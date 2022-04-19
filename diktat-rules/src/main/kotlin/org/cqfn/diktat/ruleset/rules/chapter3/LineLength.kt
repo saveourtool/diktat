@@ -5,16 +5,10 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithConditionOnLine
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getLineNumber
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
@@ -24,11 +18,15 @@ import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_INLINE_LINK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
@@ -39,6 +37,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
@@ -49,10 +48,12 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.util.containers.ConcurrentLongObjectMap.LongEntry
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.net.MalformedURLException
@@ -83,6 +84,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
+            //println(node.prettyPrint())
             println(node.text)
         }
     }
@@ -91,15 +93,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration) {
         var offset = 0
         node.text.lines().forEach { line ->
-            if (line.length > configuration.lineLength) {
+            //var line = l
+             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
-                        !isKdocValid(newNode)) {
+                    !isKdocValid(newNode)
+                ) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
-                    LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
+                    LONG_LINE.warnAndFix(
+                        configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
-                        offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
+                        offset + node.startOffset, node, fixableType != LongLineFixableCases.None
+                    ) {
                         // we should keep in mind, that in the course of fixing we change the offset
                         val textLenBeforeFix = node.textLength
                         fixError(fixableType)
@@ -107,29 +113,57 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         // offset for all next nodes changed to this delta
                         offset += (textLenAfterFix - textLenBeforeFix)
                     }
+                    //val lineOffset = findOffset(fixableType)
+                    //line = line.substring(lineOffset)
                 }
             }
             offset += line.length + 1
         }
+
     }
 
-    private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+    private fun findOffset(fixableType: LongLineFixableCases) =
+        when (fixableType) {
+            is LongLineFixableCases.Fun -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.Comment -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.LongBinaryExpression -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.BinaryExpression -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.Property -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.StringTemplate -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.Lambda -> findOffsetInNode(fixableType.node)
+            is LongLineFixableCases.None -> 0
+        }
+
+    private fun findOffsetInNode(node: ASTNode) : Int {
+        val f = node.text.findAnyOf(listOf("\n"))?.first ?: 0
+        val s = positionByOffset(node.startOffset).second
+        return f + s
+    }
+
+    private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration) : LongLineFixableCases {
         var parent = wrongNode
         do {
             when (parent.elementType) {
-                BINARY_EXPRESSION, PARENTHESIZED -> {
-                    if (parent.treeParent.elementType == BINARY_EXPRESSION || parent.treeParent.elementType == PARENTHESIZED)
+                BINARY_EXPRESSION -> {
+                    val leftOffset = positionByOffset(parent.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+                    if (leftOffset > configuration.lineLength) {
                         parent = parent.treeParent
-                    else
-                        when (parent.elementType) {
-                            BINARY_EXPRESSION -> return LongLineFixableCases.BinaryExpression(parent)
-                            PARENTHESIZED -> return LongLineFixableCases.Parenthesized(parent)
+                    } else if (parent.text.length < configuration.lineLength) {
+                        val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
+                        if (parent.treeParent.elementType in listParentSearch || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
+                            parent = parent.treeParent
+                        } else {
+                            return checkBinaryExpression(parent, configuration, leftOffset)
                         }
+                    } else {
+                        return checkBinaryExpression(parent, configuration, leftOffset)
+                    }
                 }
                 FUN -> return checkFun(parent)
                 CONDITION -> return checkCondition(parent, configuration)
-                PROPERTY -> return checkProperty(parent, configuration)
+                PROPERTY -> return checkProperty(parent)
                 EOL_COMMENT -> return checkComment(parent, configuration)
+                FUNCTION_LITERAL -> return LongLineFixableCases.Lambda(parent)
                 STRING_TEMPLATE -> {
                     // as we are going from bottom to top we are excluding
                     // 1. IF, because it seems that string template is in condition
@@ -158,6 +192,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
      *         None - if the string can't be split
      */
+
+    private fun checkBinaryExpression(node: ASTNode, configuration: LineLengthConfiguration, leftOffset: Int): LongLineFixableCases {
+        val binList: MutableList<ASTNode> = mutableListOf()
+        searchBinaryExpression(node, binList)
+        if (binList.size == 1) {
+            return LongLineFixableCases.BinaryExpression(node)
+        }
+        return LongLineFixableCases.LongBinaryExpression(node, configuration.lineLength, leftOffset, binList)
+    }
+
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
@@ -229,28 +273,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (binList.size == 1) {
             return LongLineFixableCases.None
         }
-        return LongLineFixableCases.Condition(wrongNode, configuration.lineLength, leftOffset, binList)
+        return LongLineFixableCases.LongBinaryExpression(wrongNode, configuration.lineLength, leftOffset, binList)
     }
 
-    private fun checkBinaryExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        val leftOffset = positionByOffset(wrongNode.startOffset).second
-        val binList: MutableList<ASTNode> = mutableListOf()
-        searchBinaryExpression(wrongNode.treeParent, binList)
-        if (binList.size == 1) {
-            return LongLineFixableCases.None
-        }
-        return LongLineFixableCases.BinaryExpression(wrongNode)
-    }
-
-    private fun checkParenthesized(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        val leftOffset = positionByOffset(wrongNode.startOffset).second
-        val binList: MutableList<ASTNode> = mutableListOf()
-        searchBinaryExpression(wrongNode.treeParent, binList)
-        if (binList.size == 1) {
-            return LongLineFixableCases.None
-        }
-        return LongLineFixableCases.Parenthesized(wrongNode)
-    }
+    private fun checkProperty(wrongNode: ASTNode) =
+        if (wrongNode.hasChildOfType(EQ)) LongLineFixableCases.Fun(wrongNode) else LongLineFixableCases.None
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
@@ -264,9 +291,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 val binList: MutableList<ASTNode> = mutableListOf()
                 dfsForProperty(wrongNode, binList)
                 if (binList.size == 1) {
-                    return LongLineFixableCases.None
+                    return LongLineFixableCases.BinaryExpression(wrongNode)
                 }
-                return LongLineFixableCases.Condition(wrongNode, configuration.lineLength, leftOffset, binList)
+                return LongLineFixableCases.LongBinaryExpression(wrongNode, configuration.lineLength, leftOffset, binList)
             } else {
                 return LongLineFixableCases.None
             }
@@ -302,13 +329,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         when (fixableType) {
             is LongLineFixableCases.Fun -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
             is LongLineFixableCases.Comment -> fixComment(fixableType)
-            is LongLineFixableCases.Condition -> fixLongBinaryExpression(fixableType)
+            is LongLineFixableCases.LongBinaryExpression -> fixLongBinaryExpression(fixableType)
+            is LongLineFixableCases.BinaryExpression -> fixBinaryExpression(fixableType.node)
             is LongLineFixableCases.Property -> createSplitProperty(fixableType)
             is LongLineFixableCases.StringTemplate -> fixStringTemplate(fixableType)
-            is LongLineFixableCases.BinaryExpression -> fixBinaryExpression(fixableType.node)
-            is LongLineFixableCases.Parenthesized -> fixParenthesized(fixableType.node)
+            is LongLineFixableCases.Lambda -> fixLambda(fixableType.node)
             is LongLineFixableCases.None -> return
         }
+    }
+
+    private fun fixFun(node: ASTNode): Int {
+        val lineOffset = positionByOffset(node.findChildByType(EQ)!!.startOffset).second
+        node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)!!.treeNext)
+        return lineOffset
     }
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
@@ -346,9 +379,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
 
-    private fun fixParenthesized(node: ASTNode){
-        val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
-        node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
+    private fun fixLambda(node: ASTNode){
+        val whiteSpaceAfterLBRACE = node.findChildByType(LBRACE)!!.treeNext
+        val whiteSpaceBeforeRBRACE = node.findChildByType(RBRACE)!!.treePrev
+        //node.replaceChild(whiteSpaceAfterLBRACE, PsiWhiteSpaceImpl("\n"))
+        //node.replaceChild(whiteSpaceBeforeRBRACE, PsiWhiteSpaceImpl("\n"))
+        node.appendNewlineMergingWhiteSpace(null, node.findChildByType(LBRACE)!!.treeNext)
+        node.appendNewlineMergingWhiteSpace(null, node.findChildByType(RBRACE)!!.treePrev)
     }
 
     @Suppress("UnsafeCallOnNullableType", "COMMENT_WHITE_SPACE")
@@ -373,7 +410,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * we collect their if their length less then max.
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.Condition) {
+    private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.LongBinaryExpression) {
         val leftOffset = wrongBinaryExpression.leftOffset
         val binList = wrongBinaryExpression.binList
         var binaryText = ""
@@ -561,9 +598,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
         class BinaryExpression(val node: ASTNode) : LongLineFixableCases()
 
-        class Parenthesized(val node: ASTNode) : LongLineFixableCases()
-
-        class Condition(
+        class LongBinaryExpression(
             val node: ASTNode,
             val maximumLineLength: Long,
             val leftOffset: Int,
@@ -572,6 +607,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
         class Fun(val node: ASTNode) : LongLineFixableCases()
 
+        class Lambda(val node: ASTNode) : LongLineFixableCases()
         class Property(
             val node: ASTNode,
             val indexLastSpace: Int,
