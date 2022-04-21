@@ -97,8 +97,7 @@ import org.slf4j.LoggerFactory
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_WHITESPACE),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${NewlinesRule.NAME_ID}"))
+    listOf(WRONG_WHITESPACE)
 ) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {

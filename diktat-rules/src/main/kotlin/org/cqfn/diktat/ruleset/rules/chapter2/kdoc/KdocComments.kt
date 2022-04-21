@@ -54,8 +54,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SingleConstructorRule.NAME_ID}"))
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)
 ) {
     private val config by lazy { configRules.getCommonConfiguration() }
 

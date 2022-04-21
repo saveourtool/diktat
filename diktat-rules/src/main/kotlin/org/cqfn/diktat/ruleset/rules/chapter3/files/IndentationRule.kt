@@ -72,8 +72,7 @@ import kotlin.math.abs
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_INDENTATION),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${WhiteSpaceRule.NAME_ID}"))
+    listOf(WRONG_INDENTATION)
 ) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
