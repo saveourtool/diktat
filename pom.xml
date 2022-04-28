@@ -256,7 +256,7 @@
                         </sourceDirs>
                         <args>
                             <arg>-Werror</arg>
-                            <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
+                            <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>
                     <inherited>true</inherited>
