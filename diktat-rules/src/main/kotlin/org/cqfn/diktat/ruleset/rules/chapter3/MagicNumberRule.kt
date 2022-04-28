@@ -120,5 +120,4 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
             "ignoreRanges" to false,
             "ignoreExtensionFunctions" to false)
     }
-
 }
