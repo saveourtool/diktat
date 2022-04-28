@@ -45,6 +45,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   val e = 3.4f
                 |   val g = 4/3
                 |   val h = 0U
+                |   val r = 1
                 |   val f = "qwe\$\{12\}hhe"
                 |}
                 |
