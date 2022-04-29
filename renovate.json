@@ -15,7 +15,8 @@
         "*"
       ],
       "excludePackagePatterns": [
-        "^org\\.jetbrains\\.kotlin[.:]"
+        "^org\\.jetbrains\\.kotlin[.:]",
+        "^com\\.pinterest\\.ktlint[.:]"
       ],
       "matchUpdateTypes": [
         "minor",
@@ -31,6 +32,26 @@
       ],
       "groupName": "Kotlin core dependencies",
       "groupSlug": "core-kotlin"
-    }
+    },
+    {
+      "managers": ["maven"],
+      "matchPackagePatterns": [
+        "^com\\.pinterest\\.ktlint[.:]"
+      ],
+      "groupName": "Ktlint",
+      "groupSlug": "ktlint"
+    },
+    {
+      "managers": ["gradle"],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all dependencies in gradle scripts",
+      "groupSlug": "all-gradle-dependencies"
+    },
   ]
 }
