@@ -52,6 +52,6 @@
       ],
       "groupName": "all dependencies in gradle scripts",
       "groupSlug": "all-gradle-dependencies"
-    },
+    }
   ]
 }
