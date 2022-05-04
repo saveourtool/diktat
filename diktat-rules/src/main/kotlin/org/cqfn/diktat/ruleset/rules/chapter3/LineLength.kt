@@ -120,6 +120,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
