@@ -7,7 +7,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
@@ -74,8 +73,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
-        KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"))
+        KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)
 ) {
     /**
      * @param node
