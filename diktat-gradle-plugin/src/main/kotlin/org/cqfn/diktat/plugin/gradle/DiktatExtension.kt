@@ -41,18 +41,6 @@ open class DiktatExtension(
     var output: String = ""
 
     /**
-     * Paths that will be excluded from diktat run
-     */
-    @Deprecated("Configuration via inputs/excludes is unsupported, use inputs(Action)")
-    var excludes: FileCollection? = null
-
-    /**
-     * Paths that will be scanned for .kt(s) files
-     */
-    @Deprecated("Configuration via inputs/excludes is unsupported, use inputs(Action)")
-    var inputs: FileCollection? = null
-
-    /**
      * Baseline file, containing a list of errors that will be ignored.
      * If this file doesn't exist, it will be created on the first invocation.
      */

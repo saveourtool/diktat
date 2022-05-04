@@ -28,7 +28,7 @@ repositories {
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
 val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.43.0") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.5.2"
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.1.0"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
