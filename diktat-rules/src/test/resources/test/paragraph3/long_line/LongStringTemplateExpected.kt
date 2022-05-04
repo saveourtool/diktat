@@ -15,12 +15,14 @@ val someCode = 15
 class Foo() {
 
     fun Fuu() {
-        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvkdjdfvd" else "dfjvndkjnbvif" + response.message}")
+        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvkdjdfvd" else "dfjvndkjnbvif" +
+ response.message}")
         logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvsdcsdcscskdjdfvd" else "dfjvndsdcsdcsdcskjnbvif" + response.message}")
     }
 
     val q = """
-        <--${respodcnsee.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjeeeeeee" else "dfjvndksdcjnbvif" + response.mecsssdcage}
+        <--${respodcnsee.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjeeeeeee" else "dfjvndksdcjnbvif" +
+ response.mecsssdcage}
     """.trimIndent()
 
     val w = """
@@ -31,15 +33,16 @@ class Foo() {
 
     val e = """
         another line
-        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + response.mecsssdcage}
+        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" +
+ response.mecsssdcage}
     """.trimIndent()
 
     fun foo() {
         val q = """
         re
         ${
-            if (( x >  "436587365486374568343658736548637456834365873654863745683436587365486374568343658736548637456834365873654863745683") ||
- y<238479283749238 && !isFoo()){}
+            if (( x >
+  "436587365486374568343658736548637456834365873654863745683436587365486374568343658736548637456834365873654863745683") || y<238479283749238 && !isFoo()){}
         }
     """.trimIndent()
     }
