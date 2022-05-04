@@ -80,8 +80,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            // println(node.prettyPrint())
-            // println(node.text)
         }
     }
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -107,9 +105,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         // offset for all next nodes changed to this delta
                         offset += (textLenAfterFix - textLenBeforeFix)
                     }
-                    // if (fixableType !is None) {
-                    // checkLength(fixableType.node, configuration)
-                    // }
                 }
             }
             offset += line.length + 1
