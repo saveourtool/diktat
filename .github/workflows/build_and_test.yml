@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 11
@@ -25,13 +25,13 @@ jobs:
       - name: Maven Install
         run: mvn -B clean install
       - name: Code coverage report
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: '**/target/site/jacoco*/jacoco.xml,**/reports/jacoco/**/*.xml'
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
       - name: Upload diktat jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: diktat-ruleset
           path: diktat-ruleset/target/diktat-*.jar
@@ -39,7 +39,7 @@ jobs:
           retention-days: 1
       - name: Upload gradle reports
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-test-report-${{ runner.os }}
           path: 'diktat-gradle-plugin/build/reports/'
@@ -69,7 +69,7 @@ jobs:
         shell: bash
 
       - name: Download diktat jar
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: diktat-ruleset
 
@@ -123,7 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 11
@@ -149,7 +149,7 @@ jobs:
 
       - name: Upload gradle reports
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-test-report-${{ matrix.os }}
           path: 'diktat-gradle-plugin/build/reports/'
