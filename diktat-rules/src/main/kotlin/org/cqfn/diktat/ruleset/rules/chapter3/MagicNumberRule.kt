@@ -90,7 +90,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * List of ignored numbers
          */
-        val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() }?.filter { it.isNumber() } ?: ignoreNumbersList
+        val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() }?.filter { it.isNumber() || it.isOtherNumberType() } ?: ignoreNumbersList
 
         /**
          * @param param parameter from config
@@ -102,13 +102,20 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * Check if string is number
          */
+        // || ((this.last().uppercase() == "L" || this.last().uppercase() == "U") && this.substring(0, this.lastIndex-1).isNumber())
         private fun String.isNumber() = (this.toLongOrNull() ?: this.toFloatOrNull()) != null
+
+        /**
+         * Check if string include a char of number type
+         */
+        private fun String.isOtherNumberType(): Boolean = ((this.last().uppercase() == "L" || this.last().uppercase() == "U") && this.substring(0, this.lastIndex).isNumber()) ||
+                (this.substring(this.lastIndex - 1).uppercase() == "UL" && this.substring(0, this.lastIndex - 1).isNumber())
     }
 
     companion object {
         const val IGNORE_TEST = true
         const val NAME_ID = "aca-magic-number"
-        val ignoreNumbersList = listOf("-1", "1", "0", "2")
+        val ignoreNumbersList = listOf("-1", "1", "0", "2", "0U", "1U", "2U", "-1L", "0L", "1L", "2L", "0UL", "1UL", "2UL")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,
             "ignorePropertyDeclaration" to false,

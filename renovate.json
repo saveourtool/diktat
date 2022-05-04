@@ -1,0 +1,57 @@
+{
+  "enabled": true,
+  "schedule": [
+    "before 4am on Monday"
+  ],
+  "packageRules": [
+    {
+      "managers": ["github-actions"],
+      "groupName": "all github actions",
+      "groupSlug": "all-github-actions"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "excludePackagePatterns": [
+        "^org\\.jetbrains\\.kotlin[.:]",
+        "^com\\.pinterest\\.ktlint[.:]"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major dependencies (except core Kotlin)",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackagePatterns": [
+        "^org\\.jetbrains\\.kotlin[.:]"
+      ],
+      "groupName": "Kotlin core dependencies",
+      "groupSlug": "core-kotlin"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackagePatterns": [
+        "^com\\.pinterest\\.ktlint[.:]"
+      ],
+      "groupName": "Ktlint",
+      "groupSlug": "ktlint"
+    },
+    {
+      "managers": ["gradle"],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all dependencies in gradle scripts",
+      "groupSlug": "all-gradle-dependencies"
+    }
+  ]
+}

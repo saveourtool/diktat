@@ -4,7 +4,6 @@ import org.cqfn.diktat.ruleset.rules.chapter3.files.TopLevelOrderRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

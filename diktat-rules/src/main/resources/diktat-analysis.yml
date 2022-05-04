@@ -304,7 +304,7 @@
     # Ignore numbers from test
     ignoreTest: "true"
     # Ignore numbers
-    ignoreNumbers: "-1, 1, 0, 2"
+    ignoreNumbers: "-1, 1, 0, 2, 0U, 1U, 2U, -1L, 0L, 1L, 2L, 0UL, 1UL, 2UL"
     # Is ignore override hashCode function
     ignoreHashCodeFunction: "true"
     # Is ignore property
