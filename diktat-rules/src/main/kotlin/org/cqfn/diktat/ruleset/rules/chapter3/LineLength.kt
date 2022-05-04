@@ -102,7 +102,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     LONG_LINE.warnAndFix(
                         configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
-                        offset + node.startOffset, node, fixableType != None()
+                        offset + node.startOffset, node, fixableType !is None
                     ) {
                         // we should keep in mind, that in the course of fixing we change the offset
                         val textLenBeforeFix = node.textLength
