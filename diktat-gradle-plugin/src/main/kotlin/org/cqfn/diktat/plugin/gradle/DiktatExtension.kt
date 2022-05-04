@@ -1,6 +1,5 @@
 package org.cqfn.diktat.plugin.gradle
 
-import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
