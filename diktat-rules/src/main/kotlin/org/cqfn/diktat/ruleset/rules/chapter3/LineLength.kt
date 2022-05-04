@@ -183,7 +183,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(node, configuration.lineLength, leftOffset, binList)
     }
 
-    @Suppress("TOO_LONG_FUNCTION")
+    @Suppress("TOO_LONG_FUNCTION", "UnsafeCallOnNullableType")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
         val leftOffset = if (node.text.lines().size > 1) {
