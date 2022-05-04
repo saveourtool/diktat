@@ -116,7 +116,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("TOO_LONG_FUNCTION")
+    @Suppress(
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod",
+        "UnsafeCallOnNullableType"
+    )
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
@@ -179,7 +183,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(node, configuration.lineLength, leftOffset, binList)
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("TOO_LONG_FUNCTION")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
         val leftOffset = if (node.text.lines().size > 1) {
@@ -315,6 +319,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixFun(node: ASTNode): Int {
         val lineOffset = positionByOffset(node.findChildByType(EQ)!!.startOffset).second
         node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)!!.treeNext)
@@ -356,6 +361,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.appendNewlineMergingWhiteSpace(whiteSpaceAfterPlus, whiteSpaceAfterPlus)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixLambda(node: ASTNode) {
         node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(LBRACE)!!.treeNext)
         node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)!!.treePrev, node.findChildByType(RBRACE)!!.treePrev)
