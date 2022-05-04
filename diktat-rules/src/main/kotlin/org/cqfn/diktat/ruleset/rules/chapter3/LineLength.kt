@@ -81,7 +81,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
             // println(node.prettyPrint())
-            println(node.text)
+            // println(node.text)
         }
     }
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
