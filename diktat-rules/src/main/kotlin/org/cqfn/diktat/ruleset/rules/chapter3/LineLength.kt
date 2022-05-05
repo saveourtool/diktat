@@ -126,7 +126,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             when (parent.elementType) {
                 BINARY_EXPRESSION -> {
                     val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
-                    if (splitOffset==null) {
+                    if (splitOffset == null) {
                         parent = parent.treeParent
                     } else if (parent.text.length < configuration.lineLength) {
                         val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
@@ -143,9 +143,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
                     if (parent.treeParent.elementType in listParentSearch || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
                         parent = parent.treeParent
-                        val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
-                        if (splitOffset == null) {
+                    } else {
+                        val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)
+                        if (splitOffset?.second == null) {
                             parent = parent.treeParent
+                        } else {
+                            return BinaryExpression(splitOffset?.first)
                         }
                     }
                 }
@@ -189,7 +192,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (binList.size == 1) {
             return BinaryExpression(node)
         }
-        return LongBinaryExpression(node, configuration.lineLength, leftOffset, binList)
+        return LongBinaryExpression(node, configuration, leftOffset, binList)
     }
 
     @Suppress("TOO_LONG_FUNCTION", "UnsafeCallOnNullableType")
@@ -263,7 +266,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (binList.size == 1) {
             return None()
         }
-        return LongBinaryExpression(wrongNode, configuration.lineLength, leftOffset, binList)
+        return LongBinaryExpression(wrongNode, configuration, leftOffset, binList)
     }
 
     private fun checkProperty(wrongNode: ASTNode) =
@@ -361,25 +364,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
 
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
-        val binList = wrongBinaryExpression.binList
         val splitNode = searchRigthSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)?.first
+
         if (splitNode != null){
             val nextNode = splitNode.getFirstChildWithType(OPERATION_REFERENCE)!!.treeNext
             if (!nextNode.text.contains(("\n")) )
                 splitNode.treeParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
         }
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
-        val par = prevNode.prevSibling { it.elementType == OPERATION_REFERENCE }?.let { LPAR } ?: RPAR
-        var text = ""
-        if (node.findChildByType(par)!!.treePrev != null &&
-                node.findChildByType(par)!!.treePrev.elementType == WHITE_SPACE) {
-            text += node.findChildByType(par)!!.treePrev.text
-        }
-        text += node.findChildByType(par)!!.text
-        return text
     }
 
     /**
@@ -522,7 +513,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     class LongBinaryExpression(
         node: ASTNode,
-        val maximumLineLength: Long,
+        val maximumLineLength: LineLengthConfiguration,
         val leftOffset: Int,
         val binList: MutableList<ASTNode>
     ) : LongLineFixableCases(node)

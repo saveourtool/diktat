@@ -21,8 +21,8 @@ fun foo() {
     val longIntExpression = 12345 + 12345 +
  12345 + 12345
 
-    val longIntExpression =
- (12345 + 12345 + 12345 + 12345)
+    val longIntExpression = (12345 + 12345 +
+ 12345 + 12345)
 
     val longIntExpression = (12345) + (12345) +
  (12345) + (12345)
