@@ -50,10 +50,13 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.diagnostics.WhenMissingCase
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.net.MalformedURLException
 import java.net.URL
+import javax.imageio.plugins.tiff.ExifParentTIFFTagSet
+import kotlin.math.min
 
 /**
  * The rule checks for lines in the file that exceed the maximum length.
@@ -80,6 +83,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
+            println(node.text)
         }
     }
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -121,8 +125,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION -> {
-                    val leftOffset = positionByOffset(parent.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
-                    if (leftOffset > configuration.lineLength) {
+                    val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
+                    if (splitOffset==null) {
                         parent = parent.treeParent
                     } else if (parent.text.length < configuration.lineLength) {
                         val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
@@ -133,6 +137,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         }
                     } else {
                         return checkBinaryExpression(parent, configuration)
+                    }
+                }
+                PARENTHESIZED -> {
+                    val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
+                    if (parent.treeParent.elementType in listParentSearch || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
+                        parent = parent.treeParent
+                        val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
+                        if (splitOffset == null) {
+                            parent = parent.treeParent
+                        }
                     }
                 }
                 FUN -> return checkFun(parent)
@@ -255,38 +269,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkProperty(wrongNode: ASTNode) =
             if (wrongNode.hasChildOfType(EQ)) Fun(wrongNode) else None()
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
-    private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        var newParent = wrongNode
-        while (newParent.hasChildOfType(PARENTHESIZED)) {
-            newParent = wrongNode.findChildByType(PARENTHESIZED)!!
-        }
-        if (!newParent.hasChildOfType(STRING_TEMPLATE)) {
-            if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
-                val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
-                val binList: MutableList<ASTNode> = mutableListOf()
-                dfsForProperty(wrongNode, binList)
-                if (binList.size == 1) {
-                    return BinaryExpression(wrongNode)
-                }
-                return LongBinaryExpression(wrongNode, configuration.lineLength, leftOffset, binList)
-            } else {
-                return None()
-            }
-        } else {
-            val leftOffset = positionByOffset(newParent.findChildByType(STRING_TEMPLATE)!!.startOffset).second
-            if (leftOffset > configuration.lineLength - STRING_PART_OFFSET) {
-                return None()
-            }
-            val text = wrongNode.findChildByType(STRING_TEMPLATE)!!.text.trim('"')
-            val lastCharIndex = configuration.lineLength.toInt() - leftOffset - STRING_PART_OFFSET
-            val indexLastSpace = (text.substring(0, lastCharIndex).lastIndexOf(' '))
-            if (indexLastSpace == -1) {
-                return None()
-            }
-            return Property(wrongNode, indexLastSpace, text)
-        }
-    }
 
     // fixme json method
     private fun isKdocValid(node: ASTNode) = try {
@@ -314,12 +296,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
-    private fun fixFun(node: ASTNode): Int {
-        val lineOffset = positionByOffset(node.findChildByType(EQ)!!.startOffset).second
-        node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)!!.treeNext)
-        return lineOffset
-    }
 
     private fun fixComment(wrongComment: Comment) {
         val wrongNode = wrongComment.node
@@ -383,60 +359,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
-    @Suppress("UnsafeCallOnNullableType")
+
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
-        val leftOffset = wrongBinaryExpression.leftOffset
         val binList = wrongBinaryExpression.binList
-        var binaryText = ""
-        binList.forEachIndexed { index, astNode ->
-            binaryText += findAllText(astNode)
-            if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {
-                val commonParent = astNode.parent({ it.elementType == BINARY_EXPRESSION && it in binList[index - 1].parents() })!!
-                val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
-                if (!nextNode.text.contains("\n")) {
-                    commonParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
-                }
-                return
-            }
+        val splitNode = searchRigthSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)?.first
+        if (splitNode != null){
+            val nextNode = splitNode.getFirstChildWithType(OPERATION_REFERENCE)!!.treeNext
+            if (!nextNode.text.contains(("\n")) )
+                splitNode.treeParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
         }
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun findAllText(astNode: ASTNode): String {
-        var text = ""
-        var node = astNode
-        var prevNode: ASTNode
-        do {
-            prevNode = node
-            node = node.treeParent
-            if (node.elementType == PARENTHESIZED) {
-                text += getTextFromParenthesized(node)
-            }
-        } while (node.elementType != BINARY_EXPRESSION)
-
-        if (node.firstChildNode == prevNode) {
-            if (node.treePrev != null && node.treePrev.elementType == WHITE_SPACE) {
-                text += node.treePrev.text
-            }
-        } else {
-            if (prevNode.treePrev != null && prevNode.treePrev.elementType == WHITE_SPACE) {
-                text += prevNode.treePrev.text
-            }
-        }
-        while (node.treeParent.elementType == PARENTHESIZED) {
-            node = node.treeParent
-            text += getBraceAndBeforeText(node, prevNode)
-        }
-        text += astNode.text
-        node = astNode.parent({ newNode -> newNode.nextSibling { it.elementType == OPERATION_REFERENCE } != null },
-            strict = false)
-            ?: return text
-        node = node.nextSibling { it.elementType == OPERATION_REFERENCE }!!
-        if (node.treePrev.elementType == WHITE_SPACE) {
-            text += node.treePrev.text
-        }
-        text += node.text
-        return text
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -448,20 +379,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             text += node.findChildByType(par)!!.treePrev.text
         }
         text += node.findChildByType(par)!!.text
-        return text
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun getTextFromParenthesized(node: ASTNode): String {
-        var text = ""
-        text += node.findChildByType(LPAR)!!.text
-        if (node.findChildByType(LPAR)!!.treeNext.elementType == WHITE_SPACE) {
-            text += node.findChildByType(LPAR)!!.treeNext.text
-        }
-        if (node.findChildByType(RPAR)!!.treePrev.elementType == WHITE_SPACE) {
-            text += node.findChildByType(RPAR)!!.treePrev.text
-        }
-        text += node.findChildByType(RPAR)!!.text
         return text
     }
 
@@ -484,10 +401,24 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 .forEach {
                     searchBinaryExpression(it, binList)
                 }
-        } else {
+        }
+        if (node.elementType == BINARY_EXPRESSION){
             binList.add(node)
             binList.add(node.treeParent.findChildByType(PREFIX_EXPRESSION) ?: return)
         }
+    }
+
+    private fun searchRigthSplitInBinaryExpression(parent : ASTNode, configuration: LineLengthConfiguration) : Pair<ASTNode, Int>? {
+        val binList: MutableList<ASTNode> = mutableListOf()
+        searchBinaryExpression(parent, binList)
+        return binList.map {
+            it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+        }
+            .sortedBy { it.second }
+            .reversed()
+            .firstOrNull { (it, offset) ->
+                offset + 2 <= configuration.lineLength
+            }
     }
 
     /**
@@ -498,18 +429,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @param node target node to be processed
      * @param binList where to store the corresponding results
      */
-    private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
-        node.getChildren(null).forEach {
-            if (it.elementType in propertyList) {
-                if (it.elementType == REFERENCE_EXPRESSION && it.treeParent?.elementType == CALL_EXPRESSION) {
-                    binList.add(it.treeParent)
-                } else {
-                    binList.add(it)
-                }
-            }
-            dfsForProperty(it, binList)
-        }
-    }
 
     private fun createSplitProperty(wrongProperty: Property) {
         val node = wrongProperty.node

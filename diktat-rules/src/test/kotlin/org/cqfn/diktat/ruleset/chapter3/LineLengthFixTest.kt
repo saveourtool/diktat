@@ -79,4 +79,9 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     fun `fix condition in small function`() {
         fixAndCompare("LongConditionInSmallFunctionExpected.kt", "LongConditionInSmallFunctionTest.kt", rulesConfigListDefaultLineLength)
     }
+
+    @Test
+    fun `fix expression in condition`() {
+        fixAndCompare("LongExpressionInConditionExpected.kt", "LongExpressionInConditionTest.kt", rulesConfigListLineLength)
+    }
 }

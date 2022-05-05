@@ -18,8 +18,14 @@ fun foo() {
         }
     }
 
+    val longIntExpression = 12345 + 12345 +
+ 12345 + 12345
+
     val longIntExpression =
- 12345 + 12345 + 12345 + 12345
+ (12345 + 12345 + 12345 + 12345)
+
+    val longIntExpression = (12345) + (12345) +
+ (12345) + (12345)
 
     val LongWithVar2 = "very long" +
 " woooooordsdcsdcsdcsdc $variable"
@@ -38,15 +44,9 @@ fun foo() {
     val veryLooooooooooooooooooooooooooooooongVal =
  "text"
 
-    val longIntExpression =
- (12345 + 12345 + 12345 + 12345)
-
-    val longIntExpression =
- (12345) + (12345) + (12345) + (12345)
-
     val veryLongExpression = Method() + 12345 +
  baaar()
 
-    val veryLongExpression = Method() + baaar() +
- 12345
+    val veryLongExpression = Method() +
+ baaar() + 12345
 }
