@@ -3,10 +3,10 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.6.21"
     jacoco
-    id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
-    id("org.gradle.test-retry") version "1.2.1"
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
+    id("org.gradle.test-retry") version "1.3.2"
 }
 
 repositories {
