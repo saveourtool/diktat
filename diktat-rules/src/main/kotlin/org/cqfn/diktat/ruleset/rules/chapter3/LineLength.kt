@@ -128,7 +128,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 BINARY_EXPRESSION, PARENTHESIZED -> {
                     val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
                     splitOffset?.let {
-                        if (ConditionToUpAnalysisBinExpression(parent, splitOffset)) {
+                        if (isconditionToUpAnalysisBinExpression(parent, splitOffset)) {
                             parent = parent.treeParent
                         } else {
                             return checkBinaryExpression(parent, configuration)
@@ -160,7 +160,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return None()
     }
 
-    private fun ConditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean{
+    private fun isconditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean {
         val listParentSearchInThisType = listOf(BINARY_EXPRESSION, PARENTHESIZED)
         val listParentSearchInOtherType = listOf(FUN, PROPERTY)
         return (parent.treeParent.elementType in listParentSearchInThisType || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL ||
@@ -445,7 +445,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @param node target node to be processed
      * @param binList where to store the corresponding results
      */
-
     @Suppress("UnsafeCallOnNullableType")
     private fun splitTextAndCreateNode(
         node: ASTNode,
