@@ -1,6 +1,5 @@
 package org.cqfn.diktat.plugin.gradle
 
-import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -39,18 +38,6 @@ open class DiktatExtension(
      * Default: System.out
      */
     var output: String = ""
-
-    /**
-     * Paths that will be excluded from diktat run
-     */
-    @Deprecated("Configuration via inputs/excludes is unsupported, use inputs(Action)")
-    var excludes: FileCollection? = null
-
-    /**
-     * Paths that will be scanned for .kt(s) files
-     */
-    @Deprecated("Configuration via inputs/excludes is unsupported, use inputs(Action)")
-    var inputs: FileCollection? = null
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
