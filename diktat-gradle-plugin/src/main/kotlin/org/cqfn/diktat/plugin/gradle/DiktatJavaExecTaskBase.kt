@@ -63,14 +63,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputFiles
     val actualInputs: FileCollection by lazy {
-        with(diktatExtension) {
-            // validate configuration
-            require(inputs == null && excludes == null) {
-                "`inputs` and `excludes` arguments for diktat task are deprecated and now should be changed for `inputs {}` " +
-                        "with configuration for PatternFilterable. Please check https://github.com/analysis-dev/diktat/README.md for more info."
-            }
-        }
-
         if (inputs.includes.isEmpty() && inputs.excludes.isEmpty()) {
             inputs.include("src/**/*.kt")
         }
@@ -192,7 +184,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         // githubActions should have higher priority than a custom input
         if (diktatExtension.githubActions) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
-            systemProperty("user.home", project.projectDir.toString())
+            systemProperty("user.home", project.rootDir.toString())
             reporterFlag = "--reporter=sarif"
         }
 
