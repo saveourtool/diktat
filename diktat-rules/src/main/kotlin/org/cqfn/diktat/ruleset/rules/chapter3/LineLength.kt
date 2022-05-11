@@ -7,18 +7,23 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
+import com.pinterest.ktlint.core.ast.ElementType.EQEQ
+import com.pinterest.ktlint.core.ast.ElementType.EXCL
+import com.pinterest.ktlint.core.ast.ElementType.EXCLEQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.GT
+import com.pinterest.ktlint.core.ast.ElementType.GTEQ
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
@@ -27,9 +32,11 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
+import com.pinterest.ktlint.core.ast.ElementType.LT
+import com.pinterest.ktlint.core.ast.ElementType.LTEQ
 import com.pinterest.ktlint.core.ast.ElementType.NULL
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.OROR
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
@@ -37,26 +44,20 @@ import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.diagnostics.WhenMissingCase
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.net.MalformedURLException
 import java.net.URL
-import javax.imageio.plugins.tiff.ExifParentTIFFTagSet
-import kotlin.math.min
 
 /**
  * The rule checks for lines in the file that exceed the maximum length.
@@ -124,37 +125,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var parent = wrongNode
         do {
             when (parent.elementType) {
-                BINARY_EXPRESSION -> {
+                BINARY_EXPRESSION, PARENTHESIZED -> {
                     val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
-                    if (splitOffset == null) {
-                        parent = parent.treeParent
-                    } else if (parent.text.length < configuration.lineLength) {
-                        val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
-                        if (parent.treeParent.elementType in listParentSearch || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
+                    splitOffset?.let {
+                        if (ConditionToUpAnalysisBinExpression(parent, splitOffset)) {
                             parent = parent.treeParent
                         } else {
                             return checkBinaryExpression(parent, configuration)
                         }
-                    } else {
-                        return checkBinaryExpression(parent, configuration)
-                    }
+                    } ?: run { parent = parent.treeParent }
                 }
-                PARENTHESIZED -> {
-                    val listParentSearch = listOf(BINARY_EXPRESSION, PARENTHESIZED, FUN)
-                    if (parent.treeParent.elementType in listParentSearch || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
-                        parent = parent.treeParent
-                    } else {
-                        val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)
-                        if (splitOffset?.second == null) {
-                            parent = parent.treeParent
-                        } else {
-                            return BinaryExpression(splitOffset?.first)
-                        }
-                    }
-                }
-                FUN -> return checkFun(parent)
+                FUN, PROPERTY -> return checkFunAndProperty(parent)
                 CONDITION -> return checkCondition(parent, configuration)
-                PROPERTY -> return checkProperty(parent)
                 EOL_COMMENT -> return checkComment(parent, configuration)
                 FUNCTION_LITERAL -> return Lambda(parent)
                 STRING_TEMPLATE -> {
@@ -178,13 +160,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return None()
     }
 
-    /**
-     * This class finds where the string can be split
-     *
-     * @return StringTemplate - if the string can be split,
-     *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
-     *         None - if the string can't be split
-     */
+    private fun ConditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean{
+        val listParentSearchInThisType = listOf(BINARY_EXPRESSION, PARENTHESIZED)
+        val listParentSearchInOtherType = listOf(FUN, PROPERTY)
+        return (parent.treeParent.elementType in listParentSearchInThisType || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL ||
+                (parent.treeParent.elementType in listParentSearchInOtherType && offset >= configuration.lineLength))
+    }
+
     private fun checkBinaryExpression(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(node.firstChildNode.startOffset).second
         val binList: MutableList<ASTNode> = mutableListOf()
@@ -195,6 +177,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(node, configuration, leftOffset, binList)
     }
 
+    /**
+     * This class finds where the string can be split
+     *
+     * @return StringTemplate - if the string can be split,
+     *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
+     *         None - if the string can't be split
+     */
     @Suppress("TOO_LONG_FUNCTION", "UnsafeCallOnNullableType")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
@@ -242,8 +231,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return StringTemplate(node, correcterDelimiter, multiLineOffset == 0)
     }
 
-    private fun checkFun(wrongNode: ASTNode) =
-            if (wrongNode.hasChildOfType(EQ)) Fun(wrongNode) else None()
+    private fun checkFunAndProperty(wrongNode: ASTNode) =
+            if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
@@ -269,10 +258,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(wrongNode, configuration, leftOffset, binList)
     }
 
-    private fun checkProperty(wrongNode: ASTNode) =
-            if (wrongNode.hasChildOfType(EQ)) Fun(wrongNode) else None()
-
-
     // fixme json method
     private fun isKdocValid(node: ASTNode) = try {
         if (node.elementType == KDOC_TEXT) {
@@ -288,17 +273,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "WHEN_WITHOUT_ELSE")
     private fun fixError(fixableType: LongLineFixableCases) {
         when (fixableType) {
-            is Fun -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
+            is FunAndProperty -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
             is Comment -> fixComment(fixableType)
             is LongBinaryExpression -> fixLongBinaryExpression(fixableType)
             is BinaryExpression -> fixBinaryExpression(fixableType.node)
-            is Property -> createSplitProperty(fixableType)
             is StringTemplate -> fixStringTemplate(fixableType)
             is Lambda -> fixLambda(fixableType.node)
             is None -> return
         }
     }
-
 
     private fun fixComment(wrongComment: Comment) {
         val wrongNode = wrongComment.node
@@ -362,14 +345,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
-
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
-        val splitNode = searchRigthSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)?.first
-
-        if (splitNode != null){
-            val nextNode = splitNode.getFirstChildWithType(OPERATION_REFERENCE)!!.treeNext
-            if (!nextNode.text.contains(("\n")) )
-                splitNode.treeParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+        val anySplitNode = searchSomeSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)
+        val rigthSplitnode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
+        rigthSplitnode?.let {
+            val nextNode = rigthSplitnode.first.getFirstChildWithType(OPERATION_REFERENCE)!!.treeNext
+            if (!nextNode.text.contains(("\n"))) {
+                rigthSplitnode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+            }
         }
     }
 
@@ -393,13 +376,55 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     searchBinaryExpression(it, binList)
                 }
         }
-        if (node.elementType == BINARY_EXPRESSION){
+        if (node.elementType == BINARY_EXPRESSION) {
             binList.add(node)
             binList.add(node.treeParent.findChildByType(PREFIX_EXPRESSION) ?: return)
         }
     }
 
-    private fun searchRigthSplitInBinaryExpression(parent : ASTNode, configuration: LineLengthConfiguration) : Pair<ASTNode, Int>? {
+    /**
+     * Return List of the Pair <node, offset>
+     * First elem in List - Logic Binary Expression (&&  ||)
+     * Second elem in List - Comparison Binary Expression (> < == >= <= != in !in)
+     * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- !)
+     */
+    @Suppress("TYPE_ALIAS")
+    private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
+        val logicListOperationReference = listOf(OROR, ANDAND)
+        val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ)
+        val binList: MutableList<ASTNode> = mutableListOf()
+        searchBinaryExpression(parent, binList)
+        val rightBinList = binList.map {
+            it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+        }
+            .sortedBy { it.second }
+            .reversed()
+        val returnList: MutableList<Pair<ASTNode, Int>?> = mutableListOf()
+        addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference)
+        addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference)
+        var expression = rightBinList.firstOrNull { (it, offset) ->
+            val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
+            offset + 2 <= configuration.lineLength && binExpression!!.firstChildNode.elementType !in logicListOperationReference &&
+                    binExpression.firstChildNode.elementType !in compressionListOperationReference &&
+                    binExpression.firstChildNode.elementType != EXCL
+        }
+        returnList.add(expression)
+        return returnList
+    }
+    @Suppress("TYPE_ALIAS")
+    private fun addInSmartListBinExpression(
+        returnList: MutableList<Pair<ASTNode, Int>?>,
+        rightBinList: List<Pair<ASTNode, Int>>,
+        listTypes: List<IElementType>
+    ) {
+        val expression = rightBinList.firstOrNull { (it, offset) ->
+            val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
+            offset + 2 <= configuration.lineLength && binExpression!!.firstChildNode.elementType in listTypes
+        }
+        returnList.add(expression)
+    }
+
+    private fun searchRigthSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): Pair<ASTNode, Int>? {
         val binList: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(parent, binList)
         return binList.map {
@@ -420,13 +445,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @param node target node to be processed
      * @param binList where to store the corresponding results
      */
-
-    private fun createSplitProperty(wrongProperty: Property) {
-        val node = wrongProperty.node
-        val indexLastSpace = wrongProperty.indexLastSpace
-        val text = wrongProperty.text
-        splitTextAndCreateNode(node, text, indexLastSpace)
-    }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun splitTextAndCreateNode(
@@ -521,7 +539,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class Fun show that long line should be split in Fun: after EQ (between head and body this function)
      */
-    class Fun(node: ASTNode) : LongLineFixableCases(node)
+    class FunAndProperty(node: ASTNode) : LongLineFixableCases(node)
 
     /**
      * Class Lambda show that long line should be split in Comment: in space between two words
@@ -533,11 +551,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @property indexLastSpace
      * @property text
      */
-    class Property(
-        node: ASTNode,
-        val indexLastSpace: Int,
-        val text: String
-    ) : LongLineFixableCases(node)
 
     /**
      * val text = "first part" +
