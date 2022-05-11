@@ -84,7 +84,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            println(node.text)
+            //println(node.prettyPrint())
         }
     }
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -345,6 +345,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
         val anySplitNode = searchSomeSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)
         val rigthSplitnode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
@@ -388,7 +389,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Second elem in List - Comparison Binary Expression (> < == >= <= != in !in)
      * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- !)
      */
-    @Suppress("TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
     private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
         val logicListOperationReference = listOf(OROR, ANDAND)
         val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ)
@@ -411,7 +412,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         returnList.add(expression)
         return returnList
     }
-    @Suppress("TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
     private fun addInSmartListBinExpression(
         returnList: MutableList<Pair<ASTNode, Int>?>,
         rightBinList: List<Pair<ASTNode, Int>>,
@@ -424,6 +425,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         returnList.add(expression)
     }
 
+    @Suppress( "UnsafeCallOnNullableType")
     private fun searchRigthSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): Pair<ASTNode, Int>? {
         val binList: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(parent, binList)
