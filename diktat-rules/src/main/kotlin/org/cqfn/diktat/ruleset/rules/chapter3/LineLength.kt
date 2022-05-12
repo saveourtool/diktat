@@ -84,7 +84,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            //println(node.prettyPrint())
         }
     }
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -126,7 +125,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
-                    val splitOffset = searchRigthSplitInBinaryExpression(parent, configuration)?.second
+                    val splitOffset = searchRightSplitInBinaryExpression(parent, configuration)?.second
                     splitOffset?.let {
                         if (isconditionToUpAnalysisBinExpression(parent, splitOffset)) {
                             parent = parent.treeParent
@@ -403,7 +402,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val returnList: MutableList<Pair<ASTNode, Int>?> = mutableListOf()
         addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference)
         addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference)
-        var expression = rightBinList.firstOrNull { (it, offset) ->
+        val expression = rightBinList.firstOrNull { (it, offset) ->
             val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
             offset + 2 <= configuration.lineLength && binExpression!!.firstChildNode.elementType !in logicListOperationReference &&
                     binExpression.firstChildNode.elementType !in compressionListOperationReference &&
@@ -426,7 +425,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress( "UnsafeCallOnNullableType")
-    private fun searchRigthSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): Pair<ASTNode, Int>? {
+    private fun searchRightSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): Pair<ASTNode, Int>? {
         val binList: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(parent, binList)
         return binList.map {
