@@ -47,6 +47,6 @@ fun foo() {
     val veryLongExpression = Method() + 12345 +
  baaar()
 
-    val veryLongExpression = Method() +
- baaar() + 12345
+    val veryLongExpression = Method() + baaar() +
+ 12345
 }

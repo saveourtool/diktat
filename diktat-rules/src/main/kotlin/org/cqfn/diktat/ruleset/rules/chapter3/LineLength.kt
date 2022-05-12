@@ -404,7 +404,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference)
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
-            offset + 2 <= configuration.lineLength && binExpression!!.firstChildNode.elementType !in logicListOperationReference &&
+            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) < configuration.lineLength + 1 &&
+                    binExpression!!.firstChildNode.elementType !in logicListOperationReference &&
                     binExpression.firstChildNode.elementType !in compressionListOperationReference &&
                     binExpression.firstChildNode.elementType != EXCL
         }
@@ -419,7 +420,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
-            offset + 2 <= configuration.lineLength && binExpression!!.firstChildNode.elementType in listTypes
+            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) < configuration.lineLength + 1 &&
+                    binExpression!!.firstChildNode.elementType in listTypes
         }
         returnList.add(expression)
     }
@@ -434,7 +436,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             .sortedBy { it.second }
             .reversed()
             .firstOrNull { (it, offset) ->
-                offset + 2 <= configuration.lineLength
+                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1
             }
     }
 

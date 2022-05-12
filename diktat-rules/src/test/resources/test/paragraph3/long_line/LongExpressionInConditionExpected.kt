@@ -11,8 +11,8 @@ fun foo() {
     } else if (veryLooooooongConstIntName2 >
  123 * 12 && veryLooongStringName != "asd") {
         carry+=2
-    } else if (1234 + 1235 + 1236 + 1237 +
- 1238 > 124 * 12) {
+    } else if (1234 + 1235 + 1236 + 1237 + 1238 >
+ 124 * 12) {
         carry+=3
     }
 }

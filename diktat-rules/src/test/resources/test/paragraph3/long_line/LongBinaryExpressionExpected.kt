@@ -24,8 +24,8 @@ fun foo() {
  null
 
     // limit at the operation reference
-    val variable =
- field?.filter { bar == foo } ?: null
+    val variable = field?.filter { bar == foo } ?:
+ null
 
     val variable =
  Methoooooooooooooooooooooooooood() ?: "some loooooong string"
