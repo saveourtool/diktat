@@ -501,7 +501,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class None show error long line have unidentified type or something else that we can't analyze
      */
-    class None : LongLineFixableCases(KotlinParser().createNode("ERROR"))
+    private class None : LongLineFixableCases(KotlinParser().createNode("ERROR"))
 
     /**
      * @property node node
@@ -515,7 +515,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @property hasNewLineBefore
      * @property indexLastSpace
      */
-    class Comment(
+    private class Comment(
         node: ASTNode,
         val hasNewLineBefore: Boolean,
         val indexLastSpace: Int = 0
@@ -532,7 +532,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @property delimiterIndex
      * @property isOneLineString
      */
-    class StringTemplate(
+    private class StringTemplate(
         node: ASTNode,
         val delimiterIndex: Int,
         val isOneLineString: Boolean
@@ -541,7 +541,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class BinaryExpression show that long line should be split in short binary expression? after operation reference
      */
-    class BinaryExpression(node: ASTNode) : LongLineFixableCases(node)
+    private class BinaryExpression(node: ASTNode) : LongLineFixableCases(node)
 
     /**
      * Class LongBinaryExpression show that long line should be split between other parts long binary expression,
@@ -550,7 +550,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @property leftOffset
      * @property binList
      */
-    class LongBinaryExpression(
+    private class LongBinaryExpression(
         node: ASTNode,
         val maximumLineLength: LineLengthConfiguration,
         val leftOffset: Int,
@@ -560,12 +560,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class Fun show that long line should be split in Fun: after EQ (between head and body this function)
      */
-    class FunAndProperty(node: ASTNode) : LongLineFixableCases(node)
+    private class FunAndProperty(node: ASTNode) : LongLineFixableCases(node)
 
     /**
      * Class Lambda show that long line should be split in Comment: in space between two words
      */
-    class Lambda(node: ASTNode) : LongLineFixableCases(node)
+    private class Lambda(node: ASTNode) : LongLineFixableCases(node)
 
     /**
      * Class Property show that long line should be split in property: after a EQ
