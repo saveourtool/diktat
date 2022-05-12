@@ -496,7 +496,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Class LongLineFixableCases is parent class for several specific error classes
      */
     @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
-    open class LongLineFixableCases(val node: ASTNode)
+    sealed class LongLineFixableCases(val node: ASTNode)
 
     /**
      * Class None show error long line have unidentified type or something else that we can't analyze
