@@ -98,8 +98,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 ) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
-                    LONG_LINE.warnAndFix(
-                        configRules, emitWarn, isFixMode,
+                    LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType !is None
                     ) {
@@ -119,7 +118,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "TOO_LONG_FUNCTION",
         "ComplexMethod",
-        "UnsafeCallOnNullableType"
     )
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
@@ -128,7 +126,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 BINARY_EXPRESSION, PARENTHESIZED -> {
                     val splitOffset = searchRightSplitInBinaryExpression(parent, configuration)?.second
                     splitOffset?.let {
-                        if (isconditionToUpAnalysisBinExpression(parent, splitOffset)) {
+                        if (isConditionToUpAnalysisBinExpression(parent, splitOffset)) {
                             parent = parent.treeParent
                         } else {
                             return checkBinaryExpression(parent, configuration)
@@ -160,13 +158,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return None()
     }
 
-    private fun isconditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean {
+    /**
+     * Analyzes the Binary expression and decides to go higher level with the analysis or analyze at this level
+     */
+    private fun isConditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean {
         val listParentSearchInThisType = listOf(BINARY_EXPRESSION, PARENTHESIZED)
         val listParentSearchInOtherType = listOf(FUN, PROPERTY)
         return (parent.treeParent.elementType in listParentSearchInThisType || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL ||
                 (parent.treeParent.elementType in listParentSearchInOtherType && offset >= configuration.lineLength))
     }
 
+    /**
+     * Parses the existing binary expression and passes the necessary parameters to the fix function for splitting
+     */
     private fun checkBinaryExpression(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(node.firstChildNode.startOffset).second
         val binList: MutableList<ASTNode> = mutableListOf()
@@ -253,7 +257,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val binList: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(wrongNode, binList)
         if (binList.size == 1) {
-            return None()
+            return BinaryExpression(wrongNode)
         }
         return LongBinaryExpression(wrongNode, configuration, leftOffset, binList)
     }
@@ -312,6 +316,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    /**
+     * Fix a binary expression -
+     * If the transfer is done on the Elvis operator, then transfers it to a new line
+     * If not on the Elvis operator, then transfers it to a new line after the operation reference
+     */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixBinaryExpression(node: ASTNode) {
         val nodeOperationReference = node.findChildByType(OPERATION_REFERENCE)
@@ -327,6 +336,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.appendNewlineMergingWhiteSpace(nextNode, nextNode)
     }
 
+    /**
+     * Splits Lambda expressions - add splits lines, thereby making the lambda expression a separate line
+     */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLambda(node: ASTNode) {
         node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(LBRACE)!!.treeNext)
@@ -349,10 +361,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * This method fix too long binary expression: split after OPERATION_REFERENCE closest to max length
-     *
-     * In this method we collect all binary expression in correct order and then
-     * we collect their if their length less then max.
+     * Finds where it is better to fix a Binary expression and fixes it
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
@@ -376,12 +385,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * This method stored all the nodes that have BINARY_EXPRESSION or PREFIX_EXPRESSION element type.
-     * This method uses recursion to store binary node in the order in which they are located
-     * Also binList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
-     *
-     *@param node node in which to search
-     *@param binList mutable list of ASTNode to store nodes
+     * Recursively searches for all Binary expressions inside a given
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) ||
@@ -445,6 +449,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         returnList.add(expression)
     }
 
+    /**
+     * Finds the first binary expression closer to the separator
+     */
     @Suppress("UnsafeCallOnNullableType")
     private fun searchRightSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): Pair<ASTNode, Int>? {
         val binList: MutableList<ASTNode> = mutableListOf()
@@ -457,28 +464,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             .firstOrNull { (it, offset) ->
                 offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1
             }
-    }
-
-    /**
-     * Collect by Depth-first search (DFS) all children to the right side of the equal sign with specific type [propertyList],
-     * by which we can split expression.
-     * Such logic needed, because AST representation of complex conditions is quite loaded
-     *
-     * @param node target node to be processed
-     * @param binList where to store the corresponding results
-     */
-    @Suppress("UnsafeCallOnNullableType")
-    private fun splitTextAndCreateNode(
-        node: ASTNode,
-        text: String,
-        index: Int
-    ) {
-        val resultText = "\"${text.substring(0, index)}\" +\n\"${text.substring(index)}\""
-        val newNode = KotlinParser().createNode(resultText)
-        node.removeChild(node.findChildByType(STRING_TEMPLATE)!!)
-        val prevExp = CompositeElement(BINARY_EXPRESSION)
-        node.addChild(prevExp, null)
-        prevExp.addChild(newNode, null)
     }
 
     /**
