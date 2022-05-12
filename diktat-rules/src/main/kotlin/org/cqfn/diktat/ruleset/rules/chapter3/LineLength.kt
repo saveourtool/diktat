@@ -408,8 +408,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Return List of the Pair <node, offset>
      * First elem in List - Logic Binary Expression (&&  ||)
-     * Second elem in List - Comparison Binary Expression (> < == >= <= != in !in)
-     * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- !)
+     * Second elem in List - Comparison Binary Expression (> < == >= <= !=)
+     * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
      */
     @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
     private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
@@ -427,7 +427,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference)
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
-            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) < configuration.lineLength + 1 &&
+            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
                     binExpression!!.firstChildNode.elementType !in logicListOperationReference &&
                     binExpression.firstChildNode.elementType !in compressionListOperationReference &&
                     binExpression.firstChildNode.elementType != EXCL
@@ -443,7 +443,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
-            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) < configuration.lineLength + 1 &&
+            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
                     binExpression!!.firstChildNode.elementType in listTypes
         }
         returnList.add(expression)

@@ -27,6 +27,15 @@ fun foo() {
     val variable = field?.filter { bar == foo }
  ?: null
 
+    val variable = field?.filter { bar == foo }
+?: null
+
+    val variable = Methooood() * 2 + 12 + field
+ ?: 123 + Methood().linelength
+
+    val variable = Methooood() * 2 + 12 + field
+?: 123 + Methood().linelength
+
     val variable =
  Methoooooooooooooooooooooooooood() ?: "some loooooong string"
 
