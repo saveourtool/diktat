@@ -424,7 +424,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         returnList.add(expression)
     }
 
-    @Suppress( "UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType")
     private fun searchRightSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): Pair<ASTNode, Int>? {
         val binList: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(parent, binList)
