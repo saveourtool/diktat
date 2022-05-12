@@ -2,6 +2,7 @@ package test.paragraph3.long_line
 
 fun foo() {
     if (( x >  4365873654863745683)||y<238479283749238&&!isFoo()){}
+    if (( x >  4365873654863745683) || y<238479283749238 && !isFoo()){}
     if (q.text == "dc" && !IsFoo() || x > 238479283749238 && y <                                   238479283749238 || g == "text"){}
     if (q.text == "dc" && !IsFoo() || x > 238479283749238 && y < 238479283749238 || g == "text"){}
     if (d == "very long text" && gh == "very long text" || x > 238479283749238 || y< 238479283749238){}
