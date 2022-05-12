@@ -20,12 +20,12 @@ fun foo() {
  } ?: null
 
     // limit at the right side
-    val variable = bar?.filter { it.b == c } ?:
- null
+    val variable = bar?.filter { it.b == c }
+ ?: null
 
     // limit at the operation reference
-    val variable = field?.filter { bar == foo } ?:
- null
+    val variable = field?.filter { bar == foo }
+ ?: null
 
     val variable =
  Methoooooooooooooooooooooooooood() ?: "some loooooong string"

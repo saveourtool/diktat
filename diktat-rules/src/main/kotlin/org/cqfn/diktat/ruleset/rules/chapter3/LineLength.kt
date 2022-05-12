@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.EQEQ
@@ -313,8 +314,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun fixBinaryExpression(node: ASTNode) {
-        val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
-        node.appendNewlineMergingWhiteSpace(whiteSpaceAfterPlus, whiteSpaceAfterPlus)
+        val nodeOperationReference = node.findChildByType(OPERATION_REFERENCE)
+        val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
+            nodeOperationReference.treeNext
+        } else {
+            if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
+                nodeOperationReference.treePrev
+            } else {
+                nodeOperationReference
+            }
+        }
+        node.appendNewlineMergingWhiteSpace(nextNode, nextNode)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -348,8 +358,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
         val anySplitNode = searchSomeSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)
         val rigthSplitnode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
+        val nodeOperationReference = rigthSplitnode?.first?.getFirstChildWithType(OPERATION_REFERENCE)
         rigthSplitnode?.let {
-            val nextNode = rigthSplitnode.first.getFirstChildWithType(OPERATION_REFERENCE)!!.treeNext
+            val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
+                nodeOperationReference.treeNext
+            } else {
+                if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
+                    nodeOperationReference.treePrev
+                } else {
+                    nodeOperationReference
+                }
+            }
             if (!nextNode.text.contains(("\n"))) {
                 rigthSplitnode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
             }
