@@ -56,6 +56,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.typeReferenceRecursiveVisitor
 
 import java.net.MalformedURLException
 import java.net.URL
@@ -131,7 +132,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         } else {
                             return checkBinaryExpression(parent, configuration)
                         }
-                    } ?: run { parent = parent.treeParent }
+                    }
+                        ?: run { parent = parent.treeParent }
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)
                 CONDITION -> return checkCondition(parent, configuration)
@@ -162,10 +164,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Analyzes the Binary expression and decides to go higher level with the analysis or analyze at this level
      */
     private fun isConditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean {
-        val listParentSearchInThisType = listOf(BINARY_EXPRESSION, PARENTHESIZED)
-        val listParentSearchInOtherType = listOf(FUN, PROPERTY)
-        return (parent.treeParent.elementType in listParentSearchInThisType || parent.treeParent.treeParent.elementType == FUNCTION_LITERAL ||
-                (parent.treeParent.elementType in listParentSearchInOtherType && offset >= configuration.lineLength))
+        val condition1 = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
+        val condition2 = parent.treeParent.treeParent.elementType == FUNCTION_LITERAL
+        val condition3 = parent.treeParent.elementType in listOf(FUN, PROPERTY)
+        return (condition1 || condition2 || (condition3 && offset >= configuration.lineLength))
     }
 
     /**
@@ -385,7 +387,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Recursively searches for all Binary expressions inside a given
+     * This method uses recursion to store binary node in the order in which they are located
+     * Also binList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
+     *
+     *@param node node in which to search
+     *@param binList mutable list of ASTNode to store nodes
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) ||
@@ -426,25 +432,27 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference)
         addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference)
         val expression = rightBinList.firstOrNull { (it, offset) ->
-            val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
+            val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binExpression!!.firstChildNode.elementType !in logicListOperationReference &&
-                    binExpression.firstChildNode.elementType !in compressionListOperationReference &&
-                    binExpression.firstChildNode.elementType != EXCL
+                    binExpression !in logicListOperationReference && binExpression !in compressionListOperationReference && binExpression != EXCL
         }
         returnList.add(expression)
         return returnList
     }
+
+    /**
+     * Runs through the sorted list [rightBinList], finds its last element, the type of which is included in the set [typesList] and adds it in the list [returnList]
+     */
     @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
     private fun addInSmartListBinExpression(
         returnList: MutableList<Pair<ASTNode, Int>?>,
         rightBinList: List<Pair<ASTNode, Int>>,
-        listTypes: List<IElementType>
+        typesList: List<IElementType>
     ) {
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binExpression!!.firstChildNode.elementType in listTypes
+                    binExpression!!.firstChildNode.elementType in typesList
         }
         returnList.add(expression)
     }
