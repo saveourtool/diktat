@@ -5,13 +5,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithConditionOnLine
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getLineNumber
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -49,6 +42,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -135,11 +129,41 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         }
                     } ?: return checkStringTemplate(parent, configuration)
                 }
+                STRING_TEMPLATE -> {
+                    parent.findParentNodeWithSpecificType(BINARY_EXPRESSION) ?. let {
+                        if (searchRightSplitInBinaryExpression(parent, configuration)?.second)
+                            parent = it
+                    } ?: run {
+                        val parentFun = parent.findParentNodeWithSpecificType(FUN)
+                        val parentProperty = parent.findParentNodeWithSpecificType(PROPERTY)
+                        return checkStringTemplate1(parent, configuration, parentProperty ?: parentFun )
+                    }
+                }
                 else -> parent = parent.treeParent
             }
         } while (parent.treeParent != null)
         return LongLineFixableCases.None
     }
+
+    private fun createClassForStringTeplate(node:ASTNode, configuration: LineLengthConfiguration) {
+
+    }
+
+    private fun checkStringTemplate1(node: ASTNode, configuration: LineLengthConfiguration, FunOrPropertyNode : ASTNode?) : LongLineFixableCases {
+        FunOrPropertyNode ?.let {
+            if (it.hasChildOfType(EQ)) {
+                val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)!!.startOffset).second
+                if (positionByOffset > configuration.lineLength / 2)
+                    return FunAndProperty(it)
+            } else
+                return createClassForStringTeplate(node, configuration)
+        } ?: return createClassForStringTeplate(node, configuration)
+    }
+
+    воавопщшю.iojgfjiogj + jfdgnfdkjg.fdioj.fdg..dfg.fd.gdf.df.gdf.
+
+    fjhghihj.fmkghjiogf + fkjgfogh
+        .fkpgfhkpogfh.dfhggh.fdh.gfh..fg.hgf.h.fg.
 
     /**
      * This class finds where the string can be split
