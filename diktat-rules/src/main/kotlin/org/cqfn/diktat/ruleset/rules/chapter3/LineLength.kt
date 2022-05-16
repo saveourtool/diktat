@@ -163,10 +163,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Analyzes the Binary expression and decides to go higher level with the analysis or analyze at this level
      */
     private fun isConditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean {
-        val condition1 = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
-        val condition2 = parent.treeParent.treeParent.elementType == FUNCTION_LITERAL
-        val condition3 = parent.treeParent.elementType in listOf(FUN, PROPERTY)
-        return (condition1 || condition2 || (condition3 && offset >= configuration.lineLength))
+        val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
+        val parentIsFunctionLiteral = parent.treeParent.treeParent.elementType == FUNCTION_LITERAL
+        val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
+        return (parentIsBiExprOrParenthesized || parentIsFunctionLiteral || (parentIsFunOrProperty && offset >= configuration.lineLength))
     }
 
     /**
@@ -428,12 +428,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             .sortedBy { it.second }
             .reversed()
         val returnList: MutableList<Pair<ASTNode, Int>?> = mutableListOf()
-        addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference)
-        addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference)
+        addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference, configuration)
+        addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference, configuration)
         val expression = rightBinList.firstOrNull { (it, offset) ->
-            val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
+            val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binExpression !in logicListOperationReference && binExpression !in compressionListOperationReference && binExpression != EXCL
+                    binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
         }
         returnList.add(expression)
         return returnList
@@ -446,12 +446,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun addInSmartListBinExpression(
         returnList: MutableList<Pair<ASTNode, Int>?>,
         rightBinList: List<Pair<ASTNode, Int>>,
-        typesList: List<IElementType>
+        typesList: List<IElementType>,
+        configuration: LineLengthConfiguration
     ) {
         val expression = rightBinList.firstOrNull { (it, offset) ->
-            val binExpression = it.getFirstChildWithType(OPERATION_REFERENCE)
+            val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binExpression!!.firstChildNode.elementType in typesList
+                    binOperationReference!!.firstChildNode.elementType in typesList
         }
         returnList.add(expression)
     }

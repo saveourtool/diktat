@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
     private val rulesConfigListLongLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
-            mapOf("lineLength" to "165"))
+            mapOf("lineLength" to "175"))
     )
     private val rulesConfigListDefaultLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
@@ -80,12 +80,8 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
-    fun `fix condition in small function with default length`() {
-        fixAndCompare("LongConditionInSmallFunctionDefaultExpected.kt", "LongConditionInSmallFunctionTest.kt", rulesConfigListDefaultLineLength)
-    }
-    @Test
     fun `fix condition in small function with long length`() {
-        fixAndCompare("LongConditionInSmallFunctionLongExpected.kt", "LongConditionInSmallFunctionTest.kt", rulesConfigListLongLineLength)
+        fixAndCompare("LongConditionInSmallFunctionExpected.kt", "LongConditionInSmallFunctionTest.kt", rulesConfigListLongLineLength)
     }
 
     @Test
