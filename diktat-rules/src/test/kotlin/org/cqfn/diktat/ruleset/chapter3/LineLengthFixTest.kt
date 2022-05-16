@@ -7,6 +7,10 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Test
 
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
+    private val rulesConfigListLongLineLength: List<RulesConfig> = listOf(
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "175"))
+    )
     private val rulesConfigListDefaultLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "120"))
@@ -73,5 +77,15 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     @Test
     fun `should fix annotation`() {
         fixAndCompare("LongLineAnnotationExpected.kt", "LongLineAnnotationTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `fix condition in small function with long length`() {
+        fixAndCompare("LongConditionInSmallFunctionExpected.kt", "LongConditionInSmallFunctionTest.kt", rulesConfigListLongLineLength)
+    }
+
+    @Test
+    fun `fix expression in condition`() {
+        fixAndCompare("LongExpressionInConditionExpected.kt", "LongExpressionInConditionTest.kt", rulesConfigListLineLength)
     }
 }
