@@ -552,7 +552,9 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
  */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
-        (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
+        if (whiteSpaceNode.text.lines().size == 1) {
+            (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
+        }
     } else {
         addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
     }

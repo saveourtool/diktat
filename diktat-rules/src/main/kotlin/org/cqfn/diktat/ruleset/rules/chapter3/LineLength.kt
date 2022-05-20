@@ -54,16 +54,10 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
-import org.jetbrains.kotlin.psi.parameterRecursiveVisitor
-import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.net.MalformedURLException
 import java.net.URL
@@ -131,18 +125,34 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     )
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
+        var stringOrDot : ASTNode? = null
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
-                    val splitOffset = searchRightSplitAfterType(parent, configuration, OPERATION_REFERENCE)?.second
-                    splitOffset?.let {
-                        if (isConditionToUpAnalysisBinExpression(parent, splitOffset)) {
-                            parent = parent.treeParent
-                        } else {
-                            return checkBinaryExpression(parent, configuration)
+                    parent.findParentNodeWithSpecificType(VALUE_ARGUMENT_LIST) ?. let {
+                        parent = it
+                    } ?: parent.findParentNodeWithSpecificType(FUNCTION_LITERAL) ?. let {
+                        parent = it
+                    } ?: run {
+                        val splitOffset = searchRightSplitAfterType(parent, configuration, OPERATION_REFERENCE)?.second
+                        splitOffset?.let {
+                            val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
+                            val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
+                            if (parentIsBiExprOrParenthesized) {
+                                parent = parent.treeParent
+                            } else if (parentIsFunOrProperty && splitOffset >= configuration.lineLength)  {
+                                if (stringOrDot != null) {
+                                    val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration)
+                                    if (returnElem !is None)
+                                        return returnElem
+                                }
+                                parent = parent.treeParent
+                            } else {
+                                return checkBinaryExpression(parent, configuration)
+                            }
                         }
+                            ?: run { parent = parent.treeParent }
                     }
-                        ?: run { parent = parent.treeParent }
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)
                 CONDITION -> return checkCondition(parent, configuration)
@@ -154,6 +164,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 EOL_COMMENT -> return checkComment(parent, configuration)
                 FUNCTION_LITERAL -> return Lambda(parent)
                 STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION -> {
+                    stringOrDot = parent
                     parent.findParentNodeWithSpecificType(BINARY_EXPRESSION) ?. let {
                         parent = it
                     } ?: parent.findParentNodeWithSpecificType(VALUE_ARGUMENT_LIST) ?. let {
@@ -178,9 +189,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun isConditionToUpAnalysisBinExpression(parent: ASTNode, offset: Int): Boolean {
         val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
-        val parentIsFunctionLiteral = parent.treeParent.treeParent.elementType == FUNCTION_LITERAL
         val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
-        return (parentIsBiExprOrParenthesized || parentIsFunctionLiteral || (parentIsFunOrProperty && offset >= configuration.lineLength))
+        return (parentIsBiExprOrParenthesized || (parentIsFunOrProperty && offset >= configuration.lineLength))
     }
 
     /**
@@ -196,7 +206,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(node, configuration, leftOffset, binList)
     }
 
-    private fun checkStringTemplateAndDotQualifiedExpression(node: ASTNode, configuration: LineLengthConfiguration, funOrPropertyNode : ASTNode?) : LongLineFixableCases {
+    private fun checkStringTemplateAndDotQualifiedExpression(node: ASTNode, configuration: LineLengthConfiguration, funOrPropertyNode : ASTNode? = null) : LongLineFixableCases {
         funOrPropertyNode ?.let {
             if (it.hasChildOfType(EQ)) {
                 val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)!!.startOffset).second
@@ -276,7 +286,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun parserDotQualifiedExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration) : LongLineFixableCases {
         val nodeDot = searchRightSplitAfterType(wrongNode, configuration, DOT)?.first
         nodeDot ?. let {
-            return DotQualifiedExpression(wrongNode, it)
+            return DotQualifiedExpression(wrongNode)
         } ?:
             return None()
     }
@@ -345,17 +355,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun fixDotQualifiedExpression(wrongDotQualifiedExpression: DotQualifiedExpression) {
         val node = wrongDotQualifiedExpression.node
-        val dot = wrongDotQualifiedExpression.nodeForSplit
+        val dot = node.getFirstChildWithType(DOT)
         node.appendNewlineMergingWhiteSpace(dot,dot)
     }
     private fun fixArgumentList(wrongArgumentList: ValueArgumentList) {
         val node = wrongArgumentList.node
-        val comma = wrongArgumentList.nodeForSplit
+        val nodeWithComma = wrongArgumentList.nodeForSplit
+        val comma = nodeWithComma?.getFirstChildWithType(COMMA)
         comma ?. let {
-            node.appendNewlineMergingWhiteSpace(comma, comma)
+            nodeWithComma.appendNewlineMergingWhiteSpace(comma, comma)
         } ?: run {
             node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
-            node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR)!!.treePrev, node.findChildByType(RPAR)!!.treePrev)
+            node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
             node.getChildren(null).forEach { elem->
                 if (elem.elementType == COMMA && elem.treeNext.elementType != RPAR)
                     node.appendNewlineMergingWhiteSpace(elem.treeNext, elem.treeNext)
@@ -426,13 +437,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val incorrectText = wrongStringTemplate.node.text
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
-        val textBetwenParts =
+        val textBetweenParts =
                 if (wrongStringTemplate.isOneLineString) {
                     "\" +\n\""
                 } else {
                     "\n"
                 }
-        val correctNode = KotlinParser().createNode("$firstPart$textBetwenParts$secondPart")
+        val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
         wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
 
@@ -482,6 +493,32 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == BINARY_EXPRESSION) {
             binList.add(node)
             binList.add(node.treeParent.findChildByType(PREFIX_EXPRESSION) ?: return)
+        }
+    }
+
+    private fun searchComma(node: ASTNode, commaList: MutableList<ASTNode>) {
+        if (node.elementType == VALUE_ARGUMENT_LIST){
+            node.getChildren(null)
+                .filter {
+                    it.elementType == VALUE_ARGUMENT_LIST
+                }
+                .forEach {
+                    searchComma(it, commaList)
+                }
+            commaList.add(node)
+        }
+    }
+
+    private fun searchDot(node: ASTNode, DotList: MutableList<ASTNode>) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION){
+            node.getChildren(null)
+                .filter {
+                    it.elementType == DOT_QUALIFIED_EXPRESSION
+                }
+                .forEach {
+                    searchDot(it, DotList)
+                }
+            DotList.add(node)
         }
     }
 
@@ -538,15 +575,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun searchRightSplitAfterType(parent: ASTNode, configuration: LineLengthConfiguration, type: IElementType): Pair<ASTNode, Int>? {
-        val binList: MutableList<ASTNode> = mutableListOf()
-        searchBinaryExpression(parent, binList)
-        return binList.map {
-            it to positionByOffset(it.getFirstChildWithType(type)!!.startOffset).second
+        val list: MutableList<ASTNode> = mutableListOf()
+        when (type) {
+            OPERATION_REFERENCE -> searchBinaryExpression(parent, list)
+            COMMA -> searchComma(parent, list)
+            DOT -> searchDot(parent, list)
+        }
+        return list.map {
+            it to positionByOffset(it.getFirstChildWithType(type)?.startOffset ?: configuration.lineLength.toInt()).second
         }
             .sortedBy { it.second }
             .reversed()
             .firstOrNull { (it, offset) ->
-                offset + (it.getFirstChildWithType(type)?.text!!.length ?: 0) <= configuration.lineLength + 1
+                offset + (it.getFirstChildWithType(type)?.text?.length ?: 0) <= configuration.lineLength + 1
             }
     }
 
@@ -637,9 +678,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private class Lambda(node: ASTNode) : LongLineFixableCases(node)
 
     /**
-     * Class DotQualifiedExpression show that line should be split in DotQualifiedExpression after node [nodeForSplit]
+     * Class DotQualifiedExpression show that line should be split in DotQualifiedExpression
      */
-    private class DotQualifiedExpression(node: ASTNode, val nodeForSplit: ASTNode) : LongLineFixableCases(node)
+    private class DotQualifiedExpression(node: ASTNode) : LongLineFixableCases(node)
 
     /**
      * Class ValueArgumentList show that line should be split in ValueArgumentList:
