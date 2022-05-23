@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+//import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.util.LintTestBase
-
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -15,7 +14,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${BooleanExpressionsRule.NAME_ID}"
+    private val ruleId = "diktat-ruleset:${BooleanExpressionsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
@@ -205,7 +204,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     fun `test makeCorrectExpressionString method #11 - variable in condition and binary expression`() {
         checkExpressionFormatter(
             "::testContainerId.isInitialized || a > 2",
-            "(B | A)",
+            "(A | B)",
             2
         )
     }
@@ -283,10 +282,11 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
         val stream = ByteArrayOutputStream()
         System.setErr(PrintStream(stream))
         val node = KotlinParser().createNode(expression)
-        val map: java.util.HashMap<String, Char> = HashMap()
-        val result = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(node, map)
+        val rule = BooleanExpressionsRule(emptyList())
+        val map: BooleanExpressionsRule.ExpressionReplacement = rule.ExpressionReplacement()
+        val result = rule.formatBooleanExpressionAsString(node, map)
         Assertions.assertEquals(expectedRepresentation, result)
-        Assertions.assertEquals(expectedMapSize, map.size)
+        Assertions.assertEquals(expectedMapSize, map.size())
         System.setErr(System.err)
         val stderr = stream.toString()
         Assertions.assertTrue(stderr.isEmpty()) {
