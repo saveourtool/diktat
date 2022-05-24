@@ -99,5 +99,8 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
         fixAndCompare("LongDotQualifiedExpressionExpected.kt", "LongDotQualifiedExpressionTest.kt", rulesConfigListLineLength)
     }
 
-
+    @Test
+    fun `fix long value arguments list`() {
+        fixAndCompare("LongValueArgumentsListExpected.kt", "LongValueArgumentsListTest.kt", rulesConfigListLineLength)
+    }
 }
