@@ -161,11 +161,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)
                 CONDITION -> return checkCondition(parent, configuration)
-                VALUE_ARGUMENT_LIST -> {
-                    parent.findParentNodeWithSpecificType(BINARY_EXPRESSION)?.let {
-                        parent = it
-                    } ?: return checkArgumentsList(parent, configuration)
-                }
+                VALUE_ARGUMENT_LIST -> parent.findParentNodeWithSpecificType(BINARY_EXPRESSION)?.let {
+                    parent = it
+                } ?: return checkArgumentsList(parent, configuration)
                 WHEN_ENTRY -> return WhenEntry(parent)
                 WHEN_CONDITION_WITH_EXPRESSION -> return None()
                 EOL_COMMENT -> return checkComment(parent, configuration)
@@ -198,15 +196,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return null
     }
 
-    private fun checkArgumentsList(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases{
-        node.findParentNodeWithSpecificType(WHEN_ENTRY) ?. let {
-            it.findChildByType(BLOCK) ?. run {
+    private fun checkArgumentsList(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+        node.findParentNodeWithSpecificType(WHEN_ENTRY)?.let {
+            it.findChildByType(BLOCK)?.run {
                 return ValueArgumentList(node, configuration)
             } ?: return WhenEntry(it)
         }
         return ValueArgumentList(node, configuration)
     }
-
 
     /**
      * Parses the existing binary expression and passes the necessary parameters to the fix function for splitting
@@ -221,7 +218,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(node, configuration, leftOffset, binList)
     }
 
-    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA", "GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun checkStringTemplateAndDotQualifiedExpression(
         node: ASTNode,
         configuration: LineLengthConfiguration
