@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.utils.*
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
@@ -160,14 +161,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)
                 CONDITION -> return checkCondition(parent, configuration)
-                VALUE_ARGUMENT_LIST -> parent.findParentNodeWithSpecificType(BINARY_EXPRESSION)?.let {
-                    parent = it
-                } ?: run {
-                    if (parent.treeParent.treeParent.elementType == WHEN_ENTRY) {
-                        return WhenEntry(parent.treeParent.treeParent)
-                    }
-                    return ValueArgumentList(parent, configuration)
+                VALUE_ARGUMENT_LIST -> {
+                    parent.findParentNodeWithSpecificType(BINARY_EXPRESSION)?.let {
+                        parent = it
+                    } ?: return checkArgumentsList(parent, configuration)
                 }
+                WHEN_ENTRY -> return WhenEntry(parent)
                 WHEN_CONDITION_WITH_EXPRESSION -> return None()
                 EOL_COMMENT -> return checkComment(parent, configuration)
                 FUNCTION_LITERAL -> return Lambda(parent)
@@ -177,9 +176,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     findParentNodeWithSpecificTypeMany(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
-                        val parentIsPropertyOrFun = listOf<IElementType>(PROPERTY, FUN)
-                        val parenPropertyOrFunNode = findParentNodeWithSpecificTypeMany(parent, parentIsPropertyOrFun)
-                        val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration, parenPropertyOrFunNode)
+                        val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration)
                         if (returnElem !is None) {
                             return returnElem
                         }
@@ -201,6 +198,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return null
     }
 
+    private fun checkArgumentsList(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases{
+        node.findParentNodeWithSpecificType(WHEN_ENTRY) ?. let {
+            it.findChildByType(BLOCK) ?. run {
+                return ValueArgumentList(node, configuration)
+            } ?: return WhenEntry(it)
+        }
+        return ValueArgumentList(node, configuration)
+    }
+
+
     /**
      * Parses the existing binary expression and passes the necessary parameters to the fix function for splitting
      */
@@ -217,9 +224,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("TOO_MANY_LINES_IN_LAMBDA")
     private fun checkStringTemplateAndDotQualifiedExpression(
         node: ASTNode,
-        configuration: LineLengthConfiguration,
-        funOrPropertyNode: ASTNode? = null
+        configuration: LineLengthConfiguration
     ): LongLineFixableCases {
+        val isPropertyOrFun = listOf<IElementType>(PROPERTY, FUN)
+        val funOrPropertyNode = findParentNodeWithSpecificTypeMany(node, isPropertyOrFun)
         funOrPropertyNode?.let {
             if (it.hasChildOfType(EQ)) {
                 val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)?.startOffset ?: 0).second
@@ -361,12 +369,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixWhenEntry(wrongWhenEntry: WhenEntry) {
         val node = wrongWhenEntry.node
         node.getFirstChildWithType(ARROW)?.let {
-            node.addChild(PsiWhiteSpaceImpl(" "), it.treeNext)
-            node.addChild(PsiWhiteSpaceImpl("{"), it.treeNext.treeNext)
-            node.appendNewlineMergingWhiteSpace(it.treeNext.treeNext.treeNext, it.treeNext.treeNext.treeNext)
+            node.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
         }
-        node.appendNewlineMergingWhiteSpace(node.lastChildNode.treeNext, node.lastChildNode.treeNext)
-        node.addChild(PsiWhiteSpaceImpl("}"), node.lastChildNode.treeNext)
     }
 
     private fun fixDotQualifiedExpression(wrongDotQualifiedExpression: DotQualifiedExpression) {
