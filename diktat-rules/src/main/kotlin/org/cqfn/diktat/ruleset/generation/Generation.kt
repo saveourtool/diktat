@@ -58,7 +58,6 @@ private fun generateWarningNames() {
     kotlinFile.writeTo(Paths.get("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
 }
 
-@OptIn(ExperimentalPathApi::class)
 private fun validateYear() {
     val folder = Paths.get("diktat-rules/src/test/resources/test/paragraph2/header")
     Files.list(folder)
