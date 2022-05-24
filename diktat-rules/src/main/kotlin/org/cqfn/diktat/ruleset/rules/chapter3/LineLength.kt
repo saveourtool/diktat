@@ -9,10 +9,10 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
-import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -61,7 +61,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
-import org.jetbrains.kotlin.psi.typeReferenceRecursiveVisitor
 
 import java.net.MalformedURLException
 import java.net.URL
@@ -91,8 +90,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            //println(node.prettyPrint())
-            println(node.text)
+            // println(node.prettyPrint())
+            // println(node.text)
         }
     }
 
@@ -127,15 +126,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "TOO_LONG_FUNCTION",
         "ComplexMethod",
+        "GENERIC_VARIABLE_WRONG_DECLARATION",
     )
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
-        var stringOrDot : ASTNode? = null
+        var stringOrDot: ASTNode? = null
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
                     val parentIsValArgListOrFunLitOrWhenEntry = listOf<IElementType>(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
-                    findParentNodeWithSpecificTypeMany(parent, parentIsValArgListOrFunLitOrWhenEntry) ?. let {
+                    findParentNodeWithSpecificTypeMany(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
                         val splitOffset = searchRightSplitAfterType(parent, configuration, OPERATION_REFERENCE)?.second
@@ -144,11 +144,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                             val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
                             if (parentIsBiExprOrParenthesized) {
                                 parent = parent.treeParent
-                            } else if (parentIsFunOrProperty && splitOffset >= configuration.lineLength)  {
-                                if (stringOrDot != null) {
+                            } else if (parentIsFunOrProperty && splitOffset >= configuration.lineLength) {
+                                stringOrDot?.let {
                                     val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration)
-                                    if (returnElem !is None)
+                                    if (returnElem !is None) {
                                         return returnElem
+                                    }
                                 }
                                 parent = parent.treeParent
                             } else {
@@ -160,15 +161,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)
                 CONDITION -> return checkCondition(parent, configuration)
-                VALUE_ARGUMENT_LIST -> {
-                    parent.findParentNodeWithSpecificType(BINARY_EXPRESSION) ?. let {
-                        parent = it
-                    } ?: run {
-                        if (parent.treeParent.treeParent.elementType == WHEN_ENTRY ) {
-                            return WhenEntry(parent.treeParent.treeParent)
-                        }
-                        return ValueArgumentList(parent, configuration)
+                VALUE_ARGUMENT_LIST -> parent.findParentNodeWithSpecificType(BINARY_EXPRESSION)?.let {
+                    parent = it
+                } ?: run {
+                    if (parent.treeParent.treeParent.elementType == WHEN_ENTRY) {
+                        return WhenEntry(parent.treeParent.treeParent)
                     }
+                    return ValueArgumentList(parent, configuration)
                 }
                 WHEN_CONDITION_WITH_EXPRESSION -> return None()
                 EOL_COMMENT -> return checkComment(parent, configuration)
@@ -176,14 +175,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION -> {
                     stringOrDot = parent
                     val parentIsBinExpOrValArgListOrWhenEntry = listOf<IElementType>(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
-                    findParentNodeWithSpecificTypeMany(parent, parentIsBinExpOrValArgListOrWhenEntry) ?. let {
+                    findParentNodeWithSpecificTypeMany(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
                         val parentIsPropertyOrFun = listOf<IElementType>(PROPERTY, FUN)
                         val parenPropertyOrFunNode = findParentNodeWithSpecificTypeMany(parent, parentIsPropertyOrFun)
                         val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration, parenPropertyOrFunNode)
-                        if(returnElem !is None)
+                        if (returnElem !is None) {
                             return returnElem
+                        }
                         parent = parent.treeParent
                     }
                 }
@@ -193,9 +193,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return None()
     }
 
-    private fun findParentNodeWithSpecificTypeMany(node: ASTNode, listType : List<IElementType>): ASTNode? {
+    private fun findParentNodeWithSpecificTypeMany(node: ASTNode, listType: List<IElementType>): ASTNode? {
         listType.forEach { type ->
-            node.findParentNodeWithSpecificType(type) ?. let {
+            node.findParentNodeWithSpecificType(type)?.let {
                 return it
             }
         }
@@ -215,28 +215,33 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return LongBinaryExpression(node, configuration, leftOffset, binList)
     }
 
-    private fun checkStringTemplateAndDotQualifiedExpression(node: ASTNode, configuration: LineLengthConfiguration, funOrPropertyNode : ASTNode? = null) : LongLineFixableCases {
-        funOrPropertyNode ?.let {
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+    private fun checkStringTemplateAndDotQualifiedExpression(
+        node: ASTNode,
+        configuration: LineLengthConfiguration,
+        funOrPropertyNode: ASTNode? = null
+    ): LongLineFixableCases {
+        funOrPropertyNode?.let {
             if (it.hasChildOfType(EQ)) {
                 val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)!!.startOffset).second
                 if (positionByOffset < configuration.lineLength / 2) {
                     val returnedClass = parserStringAndDot(node, configuration)
-                    if (returnedClass !is None)
+                    if (returnedClass !is None) {
                         return returnedClass
+                    }
                 }
                 return FunAndProperty(it)
             }
             return parserStringAndDot(node, configuration)
-        } ?:
-        return parserStringAndDot(node, configuration)
+        } ?: return parserStringAndDot(node, configuration)
     }
 
     private fun parserStringAndDot(node: ASTNode, configuration: LineLengthConfiguration) =
-        if (node.elementType == STRING_TEMPLATE) {
-            parserStringTemplate(node, configuration)
-        } else {
-            parserDotQualifiedExpression(node, configuration)
-        }
+            if (node.elementType == STRING_TEMPLATE) {
+                parserStringTemplate(node, configuration)
+            } else {
+                parserDotQualifiedExpression(node, configuration)
+            }
 
     /**
      * This class finds where the string can be split
@@ -292,12 +297,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return StringTemplate(node, correcterDelimiter, multiLineOffset == 0)
     }
 
-    private fun parserDotQualifiedExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration) : LongLineFixableCases {
+    private fun parserDotQualifiedExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val nodeDot = searchRightSplitAfterType(wrongNode, configuration, DOT)?.first
-        nodeDot ?. let {
+        nodeDot?.let {
             return DotQualifiedExpression(wrongNode)
-        } ?:
-            return None()
+        } ?: return None()
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
@@ -355,9 +359,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun fixWhenEntry(wrongWhenEntry : WhenEntry) {
+    private fun fixWhenEntry(wrongWhenEntry: WhenEntry) {
         val node = wrongWhenEntry.node
-        node.getFirstChildWithType(ARROW) ?. let {
+        node.getFirstChildWithType(ARROW)?.let {
             node.addChild(PsiWhiteSpaceImpl(" "), it.treeNext)
             node.addChild(PsiWhiteSpaceImpl("{"), it.treeNext.treeNext)
             node.appendNewlineMergingWhiteSpace(it.treeNext.treeNext.treeNext, it.treeNext.treeNext.treeNext)
@@ -369,20 +373,20 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixDotQualifiedExpression(wrongDotQualifiedExpression: DotQualifiedExpression) {
         val node = wrongDotQualifiedExpression.node
         val dot = node.getFirstChildWithType(DOT)
-        node.appendNewlineMergingWhiteSpace(dot,dot)
+        node.appendNewlineMergingWhiteSpace(dot, dot)
     }
 
-    private fun fixArgumentsListFirstArgument(wrongArgumentList: ValueArgumentList) : Int{
+    private fun fixArgumentsListFirstArgument(wrongArgumentList: ValueArgumentList): Int {
         val lineLength = wrongArgumentList.maximumLineLength.lineLength
         val node = wrongArgumentList.node
         var offset = 0
-        node.getFirstChildWithType(COMMA) ?. let {
+        node.getFirstChildWithType(COMMA)?.let {
             if (positionByOffset(it.startOffset).second > lineLength) {
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
                 offset = 50
             }
-        } ?: node.getFirstChildWithType(RPAR) ?. let {
+        } ?: node.getFirstChildWithType(RPAR)?.let {
             node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
             node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
             offset = 50
@@ -396,12 +400,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val offset = fixArgumentsListFirstArgument(wrongArgumentList)
         val listComma = node.getAllChildrenWithType(COMMA).map {
             it to positionByOffset(it.startOffset - offset).second
-        }.sortedBy { it.second } //.filter {  }
-        var n = 1
+        }.sortedBy { it.second }
+        var lineNumber = 1
         listComma.forEachIndexed { index, pair ->
-            if (pair.second >= n * lineLength){
-                n++
-                val commaSplit = if (index > 0){
+            if (pair.second >= lineNumber * lineLength) {
+                lineNumber++
+                val commaSplit = if (index > 0) {
                     listComma[index - 1].first
                 } else {
                     pair.first
@@ -409,8 +413,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 node.appendNewlineMergingWhiteSpace(commaSplit.treeNext, commaSplit.treeNext)
             }
         }
-        node.getFirstChildWithType(RPAR) ?. let {
-            if (positionByOffset(it.treePrev.startOffset).second + it.treePrev.text.length - offset > lineLength * n  && listComma.isNotEmpty()) {
+        node.getFirstChildWithType(RPAR)?.let {
+            if (positionByOffset(it.treePrev.startOffset).second + it.treePrev.text.length - offset > lineLength * lineNumber && listComma.isNotEmpty()) {
                 listComma.last().first.run {
                     node.appendNewlineMergingWhiteSpace(this.treeNext, this.treeNext)
                 }
@@ -541,7 +545,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun searchComma(node: ASTNode, commaList: MutableList<ASTNode>) {
-        if (node.elementType == VALUE_ARGUMENT_LIST){
+        if (node.elementType == VALUE_ARGUMENT_LIST) {
             node.getChildren(null)
                 .filter {
                     it.elementType == VALUE_ARGUMENT_LIST
@@ -553,8 +557,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun searchDot(node: ASTNode, DotList: MutableList<ASTNode>) {
-        if (node.elementType == DOT_QUALIFIED_EXPRESSION){
+    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
             node.getChildren(null)
                 .filter {
                     it.elementType == DOT_QUALIFIED_EXPRESSION
@@ -618,7 +622,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Finds the first binary expression closer to the separator
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun searchRightSplitAfterType(parent: ASTNode, configuration: LineLengthConfiguration, type: IElementType): Pair<ASTNode, Int>? {
+    private fun searchRightSplitAfterType(
+        parent: ASTNode,
+        configuration: LineLengthConfiguration,
+        type: IElementType
+    ): Pair<ASTNode, Int>? {
         val list: MutableList<ASTNode> = mutableListOf()
         when (type) {
             OPERATION_REFERENCE -> searchBinaryExpression(parent, list)
@@ -730,6 +738,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Class ValueArgumentList show that line should be split in ValueArgumentList:
      * If [nodeForSplit] !is null that node should be split after this COMMA
      * Else ([nodeForSplit] is null) - node should be split after LPAR, before RPAR and after all COMMA
+     * @property maximumLineLength
      */
     private class ValueArgumentList(node: ASTNode, val maximumLineLength: LineLengthConfiguration) : LongLineFixableCases(node)
 
