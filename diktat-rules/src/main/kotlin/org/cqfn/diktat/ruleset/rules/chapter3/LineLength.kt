@@ -384,12 +384,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             if (positionByOffset(it.startOffset).second > lineLength) {
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
-                startOffset = 50
+                startOffset = wrongArgumentList.maximumLineLength.lineLength.toInt()
             }
         } ?: node.getFirstChildWithType(RPAR)?.let {
             node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
             node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
-            startOffset = 50
+            startOffset = wrongArgumentList.maximumLineLength.lineLength.toInt()
         }
         return startOffset
     }
