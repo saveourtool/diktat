@@ -375,7 +375,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.appendNewlineMergingWhiteSpace(dot, dot)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "MagicNumber")
     private fun fixArgumentsListFirstArgument(wrongArgumentList: ValueArgumentList): Int {
         val lineLength = wrongArgumentList.maximumLineLength.lineLength
         val node = wrongArgumentList.node
