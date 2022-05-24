@@ -90,8 +90,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            // println(node.prettyPrint())
-            // println(node.text)
         }
     }
 
@@ -394,6 +392,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return offset
     }
 
+    /**
+     * Fix arguments in arguments list
+     */
     private fun fixArgumentList(wrongArgumentList: ValueArgumentList) {
         val lineLength = wrongArgumentList.maximumLineLength.lineLength
         val node = wrongArgumentList.node
@@ -544,19 +545,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun searchComma(node: ASTNode, commaList: MutableList<ASTNode>) {
-        if (node.elementType == VALUE_ARGUMENT_LIST) {
-            node.getChildren(null)
-                .filter {
-                    it.elementType == VALUE_ARGUMENT_LIST
-                }
-                .forEach {
-                    searchComma(it, commaList)
-                }
-            commaList.add(node)
-        }
-    }
-
+    /**
+     * This method uses recursion to store dot qualified expression node in the order in which they are located
+     * Also dotList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
+     *
+     *@param node node in which to search
+     *@param dotList mutable list of ASTNode to store nodes
+     */
     private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
         if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
             node.getChildren(null)
@@ -564,9 +559,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     it.elementType == DOT_QUALIFIED_EXPRESSION
                 }
                 .forEach {
-                    searchDot(it, DotList)
+                    searchDot(it, dotList)
                 }
-            DotList.add(node)
+            dotList.add(node)
         }
     }
 
@@ -619,7 +614,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Finds the first binary expression closer to the separator
+     * Finds the first binary expression or dat closer to the separator
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun searchRightSplitAfterType(
@@ -630,7 +625,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val list: MutableList<ASTNode> = mutableListOf()
         when (type) {
             OPERATION_REFERENCE -> searchBinaryExpression(parent, list)
-            COMMA -> searchComma(parent, list)
             DOT -> searchDot(parent, list)
         }
         return list.map {
@@ -736,12 +730,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class ValueArgumentList show that line should be split in ValueArgumentList:
-     * If [nodeForSplit] !is null that node should be split after this COMMA
-     * Else ([nodeForSplit] is null) - node should be split after LPAR, before RPAR and after all COMMA
-     * @property maximumLineLength
+     * @property maximumLineLength - max line length
      */
     private class ValueArgumentList(node: ASTNode, val maximumLineLength: LineLengthConfiguration) : LongLineFixableCases(node)
 
+    /**
+     * Class WhenEntry show that line should be split in WhenEntry node:
+     * Added LBRACE and RBRACE nodes
+     * Split line in space after LBRACE node and before RBRACE node
+     */
     private class WhenEntry(node: ASTNode) : LongLineFixableCases(node)
 
     /**
