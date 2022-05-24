@@ -123,6 +123,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress(
         "TOO_LONG_FUNCTION",
+        "LongMethod",
         "ComplexMethod",
         "GENERIC_VARIABLE_WRONG_DECLARATION",
     )
@@ -221,7 +222,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     ): LongLineFixableCases {
         funOrPropertyNode?.let {
             if (it.hasChildOfType(EQ)) {
-                val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)!!.startOffset).second
+                val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)?.startOffset ?: 0).second
                 if (positionByOffset < configuration.lineLength / 2) {
                     val returnedClass = parserStringAndDot(node, configuration)
                     if (returnedClass !is None) {
@@ -374,22 +375,23 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.appendNewlineMergingWhiteSpace(dot, dot)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixArgumentsListFirstArgument(wrongArgumentList: ValueArgumentList): Int {
         val lineLength = wrongArgumentList.maximumLineLength.lineLength
         val node = wrongArgumentList.node
-        var offset = 0
+        var startOffset = 0
         node.getFirstChildWithType(COMMA)?.let {
             if (positionByOffset(it.startOffset).second > lineLength) {
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
-                offset = 50
+                startOffset = 50
             }
         } ?: node.getFirstChildWithType(RPAR)?.let {
             node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
             node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
-            offset = 50
+            startOffset = 50
         }
-        return offset
+        return startOffset
     }
 
     /**
