@@ -91,15 +91,15 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType", "ForbiddenComment")
     internal fun formatBooleanExpressionAsString(node: ASTNode, expressionsReplacement: ExpressionsReplacement): String {
-        val (booleanBinaryExpression, otherBinaryExpression) = node.collectElementaryExpressions()
-        val logicalExpressions = otherBinaryExpression.filter {
+        val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
+        val logicalExpressions = otherBinaryExpressions.filter {
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
             (it.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
                     // todo: support xor; for now skip all expressions that are nested in xor
                     it.parents().takeWhile { it != node }.none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
         }
         // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
-        val elementaryBooleanExpressions = booleanBinaryExpression
+        val elementaryBooleanExpressions = booleanBinaryExpressions
             .map { it.psi as KtBinaryExpression }
             .flatMap { listOf(it.left!!.node, it.right!!.node) }
             .map {
@@ -124,8 +124,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         // jBool library is using & as && and | as ||
         return "(${correctedExpression
             .replace("&&", "&")
-            .replace("||", "|")
-        })"
+            .replace("||", "|")})"
     }
 
     /**
