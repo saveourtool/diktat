@@ -1,11 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
-//import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -14,7 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
-    private val ruleId = "diktat-ruleset:${BooleanExpressionsRule.NAME_ID}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${BooleanExpressionsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
@@ -283,7 +284,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
         System.setErr(PrintStream(stream))
         val node = KotlinParser().createNode(expression)
         val rule = BooleanExpressionsRule(emptyList())
-        val map: BooleanExpressionsRule.ExpressionReplacement = rule.ExpressionReplacement()
+        val map: BooleanExpressionsRule.ExpressionsReplacement = rule.ExpressionsReplacement()
         val result = rule.formatBooleanExpressionAsString(node, map)
         Assertions.assertEquals(expectedRepresentation, result)
         Assertions.assertEquals(expectedMapSize, map.size())
