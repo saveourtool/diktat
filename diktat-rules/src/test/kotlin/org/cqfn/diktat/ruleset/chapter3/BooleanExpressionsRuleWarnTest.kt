@@ -205,7 +205,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     fun `test makeCorrectExpressionString method #11 - variable in condition and binary expression`() {
         checkExpressionFormatter(
             "::testContainerId.isInitialized || a > 2",
-            "(A | B)",
+            "(B | A)",
             2
         )
     }
@@ -234,7 +234,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     // nested boolean expressions in lambdas
                     if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {}
                     
-                    if (!(rightSide == null || leftSide == null) &&
+                    if (rightSide != null && leftSide != null &&
                         rightSide.size == leftSide.size &&
                         rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {}
                     
@@ -284,7 +284,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
         System.setErr(PrintStream(stream))
         val node = KotlinParser().createNode(expression)
         val rule = BooleanExpressionsRule(emptyList())
-        val map: BooleanExpressionsRule.ExpressionsReplacement = rule.ExpressionsReplacement()
+        val map: BooleanExpressionsRule.ExpressionsReplacementImpl = rule.ExpressionsReplacementImpl()
         val result = rule.formatBooleanExpressionAsString(node, map)
         Assertions.assertEquals(expectedRepresentation, result)
         Assertions.assertEquals(expectedMapSize, map.size())
