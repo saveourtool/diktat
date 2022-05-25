@@ -8,10 +8,10 @@ fun foo() {
         val veryLoooooooooooooooooongNamesList =
  listOf<String>("Jack", "Nick")
         veryLoooooooooooooooooongNamesList
-.forEach {
- name ->
+.forEach { name ->
             if (name == "Nick") {
-                veryLoooooooooooooooooongNamesList.map { val str = "This string shouldn't be split"}
+                veryLoooooooooooooooooongNamesList
+.map { val str = "This string shouldn't be split"}
                 name.map { val str =
  "This string should be split" }
             }
