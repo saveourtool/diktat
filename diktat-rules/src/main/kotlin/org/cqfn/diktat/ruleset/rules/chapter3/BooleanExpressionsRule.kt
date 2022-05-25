@@ -111,13 +111,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .filterNot {
                 // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
                 it.elementType == BINARY_EXPRESSION ||
-                                // !(a || b) should be skipped too, `a` and `b` should be present later
-                                (it.psi as? KtPrefixExpression)?.lastChild
-                                    ?.node
-                                    ?.removeAllParentheses()
-                                    ?.elementType == BINARY_EXPRESSION ||
-                                // `true` and `false` are valid tokens for jBool, so we keep them.
-                                it.text == "true" || it.text == "false"
+                        // !(a || b) should be skipped too, `a` and `b` should be present later
+                        (it.psi as? KtPrefixExpression)?.lastChild
+                            ?.node
+                            ?.removeAllParentheses()
+                            ?.elementType == BINARY_EXPRESSION ||
+                        // `true` and `false` are valid tokens for jBool, so we keep them.
+                        it.text == "true" || it.text == "false"
             }
         (logicalExpressions + elementaryBooleanExpressions).forEach { expression ->
             expressionsReplacement.addExpression(expression)
