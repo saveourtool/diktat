@@ -54,7 +54,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
 
         // If there are method calls in conditions
         val expr: Expression<String> = try {
-            ExprParser.parse(correctedExpression, expressionsReplacement.getTokenMapper())
+            ExprParser.parse(correctedExpression, expressionsReplacement.orderedTokenMapper)
         } catch (exc: RuntimeException) {
             if (exc.message?.startsWith("Unrecognized!") == true) {
                 // this comes up if there is an unparsable expression (jbool doesn't have own exception type). For example a.and(b)
@@ -280,7 +280,11 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     internal inner class ExpressionsReplacement {
         private val expressionToToken: HashMap<String, String> = LinkedHashMap()
         private val tokenToOrderedToken: HashMap<String, String> = HashMap()
-        private val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
+
+        /**
+         * TokenMapper for first call ExprParser which remembers the order of expression.
+         */
+        val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
 
         /**
          * Returns <tt>true</tt> if this object contains no replacements.
@@ -295,13 +299,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          * @return the number of replacements in this object
          */
         fun size(): Int = expressionToToken.size
-
-        /**
-         * Returns the TokenMapper for first call ExprParser which remembers the order of expression.
-         *
-         * @return the TokenMapper for first call ExprParser which remembers the order of expression
-         */
-        fun getTokenMapper(): TokenMapper<String> = orderedTokenMapper
 
         /**
          * Register an expression for further replacement
