@@ -6,7 +6,7 @@ val elem1 = firstArgumentDot?.secondArgumentDot
 ?.fifthArgumentDot
 ?.sixthArgumentDot
 
-
+/*
 val elem2 = firstArgumentDot?.secondArgumentDot
 ?.thirdArgumentDot
     ?.fourthArgumentDot
@@ -70,3 +70,4 @@ val elem11 = firstArgumentDot.secondArgumentDot
 
 
 val elem12 = firstArgumentDot.secondArgumentDot.thirdArgumentDot + firstArgumentDot.secondArgumentDot.thirdArgumentDot.fourthArgumentDot
+ */

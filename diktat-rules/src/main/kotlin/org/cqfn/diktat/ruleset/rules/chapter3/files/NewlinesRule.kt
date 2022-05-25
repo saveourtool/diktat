@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
+import com.pinterest.ktlint.core.ast.*
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -65,10 +66,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -123,7 +121,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
-            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION,  -> handDotQualifiedExpression(node)
+            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedExpression(node)
             else -> {
             }
         }
@@ -131,23 +129,28 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handDotQualifiedExpression(node: ASTNode) {
         val list: MutableList<ASTNode> = mutableListOf()
         searchDot(node, list)
-        if (list.size > 3){
-            list.forEachIndexed { index, astNode ->
-                if (index>0) {
-                    val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
-                    val nodeBeforeDot = dotNode?.treePrev
-                    astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
-                }
+        if (list.size > 3) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                fixDotQualifiedExpression(list)
             }
         }
-        //println(node.text)
+    }
+
+    private fun fixDotQualifiedExpression(list: MutableList<ASTNode>) {
+        list.forEachIndexed { index, astNode ->
+            if (index>0) {
+                val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
+                val nodeBeforeDot = dotNode?.treePrev
+                astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
+            }
+        }
     }
 
     private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
-        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION) {
             node.getChildren(null)
                 .filter {
-                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION
+                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
                 }
                 .forEach {
                     searchDot(it, dotList)

@@ -2,7 +2,7 @@ package test.paragraph3.newlines
 
 val elem1 = firstArgumentDot?.secondArgumentDot?.thirdArgumentDot?.fourthArgumentDot?.fifthArgumentDot?.sixthArgumentDot
 
-
+/*
 val elem2 = firstArgumentDot?.secondArgumentDot?.thirdArgumentDot
     ?.fourthArgumentDot?.fifthArgumentDot?.sixthArgumentDot
 
@@ -40,3 +40,4 @@ val elem11 = firstArgumentDot.secondArgumentDot.thirdArgumentDot.fourthArgumentD
 
 
 val elem12 = firstArgumentDot.secondArgumentDot.thirdArgumentDot + firstArgumentDot.secondArgumentDot.thirdArgumentDot.fourthArgumentDot
+*/
