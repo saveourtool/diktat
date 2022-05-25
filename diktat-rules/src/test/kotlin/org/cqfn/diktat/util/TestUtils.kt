@@ -95,9 +95,8 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
             fileName = fileName.removeSuffix("_copy"),
             script = fileName.removeSuffix("_copy").endsWith("kts"),
             cb = cb,
-            userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
+            userData = mapOf("file_path" to fileName.removeSuffix("_copy")),
         ),
-        ruleSets = ruleSets,
         VisitorProvider(
             ruleSets = ruleSets,
             debug = true,
