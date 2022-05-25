@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -380,7 +380,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val node = wrongDotQualifiedExpression.node
         val dot = node.getFirstChildWithType(DOT)
         val safeAccess = node.getFirstChildWithType(SAFE_ACCESS)
-        val splitNode = if ( (dot?.startOffset ?: 0) > (safeAccess?.startOffset ?: 0)) {
+        val splitNode = if ((dot?.startOffset ?: 0) > (safeAccess?.startOffset ?: 0)) {
             dot
         } else {
             safeAccess
