@@ -144,21 +144,21 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         splitOffset?.let {
                             val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
                             val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
-                            if (parentIsBiExprOrParenthesized) {
-                                parent = parent.treeParent
-                            } else if (parentIsFunOrProperty && splitOffset >= configuration.lineLength) {
-                                stringOrDot?.let {
-                                    val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration)
-                                    if (returnElem !is None) {
-                                        return returnElem
-                                    }
-                                }
+                            if (parentIsBiExprOrParenthesized || (parentIsFunOrProperty && splitOffset >= configuration.lineLength)) {
                                 parent = parent.treeParent
                             } else {
                                 return checkBinaryExpression(parent, configuration)
                             }
                         }
-                            ?: run { parent = parent.treeParent }
+                            ?: run {
+                                stringOrDot?.let {
+                                    val returnElem = checkStringTemplateAndDotQualifiedExpression(it, configuration)
+                                    if (returnElem !is None) {
+                                        return returnElem
+                                    }
+                                }
+                                parent = parent.treeParent
+                            }
                     }
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)

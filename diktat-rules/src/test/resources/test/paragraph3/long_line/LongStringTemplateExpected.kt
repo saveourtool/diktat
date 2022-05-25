@@ -51,4 +51,7 @@ class Foo() {
         }
     """.trimIndent()
     }
+
+    val stringName = "This is long string template with binary expression. test should be up in level binary" +
+" expression and cannot split in operation reference and should be split this long string template" + "this string should be after operated reference"
 }
