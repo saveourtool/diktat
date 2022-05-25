@@ -644,7 +644,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             .sortedBy { it.second }
             .reversed()
             .firstOrNull { (it, offset) ->
-                offset + (it.getFirstChildWithType(type)?.text?.length ?:0)<= configuration.lineLength + 1
+                offset + (it.getFirstChildWithType(type)?.text?.length ?: 0) <= configuration.lineLength + 1
             }
     }
 
