@@ -276,7 +276,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * A special class to replace expressions (and restore it back)
      * Note: mapping is String to Char(and Char to Char) actually, but will keep it as String for simplicity
      */
-    private inner class ExpressionsReplacement {
+    internal inner class ExpressionsReplacement {
         private val expressionToToken: HashMap<String, String> = LinkedHashMap()
         private val tokenToOrderedToken: HashMap<String, String>  = HashMap()
         private val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
