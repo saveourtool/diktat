@@ -150,12 +150,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION) {
             node.getChildren(null)
                 .filter {
-                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
+                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION || it.elementType == POSTFIX_EXPRESSION
                 }
                 .forEach {
                     searchDot(it, dotList)
                 }
-            dotList.add(node)
+            if (node.elementType != POSTFIX_EXPRESSION) {
+                dotList.add(node)
+            }
         }
     }
 
