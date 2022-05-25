@@ -284,7 +284,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
         System.setErr(PrintStream(stream))
         val node = KotlinParser().createNode(expression)
         val rule = BooleanExpressionsRule(emptyList())
-        val map: BooleanExpressionsRule.ExpressionsReplacementImpl = rule.ExpressionsReplacementImpl()
+        val map: BooleanExpressionsRule.ExpressionsReplacement = rule.ExpressionsReplacement()
         val result = rule.formatBooleanExpressionAsString(node, map)
         Assertions.assertEquals(expectedRepresentation, result)
         Assertions.assertEquals(expectedMapSize, map.size())

@@ -92,11 +92,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ForbiddenComment")
     internal fun formatBooleanExpressionAsString(node: ASTNode, expressionsReplacement: ExpressionsReplacement): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
-        val logicalExpressions = otherBinaryExpressions.filter {
+        val logicalExpressions = otherBinaryExpressions.filter { otherBinaryExpression ->
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
-            (it.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
+            (otherBinaryExpression.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
                     // todo: support xor; for now skip all expressions that are nested in xor
-                    it.parents().takeWhile { it != node }.none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
+                    otherBinaryExpression.parents()
+                        .takeWhile { it != node }
+                        .none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
         }
         // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
         val elementaryBooleanExpressions = booleanBinaryExpressions
@@ -110,7 +112,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                 // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
                 it.elementType == BINARY_EXPRESSION ||
                                 // !(a || b) should be skipped too, `a` and `b` should be present later
-                                (it.psi as? KtPrefixExpression)?.lastChild?.node?.removeAllParentheses()?.elementType == BINARY_EXPRESSION ||
+                                (it.psi as? KtPrefixExpression)?.lastChild
+                                    ?.node
+                                    ?.removeAllParentheses()
+                                    ?.elementType == BINARY_EXPRESSION ||
                                 // `true` and `false` are valid tokens for jBool, so we keep them.
                                 it.text == "true" || it.text == "false"
             }
@@ -158,19 +163,15 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         simplifiedExpr: Expression<String>,
         expressionsReplacement: ExpressionsReplacement
     ) {
-        var correctKotlinBooleanExpression = simplifiedExpr
+        val correctKotlinBooleanExpression = simplifiedExpr
             .toString()
             .replace("&", "&&")
             .replace("|", "||")
+            .removePrefix("(")
+            .removeSuffix(")")
 
-        if (simplifiedExpr.toString().first() == '(' && simplifiedExpr.toString().last() == ')') {
-            correctKotlinBooleanExpression = correctKotlinBooleanExpression
-                .drop(1)
-                .dropLast(1)
-        }
-        correctKotlinBooleanExpression = expressionsReplacement.restoreFullExpression(correctKotlinBooleanExpression)
-
-        node.replaceChild(node.firstChildNode, KotlinParser().createNode(correctKotlinBooleanExpression))
+        node.replaceChild(node.firstChildNode,
+            KotlinParser().createNode(expressionsReplacement.restoreFullExpression(correctKotlinBooleanExpression)))
     }
 
     /**
@@ -278,7 +279,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     internal inner class ExpressionsReplacement {
         private val expressionToToken: HashMap<String, String> = LinkedHashMap()
-        private val tokenToOrderedToken: HashMap<String, String>  = HashMap()
+        private val tokenToOrderedToken: HashMap<String, String> = HashMap()
         private val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
 
         /**
@@ -318,7 +319,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          * Replaces registered expressions in provided expression
          *
          * @param fullExpression full boolean expression in kotlin
-         *
          * @return full expression in jbool format
          */
         @Suppress("UnsafeCallOnNullableType")
@@ -336,7 +336,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          * Restores full expression by replacing tokens and restoring the order
          *
          * @param fullExpression full boolean expression in jbool format
-         *
          * @return full boolean expression in kotlin
          */
         fun restoreFullExpression(fullExpression: String): String {
@@ -359,9 +358,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          *
          * @return collection of token are used to construct full expression in jbool format
          */
-        fun getTokens(): Collection<String> {
-            return expressionToToken.values
-        }
+        fun getTokens(): Collection<String> = expressionToToken.values
 
         private fun getLetter(letters: HashMap<String, String>, key: String) = letters
             .computeIfAbsent(key) {
