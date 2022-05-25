@@ -70,3 +70,24 @@ val elem11 = firstArgumentDot.secondArgumentDot
 
 
 val elem12 = firstArgumentDot.secondArgumentDot.thirdArgumentDot + firstArgumentDot.secondArgumentDot.thirdArgumentDot.fourthArgumentDot
+
+
+val elem13 = firstArgumentDot!!.secondArgumentDot
+?.thirdArgumentDot
+.fourthArgumentDot!!
+.fifthArgumentDot
+?.sixthArgumentDot
+
+
+val elem14 = firstArgumentDot.secondArgumentDot
+?.thirdArgumentDot!!
+.fourthArgumentDot
+?.fifthArgumentDot
+.sixthArgumentDot
+
+
+val elem15 = firstArgumentDot?.secondArgumentDot!!
+.thirdArgumentDot
+.fourthArgumentDot
+.fifthArgumentDot!!
+.sixthArgumentDot
