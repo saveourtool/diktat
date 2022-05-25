@@ -12,6 +12,7 @@ import org.cqfn.diktat.util.applyToCode
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -806,6 +807,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
     }
 
     companion object {
+        @OptIn(FeatureInAlphaState::class)
         fun assertStringRepr(
             elementType: IElementType,
             code: String,
@@ -814,7 +816,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             expected: String
         ) {
             KtLint.lint(
-                KtLint.Params(
+                KtLint.ExperimentalParams(
                     text = code,
                     ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
                     cb = { _, _ -> }

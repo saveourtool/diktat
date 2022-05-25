@@ -116,6 +116,7 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
  * @param expectedAsserts Number of expected times of assert invocation
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
+@OptIn(FeatureInAlphaState::class)
 @Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,
@@ -123,7 +124,7 @@ internal fun applyToCode(code: String,
 ) {
     val counter = AtomicInteger(0)
     KtLint.lint(
-        KtLint.Params(
+        KtLint.ExperimentalParams(
             text = code,
             ruleSets = listOf(
                 RuleSet("test", object : Rule("astnode-utils-test") {

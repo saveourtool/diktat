@@ -278,7 +278,7 @@ if (condition)
 fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
-        params: KtLint.Params,
+        params: KtLint.ExperimentalParams,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
 ) {   
 }
