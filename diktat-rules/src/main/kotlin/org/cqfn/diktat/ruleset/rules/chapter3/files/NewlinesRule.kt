@@ -8,21 +8,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.emptyBlockList
-import org.cqfn.diktat.ruleset.utils.extractLineOfText
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFilePath
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
-import org.cqfn.diktat.ruleset.utils.hasParent
-import org.cqfn.diktat.ruleset.utils.isBeginByNewline
-import org.cqfn.diktat.ruleset.utils.isEol
-import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
-import org.cqfn.diktat.ruleset.utils.isGradleScript
-import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -84,12 +69,14 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.incremental.ChangesCollector.Companion.getNonPrivateNames
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -124,6 +111,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }
+
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             SEMICOLON -> handleSemicolon(node)
@@ -135,8 +123,36 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
+            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION,  -> handDotQualifiedExpression(node)
             else -> {
             }
+        }
+    }
+    private fun handDotQualifiedExpression(node: ASTNode) {
+        val list: MutableList<ASTNode> = mutableListOf()
+        searchDot(node, list)
+        if (list.size > 3){
+            list.forEachIndexed { index, astNode ->
+                if (index>0) {
+                    val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
+                    val nodeBeforeDot = dotNode?.treePrev
+                    astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
+                }
+            }
+        }
+        //println(node.text)
+    }
+
+    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION) {
+            node.getChildren(null)
+                .filter {
+                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION
+                }
+                .forEach {
+                    searchDot(it, dotList)
+                }
+            dotList.add(node)
         }
     }
 
