@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
+import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -50,6 +51,8 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
@@ -168,7 +171,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 WHEN_CONDITION_WITH_EXPRESSION -> return None()
                 EOL_COMMENT -> return checkComment(parent, configuration)
                 FUNCTION_LITERAL -> return Lambda(parent)
-                STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION -> {
+                STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION -> {
                     stringOrDot = parent
                     val parentIsBinExpOrValArgListOrWhenEntry = listOf<IElementType>(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
                     findParentNodeWithSpecificTypeMany(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
@@ -302,10 +305,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun parserDotQualifiedExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        val nodeDot = searchRightSplitAfterType(wrongNode, configuration, DOT)?.first
+        val nodeDot = searchRightSplitAfterType(wrongNode, configuration, DOT)
+        val nodeSafeAccess = searchRightSplitAfterType(wrongNode, configuration, SAFE_ACCESS)
         nodeDot?.let {
             return DotQualifiedExpression(wrongNode)
-        } ?: return None()
+        } ?: nodeSafeAccess?.let {
+            return DotQualifiedExpression(wrongNode)
+        }
+        return None()
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
@@ -372,8 +379,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun fixDotQualifiedExpression(wrongDotQualifiedExpression: DotQualifiedExpression) {
         val node = wrongDotQualifiedExpression.node
-        val dot = node.getFirstChildWithType(DOT)
-        node.appendNewlineMergingWhiteSpace(dot, dot)
+        val dot = node.getFirstChildWithType(DOT) ?: node.getFirstChildWithType(SAFE_ACCESS)
+        val nodeBeforeDot = dot?.treePrev
+        node.appendNewlineMergingWhiteSpace(nodeBeforeDot, dot)
     }
 
     @Suppress("UnsafeCallOnNullableType", "MagicNumber")
@@ -555,14 +563,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *@param node node in which to search
      *@param dotList mutable list of ASTNode to store nodes
      */
-    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
-        if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
+    private fun searchDotOrSafeAccess(node: ASTNode, dotList: MutableList<ASTNode>) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION) {
             node.getChildren(null)
                 .filter {
-                    it.elementType == DOT_QUALIFIED_EXPRESSION
+                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION
                 }
                 .forEach {
-                    searchDot(it, dotList)
+                    searchDotOrSafeAccess(it, dotList)
                 }
             dotList.add(node)
         }
@@ -628,7 +636,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val list: MutableList<ASTNode> = mutableListOf()
         when (type) {
             OPERATION_REFERENCE -> searchBinaryExpression(parent, list)
-            DOT -> searchDot(parent, list)
+            DOT, SAFE_ACCESS -> searchDotOrSafeAccess(parent, list)
         }
         return list.map {
             it to positionByOffset(it.getFirstChildWithType(type)?.startOffset ?: configuration.lineLength.toInt()).second
@@ -636,7 +644,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             .sortedBy { it.second }
             .reversed()
             .firstOrNull { (it, offset) ->
-                offset + (it.getFirstChildWithType(type)?.text?.length ?: 0) <= configuration.lineLength + 1
+                offset + (it.getFirstChildWithType(type)?.text?.length ?:0)<= configuration.lineLength + 1
             }
     }
 
