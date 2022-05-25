@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -13,6 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -87,10 +89,19 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
         if (!node.hasChildOfType(COMMA)) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entry must end with a comma",
                 node.startOffset, node) {
-                node.addChild(LeafPsiElement(COMMA, ","), node.findChildByType(SEMICOLON)!!.treePrev)
+                val commaLocation = node.findChildByType(SEMICOLON)!!.findLatestTreePrevMatching {
+                    !setOf(EOL_COMMENT, BLOCK_COMMENT, WHITE_SPACE).contains(it.elementType)
+                }
+                node.addChild(LeafPsiElement(COMMA, ","), commaLocation.treeNext)
             }
         }
     }
+
+    private fun ASTNode.findLatestTreePrevMatching(predicate: (ASTNode) -> Boolean): ASTNode {
+        val result = this.treePrev
+        return if (predicate(result)) result else result.findLatestTreePrevMatching(predicate)
+    }
+
     companion object {
         const val NAME_ID = "abq-enum-separated"
         private val simpleValue = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)

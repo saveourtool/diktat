@@ -13,4 +13,10 @@ class EnumsSeparatedFixTest : FixTestBase("test/paragraph3/enum_separated", ::En
     fun `test enums split`() {
         fixAndCompare("EnumSeparatedExpected.kt", "EnumSeparatedTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
+    fun `last element with comment`() {
+        fixAndCompare("LastElementCommentExpected.kt", "LastElementCommentTest.kt")
+    }
 }
