@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -10,6 +9,7 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isClassEnum
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
