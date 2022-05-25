@@ -127,12 +127,16 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
     private fun handDotQualifiedExpression(node: ASTNode) {
-        val list: MutableList<ASTNode> = mutableListOf()
-        searchDot(node, list)
-        if (list.size > 3) {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                fixDotQualifiedExpression(list)
+        node.findParentNodeWithSpecificType(PACKAGE_DIRECTIVE) ?: node.findParentNodeWithSpecificType(IMPORT_DIRECTIVE)
+        ?: let {
+            val list: MutableList<ASTNode> = mutableListOf()
+            searchDot(node, list)
+            if (list.size > 3) {
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                    fixDotQualifiedExpression(list)
+                }
             }
+
         }
     }
 
