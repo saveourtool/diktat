@@ -8,11 +8,12 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.AbstractClassesRule
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOuterLambdaRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:parameter-name-in-outer-lambda"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ParameterNameInOuterLambdaRule.NAME_ID}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.name, true)
     )
