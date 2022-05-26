@@ -20,13 +20,13 @@ import java.io.File
 /**
  * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
  */
-class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>, prevId: String?) -> Rule,
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
     override fun get() = RuleSet(
         DIKTAT_RULE_SET_ID,
-        ruleSupplier.invoke(rulesConfigList ?: emptyList())
+        ruleSupplier.invoke(rulesConfigList ?: emptyList(), null)
     )
 }
 

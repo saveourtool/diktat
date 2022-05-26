@@ -34,10 +34,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule that detects redundant explicit casts
  */
-class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
+class SmartCastRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(SMART_CAST_NEEDED)
+    listOf(SMART_CAST_NEEDED),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {

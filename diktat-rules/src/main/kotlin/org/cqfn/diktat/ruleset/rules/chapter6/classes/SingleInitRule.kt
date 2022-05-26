@@ -31,10 +31,11 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * The rule that checks whether a class has a single `init` block or multiple. Having multiple `init` blocks is a bad practice.
  */
-class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
+class SingleInitRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(MULTIPLE_INIT_BLOCKS)
+    listOf(MULTIPLE_INIT_BLOCKS),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {

@@ -17,10 +17,11 @@ import org.jetbrains.kotlin.psi.psiUtil.hasSuspendModifier
 /**
  * This rule finds if using runBlocking in asynchronous code
  */
-class AsyncAndSyncRule(configRules: List<RulesConfig>) : DiktatRule(
+class AsyncAndSyncRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(RUN_BLOCKING_INSIDE_ASYNC)
+    listOf(RUN_BLOCKING_INSIDE_ASYNC),
+    prevId
 ) {
     private val asyncList = listOf("async", "launch")
 

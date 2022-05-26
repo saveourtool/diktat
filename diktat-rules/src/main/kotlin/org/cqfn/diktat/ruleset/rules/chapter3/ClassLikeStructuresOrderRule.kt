@@ -43,10 +43,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
-class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
+class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {

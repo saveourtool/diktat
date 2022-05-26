@@ -52,10 +52,11 @@ import org.slf4j.LoggerFactory
  * [12] Destructuring declarations
  */
 @Suppress("TOO_LONG_FUNCTION")
-class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
+class TrailingCommaRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(TRAILING_COMMA)
+    listOf(TRAILING_COMMA),
+    prevId
 ) {
     private val commonConfig = configRules.getCommonConfiguration()
     private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()

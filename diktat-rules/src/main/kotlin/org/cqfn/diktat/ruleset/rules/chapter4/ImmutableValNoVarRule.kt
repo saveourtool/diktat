@@ -19,10 +19,11 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
  * because `var` variables can be reassigned several times in the business logic. Of course, in some scenarios with loops or accumulators only `var`s can be used and are allowed.
  * FixMe: here we should also raise warnings for a reassignment of a var (if var has no assignments except in declaration - it can be final)
  */
-class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
+class ImmutableValNoVarRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(SAY_NO_TO_VAR)
+    listOf(SAY_NO_TO_VAR),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {

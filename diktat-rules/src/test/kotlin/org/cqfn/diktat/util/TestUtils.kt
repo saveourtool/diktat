@@ -81,13 +81,13 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
  */
 @OptIn(FeatureInAlphaState::class)
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
+internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?, prevId: String?) -> RuleSetProvider,
                     text: String,
                     fileName: String,
                     rulesConfigList: List<RulesConfig>? = null,
                     cb: LintErrorCallback = defaultCallback
 ): String {
-    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get())
+    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList, null).get())
     return KtLint.format(
         KtLint.ExperimentalParams(
             text = text,

@@ -31,10 +31,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that sorts class properties and enum members alphabetically
  */
-class SortRule(configRules: List<RulesConfig>) : DiktatRule(
+class SortRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(WRONG_DECLARATIONS_ORDER),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(

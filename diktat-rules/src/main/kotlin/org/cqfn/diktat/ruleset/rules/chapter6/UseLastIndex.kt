@@ -16,10 +16,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * This rule checks if there use property length with operation - 1 and fix this on lastIndex
  */
-class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
+class UseLastIndex(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(Warnings.USE_LAST_INDEX)
+    listOf(Warnings.USE_LAST_INDEX),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == BINARY_EXPRESSION) {

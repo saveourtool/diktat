@@ -24,10 +24,11 @@ import org.jetbrains.kotlin.psi.KtProperty
 /**
  * This rule checks if there is a backing property for field with property accessors, in case they don't use field keyword
  */
-class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
+class ImplicitBackingPropertyRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(NO_CORRESPONDING_PROPERTY)
+    listOf(NO_CORRESPONDING_PROPERTY),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {

@@ -25,10 +25,11 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * Checks if abstract class has any abstract method. If not, warns that class should not be abstract
  */
-class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+class AbstractClassesRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(CLASS_SHOULD_NOT_BE_ABSTRACT)
+    listOf(CLASS_SHOULD_NOT_BE_ABSTRACT),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {

@@ -14,10 +14,11 @@ import org.jetbrains.kotlin.psi.KtFunction
 /**
  * Rule that checks that function doesn't contains too many parameters
  */
-class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
+class FunctionArgumentsSize(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(TOO_MANY_PARAMETERS)
+    listOf(TOO_MANY_PARAMETERS),
+    prevId
 ) {
     private val configuration: FunctionArgumentsSizeConfiguration by lazy {
         FunctionArgumentsSizeConfiguration(configRules.getRuleConfig(TOO_MANY_PARAMETERS)?.configuration ?: emptyMap())

@@ -15,10 +15,11 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * @property configRules
  */
-class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
+class MultipleModifiersSequence(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_MULTIPLE_MODIFIERS_ORDER)
+    listOf(WRONG_MULTIPLE_MODIFIERS_ORDER),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == MODIFIER_LIST) {

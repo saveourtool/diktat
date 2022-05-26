@@ -27,10 +27,11 @@ import org.jetbrains.kotlin.psi.KtClass
 /**
  * This rule checks if class is stateless and if so changes it to object.
  */
-class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+class StatelessClassesRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(OBJECT_IS_PREFERRED)
+    listOf(OBJECT_IS_PREFERRED),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         // Fixme: We should find interfaces in all project and then check them

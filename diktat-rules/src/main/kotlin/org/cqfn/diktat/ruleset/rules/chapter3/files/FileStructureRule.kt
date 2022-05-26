@@ -56,11 +56,12 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
+class FileStructureRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
         FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT),
+    prevId
 ) {
     private val domainName by lazy {
         configRules

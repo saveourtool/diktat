@@ -31,10 +31,11 @@ import java.util.HashMap
  * Explicit supertype qualification should not be used if there is not clash between called methods
  * fixme can't fix supertypes that are defined in other files.
  */
-class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
+class UselessSupertype(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(USELESS_SUPERTYPE)
+    listOf(USELESS_SUPERTYPE),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {

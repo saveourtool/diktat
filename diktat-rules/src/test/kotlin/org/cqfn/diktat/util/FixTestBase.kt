@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions
  * @property resourceFilePath path to files which will be compared in tests
  */
 open class FixTestBase(protected val resourceFilePath: String,
-                       private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
+                       private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?, prevId: String?) -> RuleSetProvider,
                        private val cb: LintErrorCallback = defaultCallback,
                        private val rulesConfigList: List<RulesConfig>? = null
 ) {
@@ -20,12 +20,12 @@ open class FixTestBase(protected val resourceFilePath: String,
     }
 
     constructor(resourceFilePath: String,
-                ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+                ruleSupplier: (rulesConfigList: List<RulesConfig>, String?) -> Rule,
                 rulesConfigList: List<RulesConfig>? = null,
                 cb: LintErrorCallback = defaultCallback
     ) : this(
         resourceFilePath,
-        { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
+        { overrideRulesConfigList, _ -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
         cb,
         rulesConfigList
     )

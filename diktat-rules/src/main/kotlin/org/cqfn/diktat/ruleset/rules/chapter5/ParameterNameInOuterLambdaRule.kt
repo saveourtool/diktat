@@ -12,10 +12,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * Rule 5.2.7 check parameter name in outer lambda
  */
-class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRule(
+class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     "parameter-name-in-outer-lambda",
     configRules,
-    listOf(PARAMETER_NAME_IN_OUTER_LAMBDA)
+    listOf(PARAMETER_NAME_IN_OUTER_LAMBDA),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.LAMBDA_EXPRESSION) {

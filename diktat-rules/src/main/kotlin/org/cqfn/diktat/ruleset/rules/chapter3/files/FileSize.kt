@@ -12,10 +12,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * Rule that checks number of lines in a file
  */
-class FileSize(configRules: List<RulesConfig>) : DiktatRule(
+class FileSize(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(FILE_IS_TOO_LONG)
+    listOf(FILE_IS_TOO_LONG),
+    prevId
 ) {
     private val configuration by lazy {
         FileSizeConfiguration(

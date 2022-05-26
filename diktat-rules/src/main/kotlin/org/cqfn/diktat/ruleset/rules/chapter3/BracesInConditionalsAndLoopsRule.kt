@@ -38,10 +38,11 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * Rule that checks that all conditionals and loops have braces.
  */
-class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule(
+class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+    listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {

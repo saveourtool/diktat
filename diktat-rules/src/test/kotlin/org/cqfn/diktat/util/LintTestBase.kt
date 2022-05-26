@@ -12,7 +12,7 @@ import com.pinterest.ktlint.core.api.FeatureInAlphaState
  * @property ruleSupplier mapping of list of [RulesConfig] into a [Rule]
  * @property rulesConfigList optional custom rules config
  */
-open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>, String?) -> Rule,
                         private val rulesConfigList: List<RulesConfig>? = null) {
     /**
      * Perform linting of [code], collect errors and compare with [lintErrors]

@@ -26,10 +26,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that checks order in top level
  */
-class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
+class TopLevelOrderRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(TOP_LEVEL_ORDER),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {

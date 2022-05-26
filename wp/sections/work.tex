@@ -95,7 +95,7 @@ The only modification Diktat makes to the framework is that it adds a mechanism 
 Each rule must implement the \textsl{visit} method of the abstract Rule class, which describes the logic of the rule. By the way it is a special case of a famous pattern Visitor \cite{ref:gang}. Implementation example of the simple Rule that contains one Inspections can be found below.
 
 \begin{lstlisting}[caption={Example of the Rule.}, label={lst:example1}, language=Kotlin]
-class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rule("statement") {
+class SingleLineStatementsRule(private val configRules: List<RulesConfig>, prevId: String?) : Rule("statement") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 

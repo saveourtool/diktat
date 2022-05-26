@@ -66,10 +66,11 @@ import java.net.URL
  * Rule can fix long binary expressions in condition inside `if` and in property declarations and one line functions
  */
 @Suppress("ForbiddenComment")
-class LineLength(configRules: List<RulesConfig>) : DiktatRule(
+class LineLength(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(LONG_LINE)
+    listOf(LONG_LINE),
+    prevId
 ) {
     private val configuration by lazy {
         LineLengthConfiguration(

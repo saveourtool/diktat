@@ -20,10 +20,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule 5.1.2 Nested blokcs
  */
-class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
+class NestedFunctionBlock(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(NESTED_BLOCK)
+    listOf(NESTED_BLOCK),
+    prevId
 ) {
     private val configuration: NestedBlockConfiguration by lazy {
         NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: emptyMap())

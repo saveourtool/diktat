@@ -31,10 +31,11 @@ import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
  * This rule warn and fix cases when it possible to replace range with until or replace rangeTo function with range
  */
 @Suppress("UnsafeCallOnNullableType")
-class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
+class RangeConventionalRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(CONVENTIONAL_RANGE)
+    listOf(CONVENTIONAL_RANGE),
+    prevId
 ) {
     private val configuration by lazy {
         RangeConventionalConfiguration(

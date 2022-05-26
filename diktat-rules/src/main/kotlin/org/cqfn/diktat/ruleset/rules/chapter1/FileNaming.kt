@@ -26,10 +26,11 @@ import java.io.File
  * Aggressive: In case file contains only one class on upper level - it should be named with the same name
  */
 @Suppress("ForbiddenComment")
-class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
+class FileNaming(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS)
+    listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS),
+    prevId
 ) {
     private lateinit var filePath: String
 

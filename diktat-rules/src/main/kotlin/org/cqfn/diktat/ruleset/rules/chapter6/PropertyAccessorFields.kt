@@ -22,10 +22,11 @@ import org.jetbrains.kotlin.psi.KtProperty
 /**
  * Rule check that never use the name of a variable in the custom getter or setter
  */
-class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
+class PropertyAccessorFields(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+    listOf(WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {

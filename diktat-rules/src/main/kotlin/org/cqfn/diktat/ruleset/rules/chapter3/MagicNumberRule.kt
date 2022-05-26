@@ -28,10 +28,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule for magic number
  */
-class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
+class MagicNumberRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(MAGIC_NUMBER)
+    listOf(MAGIC_NUMBER),
+    prevId
 ) {
     private val configuration by lazy {
         MagicNumberConfiguration(

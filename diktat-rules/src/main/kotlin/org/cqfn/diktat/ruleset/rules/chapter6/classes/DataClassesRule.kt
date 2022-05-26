@@ -30,10 +30,11 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 /**
  * This rule checks if class can be made as data class
  */
-class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+class DataClassesRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(USE_DATA_CLASS)
+    listOf(USE_DATA_CLASS),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {

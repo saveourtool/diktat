@@ -25,10 +25,11 @@ import org.slf4j.LoggerFactory
  * No commented out code is allowed, including imports.
  */
 @Suppress("ForbiddenComment")
-class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
+class CommentsRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(COMMENTED_OUT_CODE)
+    listOf(COMMENTED_OUT_CODE),
+    prevId
 ) {
     private lateinit var ktPsiFactory: KtPsiFactory
 

@@ -28,12 +28,13 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
  * "string " + 1 will be converted to "string 1"
  * "string one " + "string two "
  */
-class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
+class StringConcatenationRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(
         STRING_CONCATENATION
-    )
+    ),
+    prevId
 ) {
     @Suppress("COLLAPSE_IF_STATEMENTS")
     override fun logic(node: ASTNode) {

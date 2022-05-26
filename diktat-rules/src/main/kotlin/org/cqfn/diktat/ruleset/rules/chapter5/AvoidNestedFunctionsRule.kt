@@ -24,10 +24,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * This rule checks for nested functions and warns if it finds any.
  */
-class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
+class AvoidNestedFunctionsRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(AVOID_NESTED_FUNCTIONS)
+    listOf(AVOID_NESTED_FUNCTIONS),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FUN) {

@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules
 
+import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
@@ -85,6 +86,7 @@ import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
 import java.io.File
+import kotlin.reflect.KFunction
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
@@ -221,15 +223,17 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
             ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing
             ::IndentationRule,  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
-
         )
-            .map {
-                it.invoke(configRules)
-            }
-            .toTypedArray()
+        var prevRuleId: String? = null
+        val createdRules: List<Rule> = rules.map { function ->
+            val result: Rule = function.invoke(configRules, prevRuleId)
+            prevRuleId = result.id
+            return RuleSet(result.id)
+        }
+        val rulesArray: Array<Rule> = createdRules.toTypedArray()
         return RuleSet(
             DIKTAT_RULE_SET_ID,
-            *rules
+            rules = rulesArray
         )
     }
 

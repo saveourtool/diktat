@@ -32,10 +32,11 @@ internal typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.
 /**
  * This rule checks if extension functions with the same signature don't have related classes
  */
-class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRule(
+class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(EXTENSION_FUNCTION_SAME_SIGNATURE)
+    listOf(EXTENSION_FUNCTION_SAME_SIGNATURE),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         /**

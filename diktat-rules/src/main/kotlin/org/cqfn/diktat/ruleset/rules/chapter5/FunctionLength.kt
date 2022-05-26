@@ -14,10 +14,11 @@ import org.jetbrains.kotlin.psi.KtFunction
 /**
  * Rule 5.1.1 check function length
  */
-class FunctionLength(configRules: List<RulesConfig>) : DiktatRule(
+class FunctionLength(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(TOO_LONG_FUNCTION)
+    listOf(TOO_LONG_FUNCTION),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         val configuration = FunctionLengthConfiguration(

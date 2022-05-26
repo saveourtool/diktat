@@ -50,10 +50,11 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - opening brace of lambda
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
-class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
+class BlockStructureBraces(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(BRACES_BLOCK_STRUCTURE_ERROR),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(

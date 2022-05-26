@@ -27,10 +27,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
  *
  * FixMe: The important caveat here: in "$foo" kotlin compiler adds implicit call to foo.toString() in case foo type is not string.
  */
-class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
+class StringTemplateFormatRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)
+    listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {

@@ -20,10 +20,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  * 2) If saveInitialFormattingForEnums is true then white spaces in enums will not be affected
  *
  */
-class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
+class ConsecutiveSpacesRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(TOO_MANY_CONSECUTIVE_SPACES),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(

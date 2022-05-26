@@ -25,10 +25,11 @@ import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
 /**
  * This rule checks if inline class can be used.
  */
-class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+class InlineClassesRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(INLINE_CLASS_CAN_BE_USED)
+    listOf(INLINE_CLASS_CAN_BE_USED),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         val configuration = configRules.getCommonConfiguration()

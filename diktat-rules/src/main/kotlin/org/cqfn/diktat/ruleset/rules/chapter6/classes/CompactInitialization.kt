@@ -40,10 +40,11 @@ import org.slf4j.LoggerFactory
  * FixMe: When assigned variable's name is also a `this@apply`'s property, it should be changed to qualified name,
  *  e.g `this@Foo`. But for this we need a mechanism to determine declaration scope and it's label.
  */
-class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
+class CompactInitialization(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(COMPACT_OBJECT_INITIALIZATION)
+    listOf(COMPACT_OBJECT_INITIALIZATION),
+    prevId
 ) {
     private val kotlinParser by lazy { KotlinParser() }
 

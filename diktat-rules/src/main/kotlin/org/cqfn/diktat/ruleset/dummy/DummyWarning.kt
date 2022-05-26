@@ -9,13 +9,14 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * Dummy warning used for testing and debug purposes.
  * Can be used in manual testing.
  */
-class DummyWarning(configRules: List<RulesConfig>) : DiktatRule(
+class DummyWarning(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     "dummy-rule",
     configRules,
     listOf(
         Warnings.FILE_NAME_INCORRECT,
         Warnings.FILE_NAME_MATCH_CLASS
-    )
+    ),
+    prevId
 ) {
     @Suppress("UNUSED")
     private lateinit var filePath: String

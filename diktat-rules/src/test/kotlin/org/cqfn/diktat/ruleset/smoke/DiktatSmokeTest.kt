@@ -51,7 +51,7 @@ typealias RuleToConfig = Map<String, Map<String, String>>
  */
 @OptIn(ExperimentalPathApi::class)
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
-    { DiktatRuleSetProvider(configFilePath) },
+    { _, _ -> DiktatRuleSetProvider(configFilePath) },
     { lintError, _ -> unfixedLintErrors.add(lintError) },
     null
 ) {

@@ -23,8 +23,8 @@ abstract class DiktatRule(
     id: String,
     val configRules: List<RulesConfig>,
     private val inspections: List<DiktatConfigRule>,
-    visitorModifiers: Set<VisitorModifier> = emptySet(),
-) : Rule(id, visitorModifiers) {
+    prevId: String?,
+) : Rule(id, visitorModifiers = prevId?.let { setOf(VisitorModifier.RunAfterRule(it)) } ?: emptySet()) {
     /**
      * Default value is false
      */

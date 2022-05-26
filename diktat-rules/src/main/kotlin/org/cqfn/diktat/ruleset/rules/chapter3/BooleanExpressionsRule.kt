@@ -31,10 +31,11 @@ import java.lang.RuntimeException
 /**
  * Rule that checks if the boolean expression can be simplified.
  */
-class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
+class BooleanExpressionsRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(COMPLEX_BOOLEAN_EXPRESSION)
+    listOf(COMPLEX_BOOLEAN_EXPRESSION),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {

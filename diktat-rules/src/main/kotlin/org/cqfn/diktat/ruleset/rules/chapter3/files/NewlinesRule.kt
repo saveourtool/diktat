@@ -116,10 +116,11 @@ import org.slf4j.LoggerFactory
  * 10. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
-class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
+class NewlinesRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)
+    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES),
+    prevId
 ) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())

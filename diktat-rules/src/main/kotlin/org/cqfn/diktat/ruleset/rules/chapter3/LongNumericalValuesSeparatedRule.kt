@@ -16,10 +16,11 @@ import java.lang.StringBuilder
 /**
  * Rule that checks if numerical separators (`_`) are used for long numerical literals
  */
-class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatRule(
+class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(LONG_NUMERICAL_VALUES_SEPARATED)
+    listOf(LONG_NUMERICAL_VALUES_SEPARATED),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         val configuration = LongNumericalValuesConfiguration(

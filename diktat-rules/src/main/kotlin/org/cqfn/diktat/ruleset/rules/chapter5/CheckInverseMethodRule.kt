@@ -22,10 +22,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * This rule checks if inverse method can be used.
  * For example if there is !isEmpty() on collection call that it changes it to isNotEmpty()
  */
-class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
+class CheckInverseMethodRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(INVERSE_FUNCTION_PREFERRED)
+    listOf(INVERSE_FUNCTION_PREFERRED),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CALL_EXPRESSION && node.text in methodMap.keys) {

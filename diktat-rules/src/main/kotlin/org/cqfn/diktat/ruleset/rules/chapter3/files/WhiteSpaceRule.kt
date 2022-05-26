@@ -93,10 +93,11 @@ import org.slf4j.LoggerFactory
  * 10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
  */
 @Suppress("ForbiddenComment")
-class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
+class WhiteSpaceRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_WHITESPACE)
+    listOf(WRONG_WHITESPACE),
+    prevId
 ) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {

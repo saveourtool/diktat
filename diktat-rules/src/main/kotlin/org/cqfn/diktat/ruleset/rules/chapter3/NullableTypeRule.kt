@@ -37,10 +37,11 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 /**
  * Rule that checks if nullable types are used and suggest to substitute them with non-nullable
  */
-class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
+class NullableTypeRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(NULLABLE_PROPERTY_TYPE)
+    listOf(NULLABLE_PROPERTY_TYPE),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY) {

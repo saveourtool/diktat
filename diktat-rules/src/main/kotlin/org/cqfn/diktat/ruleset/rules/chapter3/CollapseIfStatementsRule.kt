@@ -30,12 +30,13 @@ typealias PlaceOfWarningForCurrentNode = Pair<Int, ASTNode>
 /**
  * Rule for redundant nested if-statements, which could be collapsed into a single one
  */
-class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
+class CollapseIfStatementsRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(
         Warnings.COLLAPSE_IF_STATEMENTS
-    )
+    ),
+    prevId
 ) {
     private val configuration by lazy {
         CollapseIfStatementsConfiguration(

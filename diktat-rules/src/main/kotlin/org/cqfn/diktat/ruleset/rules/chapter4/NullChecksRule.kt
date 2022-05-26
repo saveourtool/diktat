@@ -30,10 +30,11 @@ import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
  * There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
  */
-class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
+class NullChecksRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(AVOID_NULL_CHECKS)
+    listOf(AVOID_NULL_CHECKS),
+    prevId
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {

@@ -68,10 +68,11 @@ import kotlin.math.abs
  * @see CustomIndentationChecker
  */
 @Suppress("LargeClass")
-class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
+class IndentationRule(configRules: List<RulesConfig>, prevId: String?) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_INDENTATION)
+    listOf(WRONG_INDENTATION),
+    prevId
 ) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
