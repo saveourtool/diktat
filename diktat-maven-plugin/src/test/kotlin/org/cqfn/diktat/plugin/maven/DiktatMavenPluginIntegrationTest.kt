@@ -88,8 +88,8 @@ class DiktatMavenPluginIntegrationTest {
      */
     private inline fun String.assertContains(other: CharSequence,
                                              crossinline lazyMessage: () -> String = {
-                                                 "The string: \"$this\" doesn't contain the substring: \"$other\""
-                                             }) {
+            "The string: \"$this\" doesn't contain the substring: \"$other\""
+        }) {
         Assertions.assertTrue(contains(other)) {
             lazyMessage()
         }
@@ -100,8 +100,8 @@ class DiktatMavenPluginIntegrationTest {
      */
     private inline fun String.assertContains(regex: Regex,
                                              crossinline lazyMessage: () -> String = {
-                                                 "The string: \"$this\" doesn't contain any substring matching the regex: \"$regex\""
-                                             }) {
+            "The string: \"$this\" doesn't contain any substring matching the regex: \"$regex\""
+        }) {
         Assertions.assertTrue(contains(regex)) {
             lazyMessage()
         }
