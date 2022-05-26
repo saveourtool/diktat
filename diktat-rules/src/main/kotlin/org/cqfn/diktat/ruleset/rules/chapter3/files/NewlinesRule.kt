@@ -122,7 +122,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
-            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedExpression(node)
+            //DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedExpression(node)
             else -> {
             }
         }
@@ -133,13 +133,22 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             val listDot: MutableList<ASTNode> = mutableListOf()
             searchDot(node, listDot)
             if (listDot.size > 3) {
-                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    fixDotQualifiedExpression(listDot)
+                val (withRightWhiteSpace, without) = listDot.partition {
+                    val WhiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
+                    WhiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && WhiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
+                }
+                if (without.size != 1 || without[0] != listDot[0]) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                        fixDotQualifiedExpression(listDot)
+                    }
                 }
             }
         }
     }
 
+    /**
+    Return true if find parent with types in list else return false
+     */
     private fun findParentNodeWithSpecificManyType(node: ASTNode, list: List<IElementType>) : Boolean {
         list.forEach { elem ->
             node.findParentNodeWithSpecificType(elem) ?. let {
@@ -149,17 +158,27 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         return true
     }
 
+    /**
+     * Fix Dot Qualified Expression and Safe Access Expression -
+     * 1) Append new White Space node before second and subsequent node Dot or Safe Access
+     * in Dot Qualified Expression? Safe Access Expression and Postfix Expression
+     * 2) If before first Dot or Safe Access node stay White Space node with \n - remove this node
+     */
     private fun fixDotQualifiedExpression(list: MutableList<ASTNode>) {
         list.forEachIndexed { index, astNode ->
+            val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
+            val nodeBeforeDot = dotNode?.treePrev
             if (index > 0) {
-                val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
-                val nodeBeforeDot = dotNode?.treePrev
                 astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
+            } else {
+                if (nodeBeforeDot?.elementType == WHITE_SPACE && nodeBeforeDot.text.lines().size > 1 ){
+                    astNode.removeChild(nodeBeforeDot)
+                }
             }
         }
     }
 
-    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
+    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>){
         if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION) {
             node.getChildren(null)
                 .filter {
