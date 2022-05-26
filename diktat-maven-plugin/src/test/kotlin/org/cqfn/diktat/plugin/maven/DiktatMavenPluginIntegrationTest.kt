@@ -18,7 +18,7 @@ import kotlin.io.path.readText
  * Integration tests for diktat-maven-plugin. Run against the project from diktat-examples.
  * The whole pipeline is as follows:
  * * For each test case, test data is copied from examples with respect to maven-itf requirements, .mvn/jvm.config and .mvn/maven.config are copied, too.
- *   **Note**: for maven its test name should equal example project's directory name, which we have in `pom.xml`.
+ *   **Note**: for maven-itf-plugin, test name should equal example project's directory name, which we have in `pom.xml`.
  * * maven-failsafe-plugin launches tests; for each test case a separate maven process is spawned. `diktat.version` is taken from `.mvn/maven.config`
  *   and the exact value is written when maven copies resources.
  * * maven execution results are analyzed here; `.mvn/jvm.config` is used to attach jacoco java agent to every maven process and generate individual execution reports.
