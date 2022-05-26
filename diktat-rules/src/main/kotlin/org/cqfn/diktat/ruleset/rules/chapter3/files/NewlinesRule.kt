@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -127,22 +128,30 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
     private fun handDotQualifiedExpression(node: ASTNode) {
-        node.findParentNodeWithSpecificType(PACKAGE_DIRECTIVE) ?: node.findParentNodeWithSpecificType(IMPORT_DIRECTIVE)
-        ?: let {
-            val list: MutableList<ASTNode> = mutableListOf()
-            searchDot(node, list)
-            if (list.size > 3) {
+        val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
+        if (findParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
+            val listDot: MutableList<ASTNode> = mutableListOf()
+            searchDot(node, listDot)
+            if (listDot.size > 3) {
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    fixDotQualifiedExpression(list)
+                    fixDotQualifiedExpression(listDot)
                 }
             }
-
         }
+    }
+
+    private fun findParentNodeWithSpecificManyType(node: ASTNode, list: List<IElementType>) : Boolean {
+        list.forEach { elem ->
+            node.findParentNodeWithSpecificType(elem) ?. let {
+                return false
+            }
+        }
+        return true
     }
 
     private fun fixDotQualifiedExpression(list: MutableList<ASTNode>) {
         list.forEachIndexed { index, astNode ->
-            if (index>0) {
+            if (index > 0) {
                 val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
                 val nodeBeforeDot = dotNode?.treePrev
                 astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
