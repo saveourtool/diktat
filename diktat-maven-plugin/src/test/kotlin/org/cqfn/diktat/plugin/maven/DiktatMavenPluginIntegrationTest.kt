@@ -4,6 +4,8 @@ import com.soebes.itf.jupiter.extension.MavenGoal
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension
 import com.soebes.itf.jupiter.extension.MavenTest
 import com.soebes.itf.jupiter.maven.MavenExecutionResult
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
@@ -54,7 +56,7 @@ class DiktatMavenPluginIntegrationTest {
 
         val mavenLog = result.mavenLog.stdout.readText()
 
-        mavenLog.assertContains("[FILE_NAME_MATCH_CLASS]")
+        assertThat(mavenLog).contains("[FILE_NAME_MATCH_CLASS]")
 
         val method = testInfo.testMethod.get()
         File(result.mavenProjectResult.targetProjectDirectory, "target/jacoco-it.exec").copyTo(
@@ -71,39 +73,19 @@ class DiktatMavenPluginIntegrationTest {
 
         val mavenLog = result.mavenLog.stdout.readText()
 
-        mavenLog.assertContains(Regex("""Original and formatted content differ, writing to [:\w/\\]+Test\.kt\.\.\."""))
-        mavenLog.assertContains(Regex("There are \\d+ lint errors"))
-        mavenLog.assertContains("[MISSING_KDOC_TOP_LEVEL]")
+        with(SoftAssertions()) {
+            try {
+                assertThat(mavenLog).containsPattern("""Original and formatted content differ, writing to [:\w/\\]+Test\.kt\.\.\.""")
+                assertThat(mavenLog).containsPattern("There are \\d+ lint errors")
+                assertThat(mavenLog).contains("[MISSING_KDOC_TOP_LEVEL]")
+            } finally {
+                assertAll()
+            }
+        }
 
         val method = testInfo.testMethod.get()
         File(result.mavenProjectResult.targetProjectDirectory, "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-${method.name}.exec")
         )
-    }
-
-    /**
-     * Asserts that this string contains a [substring][other].
-     *
-     * @param other the expected substring.
-     */
-    private inline fun String.assertContains(other: CharSequence,
-                                             crossinline lazyMessage: () -> String = {
-            "The string: \"$this\" doesn't contain the substring: \"$other\""
-        }) {
-        Assertions.assertTrue(contains(other)) {
-            lazyMessage()
-        }
-    }
-
-    /**
-     * Asserts that this string contains a substring matching the [regex].
-     */
-    private inline fun String.assertContains(regex: Regex,
-                                             crossinline lazyMessage: () -> String = {
-            "The string: \"$this\" doesn't contain any substring matching the regex: \"$regex\""
-        }) {
-        Assertions.assertTrue(contains(regex)) {
-            lazyMessage()
-        }
     }
 }
