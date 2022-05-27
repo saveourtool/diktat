@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules
 
+import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
@@ -81,6 +82,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -226,10 +228,12 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             .map {
                 it.invoke(configRules)
             }
-            .toTypedArray()
+        val orderedRules = rules.mapIndexed { index, rule ->
+            OrderedRule(rule, if (index != 0) rules[index - 1] else null)
+        }
         return RuleSet(
             DIKTAT_RULE_SET_ID,
-            *rules
+            rules = orderedRules.toTypedArray()
         )
     }
 
@@ -262,7 +266,30 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
+    private class OrderedRule(private val rule: Rule, nextRule: Rule?): Rule(rule.id, adjustVisitorModifier(rule, nextRule)) {
+        override fun visit(
+            node: ASTNode,
+            autoCorrect: Boolean,
+            emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+        ) {
+            rule.visit(node, autoCorrect, emit)
+        }
+    }
+
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
+
+        private fun adjustVisitorModifier(rule: Rule, nextRule: Rule?): Set<Rule.VisitorModifier> {
+            val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
+            require(visitorModifiers.isEmpty() || visitorModifiers.any { it is Rule.VisitorModifier.RunAfterRule }) {
+                "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
+            }
+            if (nextRule == null) return visitorModifiers
+            return visitorModifiers + Rule.VisitorModifier.RunAfterRule(
+                ruleId = nextRule.id,
+                loadOnlyWhenOtherRuleIsLoaded = false,
+                runOnlyWhenOtherRuleIsEnabled = false
+            )
+        }
     }
 }
