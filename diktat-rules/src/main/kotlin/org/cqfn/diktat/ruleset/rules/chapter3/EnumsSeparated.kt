@@ -50,7 +50,11 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
             if (!it.treeNext.isWhiteSpaceWithNewline()) {
                 ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum entries must end with a line break",
                     it.startOffset, it) {
-                    it.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
+                    val nextNode = it.treeNext
+                    if (nextNode.treeParent == it)
+                        it.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+                    else
+                        nextNode.treeParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
                 }
             }
         }
@@ -90,7 +94,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entry must end with a comma",
                 node.startOffset, node) {
                 val commaLocation = node.findChildByType(SEMICOLON)!!.findLatestTreePrevMatching {
-                    !setOf(EOL_COMMENT, BLOCK_COMMENT, WHITE_SPACE).contains(it.elementType)
+                    it.elementType !in setOf(EOL_COMMENT, BLOCK_COMMENT, WHITE_SPACE)
                 }
                 node.addChild(LeafPsiElement(COMMA, ","), commaLocation.treeNext)
             }
