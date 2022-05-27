@@ -281,7 +281,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
         private fun adjustVisitorModifier(rule: Rule, nextRule: Rule?): Set<Rule.VisitorModifier> {
             val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
-            require(visitorModifiers.isEmpty() || visitorModifiers.any { it is Rule.VisitorModifier.RunAfterRule }) {
+            require(visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
                 "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
             }
             if (nextRule == null) return visitorModifiers
