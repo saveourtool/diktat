@@ -267,7 +267,10 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
-    private class OrderedRule(private val rule: Rule, nextRule: Rule?) : Rule(rule.id, adjustVisitorModifiers(rule, nextRule)) {
+    internal class OrderedRule(val rule: Rule, nextRule: Rule?) : Rule(rule.id, adjustVisitorModifiers(rule, nextRule)) {
+        /**
+         * Delegating a call of this method
+         */
         override fun visit(
             node: ASTNode,
             autoCorrect: Boolean,
