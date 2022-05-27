@@ -3,7 +3,7 @@
 ![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/analysis-dev/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/analysis-dev/diKTat)
+[![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
