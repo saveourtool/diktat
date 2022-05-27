@@ -122,7 +122,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
-            //DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedExpression(node)
+            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION,  -> handDotQualifiedExpression(node)
             else -> {
             }
         }
@@ -170,10 +170,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             val nodeBeforeDot = dotNode?.treePrev
             if (index > 0) {
                 astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
-            } else {
-                if (nodeBeforeDot?.elementType == WHITE_SPACE && nodeBeforeDot.text.lines().size > 1 ){
-                    astNode.removeChild(nodeBeforeDot)
-                }
             }
         }
     }
