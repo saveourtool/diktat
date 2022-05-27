@@ -1,18 +1,18 @@
 <img src="/logo.svg" width="64px"/>
 
-![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
-![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
-![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
+![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg)
+![deteKT static analysis](https://github.com/saveourtool/diKTat/workflows/Run%20deteKT/badge.svg)
+![diKTat code style](https://github.com/saveourtool/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
 
-[![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
+[![Releases](https://img.shields.io/github/v/release/saveourtool/diKTat)](https://github.com/saveourtool/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
-[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
-![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
-![GitHub repo size](https://img.shields.io/github/repo-size/cqfn/diktat)
+[![Hits-of-Code](https://hitsofcode.com/github/saveourtool/diktat)](https://hitsofcode.com/view/github/saveourtool/diktat)
+![Lines of code](https://img.shields.io/tokei/lines/github/saveourtool/diktat)
+![GitHub repo size](https://img.shields.io/github/repo-size/saveourtool/diktat)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 
@@ -56,11 +56,11 @@ Main features of diktat are the following:
 curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
 ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar)
+2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar)
 
 **OR** use curl:
 ```bash
-$ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar
+$ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar
 ```
 </details>
 
@@ -87,7 +87,7 @@ export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED"
 ```
 
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>
 <summary>Add this plugin to your pom.xml:</summary>
