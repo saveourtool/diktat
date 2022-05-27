@@ -136,6 +136,7 @@ enum class Warnings(
     FILE_NAME_MATCH_CLASS(true, "3.1.2", "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
     COLLAPSE_IF_STATEMENTS(true, "3.16.1", "avoid using redundant nested if-statements, which could be collapsed into a single one"),
     CONVENTIONAL_RANGE(true, "3.17.1", "use conventional rule for range case"),
+    DEBUG_PRINT(false, "3.18.1", "avoit using print/println for debug logging"),
 
     // ======== chapter 4 ========
     NULLABLE_PROPERTY_TYPE(true, "4.3.1", "try to avoid use of nullable types"),
