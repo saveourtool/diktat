@@ -84,6 +84,6 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_SPACES = 1
-        const val NAME_ID = "aco-too-many-spaces"
+        const val NAME_ID = "zco-too-many-spaces"
     }
 }
