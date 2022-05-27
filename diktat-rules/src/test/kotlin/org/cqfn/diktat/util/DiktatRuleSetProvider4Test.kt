@@ -59,6 +59,19 @@ class DiktatRuleSetProviderTest {
 
     @Test
     fun `check OrderedRule with VisitorModifier RunAfterRule`() {
+        val rule = object : Rule("rule") {
+            override fun visit(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType
+            ) {
+                // do nothing
+            }
+        }
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            DiktatRuleSetProvider.OrderedRule(rule, rule)
+        }
+
         val ruleWithRunAfterRule = object : Rule("invalid-rule", setOf(VisitorModifier.RunAfterRule("another-rule"))) {
             override fun visit(
                 node: ASTNode,
@@ -69,7 +82,7 @@ class DiktatRuleSetProviderTest {
             }
         }
         Assertions.assertThrows(IllegalArgumentException::class.java) {
-            DiktatRuleSetProvider.OrderedRule(ruleWithRunAfterRule, null)
+            DiktatRuleSetProvider.OrderedRule(ruleWithRunAfterRule, rule)
         }
     }
 
@@ -94,16 +107,12 @@ class DiktatRuleSetProviderTest {
             }
         }
 
-        val orderedRule1 = DiktatRuleSetProvider.OrderedRule(rule1, null)
-        Assertions.assertTrue(orderedRule1.visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule },
-            "Found Rule.VisitorModifier.RunAfterRule for case without prevRule")
-
-        val orderedRule2 = DiktatRuleSetProvider.OrderedRule(rule2, rule1)
-        val visitorModifiers2 = orderedRule2.visitorModifiers
+        val orderedRule = DiktatRuleSetProvider.OrderedRule(rule2, rule1)
+        val visitorModifiers = orderedRule.visitorModifiers
             .filterIsInstance<Rule.VisitorModifier.RunAfterRule>()
-        Assertions.assertEquals(1, visitorModifiers2.size,
-            "Found invalid count of Rule.VisitorModifier.RunAfterRule for case with prevRule")
-        Assertions.assertEquals(rule1.id, visitorModifiers2[0].ruleId,
+        Assertions.assertEquals(1, visitorModifiers.size,
+            "Found invalid count of Rule.VisitorModifier.RunAfterRule")
+        Assertions.assertEquals(rule1.id, visitorModifiers[0].ruleId,
             "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
     }
 

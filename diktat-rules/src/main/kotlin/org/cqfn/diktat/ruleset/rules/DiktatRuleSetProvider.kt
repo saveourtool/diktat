@@ -230,7 +230,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 it.invoke(configRules)
             }
         val orderedRules = rules.mapIndexed { index, rule ->
-            OrderedRule(rule, if (index != 0) rules[index - 1] else null)
+            if (index != 0) OrderedRule(rule, rules[index - 1]) else rule
         }
         return RuleSet(
             DIKTAT_RULE_SET_ID,
@@ -269,12 +269,13 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     /**
      * This is a wrapper around Ktlint Rule which adjusts visitorModifiers to keep order with prevRule
+     * Added as a workaround after introducing a new logic for sorting KtLint Rules: https://github.com/pinterest/ktlint/issues/1478
      *
      * @property rule KtLink Rule which this class wraps
      *
      * @param prevRule previous KtLink Rule, the wrapped rule is called after prevRule
      */
-    internal class OrderedRule(val rule: Rule, prevRule: Rule?) : Rule(rule.id, adjustVisitorModifiers(rule, prevRule)) {
+    internal class OrderedRule(val rule: Rule, prevRule: Rule) : Rule(rule.id, adjustVisitorModifiers(rule, prevRule)) {
         /**
          * Delegating a call of this method
          */
@@ -290,18 +291,19 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
 
-        private fun adjustVisitorModifiers(rule: Rule, nextRule: Rule?): Set<Rule.VisitorModifier> {
+        private fun adjustVisitorModifiers(rule: Rule, prevRule: Rule): Set<Rule.VisitorModifier> {
             val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
             require(visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
                 "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
             }
-            return nextRule?.let {
-                visitorModifiers + Rule.VisitorModifier.RunAfterRule(
-                    ruleId = it.id,
-                    loadOnlyWhenOtherRuleIsLoaded = false,
-                    runOnlyWhenOtherRuleIsEnabled = false
-                )
-            } ?: visitorModifiers
+            require(rule.id != prevRule.id) {
+                "PrevRule has same ID as rule: ${rule.id}"
+            }
+            return visitorModifiers + Rule.VisitorModifier.RunAfterRule(
+                ruleId = prevRule.id,
+                loadOnlyWhenOtherRuleIsLoaded = false,
+                runOnlyWhenOtherRuleIsEnabled = false
+            )
         }
     }
 }
