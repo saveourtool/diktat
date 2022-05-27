@@ -22,6 +22,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
+import org.cqfn.diktat.ruleset.rules.chapter3.DebugPrintRule
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
 import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
@@ -186,6 +187,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::TrailingCommaRule,
             ::SingleInitRule,
             ::RangeConventionalRule,
+            ::DebugPrintRule,
             ::CustomLabel,
             ::VariableGenericTypeDeclarationRule,
             ::LongNumericalValuesSeparatedRule,
