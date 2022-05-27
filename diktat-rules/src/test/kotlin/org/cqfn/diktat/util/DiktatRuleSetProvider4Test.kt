@@ -6,12 +6,14 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -40,8 +42,83 @@ class DiktatRuleSetProviderTest {
             .filter { it.isFile }
             .map { it.nameWithoutExtension }
             .filterNot { it in ignoreFile }
-        val rulesName = DiktatRuleSetProvider().get().map { it::class.simpleName!! }.filter { it != "DummyWarning" }
+        val rulesName = DiktatRuleSetProvider().get()
+            .onEachIndexed { index, rule ->
+                if (index != 0) {
+                    Assertions.assertTrue(
+                        rule.visitorModifiers.any { it is Rule.VisitorModifier.RunAfterRule },
+                        "Rule ${rule.id} doesn't contain Rule.VisitorModifier.RunAfterRule"
+                    )
+                }
+            }
+            .map { (it as? DiktatRuleSetProvider.OrderedRule)?.rule ?: it }
+            .map { it::class.simpleName!! }
+            .filter { it != "DummyWarning" }
         Assertions.assertEquals(filesName.sorted().toList(), rulesName.sorted())
+    }
+
+    @Test
+    fun `check OrderedRule with VisitorModifier RunAfterRule`() {
+        val rule = object : Rule("rule") {
+            override fun visit(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType
+            ) {
+                // do nothing
+            }
+        }
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            DiktatRuleSetProvider.OrderedRule(rule, rule)
+        }
+
+        val ruleWithRunAfterRule = object : Rule("invalid-rule", setOf(VisitorModifier.RunAfterRule("another-rule"))) {
+            override fun visit(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType
+            ) {
+                // do nothing
+            }
+        }
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            DiktatRuleSetProvider.OrderedRule(ruleWithRunAfterRule, rule)
+        }
+    }
+
+    @Test
+    fun `check OrderedRule`() {
+        val rule1 = object : Rule("rule-first") {
+            override fun visit(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType
+            ) {
+                // do nothing
+            }
+        }
+        val rule2 = object : Rule("rule-second") {
+            override fun visit(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType
+            ) {
+                // do nothing
+            }
+        }
+
+        val orderedRule = DiktatRuleSetProvider.OrderedRule(rule2, rule1)
+        orderedRule.visitorModifiers
+            .filterIsInstance<Rule.VisitorModifier.RunAfterRule>()
+            .also {
+                Assertions.assertEquals(1, it.size,
+                    "Found invalid count of Rule.VisitorModifier.RunAfterRule")
+            }
+            .first()
+            .let {
+                Assertions.assertEquals(rule1.id, it.ruleId,
+                    "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
+            }
     }
 
     companion object {
