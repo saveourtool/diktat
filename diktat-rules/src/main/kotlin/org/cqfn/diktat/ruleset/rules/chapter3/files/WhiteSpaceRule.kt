@@ -424,7 +424,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
-        const val NAME_ID = "acs-horizontal-whitespace"
+        const val NAME_ID = "zcs-horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
         private val keywordsWithSpaceAfter = TokenSet.create(

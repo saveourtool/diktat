@@ -187,7 +187,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::SingleInitRule,
             ::RangeConventionalRule,
             ::CustomLabel,
-            ::ParameterNameInOuterLambdaRule,
             ::VariableGenericTypeDeclarationRule,
             ::LongNumericalValuesSeparatedRule,
             ::NestedFunctionBlock,
@@ -216,6 +215,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::ExtensionFunctionsSameNameRule,
             ::LambdaLengthRule,
             ::BooleanExpressionsRule,
+            ::ParameterNameInOuterLambdaRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
             ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,
