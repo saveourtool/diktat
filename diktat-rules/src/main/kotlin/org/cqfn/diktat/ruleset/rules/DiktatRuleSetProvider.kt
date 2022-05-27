@@ -267,7 +267,14 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
-    internal class OrderedRule(val rule: Rule, nextRule: Rule?) : Rule(rule.id, adjustVisitorModifiers(rule, nextRule)) {
+
+    /**
+     * This is a wrapper around Ktlint Rule which adjusts visitorModifiers to keep order with prevRule
+     *
+     * @property rule KtLink Rule which this class wraps
+     * @param prevRule previous KtLink Rule, the wrapped rule is called after prevRule
+     */
+    internal class OrderedRule(val rule: Rule, prevRule: Rule?) : Rule(rule.id, adjustVisitorModifiers(rule, prevRule)) {
         /**
          * Delegating a call of this method
          */
