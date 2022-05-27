@@ -1,9 +1,9 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.dummy.DummyWarning
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
@@ -80,9 +80,9 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
+import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
