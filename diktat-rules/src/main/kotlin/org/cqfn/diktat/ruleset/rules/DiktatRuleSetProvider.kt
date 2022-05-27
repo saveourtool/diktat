@@ -267,7 +267,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
-    private class OrderedRule(private val rule: Rule, nextRule: Rule?): Rule(rule.id, adjustVisitorModifier(rule, nextRule)) {
+    private class OrderedRule(private val rule: Rule, nextRule: Rule?) : Rule(rule.id, adjustVisitorModifiers(rule, nextRule)) {
         override fun visit(
             node: ASTNode,
             autoCorrect: Boolean,
@@ -280,17 +280,18 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
 
-        private fun adjustVisitorModifier(rule: Rule, nextRule: Rule?): Set<Rule.VisitorModifier> {
+        private fun adjustVisitorModifiers(rule: Rule, nextRule: Rule?): Set<Rule.VisitorModifier> {
             val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
             require(visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
                 "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
             }
-            if (nextRule == null) return visitorModifiers
-            return visitorModifiers + Rule.VisitorModifier.RunAfterRule(
-                ruleId = nextRule.id,
-                loadOnlyWhenOtherRuleIsLoaded = false,
-                runOnlyWhenOtherRuleIsEnabled = false
-            )
+            return nextRule?.let {
+                visitorModifiers + Rule.VisitorModifier.RunAfterRule(
+                    ruleId = it.id,
+                    loadOnlyWhenOtherRuleIsLoaded = false,
+                    runOnlyWhenOtherRuleIsEnabled = false
+                )
+            } ?: visitorModifiers
         }
     }
 }
