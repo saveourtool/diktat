@@ -92,6 +92,6 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abi-multiple-init-block"
+        const val NAME_ID = "aaz-stateless-class"
     }
 }

@@ -124,6 +124,59 @@ If you use it and encounter any problems, feel free to open issues on [github](h
 To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
+Requesting a specific _Maven_ `executionId` on the command line (the trailing
+`diktat` in the above example) may be essential in these cases:
+
+  * In your `pom.xml`, you have multiple executions with different
+    configurations (e. g.: multiple rule sets):
+    <details>
+
+    ```xml
+    <executions>
+
+        <execution>
+            <id>diktat-basic</id>
+            <configuration>
+                <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+            </configuration>
+        </execution>
+
+        <execution>
+            <id>diktat-advanced</id>
+            <configuration>
+                <diktatConfigFile>diktat-analysis-advanced.yml</diktatConfigFile>
+            </configuration>
+        </execution>
+
+    </executions>
+    ```
+    </details>
+  * Your YAML file with DiKTat rules has a non-default name and/or resides in a
+    non-default location:
+    <details>
+
+    ```xml
+    <executions>
+        <execution>
+            <id>diktat</id>
+            <configuration>
+                <diktatConfigFile>/non/default/rule-set-file.yml</diktatConfigFile>
+            </configuration>
+        </execution>
+    </executions>
+    ```
+    </details>
+
+If you omit the `executionId`:
+
+```console
+$ mvn diktat:check
+```
+
+&mdash; the plug-in will use the default configuration and search for
+`diktat-analysis.yml` file in the project directory (you can still customize the
+rule sets by editing the YAML file).
+
 ## Run with Gradle using diktat-gradle-plugin
 Requires a gradle version no lower than 5.3.
 
