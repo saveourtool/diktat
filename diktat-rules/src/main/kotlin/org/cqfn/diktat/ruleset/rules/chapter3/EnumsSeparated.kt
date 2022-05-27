@@ -50,15 +50,22 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
             if (!it.treeNext.isWhiteSpaceWithNewline()) {
                 ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum entries must end with a line break",
                     it.startOffset, it) {
-                    val nextNode = it.treeNext
-                    if (nextNode.treeParent == it)
-                        it.appendNewlineMergingWhiteSpace(nextNode, nextNode)
-                    else
-                        nextNode.treeParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+                    it.appendNewline()
                 }
             }
         }
         checkLastEnum(enumEntries.last())
+    }
+
+    private fun ASTNode.appendNewline() {
+        val nextNode = this.treeNext
+        if (nextNode?.elementType == WHITE_SPACE) {
+            (nextNode as LeafPsiElement).rawReplaceWithText("\n${nextNode.text}")
+        } else if (nextNode.treeParent == this) {
+            this.addChild(PsiWhiteSpaceImpl("\n"), nextNode)
+        } else {
+            this.treeParent.addChild(PsiWhiteSpaceImpl("\n"), nextNode)
+        }
     }
 
     private fun isEnumOneLine(nodes: List<ASTNode>) =
