@@ -108,12 +108,17 @@ class DiktatRuleSetProviderTest {
         }
 
         val orderedRule = DiktatRuleSetProvider.OrderedRule(rule2, rule1)
-        val visitorModifiers = orderedRule.visitorModifiers
+        orderedRule.visitorModifiers
             .filterIsInstance<Rule.VisitorModifier.RunAfterRule>()
-        Assertions.assertEquals(1, visitorModifiers.size,
-            "Found invalid count of Rule.VisitorModifier.RunAfterRule")
-        Assertions.assertEquals(rule1.id, visitorModifiers[0].ruleId,
-            "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
+            .also {
+                Assertions.assertEquals(1, it.size,
+                    "Found invalid count of Rule.VisitorModifier.RunAfterRule")
+            }
+            .first()
+            .let {
+                Assertions.assertEquals(rule1.id, it.ruleId,
+                    "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
+            }
     }
 
     companion object {
