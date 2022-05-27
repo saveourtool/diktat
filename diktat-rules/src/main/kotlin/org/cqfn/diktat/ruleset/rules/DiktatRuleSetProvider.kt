@@ -267,7 +267,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
-
     /**
      * This is a wrapper around Ktlint Rule which adjusts visitorModifiers to keep order with prevRule
      *
