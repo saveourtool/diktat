@@ -220,7 +220,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkForComplexExpression(node: ASTNode) {
         if (node.getRootNode().getFilePath().isGradleScript()) {
-            // this inspection is softened for gradle scripts, see https://github.com/analysis-dev/diktat/issues/1148
+            // this inspection is softened for gradle scripts, see https://github.com/saveourtool/diktat/issues/1148
             return
         }
         COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
