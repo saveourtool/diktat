@@ -20,9 +20,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/cqfn/diktat.git</connection>
-        <developerConnection>scm:git:ssh://github.com:cqfn/diktat.git</developerConnection>
-        <url>http://github.com/cqfn/diktat/tree/master</url>
+        <connection>scm:git:git://github.com/saveourtool/diktat.git</connection>
+        <developerConnection>scm:git:ssh://github.com:saveourtool/diktat.git</developerConnection>
+        <url>http://github.com/saveourtool/diktat/tree/master</url>
     </scm>
 
     <developers>

@@ -47,7 +47,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         if (node.elementType == WHEN) {
-            // Rule is simplified after https://github.com/analysis-dev/diktat/issues/1168
+            // Rule is simplified after https://github.com/saveourtool/diktat/issues/1168
             return
         }
     }
