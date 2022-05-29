@@ -232,7 +232,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name, this, configs)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
@@ -248,7 +248,7 @@ enum class Warnings(
         isFix: Boolean,
         node: ASTNode,
         autoFix: () -> Unit) {
-        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name, this, configs)) {
             autoFix()
         }
     }

@@ -46,7 +46,8 @@ interface Rule {
 data class RulesConfig(
     val name: String,
     val enabled: Boolean = true,
-    val configuration: Map<String, String> = emptyMap()
+    val configuration: Map<String, String> = emptyMap(),
+    val ignoreAnnotated: Set<String> = setOf(),
 )
 
 /**
@@ -186,6 +187,12 @@ fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.n
 fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
+}
+
+
+fun List<RulesConfig>.isAnnotatedWithIgnoredAnnotation(rule: Rule, annotations: Set<String>): Boolean {
+    val ruleMatched = getRuleConfig(rule)
+    return ruleMatched?.ignoreAnnotated?.intersect(annotations)?.isNotEmpty() ?: false
 }
 
 /**
