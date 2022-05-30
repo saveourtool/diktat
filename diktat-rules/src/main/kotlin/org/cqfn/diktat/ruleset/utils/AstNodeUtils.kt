@@ -983,7 +983,7 @@ private fun hasAnySuppressorForInspection(
     }
         ?.findAllDescendantsWithSpecificType(ANNOTATION_ENTRY)
         ?.map { it.psi as KtAnnotationEntry }
-        ?: setOf()
+        ?: emptySet()
 
     val foundSuppress = annotationsForNode.containSuppressWithName(warningName)
 

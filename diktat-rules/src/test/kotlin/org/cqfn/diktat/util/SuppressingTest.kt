@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test
 class SuppressingTest : LintTestBase(::IdentifierNaming) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}"
     private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
-        RulesConfig(IDENTIFIER_LENGTH.name, true, mapOf(), setOf("MySuperSuppress"))
+        RulesConfig(IDENTIFIER_LENGTH.name, true, emptyMap(), setOf("MySuperSuppress"))
     )
 
     @Test
@@ -45,10 +45,10 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     fun `checking that suppression with ignore everything works`() {
         val code =
                 """
-                        @Suppress(                    "                    diktat                    "                    )
-                        fun foo() {
-                            val a = 1
-                        }
+                    @Suppress("diktat")
+                    fun foo() {
+                        val a = 1
+                    }
                 """.trimIndent()
         lintMethod(code)
     }
@@ -57,10 +57,10 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     fun `checking that suppression with a targeted inspection name works`() {
         val code =
                 """
-                        @Suppress(                    "                    IDENTIFIER_LENGTH                    "                    )
-                        fun foo() {
-                            val a = 1
-                        }
+                    @Suppress("IDENTIFIER_LENGTH")
+                    fun foo() {
+                        val a = 1
+                    }
                 """.trimIndent()
         lintMethod(code)
     }
@@ -69,10 +69,10 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     fun `negative scenario for other annotation`() {
         val code =
                 """
-                        @MySuperSuppress111()
-                        fun foo() {
-                            val a = 1
-                        }
+                    @MySuperSuppress111()
+                    fun foo() {
+                        val a = 1
+                    }
                 """.trimIndent()
         lintMethod(
             code,
