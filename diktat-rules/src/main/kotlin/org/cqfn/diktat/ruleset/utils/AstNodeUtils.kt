@@ -11,6 +11,10 @@
 
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.common.config.rules.DIKTAT
+import org.cqfn.diktat.common.config.rules.Rule
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
@@ -43,10 +47,6 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.DIKTAT
-import org.cqfn.diktat.common.config.rules.Rule
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -512,38 +512,12 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  * @param warningName a name of the warning which is checked
  * @return boolean result
  */
-fun ASTNode.isSuppressed(warningName: String, rule: Rule, configs: List<RulesConfig>) =
-    this.parent(hasAnySuppressorForInspection(warningName, rule, configs), strict = false) != null
-
-private fun hasAnySuppressorForInspection(warningName: String, rule: Rule, configs: List<RulesConfig>) =
-    { node: ASTNode ->
-        val annotationsForNode = if (node.elementType != FILE) {
-            node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
-        } else {
-            node.findChildByType(FILE_ANNOTATION_LIST)
-        }
-            ?.findAllDescendantsWithSpecificType(ANNOTATION_ENTRY)
-            ?.map { it.psi as KtAnnotationEntry }
-            ?: setOf()
-
-        val foundSuppress = annotationsForNode.containSuppressWithName(warningName)
-
-        val foundIgnoredAnnotation =
-            configs.isAnnotatedWithIgnoredAnnotation(rule, annotationsForNode.map { it.shortName.toString() }.toSet())
-
-        val isCompletelyIgnoredBlock = annotationsForNode.containSuppressWithName(DIKTAT)
-
-        foundSuppress || foundIgnoredAnnotation || isCompletelyIgnoredBlock
-    }
-
-private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
-    this.any {
-        it.shortName.toString() == (Suppress::class.simpleName) &&
-                (it.valueArgumentList
-                    ?.arguments
-                    ?.any { annotation -> annotation.text.trim('"') == name }
-                    ?: false)
-    }
+fun ASTNode.isSuppressed(
+    warningName: String,
+    rule: Rule,
+    configs: List<RulesConfig>
+) =
+        this.parent(hasAnySuppressorForInspection(warningName, rule, configs), strict = false) != null
 
 /**
  * Checks node has `override` modifier
@@ -847,6 +821,15 @@ fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
     return node
 }
 
+private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
+        this.any {
+            it.shortName.toString() == (Suppress::class.simpleName) &&
+                    (it.valueArgumentList
+                        ?.arguments
+                        ?.any { annotation -> annotation.text.trim('"') == name }
+                        ?: false)
+        }
+
 private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {
     val currentLine = this.getLineNumber()
     val currentOffset = this.startOffset
@@ -986,6 +969,30 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
         .contains("it")
 
     return hasNoParameters(lambdaNode) && hasIt
+}
+
+private fun hasAnySuppressorForInspection(
+    warningName: String,
+    rule: Rule,
+    configs: List<RulesConfig>
+) = { node: ASTNode ->
+    val annotationsForNode = if (node.elementType != FILE) {
+        node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
+    } else {
+        node.findChildByType(FILE_ANNOTATION_LIST)
+    }
+        ?.findAllDescendantsWithSpecificType(ANNOTATION_ENTRY)
+        ?.map { it.psi as KtAnnotationEntry }
+        ?: setOf()
+
+    val foundSuppress = annotationsForNode.containSuppressWithName(warningName)
+
+    val foundIgnoredAnnotation =
+            configs.isAnnotatedWithIgnoredAnnotation(rule, annotationsForNode.map { it.shortName.toString() }.toSet())
+
+    val isCompletelyIgnoredBlock = annotationsForNode.containSuppressWithName(DIKTAT)
+
+    foundSuppress || foundIgnoredAnnotation || isCompletelyIgnoredBlock
 }
 
 private fun hasNoParameters(lambdaNode: ASTNode): Boolean {

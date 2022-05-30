@@ -54,7 +54,7 @@ data class RulesConfig(
     val name: String,
     val enabled: Boolean = true,
     val configuration: Map<String, String> = emptyMap(),
-    val ignoreAnnotated: Set<String> = setOf(),
+    val ignoreAnnotated: Set<String> = emptySet(),
 )
 
 /**

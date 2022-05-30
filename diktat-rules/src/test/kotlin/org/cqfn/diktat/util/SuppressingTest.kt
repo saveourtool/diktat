@@ -16,7 +16,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
-import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
@@ -45,11 +44,11 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `checking that suppression with ignore everything works`() {
         val code =
-            """
-                    @Suppress("diktat")
-                    fun foo() {
-                        val a = 1
-                    }
+                """
+                        @Suppress(                    "                    diktat                    "                    )
+                        fun foo() {
+                            val a = 1
+                        }
                 """.trimIndent()
         lintMethod(code)
     }
@@ -57,11 +56,11 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `checking that suppression with a targeted inspection name works`() {
         val code =
-            """
-                    @Suppress("IDENTIFIER_LENGTH")
-                    fun foo() {
-                        val a = 1
-                    }
+                """
+                        @Suppress(                    "                    IDENTIFIER_LENGTH                    "                    )
+                        fun foo() {
+                            val a = 1
+                        }
                 """.trimIndent()
         lintMethod(code)
     }
@@ -69,11 +68,11 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `negative scenario for other annotation`() {
         val code =
-            """
-                    @MySuperSuppress111()
-                    fun foo() {
-                        val a = 1
-                    }
+                """
+                        @MySuperSuppress111()
+                        fun foo() {
+                            val a = 1
+                        }
                 """.trimIndent()
         lintMethod(
             code,
