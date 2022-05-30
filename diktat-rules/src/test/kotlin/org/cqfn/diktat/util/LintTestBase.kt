@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
+import org.intellij.lang.annotations.Language
 
 /**
  * Base class for testing rules without fixing code.
@@ -23,7 +24,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @param fileName optional override for file name
      */
     @OptIn(FeatureInAlphaState::class)
-    fun lintMethod(code: String,
+    fun lintMethod(@Language("kotlin") code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null

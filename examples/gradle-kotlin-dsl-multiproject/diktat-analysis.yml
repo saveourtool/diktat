@@ -126,7 +126,7 @@
   enabled: true
   configuration:
     newlineAtEnd: true
-    extendedIndentOfParameters: true
+    extendedIndentOfParameters: false
     alignedParameters: true
     extendedIndentAfterOperators: true
     indentationSize: 4

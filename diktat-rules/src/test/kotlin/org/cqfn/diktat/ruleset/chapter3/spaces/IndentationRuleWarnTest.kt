@@ -396,19 +396,19 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    consume(Example(
-                    |            t1, t2, t3
+                    |        t1, t2, t3
                     |    ))
                     |
                     |    bar(baz(
-                    |            1,
-                    |            2
+                    |        1,
+                    |        2
                     |    )
                     |    )
                     |
                     |    bar(baz(
-                    |            1,
-                    |            2),
-                    |            3
+                    |        1,
+                    |        2),
+                    |        3
                     |    )
                     |}
                     |
@@ -484,15 +484,15 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    bar(
-                    |            param1 = baz(
-                    |                    1,
-                    |                    2
-                    |            ),
-                    |            param2 = { elem ->
-                    |                elem.qux()
-                    |            },
-                    |            param3 = x
-                    |                    .y()
+                    |        param1 = baz(
+                    |            1,
+                    |            2
+                    |        ),
+                    |        param2 = { elem ->
+                    |            elem.qux()
+                    |        },
+                    |        param3 = x
+                    |                .y()
                     |    )
                     |}
                     |
