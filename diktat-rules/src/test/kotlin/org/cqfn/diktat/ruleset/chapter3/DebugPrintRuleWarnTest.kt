@@ -131,4 +131,16 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.DEBUG_PRINT)
+    fun `call parameter from console`() {
+        lintMethod(
+            """
+                |fun test() {
+                |    val foo = console.size
+                |}
+            """.trimMargin()
+        )
+    }
 }
