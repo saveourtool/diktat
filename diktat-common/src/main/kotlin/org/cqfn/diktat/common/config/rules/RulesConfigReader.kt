@@ -47,6 +47,7 @@ interface Rule {
  * @property name name of the rule
  * @property enabled
  * @property configuration a map of strings with configuration options
+ * @property ignoreAnnotated if a code block is marked with this annotations - it will not be checked by this rule
  */
 @Serializable
 data class RulesConfig(
@@ -195,16 +196,19 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     return ruleMatched?.enabled ?: true
 }
 
-
+/**
+ * @param rule diktat inspection
+ * @param annotations set of annotations that are annotating a block of code
+ * @return true if the code block is marked with annotation that is in `ignored list` in the rule
+ */
 fun List<RulesConfig>.isAnnotatedWithIgnoredAnnotation(rule: Rule, annotations: Set<String>): Boolean =
-    getRuleConfig(rule)
-        ?.ignoreAnnotated
-        ?.map { it.trim() }
-        ?.map { it.trim('"') }
-        ?.intersect(annotations)
-        ?.isNotEmpty()
-        ?: false
-
+        getRuleConfig(rule)
+            ?.ignoreAnnotated
+            ?.map { it.trim() }
+            ?.map { it.trim('"') }
+            ?.intersect(annotations)
+            ?.isNotEmpty()
+            ?: false
 
 /**
  * Parse string into KotlinVersion
