@@ -24,7 +24,7 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
             val valueArgumentList = node.findChildByType(ElementType.VALUE_ARGUMENT_LIST)
             if (referenceExpression in setOf("print", "println") &&
                     node.treePrev?.elementType != ElementType.DOT &&
-                    valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size == 1 &&
+                    valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
                     node.findChildByType(ElementType.LAMBDA_ARGUMENT) == null) {
                 Warnings.DEBUG_PRINT.warn(
                     configRules, emitWarn, isFixMode,

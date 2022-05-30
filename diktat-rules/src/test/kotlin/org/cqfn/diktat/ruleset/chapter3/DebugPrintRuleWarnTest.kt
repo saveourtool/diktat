@@ -41,12 +41,24 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
 
     @Test
     @Tag(WarningNames.DEBUG_PRINT)
+    fun `call of println without arguments`() {
+        lintMethod(
+            """
+                |fun test() {
+                |    println()
+                |}
+            """.trimMargin(),
+            LintError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found println()", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.DEBUG_PRINT)
     fun `custom method print by argument list`() {
         lintMethod(
             """
                 |fun test() {
                 |    print("test custom args", 123)
-                |    print()
                 |}
             """.trimMargin()
         )

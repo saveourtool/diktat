@@ -243,14 +243,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files #2`() {
         fixAndCompareSmokeTest("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
-        Assertions.assertEquals(3, unfixedLintErrors.size)
+        Assertions.assertEquals(7, unfixedLintErrors.size)
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files with package name`() {
         fixAndCompareSmokeTest("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
-        Assertions.assertEquals(3, unfixedLintErrors.size)
+        Assertions.assertEquals(7, unfixedLintErrors.size)
     }
 
     @Test
