@@ -15,6 +15,8 @@
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
+  # all code blocks with MyAnnotation will be ignored and not checked
+  ignoreAnnotated: [ MyAnnotation ]
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true

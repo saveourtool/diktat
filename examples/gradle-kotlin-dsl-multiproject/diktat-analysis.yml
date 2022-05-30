@@ -5,6 +5,8 @@
     testDirs: test
 - name: CLASS_NAME_INCORRECT
   enabled: true
+  # all code blocks with MyAnnotation will be ignored and not checked
+  ignoreAnnotated: [ MyAnnotation ]
 - name: CONSTANT_UPPERCASE
   enabled: true
 - name: ENUM_VALUE
