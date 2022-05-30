@@ -391,7 +391,7 @@ class SomeClass {
 
 <details>
 <summary>Disable all inspections on selected code blocks</summary>
-Also you can suppress **all** warnings by adding `@Suppress` annotation on individual code blocks.
+Also you can suppress **all** warnings by adding `@Suppress("diktat")` annotation on individual code blocks.
 
 For example:
 
