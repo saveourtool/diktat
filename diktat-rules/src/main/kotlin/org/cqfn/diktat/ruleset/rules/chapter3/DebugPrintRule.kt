@@ -19,6 +19,7 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(Warnings.DEBUG_PRINT)
 ) {
     override fun logic(node: ASTNode) {
+        // check kotlin.io.print()/kotlin.io.println()
         if (node.elementType == ElementType.CALL_EXPRESSION) {
             val referenceExpression = node.findChildByType(ElementType.REFERENCE_EXPRESSION)?.text
             val valueArgumentList = node.findChildByType(ElementType.VALUE_ARGUMENT_LIST)
@@ -30,6 +31,27 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
                     configRules, emitWarn, isFixMode,
                     "found $referenceExpression()", node.startOffset, node,
                 )
+            }
+        }
+        // check kotlin.js.console.*()
+        if (node.elementType == ElementType.DOT_QUALIFIED_EXPRESSION) {
+            val isConsole = node.firstChildNode.let { referenceExpression ->
+                referenceExpression.elementType == ElementType.REFERENCE_EXPRESSION &&
+                        referenceExpression.firstChildNode.let { it.elementType == ElementType.IDENTIFIER && it.text == "console" }
+            }
+            if (isConsole) {
+                val logMethod = node.lastChildNode
+                    .takeIf { it.elementType == ElementType.CALL_EXPRESSION }
+                    ?.takeIf { it.findChildByType(ElementType.LAMBDA_ARGUMENT) == null }
+                    ?.firstChildNode
+                    ?.takeIf { it.elementType == ElementType.REFERENCE_EXPRESSION }
+                    ?.text
+                if (logMethod in setOf("error", "info", "log", "warn")) {
+                    Warnings.DEBUG_PRINT.warn(
+                        configRules, emitWarn, isFixMode,
+                        "found console.$logMethod()", node.startOffset, node,
+                    )
+                }
             }
         }
     }

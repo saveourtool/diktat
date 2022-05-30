@@ -89,4 +89,46 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.DEBUG_PRINT)
+    fun `call of console`() {
+        lintMethod(
+            """
+                |fun test() {
+                |    console.error("1")
+                |    console.info("1", "2")
+                |    console.log("1", "2", "3")
+                |    console.warn("1", "2", "3", "4")
+                |}
+            """.trimMargin(),
+            LintError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.error()", false),
+            LintError(3, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.info()", false),
+            LintError(4, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.log()", false),
+            LintError(5, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.warn()", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.DEBUG_PRINT)
+    fun `custom method console with lambda as last parameter`() {
+        lintMethod(
+            """
+                |fun test() {
+                |    console.error("1") {
+                |       foo("")
+                |    }
+                |    console.info("1", "2") {
+                |       foo("")
+                |    }
+                |    console.log("1", "2", "3") {
+                |       foo("")
+                |    }
+                |    console.warn("1", "2", "3", "4") {
+                |       foo("")
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
 }
