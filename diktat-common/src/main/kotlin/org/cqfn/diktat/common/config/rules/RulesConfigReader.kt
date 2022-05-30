@@ -27,6 +27,12 @@ import kotlinx.serialization.decodeFromString
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
 /**
+ * Common application name, that is used in plugins and can be used to Suppress all diktat inspections on the
+ * particular code block with @Suppress("diktat")
+ */
+const val DIKTAT = "diktat"
+
+/**
  * This interface represents individual inspection in rule set.
  */
 interface Rule {
@@ -190,10 +196,15 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
 }
 
 
-fun List<RulesConfig>.isAnnotatedWithIgnoredAnnotation(rule: Rule, annotations: Set<String>): Boolean {
-    val ruleMatched = getRuleConfig(rule)
-    return ruleMatched?.ignoreAnnotated?.intersect(annotations)?.isNotEmpty() ?: false
-}
+fun List<RulesConfig>.isAnnotatedWithIgnoredAnnotation(rule: Rule, annotations: Set<String>): Boolean =
+    getRuleConfig(rule)
+        ?.ignoreAnnotated
+        ?.map { it.trim() }
+        ?.map { it.trim('"') }
+        ?.intersect(annotations)
+        ?.isNotEmpty()
+        ?: false
+
 
 /**
  * Parse string into KotlinVersion
