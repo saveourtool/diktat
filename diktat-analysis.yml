@@ -12,7 +12,7 @@
     testDirs: test
     kotlinVersion: 1.6
     srcDirectories: "main"
-# Checks that the Class/Enum/Interface name does not match Pascal case
+# Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
@@ -177,7 +177,7 @@
   enabled: true
   configuration:
     deleteUnusedImport: true
-# Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
+# Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line ternary operator statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
 # Checks that the declaration part of a class-like code structures (class/interface/etc.) is in the proper order
