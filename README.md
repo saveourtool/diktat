@@ -374,7 +374,8 @@ Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 <details>
 <summary>Suppress warnings on individual code blocks</summary>
-In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings by adding `@Suppress` annotation on individual code blocks
+In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings
+by adding `@Suppress` annotation on individual code blocks or `@file:Suppress()` annotation on a file-level.
 
 For example:
 
@@ -389,7 +390,35 @@ class SomeClass {
 </details>
 
 <details>
-<summary>Suppress groups of inspections</summary>
+<summary>Disable all inspections on selected code blocks</summary>
+Also you can suppress **all** warnings by adding `@Suppress("diktat")` annotation on individual code blocks.
+
+For example:
+
+``` kotlin
+@Suppress("diktat")
+class SomeClass {
+    fun methODTREE(): String {
+
+    }
+}
+```
+</details>
+
+<details>
+<summary>ignoreAnnotated: disable inspections on blocks with predefined annotation</summary>
+In the `diktat-analysis.yml` file for each inspection it is possible to define a list of annotations that will cause
+disabling of the inspection on that particular code block:
+
+```yaml
+- name: HEADER_NOT_BEFORE_PACKAGE
+  enabled: true
+  ignoreAnnotated: [MyAnnotation, Compose, Controller]
+```
+</details>
+
+<details>
+<summary>Suppress groups of inspections by chapters</summary>
 It is easy to suppress even groups of inspections in diKTat.
 
 These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 
