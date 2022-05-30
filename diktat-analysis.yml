@@ -18,12 +18,12 @@
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
-# Checks that enum value is in non UPPER_SNAKE_CASE or non PascalCase depending on the config, UPPER_SNAKE_CASE by default
+# Checks that enum value is in upper SNAKE_CASE or in PascalCase depending on the config. UPPER_SNAKE_CASE is the default, but can be changed by 'enumStyle' config
 - name: ENUM_VALUE
   enabled: true
   configuration:
-    # Two options: snakeCase(default), PascalCase
-    enumStyle: snakeCase
+    # Two options: SNAKE_CASE (default), PascalCase
+    enumStyle: SNAKE_CASE
 # Checks that class which extends any Exception class has Exception suffix
 - name: EXCEPTION_SUFFIX
   enabled: true

@@ -51,7 +51,7 @@ enum class Warnings(
     CONSTANT_UPPERCASE(true, "1.5.1", "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them"),
     VARIABLE_HAS_PREFIX(true, "1.1.1", "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception)"),
     IDENTIFIER_LENGTH(false, "1.1.1", "identifier's length is incorrect, it should be in range of [2, 64] symbols"),
-    ENUM_VALUE(true, "1.3.1", "enum values should be in selected UPPER_CASE snake/PascalCase format"),
+    ENUM_VALUE(true, "1.3.1", "enum values should be in a proper format (usually UPPER_SNAKE_CASE)"),
     GENERIC_NAME(true, "1.1.1", "generic name should contain only one single capital letter, it can be followed by a number"),
     BACKTICKS_PROHIBITED(false, "1.1.1", "backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     FUNCTION_NAME_INCORRECT_CASE(true, "1.4.1", "function/method name should be in lowerCamelCase"),
