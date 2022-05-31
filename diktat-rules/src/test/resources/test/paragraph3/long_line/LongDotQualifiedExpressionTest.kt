@@ -14,3 +14,5 @@ val E = This?.Is?.Veeeeryyyyyyy?.Loooooong?.Dot
 
 val F = This!!.Is!!.Veeeeryyyyyyy!!.Loooooong!!
     .Dot!!.Qualified!!.Expression
+
+val G = ThisIsVeryLonDotQualifiedExpressioWithoutDot.lalalala.lalalal
