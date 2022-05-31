@@ -19,21 +19,29 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(Warnings.DEBUG_PRINT)
 ) {
     override fun logic(node: ASTNode) {
-        // check kotlin.io.print()/kotlin.io.println()
+        checkPrintln(node)
+        checkJsConsole(node)
+    }
+
+    // check kotlin.io.print()/kotlin.io.println()
+    private fun checkPrintln(node: ASTNode) {
         if (node.elementType == ElementType.CALL_EXPRESSION) {
             val referenceExpression = node.findChildByType(ElementType.REFERENCE_EXPRESSION)?.text
             val valueArgumentList = node.findChildByType(ElementType.VALUE_ARGUMENT_LIST)
             if (referenceExpression in setOf("print", "println") &&
-                    node.treePrev?.elementType != ElementType.DOT &&
-                    valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
-                    node.findChildByType(ElementType.LAMBDA_ARGUMENT) == null) {
+                node.treePrev?.elementType != ElementType.DOT &&
+                valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
+                node.findChildByType(ElementType.LAMBDA_ARGUMENT) == null) {
                 Warnings.DEBUG_PRINT.warn(
                     configRules, emitWarn, isFixMode,
                     "found $referenceExpression()", node.startOffset, node,
                 )
             }
         }
-        // check kotlin.js.console.*()
+    }
+
+    // check kotlin.js.console.*()
+    private fun checkJsConsole(node: ASTNode) {
         if (node.elementType == ElementType.DOT_QUALIFIED_EXPRESSION) {
             val isConsole = node.firstChildNode.let { referenceExpression ->
                 referenceExpression.elementType == ElementType.REFERENCE_EXPRESSION &&
