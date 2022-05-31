@@ -88,8 +88,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             val config = configRules.getCommonConfiguration()
             val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
-            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter() &&
-                    node.treeParent.findAllDescendantsWithSpecificType(ElementType.FUNCTION_TYPE).isEmpty()) {
+            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter() && node.getIdentifierName() != null) {
                 checkSignatureDescription(node)
             }
         } else if (node.elementType == KDOC_SECTION) {
