@@ -567,16 +567,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *@param node node in which to search
      *@param dotList mutable list of ASTNode to store nodes
      */
-    private fun searchDotOrSafeAccess(node: ASTNode, dotList: MutableList<ASTNode>) {
-        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION) {
+    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION) {
             node.getChildren(null)
                 .filter {
-                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION
+                    it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION || it.elementType == POSTFIX_EXPRESSION
                 }
                 .forEach {
-                    searchDotOrSafeAccess(it, dotList)
+                    searchDot(it, dotList)
                 }
-            dotList.add(node)
+            if (node.elementType != POSTFIX_EXPRESSION) {
+                dotList.add(node)
+            }
         }
     }
 
