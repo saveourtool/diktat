@@ -12,6 +12,8 @@
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
+  # all code blocks with MyAnnotation will be ignored and not checked
+  ignoreAnnotated: [ MyAnnotation ]
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
@@ -202,7 +204,7 @@
     # Is newline at the end of a file needed
     newlineAtEnd: true
     # If true: in parameter list when parameters are split by newline they are indented with two indentations instead of one
-    extendedIndentOfParameters: true
+    extendedIndentOfParameters: false
     # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
@@ -516,6 +518,9 @@
   enabled: true
   configuration:
     isRangeToIgnore: false
+# Check if there is a call of print()\println() or console.log(). Assumption that it's a debug print
+- name: DEBUG_PRINT
+  enabled: true
 # Check that typealias name is in PascalCase
 - name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true

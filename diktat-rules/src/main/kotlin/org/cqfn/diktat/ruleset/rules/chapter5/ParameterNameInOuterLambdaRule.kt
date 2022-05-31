@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * Rule 5.2.7 check parameter name in outer lambda
  */
 class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRule(
-    "parameter-name-in-outer-lambda",
+    NAME_ID,
     configRules,
     listOf(PARAMETER_NAME_IN_OUTER_LAMBDA)
 ) {
@@ -34,5 +34,8 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
                 node.startOffset, node,
             )
         }
+    }
+    companion object {
+        const val NAME_ID = "acn-parameter-name-in-outer-lambda"
     }
 }

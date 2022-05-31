@@ -25,4 +25,22 @@ class BooleanExpressionsRuleFixTest : FixTestBase("test/paragraph3/boolean_expre
     fun `check same expressions`() {
         fixAndCompare("SameExpressionsInConditionExpected.kt", "SameExpressionsInConditionTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
+    fun `check substitution works properly`() {
+        fixAndCompare("SubstitutionIssueExpected.kt", "SubstitutionIssueTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
+    fun `check ordering is persisted`() {
+        fixAndCompare("OrderIssueExpected.kt", "OrderIssueTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
+    fun `check handling of negative expression`() {
+        fixAndCompare("NegativeExpressionExpected.kt", "NegativeExpressionTest.kt")
+    }
 }

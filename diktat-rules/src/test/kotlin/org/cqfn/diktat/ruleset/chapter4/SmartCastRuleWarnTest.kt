@@ -192,7 +192,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     }
 
     @Test
-    @Disabled("Rule is simplified after https://github.com/analysis-dev/diktat/issues/1168")
+    @Disabled("Rule is simplified after https://github.com/saveourtool/diktat/issues/1168")
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in when bad`() {
         lintMethod(

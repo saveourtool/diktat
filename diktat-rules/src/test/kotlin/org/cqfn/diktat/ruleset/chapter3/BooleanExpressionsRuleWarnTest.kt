@@ -234,7 +234,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     // nested boolean expressions in lambdas
                     if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {}
                     
-                    if (!(rightSide == null || leftSide == null) &&
+                    if (rightSide != null && leftSide != null &&
                         rightSide.size == leftSide.size &&
                         rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {}
                     
@@ -283,10 +283,11 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
         val stream = ByteArrayOutputStream()
         System.setErr(PrintStream(stream))
         val node = KotlinParser().createNode(expression)
-        val map: java.util.HashMap<String, Char> = HashMap()
-        val result = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(node, map)
+        val rule = BooleanExpressionsRule(emptyList())
+        val map: BooleanExpressionsRule.ExpressionsReplacement = rule.ExpressionsReplacement()
+        val result = rule.formatBooleanExpressionAsString(node, map)
         Assertions.assertEquals(expectedRepresentation, result)
-        Assertions.assertEquals(expectedMapSize, map.size)
+        Assertions.assertEquals(expectedMapSize, map.size())
         System.setErr(System.err)
         val stderr = stream.toString()
         Assertions.assertTrue(stderr.isEmpty()) {

@@ -5,6 +5,8 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.api.FeatureInAlphaState
+import org.intellij.lang.annotations.Language
 
 /**
  * Base class for testing rules without fixing code.
@@ -21,7 +23,8 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @param rulesConfigList optional override for `this.rulesConfigList`
      * @param fileName optional override for file name
      */
-    fun lintMethod(code: String,
+    @OptIn(FeatureInAlphaState::class)
+    fun lintMethod(@Language("kotlin") code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null
@@ -29,7 +32,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val actualFileName = fileName ?: TEST_FILE_NAME
         val res: MutableList<LintError> = mutableListOf()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 fileName = actualFileName,
                 script = actualFileName.endsWith("kts"),
                 text = code,
