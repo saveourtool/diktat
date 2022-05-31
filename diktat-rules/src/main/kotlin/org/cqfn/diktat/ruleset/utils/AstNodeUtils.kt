@@ -28,6 +28,7 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
@@ -162,7 +163,10 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
 /**
  * Checks if a function is anonymous
  */
-fun ASTNode.isAnonymousFunction() = this.getIdentifierName() == null
+fun ASTNode.isAnonymousFunction() {
+    require(this.elementType == FUN)
+    this.getIdentifierName() == null
+}
 
 /**
  * Checks if the symbols in this node are at the end of line
