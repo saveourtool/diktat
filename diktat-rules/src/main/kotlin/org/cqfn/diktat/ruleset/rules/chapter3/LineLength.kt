@@ -93,7 +93,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            println(node.text)
         }
     }
 
