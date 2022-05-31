@@ -122,14 +122,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
-            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedExpression(node)
+            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedAndSafeAccessExpression(node)
             else -> {
             }
         }
     }
 
     @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
-    private fun handDotQualifiedExpression(node: ASTNode) {
+    private fun handDotQualifiedAndSafeAccessExpression(node: ASTNode) {
         val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
             VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
         if (isNotFindParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
