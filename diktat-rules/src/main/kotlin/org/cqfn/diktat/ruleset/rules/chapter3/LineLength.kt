@@ -140,7 +140,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     findParentNodeWithSpecificTypeMany(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
-                        val splitOffset = searchRightSplitAfterType(parent, configuration, OPERATION_REFERENCE)?.second
+                        val splitOffset = searchRightSplitAfterOperationReference(parent, configuration)?.second
                         splitOffset?.let {
                             val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
                             val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
@@ -304,8 +304,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun parserDotQualifiedExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        val nodeDot = searchRightSplitAfterType(wrongNode, configuration, DOT)
-        val nodeSafeAccess = searchRightSplitAfterType(wrongNode, configuration, SAFE_ACCESS)
+        val nodeDot = searchRightSplitBeforeDotOrSafeAccess(wrongNode, configuration, DOT)
+        val nodeSafeAccess = searchRightSplitBeforeDotOrSafeAccess(wrongNode, configuration, SAFE_ACCESS)
         return nodeDot?.let {
             DotQualifiedExpression(wrongNode)
         } ?: nodeSafeAccess?.let {
@@ -645,7 +645,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             DOT, SAFE_ACCESS -> searchDotOrSafeAccess(parent, list)
         }
         return list.map {
-            it to (it.getFirstChildWithType(type)?.startOffset ?: (configuration.lineLength.toInt() + 1))
+            val offset = it.getFirstChildWithType(type)?.run {
+                positionByOffset(this.startOffset).second
+            } ?: run {
+                configuration.lineLength.toInt() + 10
+            }
+            it to offset
         }
             .sortedBy { it.second }
             .reversed()
@@ -654,6 +659,45 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 
+
+    private fun searchRightSplitAfterOperationReference(
+        parent: ASTNode,
+        configuration: LineLengthConfiguration,
+    ): Pair<ASTNode, Int>? {
+        val list: MutableList<ASTNode> = mutableListOf()
+        searchBinaryExpression(parent, list)
+        return list.map {
+            it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+        }
+            .sortedBy { it.second }
+            .reversed()
+            .firstOrNull { (it, offset) ->
+                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text?.length ?: 0) <= configuration.lineLength + 1
+            }
+    }
+
+    private fun searchRightSplitBeforeDotOrSafeAccess(
+        parent: ASTNode,
+        configuration: LineLengthConfiguration,
+        type: IElementType
+    ): Pair<ASTNode, Int>? {
+        val list: MutableList<ASTNode> = mutableListOf()
+        searchDotOrSafeAccess(parent, list)
+        return list.map {
+            val offset = it.getFirstChildWithType(type)?.run {
+                positionByOffset(this.startOffset).second
+            } ?: run {
+                configuration.lineLength.toInt() + 10
+            }
+            it to offset
+        }
+            .sortedBy { it.second }
+            .reversed()
+            .firstOrNull { (it, offset) ->
+                offset <= configuration.lineLength + 1
+            }
+    }
+    
     /**
      *
      * [RuleConfiguration] for maximum line length

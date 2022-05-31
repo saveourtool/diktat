@@ -1,6 +1,6 @@
 package test.paragraph3.long_line
 
-val G = ThisIsVeryyyyLooooonDooootQualifiedExpressioWithoutDot.lalalala.lalalal
+val G = ThisIsVeryyyyLooooonNameDooootQualifiedExpressioWithoutDot.lalalala.lalalal
 
 val A = This.Is.Veeeeryyyyyyy.Loooooong.Dot.Qualified.Expression
 
@@ -16,5 +16,3 @@ val E = This?.Is?.Veeeeryyyyyyy?.Loooooong?.Dot
 
 val F = This!!.Is!!.Veeeeryyyyyyy!!.Loooooong!!
     .Dot!!.Qualified!!.Expression
-
-val G = ThisIsVeryyyyLooooonDooootQualifiedExpressioWithoutDot.lalalala.lalalal
