@@ -128,7 +128,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION", "MagicNumber")
     private fun handDotQualifiedAndSafeAccessExpression(node: ASTNode) {
         val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
             VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
