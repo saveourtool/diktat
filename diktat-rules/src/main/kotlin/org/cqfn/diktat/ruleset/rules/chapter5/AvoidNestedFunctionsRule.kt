@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isAnonymousFunction
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -66,7 +67,7 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isNestedFunction(node: ASTNode): Boolean =
             node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST) &&
-                    node.getFirstChildWithType(IDENTIFIER) != null
+                    !node.isAnonymousFunction()
 
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
             parents()

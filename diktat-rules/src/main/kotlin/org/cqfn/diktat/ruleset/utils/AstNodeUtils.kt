@@ -160,6 +160,11 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
         this.findChildByType(elementType)
 
 /**
+ * Checks if a function is anonymous
+ */
+fun ASTNode.isAnonymousFunction() = this.getIdentifierName() == null
+
+/**
  * Checks if the symbols in this node are at the end of line
  */
 fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewline() ?: true
