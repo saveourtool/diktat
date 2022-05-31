@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
-import com.pinterest.ktlint.core.ast.*
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -67,15 +66,16 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.*
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import com.pinterest.ktlint.core.ast.nextCodeSibling
+import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import org.jetbrains.kotlin.incremental.ChangesCollector.Companion.getNonPrivateNames
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -122,20 +122,23 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
-            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION,  -> handDotQualifiedExpression(node)
+            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedExpression(node)
             else -> {
             }
         }
     }
+
+    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun handDotQualifiedExpression(node: ASTNode) {
-        val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
-        if (findParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
+        val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
+            VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
+        if (isNotFindParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
             val listDot: MutableList<ASTNode> = mutableListOf()
             searchDot(node, listDot)
             if (listDot.size > 3) {
                 val (withRightWhiteSpace, without) = listDot.partition {
-                    val WhiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
-                    WhiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && WhiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
+                    val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
+                    whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
                 }
                 if (without.size != 1 || without[0] != listDot[0]) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
@@ -147,11 +150,11 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-    Return true if find parent with types in list else return false
+     * Return false, if you find parent with types in list else return true
      */
-    private fun findParentNodeWithSpecificManyType(node: ASTNode, list: List<IElementType>) : Boolean {
+    private fun isNotFindParentNodeWithSpecificManyType(node: ASTNode, list: List<IElementType>): Boolean {
         list.forEach { elem ->
-            node.findParentNodeWithSpecificType(elem) ?. let {
+            node.findParentNodeWithSpecificType(elem)?.let {
                 return false
             }
         }
@@ -174,7 +177,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>){
+    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
         if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION) {
             node.getChildren(null)
                 .filter {
