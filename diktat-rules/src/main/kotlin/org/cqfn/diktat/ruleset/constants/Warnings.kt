@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.constants
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
-import org.cqfn.diktat.ruleset.utils.hasSuppress
+import org.cqfn.diktat.ruleset.utils.isSuppressed
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 typealias EmitType = ((offset: Int,
@@ -136,6 +136,7 @@ enum class Warnings(
     FILE_NAME_MATCH_CLASS(true, "3.1.2", "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
     COLLAPSE_IF_STATEMENTS(true, "3.16.1", "avoid using redundant nested if-statements, which could be collapsed into a single one"),
     CONVENTIONAL_RANGE(true, "3.17.1", "use conventional rule for range case"),
+    DEBUG_PRINT(false, "3.18.1", "use a dedicated logging library"),
 
     // ======== chapter 4 ========
     NULLABLE_PROPERTY_TYPE(true, "4.3.1", "try to avoid use of nullable types"),
@@ -232,7 +233,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.isSuppressed(name, this, configs)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
@@ -248,7 +249,7 @@ enum class Warnings(
         isFix: Boolean,
         node: ASTNode,
         autoFix: () -> Unit) {
-        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.isSuppressed(name, this, configs)) {
             autoFix()
         }
     }

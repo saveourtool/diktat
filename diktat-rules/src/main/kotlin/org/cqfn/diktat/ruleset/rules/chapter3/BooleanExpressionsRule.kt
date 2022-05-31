@@ -11,6 +11,7 @@ import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
 import com.bpodgursky.jbool_expressions.Expression
 import com.bpodgursky.jbool_expressions.options.ExprOptions
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
+import com.bpodgursky.jbool_expressions.parsers.TokenMapper
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
@@ -22,6 +23,7 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
+import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.lang.RuntimeException
@@ -42,17 +44,17 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("TooGenericExceptionCaught")
     private fun checkBooleanExpression(node: ASTNode) {
-        // This map is used to assign a variable name for every elementary boolean expression. It is required for jbool to operate.
-        val mapOfExpressionToChar: HashMap<String, Char> = HashMap()
-        val correctedExpression = formatBooleanExpressionAsString(node, mapOfExpressionToChar)
-        if (mapOfExpressionToChar.isEmpty()) {
+        // This class is used to assign a variable name for every elementary boolean expression. It is required for jbool to operate.
+        val expressionsReplacement = ExpressionsReplacement()
+        val correctedExpression = formatBooleanExpressionAsString(node, expressionsReplacement)
+        if (expressionsReplacement.isEmpty()) {
             // this happens, if we haven't found any expressions that can be simplified
             return
         }
 
         // If there are method calls in conditions
         val expr: Expression<String> = try {
-            ExprParser.parse(correctedExpression)
+            ExprParser.parse(correctedExpression, expressionsReplacement.orderedTokenMapper)
         } catch (exc: RuntimeException) {
             if (exc.message?.startsWith("Unrecognized!") == true) {
                 // this comes up if there is an unparsable expression (jbool doesn't have own exception type). For example a.and(b)
@@ -61,21 +63,21 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                 throw exc
             }
         }
-        val distributiveLawString = checkDistributiveLaw(expr, mapOfExpressionToChar, node)
+        val distributiveLawString = checkDistributiveLaw(expr, expressionsReplacement, node)
         val simplifiedExpression = distributiveLawString?.let {
             ExprParser.parse(distributiveLawString)
         }
             ?: RulesHelper.applySet(expr, RulesHelper.demorganRules(), ExprOptions.noCaching())
         if (expr != simplifiedExpression) {
             COMPLEX_BOOLEAN_EXPRESSION.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                fixBooleanExpression(node, simplifiedExpression, mapOfExpressionToChar)
+                fixBooleanExpression(node, simplifiedExpression, expressionsReplacement)
             }
         }
     }
 
     /**
      * Converts a complex boolean expression into a string representation, mapping each elementary expression to a letter token.
-     * These tokens are collected into [mapOfExpressionToChar].
+     * These tokens are collected into [expressionsReplacement].
      * For example:
      * ```
      * (a > 5 && b != 2) -> A & B
@@ -84,17 +86,19 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * ```
      *
      * @param node
-     * @param mapOfExpressionToChar a mutable map for expression->token
+     * @param expressionsReplacement a special class for replacements expression->token
      * @return formatted string representation of expression
      */
     @Suppress("UnsafeCallOnNullableType", "ForbiddenComment")
-    internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
+    internal fun formatBooleanExpressionAsString(node: ASTNode, expressionsReplacement: ExpressionsReplacement): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
-        val logicalExpressions = otherBinaryExpressions.filter {
+        val logicalExpressions = otherBinaryExpressions.filter { otherBinaryExpression ->
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
-            (it.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
+            (otherBinaryExpression.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
                     // todo: support xor; for now skip all expressions that are nested in xor
-                    it.parents().takeWhile { it != node }.none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
+                    otherBinaryExpression.parents()
+                        .takeWhile { it != node }
+                        .none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
         }
         // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
         val elementaryBooleanExpressions = booleanBinaryExpressions
@@ -102,26 +106,25 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .flatMap { listOf(it.left!!.node, it.right!!.node) }
             .map {
                 // remove parentheses around expression, if there are any
-                (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it
+                it.removeAllParentheses()
             }
             .filterNot {
                 // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
-                // `true` and `false` are valid tokens for jBool, so we keep them.
-                it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false"
+                it.elementType == BINARY_EXPRESSION ||
+                        // !(a || b) should be skipped too, `a` and `b` should be present later
+                        (it.psi as? KtPrefixExpression)?.lastChild
+                            ?.node
+                            ?.removeAllParentheses()
+                            ?.elementType == BINARY_EXPRESSION ||
+                        // `true` and `false` are valid tokens for jBool, so we keep them.
+                        it.text == "true" || it.text == "false"
             }
-        var characterAsciiCode = 'A'.code  // `A` character in ASCII
         (logicalExpressions + elementaryBooleanExpressions).forEach { expression ->
-            mapOfExpressionToChar.computeIfAbsent(expression.textWithoutComments()) {
-                // Every elementary expression is assigned a single-letter variable.
-                characterAsciiCode++.toChar()
-            }
+            expressionsReplacement.addExpression(expression)
         }
         // Prepare final formatted string
-        var correctedExpression = node.textWithoutComments()
         // At first, substitute all elementary expressions with variables
-        mapOfExpressionToChar.forEach { (refExpr, char) ->
-            correctedExpression = correctedExpression.replace(refExpr, char.toString())
-        }
+        val correctedExpression = expressionsReplacement.replaceExpressions(node.textWithoutComments())
         // jBool library is using & as && and | as ||
         return "(${correctedExpression
             .replace("&&", "&")
@@ -143,6 +146,11 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             operationReferenceText == "&&" || operationReferenceText == "||"
         }
 
+    private fun ASTNode.removeAllParentheses(): ASTNode {
+        val result = (this.psi as? KtParenthesizedExpression)?.expression?.node ?: return this
+        return result.removeAllParentheses()
+    }
+
     private fun ASTNode.textWithoutComments() = findAllNodesWithCondition(withSelf = false) {
         it.isLeaf()
     }
@@ -153,23 +161,17 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixBooleanExpression(
         node: ASTNode,
         simplifiedExpr: Expression<String>,
-        mapOfExpressionToChar: HashMap<String, Char>
+        expressionsReplacement: ExpressionsReplacement
     ) {
-        var correctKotlinBooleanExpression = simplifiedExpr
+        val correctKotlinBooleanExpression = simplifiedExpr
             .toString()
             .replace("&", "&&")
             .replace("|", "||")
+            .removePrefix("(")
+            .removeSuffix(")")
 
-        if (simplifiedExpr.toString().first() == '(' && simplifiedExpr.toString().last() == ')') {
-            correctKotlinBooleanExpression = correctKotlinBooleanExpression
-                .drop(1)
-                .dropLast(1)
-        }
-
-        mapOfExpressionToChar.forEach { (key, value) ->
-            correctKotlinBooleanExpression = correctKotlinBooleanExpression.replace(value.toString(), key)
-        }
-        node.replaceChild(node.firstChildNode, KotlinParser().createNode(correctKotlinBooleanExpression))
+        node.replaceChild(node.firstChildNode,
+            KotlinParser().createNode(expressionsReplacement.restoreFullExpression(correctKotlinBooleanExpression)))
     }
 
     /**
@@ -179,12 +181,12 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkDistributiveLaw(
         expr: Expression<String>,
-        mapOfExpressionToChar: HashMap<String, Char>,
+        expressionsReplacement: ExpressionsReplacement,
         node: ASTNode
     ): String? {
         // checking that expression can be considered as distributive law
-        val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), mapOfExpressionToChar) ?: return null
-        val correctSymbolsSequence = mapOfExpressionToChar.values.toMutableList()
+        val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), expressionsReplacement)?.toString() ?: return null
+        val correctSymbolsSequence = expressionsReplacement.getTokens().toMutableList()
         correctSymbolsSequence.remove(commonDistributiveOperand)
         correctSymbolsSequence.add(0, commonDistributiveOperand)
         val expressionsLogicalOperator = expr.toString().first { it == '&' || it == '|' }
@@ -195,7 +197,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Returns correct result string in distributive law
      */
-    private fun returnNeededDistributiveExpression(firstLogicalOperator: Char, symbols: List<Char>): String {
+    private fun returnNeededDistributiveExpression(firstLogicalOperator: Char, symbols: List<String>): String {
         val secondSymbol = if (firstLogicalOperator == '&') '|' else '&'  // this is used to alter symbols
         val resultString = StringBuilder()
         symbols.forEachIndexed { index, symbol ->
@@ -218,13 +220,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getCommonDistributiveOperand(
         node: ASTNode,
         expression: String,
-        mapOfExpressionToChar: HashMap<String, Char>
+        expressionsReplacement: ExpressionsReplacement
     ): Char? {
         val operationSequence = expression.filter { it == '&' || it == '|' }
         val numberOfOperationReferences = operationSequence.length
         // There should be three operands and three operation references in order to consider the expression
         // Moreover the operation references between operands should alternate.
-        if (mapOfExpressionToChar.size < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
+        if (expressionsReplacement.size() < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
                 numberOfOperationReferences < DISTRIBUTIVE_LAW_MIN_OPERATIONS ||
                 !isSequenceAlternate(operationSequence)) {
             return null
@@ -270,6 +272,96 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun KtBinaryExpression.isXorExpression() = operationReference.text == "xor"
+
+    /**
+     * A special class to replace expressions (and restore it back)
+     * Note: mapping is String to Char(and Char to Char) actually, but will keep it as String for simplicity
+     */
+    internal inner class ExpressionsReplacement {
+        private val expressionToToken: HashMap<String, String> = LinkedHashMap()
+        private val tokenToOrderedToken: HashMap<String, String> = HashMap()
+
+        /**
+         * TokenMapper for first call ExprParser which remembers the order of expression.
+         */
+        val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
+
+        /**
+         * Returns <tt>true</tt> if this object contains no replacements.
+         *
+         * @return <tt>true</tt> if this object contains no replacements
+         */
+        fun isEmpty(): Boolean = expressionToToken.isEmpty()
+
+        /**
+         * Returns the number of replacements in this object.
+         *
+         * @return the number of replacements in this object
+         */
+        fun size(): Int = expressionToToken.size
+
+        /**
+         * Register an expression for further replacement
+         *
+         * @param expressionAstNode astNode which contains boolean expression
+         */
+        fun addExpression(expressionAstNode: ASTNode) {
+            val expressionText = expressionAstNode.textWithoutComments()
+            // support case when `boolean_expression` matches to `!boolean_expression`
+            val expression = if (expressionText.startsWith('!')) expressionText.substring(1) else expressionText
+            getLetter(expressionToToken, expression)
+        }
+
+        /**
+         * Replaces registered expressions in provided expression
+         *
+         * @param fullExpression full boolean expression in kotlin
+         * @return full expression in jbool format
+         */
+        @Suppress("UnsafeCallOnNullableType")
+        fun replaceExpressions(fullExpression: String): String {
+            var resultExpression = fullExpression
+            expressionToToken.keys
+                .sortedByDescending { it.length }
+                .forEach { refExpr ->
+                    resultExpression = resultExpression.replace(refExpr, expressionToToken[refExpr]!!)
+                }
+            return resultExpression
+        }
+
+        /**
+         * Restores full expression by replacing tokens and restoring the order
+         *
+         * @param fullExpression full boolean expression in jbool format
+         * @return full boolean expression in kotlin
+         */
+        fun restoreFullExpression(fullExpression: String): String {
+            // restore order
+            var resultExpression = fullExpression
+            tokenToOrderedToken.values.forEachIndexed { index, value ->
+                resultExpression = resultExpression.replace(value, "%${index + 1}\$s")
+            }
+            resultExpression = resultExpression.format(args = tokenToOrderedToken.keys.toTypedArray())
+            // restore expression
+            expressionToToken.values.forEachIndexed { index, value ->
+                resultExpression = resultExpression.replace(value, "%${index + 1}\$s")
+            }
+            resultExpression = resultExpression.format(args = expressionToToken.keys.toTypedArray())
+            return resultExpression
+        }
+
+        /**
+         * Returns collection of token are used to construct full expression in jbool format.
+         *
+         * @return collection of token are used to construct full expression in jbool format
+         */
+        fun getTokens(): Collection<String> = expressionToToken.values
+
+        private fun getLetter(letters: HashMap<String, String>, key: String) = letters
+            .computeIfAbsent(key) {
+                ('A'.code + letters.size).toChar().toString()
+            }
+    }
 
     companion object {
         const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3

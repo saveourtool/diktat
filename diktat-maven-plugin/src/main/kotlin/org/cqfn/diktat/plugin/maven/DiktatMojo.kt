@@ -5,6 +5,7 @@
 package org.cqfn.diktat.plugin.maven
 
 import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.apache.maven.plugins.annotations.Mojo
 
 import java.io.File
@@ -16,9 +17,10 @@ import java.io.File
 @Suppress("unused")
 class DiktatCheckMojo : DiktatBaseMojo() {
     /**
-     * @param params instance of [KtLint.Params] used in analysis
+     * @param params instance of [KtLint.ExperimentalParams] used in analysis
      */
-    override fun runAction(params: KtLint.Params) {
+    @OptIn(FeatureInAlphaState::class)
+    override fun runAction(params: KtLint.ExperimentalParams) {
         KtLint.lint(params)
     }
 }
@@ -33,7 +35,8 @@ class DiktatFixMojo : DiktatBaseMojo() {
     /**
      * @param params instance of [KtLint.Params] used in analysis
      */
-    override fun runAction(params: KtLint.Params) {
+    @OptIn(FeatureInAlphaState::class)
+    override fun runAction(params: KtLint.ExperimentalParams) {
         val fileName = params.fileName
         val filePath = params.userData["file_path"] ?: error("File path should be provided")
         val fileContent = File(filePath).readText(charset("UTF-8"))

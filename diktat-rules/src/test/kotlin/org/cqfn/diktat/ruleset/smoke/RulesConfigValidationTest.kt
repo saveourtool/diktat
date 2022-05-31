@@ -60,7 +60,7 @@ class RulesConfigValidationTest {
     }
 
     @Test
-    @Disabled("https://github.com/cqfn/diKTat/issues/395")
+    @Disabled("https://github.com/saveourtool/diKTat/issues/395")
     fun `should throw error on invalid configuration section`() {
         file.writeText(
             """

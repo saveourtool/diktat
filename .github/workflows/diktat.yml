@@ -33,6 +33,6 @@ jobs:
           git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0)
           DIKTAT_CONFIG=diktat-analysis.yml
-          wget -O $DIKTAT_CONFIG https://raw.githubusercontent.com/cqfn/diKTat/$LATEST_TAG/$DIKTAT_CONFIG
+          wget -O $DIKTAT_CONFIG https://raw.githubusercontent.com/saveourtool/diKTat/$LATEST_TAG/$DIKTAT_CONFIG
       - name: Run diktat via maven plugin
         run: mvn -B diktat:check@diktat -DskipPluginMarker
