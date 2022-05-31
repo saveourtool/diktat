@@ -1044,3 +1044,21 @@ if (condition1 && condition2 && condition1) {
     foo()
 }
 ```
+
+<!-- =============================================================================== -->
+### <a name="c3.18"></a> 3.18 Logging
+This section describes the general rules of logging.
+
+#### <a name="r3.18.1"></a> 3.18.1 Debug logging
+The dedicated logging library should be used for logging purposes.
+Need to try to avoid the following statements (assumption that it's a debug logging):
+```kotlin
+print("I'M HERE")
+println("test")
+```
+
+Additionaly, need to avoid the following statements on Kotlin JS:
+```kotlin
+console.info("info test")
+console.log("test")
+```
