@@ -631,35 +631,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Finds the first binary expression or dot and safe access closer to the separator
+     * Finds the first binary expression closer to the separator
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun searchRightSplitAfterType(
-        parent: ASTNode,
-        configuration: LineLengthConfiguration,
-        type: IElementType
-    ): Pair<ASTNode, Int>? {
-        val list: MutableList<ASTNode> = mutableListOf()
-        when (type) {
-            OPERATION_REFERENCE -> searchBinaryExpression(parent, list)
-            DOT, SAFE_ACCESS -> searchDotOrSafeAccess(parent, list)
-        }
-        return list.map {
-            val offset = it.getFirstChildWithType(type)?.run {
-                positionByOffset(this.startOffset).second
-            } ?: run {
-                configuration.lineLength.toInt() + 10
-            }
-            it to offset
-        }
-            .sortedBy { it.second }
-            .reversed()
-            .firstOrNull { (it, offset) ->
-                offset + (it.getFirstChildWithType(type)?.text?.length ?: 0) <= configuration.lineLength + 1
-            }
-    }
-
-
     private fun searchRightSplitAfterOperationReference(
         parent: ASTNode,
         configuration: LineLengthConfiguration,
@@ -676,6 +650,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 
+    /**
+     * Finds the first dot or safe access closer to the separator
+     */
+    @Suppress("MAGIC_NUMBER")
     private fun searchRightSplitBeforeDotOrSafeAccess(
         parent: ASTNode,
         configuration: LineLengthConfiguration,
@@ -768,7 +746,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private class FunAndProperty(node: ASTNode) : LongLineFixableCases(node)
 
     /**
-     * Class Lambda show that long line should be split in Lambda: in space after LBRACE node and before RBRACE node
+     * Class Lambda show that long line should be split in Lambda: in space after [LBRACE] node and before [RBRACE] node
      */
     private class Lambda(node: ASTNode) : LongLineFixableCases(node)
 
