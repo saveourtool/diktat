@@ -232,7 +232,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }
                     |        ?.qux()
                     |}
-            """.trimMargin()
+            """.trimMargin(),
+            LintError(2, 5, ruleId, "${WRONG_NEWLINES.warnText()} list!!...", true)
         )
     }
 
@@ -262,6 +263,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }?.qux()
                     |}
             """.trimMargin(),
+            LintError(2, 5, ruleId, "${WRONG_NEWLINES.warnText()} list!!.filterNotNull()...", true),
             LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
             LintError(3, 26, ruleId, "$functionalStyleWarn .", true),
             LintError(5, 10, ruleId, "$functionalStyleWarn ?.", true),
@@ -634,7 +636,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |           }
                     |        }
                     |}
-            """.trimMargin()
+            """.trimMargin(), LintError(22, 9, ruleId, "${WRONG_NEWLINES.warnText()} allProperties...", true)
         )
     }
 
@@ -812,7 +814,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.map().gre().few().qwe()
                 |}
             """.trimMargin(),
+            LintError(2, 4, ruleId, "${WRONG_NEWLINES.warnText()} x.map()...", true),
             LintError(3, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+            LintError(13, 4, ruleId, "${WRONG_NEWLINES.warnText()} x.map().gre().few().qwe()", true),
             LintError(13, 23, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }
@@ -840,7 +844,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   .few()
                 |}
             """.trimMargin(),
+            LintError(2, 4, ruleId, "${WRONG_NEWLINES.warnText()} x...", true),
             LintError(4, 22, ruleId, "$functionalStyleWarn .", true),
+            LintError(8, 4, ruleId, "${WRONG_NEWLINES.warnText()} x...", true),
             LintError(9, 22, ruleId, "$functionalStyleWarn .", true)
         )
     }
@@ -966,6 +972,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.gf().fge().qwe().fd()
                 |}
             """.trimMargin(),
+            LintError(6, 4, ruleId, "${WRONG_NEWLINES.warnText()} x.gf().fge().qwe().fd()", true),
             LintError(6, 22, ruleId, "$functionalStyleWarn .", true), rulesConfigList = rulesConfigList
         )
     }
@@ -993,6 +1000,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |       .qwe()
                 |}
             """.trimMargin(),
+            LintError(9, 4, ruleId, "${WRONG_NEWLINES.warnText()} bfr()!!.qwe().foo().qwe().dg()", true),
             LintError(9, 29, ruleId, "$functionalStyleWarn .", true)
         )
     }
