@@ -646,7 +646,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             DOT, SAFE_ACCESS -> searchDotOrSafeAccess(parent, list)
         }
         return list.map {
-            it to positionByOffset(it.getFirstChildWithType(type)?.startOffset ?: configuration.lineLength.toInt()).second
+            it to (it.getFirstChildWithType(type)?.startOffset ?: (configuration.lineLength.toInt() + 10))
         }
             .sortedBy { it.second }
             .reversed()
