@@ -306,12 +306,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun parserDotQualifiedExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val nodeDot = searchRightSplitAfterType(wrongNode, configuration, DOT)
         val nodeSafeAccess = searchRightSplitAfterType(wrongNode, configuration, SAFE_ACCESS)
-        nodeDot?.let {
-            return DotQualifiedExpression(wrongNode)
+        return nodeDot?.let {
+            DotQualifiedExpression(wrongNode)
         } ?: nodeSafeAccess?.let {
-            return DotQualifiedExpression(wrongNode)
-        }
-        return None()
+            DotQualifiedExpression(wrongNode)
+        } ?: None()
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
@@ -563,7 +562,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * This method uses recursion to store dot qualified expression node in the order in which they are located
-     * Also dotList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
+     * Also dotList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid))
      *
      *@param node node in which to search
      *@param dotList mutable list of ASTNode to store nodes
@@ -630,7 +629,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Finds the first binary expression or dat closer to the separator
+     * Finds the first binary expression or dot and safe access closer to the separator
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun searchRightSplitAfterType(
@@ -676,28 +675,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private class None : LongLineFixableCases(KotlinParser().createNode("ERROR"))
 
     /**
-     * @property node node
+     * Class Comment show that long line should be split in comment
      * @property hasNewLineBefore flag to handle type of comment: ordinary comment (long part of which should be moved to the next line)
      * and inline comments (which should be moved entirely to the previous line)
      * @property indexLastSpace index of last space to substring comment
-     */
-
-    /**
-     * Class Comment show that long line should be split in comment
-     * @property hasNewLineBefore
-     * @property indexLastSpace
      */
     private class Comment(
         node: ASTNode,
         val hasNewLineBefore: Boolean,
         val indexLastSpace: Int = 0
     ) : LongLineFixableCases(node)
-
-    /**
-     * @property node node
-     * @property delimiterIndex index to split
-     * @property isOneLineString flag is string is one line
-     */
 
     /**
      * Class StringTemplate show that long line should be split in string template
@@ -718,9 +705,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class LongBinaryExpression show that long line should be split between other parts long binary expression,
      * after one of operation reference
-     * @property maximumLineLength
-     * @property leftOffset
-     * @property binList
+     * @property maximumLineLength is number of maximum line length
+     * @property leftOffset is offset before start [node]
+     * @property binList is list of Binary Expression which are children of [node]
      */
     private class LongBinaryExpression(
         node: ASTNode,
@@ -752,8 +739,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class WhenEntry show that line should be split in WhenEntry node:
-     * Added LBRACE and RBRACE nodes
-     * Split line in space after LBRACE node and before RBRACE node
+     * Added [LBRACE] and [RBRACE] nodes
+     * Split line in space after [LBRACE] node and before [RBRACE] node
      */
     private class WhenEntry(node: ASTNode) : LongLineFixableCases(node)
 
