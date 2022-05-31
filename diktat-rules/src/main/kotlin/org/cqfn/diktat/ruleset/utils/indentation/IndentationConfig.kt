@@ -15,7 +15,7 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     /**
      * If true, in parameter list when parameters are split by newline they are indented with two indentations instead of one
      */
-    val extendedIndentOfParameters = config["extendedIndentOfParameters"]?.toBoolean() ?: true
+    val extendedIndentOfParameters = config["extendedIndentOfParameters"]?.toBoolean() ?: false
 
     /**
      * If true, if first parameter in parameter list is on the same line as opening parenthesis, then other parameters
