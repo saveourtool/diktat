@@ -141,7 +141,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
                 }
                 if (without.size > 1 || (without.size == 1 && without[0] != listDot[0])) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access", node.startOffset, node) {
                         fixDotQualifiedExpression(listDot)
                     }
                 }
