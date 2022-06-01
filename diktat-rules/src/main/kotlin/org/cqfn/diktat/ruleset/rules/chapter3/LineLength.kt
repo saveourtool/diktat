@@ -661,11 +661,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     ): Pair<ASTNode, Int>? {
         val list: MutableList<ASTNode> = mutableListOf()
         searchDotOrSafeAccess(parent, list)
+        val offsetFromMaximum = 10
         return list.map {
             val offset = it.getFirstChildWithType(type)?.run {
                 positionByOffset(this.startOffset).second
             } ?: run {
-                configuration.lineLength.toInt() + 10
+                configuration.lineLength.toInt() + offsetFromMaximum
             }
             it to offset
         }
