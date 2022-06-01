@@ -242,11 +242,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun parserStringAndDot(node: ASTNode, configuration: LineLengthConfiguration) =
-        if (node.elementType == STRING_TEMPLATE) {
-            parserStringTemplate(node, configuration)
-        } else {
-            parserDotQualifiedExpression(node, configuration)
-        }
+            if (node.elementType == STRING_TEMPLATE) {
+                parserStringTemplate(node, configuration)
+            } else {
+                parserDotQualifiedExpression(node, configuration)
+            }
 
     /**
      * This class finds where the string can be split
@@ -274,7 +274,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             positionByOffset(node.startOffset).second
         }
         val delimiterIndex =
-            node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+                node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
             // we can't split this string, however may be we can move it entirely:
             // case when new line should be inserted after `+`. Example: "first" + "second"
@@ -292,7 +292,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
         val shouldAddTwoSpaces =
-            (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
+                (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
         val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
@@ -318,7 +318,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
-        if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
+            if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
@@ -509,11 +509,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
         val textBetweenParts =
-            if (wrongStringTemplate.isOneLineString) {
-                "\" +\n\""
-            } else {
-                "\n"
-            }
+                if (wrongStringTemplate.isOneLineString) {
+                    "\" +\n\""
+                } else {
+                    "\n"
+                }
         val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
         wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
@@ -524,7 +524,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
         val anySplitNode =
-            searchSomeSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)
+                searchSomeSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)
         val rigthSplitnode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
         val nodeOperationReference = rigthSplitnode?.first?.getFirstChildWithType(OPERATION_REFERENCE)
         rigthSplitnode?.let {
@@ -567,8 +567,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isTypeDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode):Boolean =
-        node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
+    private fun isTypeDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode): Boolean =
+            node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
 
     /**
      * This method uses recursion to store dot qualified expression node in the order in which they are located
