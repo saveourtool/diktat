@@ -1,18 +1,18 @@
 <img src="/logo.svg" width="64px"/>
 
-![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
-![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
-![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/analysis-dev/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/analysis-dev/diKTat)
+![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg)
+![deteKT static analysis](https://github.com/saveourtool/diKTat/workflows/Run%20deteKT/badge.svg)
+![diKTat code style](https://github.com/saveourtool/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
 
-[![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
+[![Releases](https://img.shields.io/github/v/release/saveourtool/diKTat)](https://github.com/saveourtool/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaveourtool%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaveourtool%2FdiKTat?ref=badge_shield)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
-[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
-![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
-![GitHub repo size](https://img.shields.io/github/repo-size/cqfn/diktat)
+[![Hits-of-Code](https://hitsofcode.com/github/saveourtool/diktat)](https://hitsofcode.com/view/github/saveourtool/diktat)
+![Lines of code](https://img.shields.io/tokei/lines/github/saveourtool/diktat)
+![GitHub repo size](https://img.shields.io/github/repo-size/saveourtool/diktat)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 
@@ -56,11 +56,11 @@ Main features of diktat are the following:
 curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
 ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar)
+2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar)
 
 **OR** use curl:
 ```bash
-$ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar
+$ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar
 ```
 </details>
 
@@ -87,7 +87,7 @@ export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED"
 ```
 
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>
 <summary>Add this plugin to your pom.xml:</summary>
@@ -123,6 +123,59 @@ If you use it and encounter any problems, feel free to open issues on [github](h
 
 To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
+
+Requesting a specific _Maven_ `executionId` on the command line (the trailing
+`diktat` in the above example) may be essential in these cases:
+
+  * In your `pom.xml`, you have multiple executions with different
+    configurations (e. g.: multiple rule sets):
+    <details>
+
+    ```xml
+    <executions>
+
+        <execution>
+            <id>diktat-basic</id>
+            <configuration>
+                <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+            </configuration>
+        </execution>
+
+        <execution>
+            <id>diktat-advanced</id>
+            <configuration>
+                <diktatConfigFile>diktat-analysis-advanced.yml</diktatConfigFile>
+            </configuration>
+        </execution>
+
+    </executions>
+    ```
+    </details>
+  * Your YAML file with DiKTat rules has a non-default name and/or resides in a
+    non-default location:
+    <details>
+
+    ```xml
+    <executions>
+        <execution>
+            <id>diktat</id>
+            <configuration>
+                <diktatConfigFile>/non/default/rule-set-file.yml</diktatConfigFile>
+            </configuration>
+        </execution>
+    </executions>
+    ```
+    </details>
+
+If you omit the `executionId`:
+
+```console
+$ mvn diktat:check
+```
+
+&mdash; the plug-in will use the default configuration and search for
+`diktat-analysis.yml` file in the project directory (you can still customize the
+rule sets by editing the YAML file).
 
 ## Run with Gradle using diktat-gradle-plugin
 Requires a gradle version no lower than 5.3.
@@ -321,7 +374,8 @@ Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 <details>
 <summary>Suppress warnings on individual code blocks</summary>
-In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings by adding `@Suppress` annotation on individual code blocks
+In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings
+by adding `@Suppress` annotation on individual code blocks or `@file:Suppress()` annotation on a file-level.
 
 For example:
 
@@ -336,7 +390,35 @@ class SomeClass {
 </details>
 
 <details>
-<summary>Suppress groups of inspections</summary>
+<summary>Disable all inspections on selected code blocks</summary>
+Also you can suppress **all** warnings by adding `@Suppress("diktat")` annotation on individual code blocks.
+
+For example:
+
+``` kotlin
+@Suppress("diktat")
+class SomeClass {
+    fun methODTREE(): String {
+
+    }
+}
+```
+</details>
+
+<details>
+<summary>ignoreAnnotated: disable inspections on blocks with predefined annotation</summary>
+In the `diktat-analysis.yml` file for each inspection it is possible to define a list of annotations that will cause
+disabling of the inspection on that particular code block:
+
+```yaml
+- name: HEADER_NOT_BEFORE_PACKAGE
+  enabled: true
+  ignoreAnnotated: [MyAnnotation, Compose, Controller]
+```
+</details>
+
+<details>
+<summary>Suppress groups of inspections by chapters</summary>
 It is easy to suppress even groups of inspections in diKTat.
 
 These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 

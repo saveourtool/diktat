@@ -7,7 +7,7 @@ enum class ENUM {
 enum class ENUM {
     RED(0xFF0000),
     GREEN(0x00FF00),
-    BLUE(0x0000FF) /*sdcsc*/,
+    BLUE(0x0000FF), /*sdcsc*/
 ;
 }
 

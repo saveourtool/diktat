@@ -219,7 +219,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val javaVersion = getJavaExecJvmVersion()
         project.logger.debug("For diktat execution jvm version $javaVersion will be used")
         if (javaVersion.majorVersion.toInt() >= MIN_JVM_REQUIRES_ADD_OPENS) {
-            // https://github.com/analysis-dev/diktat/issues/1182#issuecomment-1023099713
+            // https://github.com/saveourtool/diktat/issues/1182#issuecomment-1023099713
             project.logger.debug("Adding `--add-opens` flag for JVM version >=$MIN_JVM_REQUIRES_ADD_OPENS compatibility")
             jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
         }

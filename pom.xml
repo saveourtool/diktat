@@ -20,9 +20,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/cqfn/diktat.git</connection>
-        <developerConnection>scm:git:ssh://github.com:cqfn/diktat.git</developerConnection>
-        <url>http://github.com/cqfn/diktat/tree/master</url>
+        <connection>scm:git:git://github.com/saveourtool/diktat.git</connection>
+        <developerConnection>scm:git:ssh://github.com:saveourtool/diktat.git</developerConnection>
+        <url>http://github.com/saveourtool/diktat/tree/master</url>
     </scm>
 
     <developers>
@@ -45,7 +45,7 @@
         <kotlin.version>1.6.21</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlinx.serialization.version>1.3.2</kotlinx.serialization.version>
-        <ktlint.version>0.44.0</ktlint.version>
+        <ktlint.version>0.45.2</ktlint.version>
         <junit.version>5.8.2</junit.version>
         <guava.version>31.0.1-jre</guava.version>
         <slf4j.version>1.7.36</slf4j.version>
@@ -105,6 +105,11 @@
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-json-jvm</artifactId>
+                <version>${kotlinx.serialization.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
                 <artifactId>ktlint-core</artifactId>
                 <version>${ktlint.version}</version>
@@ -114,6 +119,36 @@
                         <artifactId>logback-classic</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-plain</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-sarif</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-json</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-html</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-baseline</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.charleskorn.kaml</groupId>
+                <artifactId>kaml-jvm</artifactId>
+                <version>0.43.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

@@ -194,6 +194,8 @@ public object WarningNames {
 
     public const val CONVENTIONAL_RANGE: String = "CONVENTIONAL_RANGE"
 
+    public const val DEBUG_PRINT: String = "DEBUG_PRINT"
+
     public const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
 
     public const val TYPE_ALIAS: String = "TYPE_ALIAS"

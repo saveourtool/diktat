@@ -14,10 +14,13 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
+import kotlin.io.path.name
+import kotlin.io.path.readLines
+import kotlin.io.path.writeLines
 
 /**
  * The comment that will be added to the generated sources file.
@@ -56,20 +59,18 @@ private fun generateWarningNames() {
         .addComment(autoGenerationComment)
         .build()
 
-    kotlinFile.writeTo(File("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
+    kotlinFile.writeTo(Paths.get("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
 }
 
-@OptIn(ExperimentalPathApi::class)
 private fun validateYear() {
-    val files = File("diktat-rules/src/test/resources/test/paragraph2/header")
-    files
-        .listFiles()
-        ?.filterNot { it.name.contains("CopyrightDifferentYearTest.kt") }
-        ?.forEach { file ->
-            val tempFile = createTempFile().toFile()
-            tempFile.printWriter().use { writer ->
-                file.forEachLine { line ->
-                    writer.println(when {
+    val folder = Paths.get("diktat-rules/src/test/resources/test/paragraph2/header")
+    Files.list(folder)
+        .filter { !it.name.contains("CopyrightDifferentYearTest.kt") }
+        .forEach { file ->
+            val tempFile = createTempFile()
+            tempFile.writeLines(file.readLines()
+                .map { line ->
+                    when {
                         line.contains(hyphenRegex) -> line.replace(hyphenRegex) {
                             val years = it.value.split("-")
                             "${years[0]}-$curYear"
@@ -79,10 +80,9 @@ private fun validateYear() {
                             "${copyrightYears[0]}-$curYear"
                         }
                         else -> line
-                    })
-                }
-            }
-            file.delete()
-            tempFile.renameTo(file)
+                    }
+                })
+            Files.delete(file)
+            Files.move(tempFile, file)
         }
 }
