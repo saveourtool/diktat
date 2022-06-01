@@ -219,7 +219,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val NAME_ID = "abc-local-variables"
-        private var functionInitializers = listOf(
+        private val functionInitializers = listOf(
             "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
             "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",
             "mutableListOf", "mutableSetOf", "mutableMapOf",
