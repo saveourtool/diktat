@@ -56,7 +56,7 @@ private fun generateWarningNames() {
         .builder("generated", "WarningNames")
         .addType(fileBody)
         .indent("    ")
-        .addComment(autoGenerationComment)
+        .addFileComment(autoGenerationComment)
         .build()
 
     kotlinFile.writeTo(Paths.get("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom

@@ -9,7 +9,13 @@ import org.slf4j.LoggerFactory
  */
 class TestCheckWarn : TestCompare() {
     @Suppress("MISSING_KDOC_CLASS_ELEMENTS") override val log: Logger = LoggerFactory.getLogger(TestCheckWarn::class.java)
-    @Suppress("UnusedPrivateMember", "UNUSED") private var testConfig: TestConfig? = null
+
+    @Suppress(
+        "UnusedPrivateMember",
+        "UNUSED",
+        "VarCouldBeVal"
+    )
+    private var testConfig: TestConfig? = null
 
     /**
      * Get tests execution result
