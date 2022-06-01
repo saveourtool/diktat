@@ -140,7 +140,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
                 }
-                if (without.size != 1 || without[0] != listDot[0]) {
+                if (without.size > 1 || (without.size == 1 && without[0] != listDot[0])) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                         fixDotQualifiedExpression(listDot)
                     }

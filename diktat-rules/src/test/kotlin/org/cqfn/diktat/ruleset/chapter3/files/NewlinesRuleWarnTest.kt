@@ -232,8 +232,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }
                     |        ?.qux()
                     |}
-            """.trimMargin(),
-            LintError(2, 5, ruleId, "${WRONG_NEWLINES.warnText()} list!!...", true)
+            """.trimMargin()
         )
     }
 
@@ -636,7 +635,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |           }
                     |        }
                     |}
-            """.trimMargin(), LintError(22, 9, ruleId, "${WRONG_NEWLINES.warnText()} allProperties...", true)
+            """.trimMargin()
         )
     }
 
