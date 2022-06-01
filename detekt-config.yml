@@ -598,6 +598,7 @@ style:
     active: true
   VarCouldBeVal:
     active: true
+    ignoreAnnotated: ['org.apache.maven.plugins.annotations.Parameter']
   WildcardImport:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
