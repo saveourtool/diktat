@@ -61,15 +61,14 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Test
     @Tag(WarningNames.GENERIC_NAME)
     fun `anonymous function`() {
-        val code =
-            """
-                    package org.cqfn.diktat.test
+        val code = """
+            package org.cqfn.diktat.test
 
-                    fun foo() {
-                        val sum: (Int) -> Int = fun(x): Int = x + x
-                    }
+            fun foo() {
+                val sum: (Int) -> Int = fun(x): Int = x + x
+            }
 
-                """.trimIndent()
+        """.trimIndent()
         lintMethod(code)
     }
 
