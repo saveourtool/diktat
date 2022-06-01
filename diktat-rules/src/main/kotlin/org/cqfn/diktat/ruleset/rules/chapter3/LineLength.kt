@@ -102,9 +102,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
-                if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
-                    !isKdocValid(newNode)
-                ) {
+                if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(
@@ -137,15 +135,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
-                    val parentIsValArgListOrFunLitOrWhenEntry =
-                        listOf<IElementType>(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsValArgListOrFunLitOrWhenEntry = listOf<IElementType>(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
                     findParentNodeWithSpecificTypeMany(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
                         val splitOffset = searchRightSplitAfterOperationReference(parent, configuration)?.second
                         splitOffset?.let {
-                            val parentIsBiExprOrParenthesized =
-                                parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
+                            val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
                             val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
                             if (parentIsBiExprOrParenthesized || (parentIsFunOrProperty && splitOffset >= configuration.lineLength)) {
                                 parent = parent.treeParent
@@ -175,8 +171,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 FUNCTION_LITERAL -> return Lambda(parent)
                 STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION -> {
                     stringOrDot = parent
-                    val parentIsBinExpOrValArgListOrWhenEntry =
-                        listOf<IElementType>(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsBinExpOrValArgListOrWhenEntry = listOf<IElementType>(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
                     findParentNodeWithSpecificTypeMany(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
@@ -331,12 +326,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (stringBeforeCommentContent.length >= configuration.lineLength.toInt() - leftOffset) {
             return None()
         }
-        val indexLastSpace =
-            wrongNode.text.substring(stringBeforeCommentContent.length, configuration.lineLength.toInt() - leftOffset)
-                .lastIndexOf(' ')
-        val isNewLine =
-            wrongNode.treePrev?.isWhiteSpaceWithNewline() ?: wrongNode.treeParent?.treePrev?.isWhiteSpaceWithNewline()
-            ?: false
+        val indexLastSpace = wrongNode.text.substring(stringBeforeCommentContent.length, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+        val isNewLine = wrongNode.treePrev?.isWhiteSpaceWithNewline() ?: wrongNode.treeParent?.treePrev?.isWhiteSpaceWithNewline() ?: false
         if (isNewLine && indexLastSpace == -1) {
             return None()
         }
@@ -411,18 +402,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var startOffset = 0
         node.getFirstChildWithType(COMMA)?.let {
             if (positionByOffset(it.startOffset).second > lineLength) {
-                node.appendNewlineMergingWhiteSpace(
-                    node.findChildByType(LPAR)!!.treeNext,
-                    node.findChildByType(LPAR)!!.treeNext
-                )
+                node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
                 startOffset = wrongArgumentList.maximumLineLength.lineLength.toInt()
             }
         } ?: node.getFirstChildWithType(RPAR)?.let {
-            node.appendNewlineMergingWhiteSpace(
-                node.findChildByType(LPAR)!!.treeNext,
-                node.findChildByType(LPAR)!!.treeNext
-            )
+            node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
             node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
             startOffset = wrongArgumentList.maximumLineLength.lineLength.toInt()
         }
@@ -484,10 +469,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 val parent = wrongNode.treeParent
                 parent.removeChild(wrongNode)
                 newLineNodeOnPreviousLine.treeParent.addChild(wrongNode, newLineNodeOnPreviousLine.treeNext)
-                newLineNodeOnPreviousLine.treeParent.addChild(
-                    PsiWhiteSpaceImpl("\n"),
-                    newLineNodeOnPreviousLine.treeNext.treeNext
-                )
+                newLineNodeOnPreviousLine.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newLineNodeOnPreviousLine.treeNext.treeNext)
             }
         }
     }
@@ -517,14 +499,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLambda(node: ASTNode) {
-        node.appendNewlineMergingWhiteSpace(
-            node.findChildByType(LBRACE)!!.treeNext,
-            node.findChildByType(LBRACE)!!.treeNext
-        )
-        node.appendNewlineMergingWhiteSpace(
-            node.findChildByType(RBRACE)!!.treePrev,
-            node.findChildByType(RBRACE)!!.treePrev
-        )
+        node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(LBRACE)!!.treeNext)
+        node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)!!.treePrev, node.findChildByType(RBRACE)!!.treePrev)
     }
 
     @Suppress("UnsafeCallOnNullableType", "COMMENT_WHITE_SPACE")
@@ -575,9 +551,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *@param binList mutable list of ASTNode to store nodes
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
-        if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) ||
-            node.hasChildOfType(POSTFIX_EXPRESSION)
-        ) {
+        if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) || node.hasChildOfType(POSTFIX_EXPRESSION)) {
             node.getChildren(null)
                 .filter {
                     it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED ||
@@ -676,12 +650,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     ): Pair<ASTNode, Int>? {
         val list: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(parent, list)
-        return list.map {
-            it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
-        }
+        return list.asSequence()
+            .map {
+                it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+            }
             .sortedBy { it.second }
-            .reversed()
-            .firstOrNull { (it, offset) ->
+            .lastOrNull { (it, offset) ->
                 offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text?.length ?: 0) <= configuration.lineLength + 1
             }
     }
@@ -700,13 +674,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val offsetFromMaximum = 10
         return list.asSequence()
             .map {
-            val offset = it.getFirstChildWithType(type)?.run {
-                positionByOffset(this.startOffset).second
-            } ?: run {
-                configuration.lineLength.toInt() + offsetFromMaximum
+                val offset = it.getFirstChildWithType(type)?.run {
+                    positionByOffset(this.startOffset).second
+                } ?: run {
+                    configuration.lineLength.toInt() + offsetFromMaximum
+                }
+                it to offset
             }
-            it to offset
-        }
             .sortedBy { it.second }
             .lastOrNull { (it, offset) ->
                 offset <= configuration.lineLength + 1
