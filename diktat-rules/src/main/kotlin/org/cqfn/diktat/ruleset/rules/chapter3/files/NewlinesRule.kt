@@ -177,8 +177,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isDotQuaOrSafeAccessOrPostfixExpression(node:ASTNode) =
-        node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
+    private fun isDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode) =
+            node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
 
     private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
         if (isDotQuaOrSafeAccessOrPostfixExpression(node)) {
