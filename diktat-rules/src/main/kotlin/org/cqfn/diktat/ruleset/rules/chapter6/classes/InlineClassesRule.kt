@@ -45,7 +45,10 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         // Fixme: In Kotlin 1.4.30 inline classes may be used with internal constructors. When it will be released need to check it
         if (hasValidProperties(classPsi) &&
                 !isExtendingClass(classPsi.node) &&
-                classPsi.node.getFirstChildWithType(MODIFIER_LIST)?.getChildren(null)?.all { it.elementType in goodModifiers } != false) {
+                classPsi.node
+                    .getFirstChildWithType(MODIFIER_LIST)
+                    ?.getChildren(null)
+                    ?.all { it.elementType in goodModifiers } != false) {
             // Fixme: since it's an experimental feature we shouldn't do fixer
             INLINE_CLASS_CAN_BE_USED.warn(configRules, emitWarn, isFixMode, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node)
         }
@@ -56,8 +59,14 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
             return !classPsi.getProperties().single().isVar
         } else if (classPsi.getProperties().isEmpty() && classPsi.hasExplicitPrimaryConstructor()) {
             return classPsi.primaryConstructorParameters.size == 1 &&
-                    !classPsi.primaryConstructorParameters.first().node.hasChildOfType(VAR_KEYWORD) &&
-                    classPsi.primaryConstructor?.visibilityModifierType()?.value?.let { it == "public" } ?: true
+                    !classPsi.primaryConstructorParameters
+                        .first()
+                        .node
+                        .hasChildOfType(VAR_KEYWORD) &&
+                    classPsi.primaryConstructor
+                        ?.visibilityModifierType()
+                        ?.value
+                        ?.let { it == "public" } ?: true
         }
         return false
     }

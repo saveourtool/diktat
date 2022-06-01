@@ -151,7 +151,8 @@ class KotlinParser {
                     .createBlockCodeFragment(text, null)
                     .node
                     .findChildByType(BLOCK)!!
-                    .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
+                    .findChildByType(ERROR_ELEMENT)!!
+                    .findChildByType(IMPORT_LIST)!!
             }
         } else {
             ktPsiFactory

@@ -109,7 +109,9 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun takeCommentsBeforeNestedIf(node: ASTNode): List<ASTNode> {
         val thenNode = (node.psi as KtIfExpression).then?.node
-        return thenNode?.children()?.takeWhile { it.elementType != IF }?.filter {
+        return thenNode?.children()
+            ?.takeWhile { it.elementType != IF }
+            ?.filter {
             it.elementType == EOL_COMMENT ||
                     it.elementType == BLOCK_COMMENT
         }

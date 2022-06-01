@@ -351,7 +351,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleLambdaBody(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL) {
-            val isSingleLineLambda = node.treeParent.text.lines().size == 1
+            val isSingleLineLambda = node.treeParent
+                .text
+                .lines()
+                .size == 1
             val arrowNode = node.siblings(false).find { it.elementType == ARROW }
             if (!isSingleLineLambda && arrowNode != null) {
                 // lambda with explicit arguments

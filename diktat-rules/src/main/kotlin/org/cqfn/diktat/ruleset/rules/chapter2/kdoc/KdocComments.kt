@@ -203,9 +203,15 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         propertyInLocalKdoc: ASTNode?
     ) {
         val kdocText = if (prevComment.elementType == KDOC) {
-            prevComment.text.removePrefix("/**").removeSuffix("*/").trim('\n', ' ')
+            prevComment.text
+                .removePrefix("/**")
+                .removeSuffix("*/")
+                .trim('\n', ' ')
         } else {
-            prevComment.text.removePrefix("/*").removeSuffix("*/").trim('\n', ' ')
+            prevComment.text
+                .removePrefix("/*")
+                .removeSuffix("*/")
+                .trim('\n', ' ')
         }
         // if property is documented with KDoc, which has a property tag inside, then it can contain some additional more complicated
         // structure, that will be hard to move automatically

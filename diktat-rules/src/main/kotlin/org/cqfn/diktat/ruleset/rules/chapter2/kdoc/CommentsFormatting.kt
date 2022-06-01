@@ -333,7 +333,10 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     } else if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&
             node.treeParent.treePrev.treePrev != null) {
         // When comment inside of a PROPERTY
-        node.treeParent.treePrev.treePrev.elementType == LBRACE
+        node.treeParent
+            .treePrev
+            .treePrev
+            .elementType == LBRACE
     } else {
         node.treeParent.getAllChildrenWithType(node.elementType).first() == node
     }
