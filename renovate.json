@@ -42,6 +42,13 @@
       "groupSlug": "ktlint"
     },
     {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "org.sonatype.plugins:nexus-staging-maven-plugin"
+      ],
+      "allowedVersions": "<= 1.6.8 || > 1.6.13"
+    },
+    {
       "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"

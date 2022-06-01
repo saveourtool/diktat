@@ -36,7 +36,7 @@ class KotlinParser {
                 (transaction as PomTransactionBase).run()
             }
 
-            @Suppress("UNCHECKED_CAST")
+            @Suppress("UNCHECKED_CAST", "SpreadOperator")
             override fun <T : PomModelAspect> getModelAspect(aspect: Class<T>): T? {
                 if (aspect == TreeAspect::class.java) {
                     val constructor = ReflectionFactory.getReflectionFactory().newConstructorForSerialization(
