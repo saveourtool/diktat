@@ -6,6 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter5.AvoidNestedFunctionsRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import generated.WarningNames.AVOID_NESTED_FUNCTIONS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -33,6 +34,21 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                 """.trimMargin(),
             LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", false)
         )
+    }
+
+    @Test
+    @Tag(AVOID_NESTED_FUNCTIONS)
+    fun `anonymous function`() {
+        val code =
+            """
+                    package org.cqfn.diktat.test
+
+                    fun foo() {
+                        val sum: (Int) -> Int = fun(x): Int = x + x
+                    }
+
+                """.trimIndent()
+        lintMethod(code)
     }
 
     @Test

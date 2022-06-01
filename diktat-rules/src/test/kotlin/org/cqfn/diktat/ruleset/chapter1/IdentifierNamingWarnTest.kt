@@ -66,7 +66,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     package org.cqfn.diktat.test
 
                     fun foo() {
-                        val sum: Int -> Int = fun(x): Int = x + x
+                        val sum: (Int) -> Int = fun(x): Int = x + x
                     }
 
                 """.trimIndent()
