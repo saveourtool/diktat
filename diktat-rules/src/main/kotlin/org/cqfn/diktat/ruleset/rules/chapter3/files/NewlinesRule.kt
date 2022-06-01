@@ -349,6 +349,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun handleLambdaBody(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL) {
             val isSingleLineLambda = node.treeParent

@@ -232,6 +232,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * If it is triple-quoted string template we need to indent all its parts
      */
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun fixStringLiteral(
         whiteSpace: PsiWhiteSpace,
         expectedIndent: Int,
@@ -267,9 +268,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         val correctedText = StringBuilder()
         // shift of the node depending on its initial string template indent
         val nodeStartIndent = if (node.firstChildNode
-                .text
-                .takeWhile { it == ' ' }
-                .count() - actualIndent - INDENT_SIZE > 0) {
+            .text
+            .takeWhile { it == ' ' }
+            .count() - actualIndent - INDENT_SIZE > 0) {
             node.firstChildNode
                 .text
                 .takeWhile { it == ' ' }

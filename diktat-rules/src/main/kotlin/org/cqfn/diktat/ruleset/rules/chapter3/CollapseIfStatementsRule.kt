@@ -112,9 +112,8 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         return thenNode?.children()
             ?.takeWhile { it.elementType != IF }
             ?.filter {
-            it.elementType == EOL_COMMENT ||
-                    it.elementType == BLOCK_COMMENT
-        }
+                it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT
+            }
             ?.toList() ?: emptyList()
     }
 
