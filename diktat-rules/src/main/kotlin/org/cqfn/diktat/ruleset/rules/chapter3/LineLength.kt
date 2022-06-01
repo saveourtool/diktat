@@ -136,7 +136,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
                     val parentIsValArgListOrFunLitOrWhenEntry = listOf<IElementType>(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
-                    findParentNodeWithSpecificTypeMany(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
+                    findParentNodeMatching(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
                         val splitOffset = searchRightSplitAfterOperationReference(parent, configuration)?.second
@@ -161,7 +161,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     }
                 }
                 FUN, PROPERTY -> return checkFunAndProperty(parent)
-                CONDITION -> return checkCondition(parent, configuration)
                 VALUE_ARGUMENT_LIST -> parent.findParentNodeWithSpecificType(BINARY_EXPRESSION)?.let {
                     parent = it
                 } ?: return checkArgumentsList(parent, configuration)
@@ -171,8 +170,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 FUNCTION_LITERAL -> return Lambda(parent)
                 STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION -> {
                     stringOrDot = parent
-                    val parentIsBinExpOrValArgListOrWhenEntry = listOf<IElementType>(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
-                    findParentNodeWithSpecificTypeMany(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
+                    val parentIsBinExpOrValArgListOrWhenEntry = listOf(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
+                    findParentNodeMatching(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
                         val returnElem = checkStringTemplateAndDotQualifiedExpression(parent, configuration)
@@ -188,7 +187,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return None()
     }
 
-    private fun findParentNodeWithSpecificTypeMany(node: ASTNode, listType: List<IElementType>): ASTNode? {
+    private fun findParentNodeMatching(node: ASTNode, listType: List<IElementType>): ASTNode? {
         listType.forEach { type ->
             node.findParentNodeWithSpecificType(type)?.let {
                 return it
@@ -225,7 +224,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         configuration: LineLengthConfiguration
     ): LongLineFixableCases {
         val isPropertyOrFun = listOf<IElementType>(PROPERTY, FUN)
-        val funOrPropertyNode = findParentNodeWithSpecificTypeMany(node, isPropertyOrFun)
+        val funOrPropertyNode = findParentNodeMatching(node, isPropertyOrFun)
         funOrPropertyNode?.let {
             if (it.hasChildOfType(EQ)) {
                 val positionByOffset = positionByOffset(it.getFirstChildWithType(EQ)?.startOffset ?: 0).second
@@ -332,16 +331,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             return None()
         }
         return Comment(wrongNode, isNewLine, indexLastSpace + stringBeforeCommentContent.length)
-    }
-
-    private fun checkCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        val leftOffset = positionByOffset(wrongNode.firstChildNode.startOffset).second
-        val binList: MutableList<ASTNode> = mutableListOf()
-        searchBinaryExpression(wrongNode, binList)
-        if (binList.size == 1) {
-            return BinaryExpression(wrongNode)
-        }
-        return LongBinaryExpression(wrongNode, configuration, leftOffset, binList)
     }
 
     // fixme json method
@@ -553,10 +542,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) || node.hasChildOfType(POSTFIX_EXPRESSION)) {
             node.getChildren(null)
-                .filter {
-                    it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED ||
-                            it.elementType == POSTFIX_EXPRESSION
-                }
                 .forEach {
                     searchBinaryExpression(it, binList)
                 }
@@ -567,9 +552,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isTypeDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode): Boolean =
-            node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
-
     /**
      * This method uses recursion to store dot qualified expression node in the order in which they are located
      * Also dotList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid))
@@ -578,11 +560,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *@param dotList mutable list of ASTNode to store nodes
      */
     private fun searchDotOrSafeAccess(node: ASTNode, dotList: MutableList<ASTNode>) {
-        if (isTypeDotQuaOrSafeAccessOrPostfixExpression(node)) {
+        if (node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION) {
             node.getChildren(null)
-                .filter {
-                    isTypeDotQuaOrSafeAccessOrPostfixExpression(it)
-                }
                 .forEach {
                     searchDotOrSafeAccess(it, dotList)
                 }
