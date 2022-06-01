@@ -653,7 +653,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Finds the first dot or safe access closer to the separator
      */
-    @Suppress("MAGIC_NUMBER")
+    @Suppress("MAGIC_NUMBER", "MagicNumber")
     private fun searchRightSplitBeforeDotOrSafeAccess(
         parent: ASTNode,
         configuration: LineLengthConfiguration,
