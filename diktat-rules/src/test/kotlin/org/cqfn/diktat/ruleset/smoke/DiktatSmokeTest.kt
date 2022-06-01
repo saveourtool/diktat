@@ -296,7 +296,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             .core
             .api
             .Assertions
-            .assertThat(unfixedLintErrors).noneMatch {
+            .assertThat(unfixedLintErrors)
+            .noneMatch {
                 it.ruleId == "diktat-ruleset:local-variables"
             }
     }
