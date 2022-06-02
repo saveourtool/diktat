@@ -371,8 +371,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
      * 4) backticks are prohibited in the naming of non-test methods
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun checkFunctionName(node: ASTNode): List<ASTNode> {
-        val functionName = node.getIdentifierName()!!
+    private fun checkFunctionName(node: ASTNode): List<ASTNode>? {
+        val functionName = node.getIdentifierName() ?: return null
 
         // basic check for camel case
         if (!functionName.text.isLowerCamelCase()) {

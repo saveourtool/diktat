@@ -28,6 +28,7 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
@@ -158,6 +159,15 @@ fun ASTNode.replaceWhiteSpaceText(beforeNode: ASTNode, text: String) {
  */
 fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
         this.findChildByType(elementType)
+
+/**
+ * Checks if a function is anonymous
+ * throws exception if the node type is different from FUN
+ */
+fun ASTNode.isAnonymousFunction(): Boolean {
+    require(this.elementType == FUN)
+    return this.getIdentifierName() == null
+}
 
 /**
  * Checks if the symbols in this node are at the end of line

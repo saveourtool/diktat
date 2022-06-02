@@ -21,6 +21,7 @@ import org.cqfn.diktat.ruleset.utils.hasKnownKdocTag
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
+import org.cqfn.diktat.ruleset.utils.isAnonymousFunction
 import org.cqfn.diktat.ruleset.utils.isGetterOrSetter
 import org.cqfn.diktat.ruleset.utils.isLocatedInTest
 import org.cqfn.diktat.ruleset.utils.isOverridden
@@ -88,7 +89,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             val config = configRules.getCommonConfiguration()
             val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
-            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
+            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter() && !node.isAnonymousFunction()) {
                 checkSignatureDescription(node)
             }
         } else if (node.elementType == KDOC_SECTION) {
