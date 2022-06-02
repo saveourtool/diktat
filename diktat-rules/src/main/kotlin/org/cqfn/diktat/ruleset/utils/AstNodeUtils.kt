@@ -162,7 +162,7 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
 
 /**
  * Checks if a function is anonymous
- * throws an error if the node type is different from FUN
+ * throws exception if the node type is different from FUN
  */
 fun ASTNode.isAnonymousFunction(): Boolean {
     require(this.elementType == FUN)
