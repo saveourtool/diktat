@@ -133,10 +133,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
             VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
         if (isNotFindParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
-            val listDot: MutableList<ASTNode> = mutableListOf()
-            searchDot(node, listDot)
+            val listDot = node.findAllNodesWithCondition(
+                withSelf = true,
+                excludeChildrenCondition = { !isDotQuaOrSafeAccessOrPostfixExpression(it) }
+            ) {
+                isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
+            }.reversed()
             if (listDot.size > 3) {
-                val (withRightWhiteSpace, without) = listDot.partition {
+                val without = listDot.filterNot {
                     val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
                 }
@@ -167,7 +171,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      * in Dot Qualified Expression? Safe Access Expression and Postfix Expression
      * 2) If before first Dot or Safe Access node stay White Space node with \n - remove this node
      */
-    private fun fixDotQualifiedExpression(list: MutableList<ASTNode>) {
+    private fun fixDotQualifiedExpression(list: List<ASTNode>) {
         list.forEachIndexed { index, astNode ->
             val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
             val nodeBeforeDot = dotNode?.treePrev
@@ -180,20 +184,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode) =
             node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
 
-    private fun searchDot(node: ASTNode, dotList: MutableList<ASTNode>) {
-        if (isDotQuaOrSafeAccessOrPostfixExpression(node)) {
-            node.getChildren(null)
-                .filter {
-                    isDotQuaOrSafeAccessOrPostfixExpression(it)
-                }
-                .forEach {
-                    searchDot(it, dotList)
-                }
-            if (node.elementType != POSTFIX_EXPRESSION) {
-                dotList.add(node)
-            }
-        }
-    }
 
     /**
      * Check that EOL semicolon is used only in enums
