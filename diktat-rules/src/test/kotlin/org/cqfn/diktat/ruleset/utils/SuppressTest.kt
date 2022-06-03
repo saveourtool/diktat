@@ -14,16 +14,16 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `test suppress on class`() {
         val code =
-                """
-                  @Suppress("FUNCTION_NAME_INCORRECT_CASE", "BACKTICKS_PROHIBITED")
-                  class SomeClass {
+            """
+                @Suppress("FUNCTION_NAME_INCORRECT_CASE", "BACKTICKS_PROHIBITED")
+                class SomeClass {
                     fun /* */ methODTREE(): String {
 
                     }
-                    
+
                     fun `some`() {}
-                  }
-                """.trimIndent()
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
@@ -71,44 +71,44 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `test suppress on file`() {
         val code =
-                """
-                  @file:Suppress("FUNCTION_NAME_INCORRECT_CASE")
+            """
+                @file:Suppress("FUNCTION_NAME_INCORRECT_CASE")
 
-                  class SomeClass {
+                class SomeClass {
                     fun /* */ methODTREE(): String {
 
                     }
-                  }
-                """.trimIndent()
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
     @Test
     fun `test suppress field`() {
         val code =
-                """
-                  class SomeClass(@field:Suppress("IDENTIFIER_LENGTH") val a:String) {
+            """
+                class SomeClass(@field:Suppress("IDENTIFIER_LENGTH") val a:String) {
                     fun /* */ method(): String {
 
                     }
-                  }
-                """.trimIndent()
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
     @Test
     fun `test suppress field with set`() {
         val code =
-                """
-                  class SomeClass() {
+            """
+                class SomeClass() {
                     @set:[Suppress("IDENTIFIER_LENGTH") Inject]
                     val a = 5
-                  
+                
                     fun /* */ method(): String {
 
                     }
-                  }
-                """.trimIndent()
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
@@ -131,14 +131,14 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `test suppress on class bad`() {
         val code =
-                """
-                  @Suppress()
-                  class SomeClass {
+            """
+                @Suppress()
+                class SomeClass {
                     fun /* */ methODTREE(): String {
 
                     }
-                  }
-                """.trimIndent()
+                }
+            """.trimIndent()
         lintMethod(code,
             LintError(3, 13, "$DIKTAT_RULE_SET_ID:aai-identifier-naming",
                 "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))

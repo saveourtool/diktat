@@ -30,7 +30,7 @@ class CustomLabel(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == LABEL_QUALIFIER && node.text !in labels && node.treeParent.elementType in stopWords) {
             val nestedCount = node.parents().count {
                 it.elementType in loopType ||
-                        (it.elementType == CALL_EXPRESSION && it.findChildByType(REFERENCE_EXPRESSION)?.text in forEachReference)
+                    (it.elementType == CALL_EXPRESSION && it.findChildByType(REFERENCE_EXPRESSION)?.text in forEachReference)
             }
             if (nestedCount == 1) {
                 CUSTOM_LABEL.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)

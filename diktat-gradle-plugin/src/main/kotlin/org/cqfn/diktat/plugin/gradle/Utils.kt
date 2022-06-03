@@ -34,4 +34,4 @@ class KotlinClosure1<in T : Any?, V : Any>(
     "KDOC_WITHOUT_RETURN_TAG"
 )
 fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
-        KotlinClosure1(action, this, this)
+    KotlinClosure1(action, this, this)

@@ -16,7 +16,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
     private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
     private fun keywordWarn(keyword: String, sep: String) =
-            "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
+        "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
 
     private fun tokenWarn(token: String,
                           before: Int?,
@@ -24,13 +24,13 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                           reqBefore: Int?,
                           reqAfter: Int?
     ) = "${WRONG_WHITESPACE.warnText()} $token should have" +
-            (reqBefore?.let { " $it space(s) before" } ?: "") +
-            (if (reqBefore != null && reqAfter != null) " and" else "") +
-            (reqAfter?.let { " $it space(s) after" } ?: "") +
-            ", but has" +
-            (before?.let { " $it space(s) before" } ?: "") +
-            (if (before != null && after != null) " and" else "") +
-            (after?.let { " $it space(s) after" } ?: "")
+        (reqBefore?.let { " $it space(s) before" } ?: "") +
+        (if (reqBefore != null && reqAfter != null) " and" else "") +
+        (reqAfter?.let { " $it space(s) after" } ?: "") +
+        ", but has" +
+        (before?.let { " $it space(s) before" } ?: "") +
+        (if (before != null && after != null) " and" else "") +
+        (after?.let { " $it space(s) after" } ?: "")
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)

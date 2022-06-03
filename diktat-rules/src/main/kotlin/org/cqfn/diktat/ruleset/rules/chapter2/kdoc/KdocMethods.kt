@@ -277,11 +277,11 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kdocTemplate = "/**\n" +
-                    (missingParameters.joinToString("") { " * @param $it\n" } +
-                            (if (returnCheckFailed) " * @return\n" else "") +
-                            explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
-                            " */\n"
-                    )
+                (missingParameters.joinToString("") { " * @param $it\n" } +
+                    (if (returnCheckFailed) " * @return\n" else "") +
+                    explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
+                    " */\n"
+                )
             val kdocNode = KotlinParser().createNode(kdocTemplate).findChildByType(KDOC)!!
             node.appendNewlineMergingWhiteSpace(node.firstChildNode, node.firstChildNode)
             node.addChild(kdocNode, node.firstChildNode)

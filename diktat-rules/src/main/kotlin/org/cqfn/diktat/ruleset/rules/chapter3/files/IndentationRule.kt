@@ -218,13 +218,13 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val nextNode = whiteSpace.node.treeNext
         if (nextNode != null &&
-                nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
-                nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
-                nextNode.firstChildNode.text.startsWith("\"\"\"") &&
-                nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
-                    it == "trimIndent()" ||
-                            it == "trimMargin()"
-                } == true) {
+            nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
+            nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
+            nextNode.firstChildNode.text.startsWith("\"\"\"") &&
+            nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+                it == "trimIndent()" ||
+                    it == "trimMargin()"
+            } == true) {
             fixStringLiteral(whiteSpace, expectedIndent, actualIndent)
         }
     }
@@ -380,7 +380,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
              * @return boolean result
              */
             fun isActive(currentNode: ASTNode): Boolean = currentNode.psi.parentsWithSelf.any { it.node == initiator } &&
-                    (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
+                (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
         }
     }
 
