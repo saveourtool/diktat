@@ -140,12 +140,12 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
             ?: node.children().firstOrNull {
                 // taking nodes with actual code
                 !it.isWhiteSpace() && !it.isPartOfComment() &&
-                        // but not the ones we are going to move
-                        it.elementType != FILE_ANNOTATION_LIST &&
-                        // if we are here, then IMPORT_LIST either is not present in the AST, or is empty. Either way, we don't need to select it.
-                        it.elementType != IMPORT_LIST &&
-                        // if we are here, then package is default and we don't need to select the empty PACKAGE_DIRECTIVE node.
-                        it.elementType != PACKAGE_DIRECTIVE
+                    // but not the ones we are going to move
+                    it.elementType != FILE_ANNOTATION_LIST &&
+                    // if we are here, then IMPORT_LIST either is not present in the AST, or is empty. Either way, we don't need to select it.
+                    it.elementType != IMPORT_LIST &&
+                    // if we are here, then package is default and we don't need to select the empty PACKAGE_DIRECTIVE node.
+                    it.elementType != PACKAGE_DIRECTIVE
             }
             ?: return  // at this point it means the file contains only comments
         // We consider the first block comment of the file to be the one that possibly contains copyright information.
@@ -166,7 +166,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         val otherNodesBeforeCode = firstCodeNode.siblings(forward = false)
             .filterNot {
                 it.isWhiteSpace() ||
-                        it == copyrightComment || it == headerKdoc || it == fileAnnotations
+                    it == copyrightComment || it == headerKdoc || it == fileAnnotations
             }
             .toList()
             .reversed()
@@ -234,8 +234,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 val importName = ktImportDirective.importPath?.importedName?.asString()
                 val importPath = ktImportDirective.importPath?.pathStr!!  // importPath - ifNOtParsed & Nullable
                 if (ktImportDirective.aliasName == null &&
-                        packageName.isNotEmpty() && importPath.startsWith("$packageName.") &&
-                        importPath.substring(packageName.length + 1).indexOf('.') == -1
+                    packageName.isNotEmpty() && importPath.startsWith("$packageName.") &&
+                    importPath.substring(packageName.length + 1).indexOf('.') == -1
                 ) {
                     // this branch corresponds to imports from the same package
                     deleteImport(importPath, node, ktImportDirective)

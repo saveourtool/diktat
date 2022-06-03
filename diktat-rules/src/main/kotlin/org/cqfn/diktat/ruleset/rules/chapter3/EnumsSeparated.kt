@@ -67,7 +67,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isEnumOneLine(nodes: List<ASTNode>) =
-            nodes.dropLast(1).none { it.treeNext.isWhiteSpaceWithNewline() }
+        nodes.dropLast(1).none { it.treeNext.isWhiteSpaceWithNewline() }
 
     private fun isEnumSimple(enumEntries: List<ASTNode>): Boolean {
         enumEntries.forEach { node ->

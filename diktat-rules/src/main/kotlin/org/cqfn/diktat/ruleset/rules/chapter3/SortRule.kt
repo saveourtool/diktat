@@ -46,7 +46,7 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
             sortEnum(classBody)
         }
         if ((node.psi as? KtObjectDeclaration)?.isCompanion() == true && classBody != null &&
-                configuration.sortProperty) {
+            configuration.sortProperty) {
             sortProperty(classBody)
         }
     }

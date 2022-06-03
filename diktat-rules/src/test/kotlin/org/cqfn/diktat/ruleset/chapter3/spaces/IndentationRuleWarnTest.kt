@@ -114,8 +114,8 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |    private val foo = 0
                     |    private val fuu =
-                    |            0
-                    |    
+                    |        0
+                    |
                     |    fun bar() {
                     |        if (foo > 0) {
                     |            baz()
@@ -229,11 +229,11 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    val a = list.filter {
                     |        predicate(it)
                     |    }
-                    |    
+                    |
                     |    val b =
-                    |            list.filter { 
-                    |                predicate(it)
-                    |            }
+                    |        list.filter { 
+                    |            predicate(it)
+                    |        }
                     |}
                     |
                 """.trimMargin()
@@ -249,11 +249,11 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    val a = { x: Int ->
                     |        x * 2
                     |    }
-                    |    
+                    |
                     |    val b =
-                    |            { x: Int ->
-                    |                x * 2
-                    |            }
+                    |        { x: Int ->
+                    |            x * 2
+                    |        }
                     |}
                     |
                 """.trimMargin()
@@ -284,18 +284,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    Integer
-                    |            .valueOf(2).also {
-                    |                println(it)
-                    |            }
-                    |            ?.also {
-                    |                println("Also with safe access")
-                    |            }
-                    |            ?: Integer.valueOf(0)
+                    |        .valueOf(2).also {
+                    |            println(it)
+                    |        }
+                    |        ?.also {
+                    |            println("Also with safe access")
+                    |        }
+                    |        ?: Integer.valueOf(0)
                     |
                     |    bar
-                    |            .baz()
-                    |            as Baz
-                    |            as? Baz
+                    |        .baz()
+                    |        as Baz
+                    |        as? Baz
                     |}
                     |
                 """.trimMargin()
@@ -492,7 +492,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            elem.qux()
                     |        },
                     |        param3 = x
-                    |                .y()
+                    |            .y()
                     |    )
                     |}
                     |
@@ -587,28 +587,28 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    list
-                    |            .map(::foo)
-                    |            // comment about the next call
-                    |            .filter { it.bar() }
-                    |            // another comment about the next call
-                    |            ?.filter { it.bar() }
-                    |            ?.count()
-                    |    
+                    |        .map(::foo)
+                    |        // comment about the next call
+                    |        .filter { it.bar() }
+                    |        // another comment about the next call
+                    |        ?.filter { it.bar() }
+                    |        ?.count()
+                    |
                     |    list.any { predicate(it) } &&
-                    |            list.any {
-                    |                predicate(it)
-                    |            }
-                    |    
+                    |        list.any {
+                    |            predicate(it)
+                    |        }
+                    |
                     |    list.any { predicate(it) } &&
-                    |            // comment
-                    |            list.any {
-                    |                predicate(it)
-                    |            }
-                    |    
+                    |        // comment
+                    |        list.any {
+                    |            predicate(it)
+                    |        }
+                    |
                     |    list.filter {
                     |        predicate(it) &&
-                    |                // comment
-                    |                predicate(it)
+                    |            // comment
+                    |            predicate(it)
                     |    }
                     |}
                     |
@@ -639,9 +639,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    return x +
-                    |            (y +
-                    |                    foo(x)
-                    |            )
+                    |        (y +
+                    |            foo(x)
+                    |        )
                     |}
                     |
                 """.trimMargin()
