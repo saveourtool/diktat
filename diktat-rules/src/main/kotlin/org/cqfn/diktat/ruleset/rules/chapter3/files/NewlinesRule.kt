@@ -184,7 +184,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode) =
             node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
 
-
     /**
      * Check that EOL semicolon is used only in enums
      */
