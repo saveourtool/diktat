@@ -438,7 +438,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(8, 18, ruleId, "${Warnings.FIRST_COMMENT_NO_BLANK_LINE.warnText()} // Bad Comment ", true))
+            LintError(8, 18, ruleId, "${Warnings.FIRST_COMMENT_NO_BLANK_LINE.warnText()} // Bad Comment", true))
     }
 
     @Test

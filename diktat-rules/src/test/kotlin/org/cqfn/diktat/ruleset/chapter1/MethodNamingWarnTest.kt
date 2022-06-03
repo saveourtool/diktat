@@ -26,7 +26,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 13, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, LintError(2, 15, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -40,7 +40,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two", true))
+        lintMethod(code, LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two", true))
     }
 
     @Test
@@ -70,7 +70,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -83,7 +83,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -95,7 +95,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     typealias relatedClasses = List<Pair<String, String>>
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 13, ruleId, "${TYPEALIAS_NAME_INCORRECT_CASE.warnText()} relatedClasses", true))
+        lintMethod(code, LintError(2, 15, ruleId, "${TYPEALIAS_NAME_INCORRECT_CASE.warnText()} relatedClasses", true))
     }
 
     @Test
