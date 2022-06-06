@@ -1,28 +1,39 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import java.io.File
 import java.io.IOException
-import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.ArrayList
-import java.util.stream.Collectors
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.copyTo
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.readLines
 
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
+ *
+ * @property resourceFilePath only used when the files are loaded as resources,
+ *   via [compareFilesFromResources].
  * @property function a transformation that will be applied to the file
  */
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(private val resourceFilePath: String,
                          private val function: (expectedText: String, testFilePath: String) -> String) {
     /**
-     * @param expectedResult
-     * @param testFileStr
-     * @param trimLastEmptyLine
-     * @return true if transformed file equals expected result, false otherwise
+     * @param expectedResult the name of the resource which has the expected
+     *   content. The trailing newline, if any, **won't be read** as a separate
+     *   empty string. So, if the content to be read from this file is expected
+     *   to be terminated with an empty string (which is the case if
+     *   `newlineAtEnd` is `true`), then the file should end with **two**
+     *   consecutive linebreaks.
+     * @param testFileStr the name of the resource which has the original content.
+     * @param trimLastEmptyLine whether the last (empty) line should be
+     *   discarded when reading the content of [testFileStr].
+     * @return `true` if transformed file equals expected result, `false` otherwise.
+     * @see compareFilesFromFileSystem
      */
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     fun compareFilesFromResources(
@@ -37,40 +48,79 @@ class TestComparatorUnit(private val resourceFilePath: String,
             return false
         }
 
-        val expectedFile = File(expectedPath.file)
-        val testFile = File(testPath.file)
-
-        val copyTestFile = File("${testFile.absolutePath}_copy")
-        FileUtils.copyFile(testFile, copyTestFile)
-
-        val actualResult = function(
-            readFile(copyTestFile.absolutePath).joinToString("\n"),
-            copyTestFile.absolutePath
-        )
-
-        if (trimLastEmptyLine) {
-            val actual: MutableList<String> = mutableListOf()
-            actual.addAll(actualResult.split("\n").dropLast(1))
-            return FileComparator(expectedFile, actual).compareFilesEqual()
-        }
-
-        // fixme: actualResult is separated by KtLint#determineLneSeparator, should be split by it here too
-        return FileComparator(expectedFile, actualResult.split("\n")).compareFilesEqual()
+        return compareFilesFromFileSystem(
+            Paths.get(expectedPath.toURI()),
+            Paths.get(testPath.toURI()),
+            trimLastEmptyLine).isSuccessful
     }
 
     /**
-     * @param fileName
-     * @return file content as a list of lines
+     * @param expectedFile the file which has the expected content. The trailing
+     *   newline, if any, **won't be read** as a separate empty string. So, if
+     *   the content to be read from this file is expected to be terminated with
+     *   an empty string (which is the case if `newlineAtEnd` is `true`), then
+     *   the file should end with **two** consecutive linebreaks.
+     * @param testFile the file which has the original content.
+     * @param trimLastEmptyLine whether the last (empty) line should be
+     *   discarded when reading the content of [testFile].
+     * @return the result of file comparison by their content.
+     * @see compareFilesFromResources
      */
-    private fun readFile(fileName: String): List<String> {
-        var list: List<String> = ArrayList()
-        try {
-            Files.newBufferedReader(Paths.get(fileName)).use { list = it.lines().collect(Collectors.toList()) }
-        } catch (e: IOException) {
-            log.error("Not able to read file: $fileName")
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
+    fun compareFilesFromFileSystem(
+        expectedFile: Path,
+        testFile: Path,
+        trimLastEmptyLine: Boolean = false
+    ): FileComparisonResult {
+        if (!testFile.isRegularFile() || !expectedFile.isRegularFile()) {
+            log.error("Not able to find files for running test: $expectedFile and $testFile")
+            return FileComparisonResult(
+                isSuccessful = false,
+                actualContent = "// $testFile is a regular file: ${testFile.isRegularFile()}",
+                expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
         }
-        return list
+
+        val copyTestFile = Path("${testFile.absolutePathString()}_copy")
+        testFile.copyTo(copyTestFile, overwrite = true)
+
+        val actualResult = function(
+            readFile(copyTestFile).joinToString("\n"),
+            copyTestFile.absolutePathString()
+        )
+
+        val actualFileContent = if (trimLastEmptyLine) {
+            actualResult.split("\n").dropLast(1)
+        } else {
+            // fixme: actualResult is separated by KtLint#determineLneSeparator, should be split by it here too
+            actualResult.split("\n")
+        }
+
+        val expectedFileContent = readFile(expectedFile)
+
+        val isSuccessful = FileComparator(
+            expectedFile,
+            expectedFileContent,
+            testFile,
+            actualFileContent).compareFilesEqual()
+
+        return FileComparisonResult(
+            isSuccessful,
+            actualFileContent.joinToString("\n"),
+            expectedFileContent.joinToString("\n"))
     }
+
+    /**
+     * @param file the file whose content is to be read.
+     * @return file content as a list of lines, or an empty list if an I/O error
+     *   has occurred.
+     */
+    private fun readFile(file: Path): List<String> =
+        try {
+            file.readLines()
+        } catch (e: IOException) {
+            log.error("Not able to read file: $file")
+            emptyList()
+        }
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
