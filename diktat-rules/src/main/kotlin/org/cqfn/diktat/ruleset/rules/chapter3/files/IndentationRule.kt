@@ -39,6 +39,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -217,11 +218,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         actualIndent: Int
     ) {
         val nextNode = whiteSpace.node.treeNext
-        if (nextNode != null &&
-                nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
-                nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
-                nextNode.firstChildNode.text.startsWith("\"\"\"") &&
-                nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
+            nextNode
+        } else {
+            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+        }
+        if (nextNodeDot != null &&
+                nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
+                nextNodeDot.firstChildNode.text.startsWith("\"\"\"") &&
+                nextNodeDot.findChildByType(CALL_EXPRESSION)?.text?.let {
                     it == "trimIndent()" ||
                             it == "trimMargin()"
                 } == true) {

@@ -45,4 +45,10 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     fun `regression - incorrect fixing in constructor parameter list`() {
         fixAndCompare("ConstructorExpected.kt", "ConstructorTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `multiline string`() {
+        fixAndCompare("MultilionStringTest.kt", "MultilionStringTest.kt")
+    }
 }
