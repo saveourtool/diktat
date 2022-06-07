@@ -14,7 +14,6 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
-import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
@@ -84,7 +83,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap()
         )
     }
-    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
+    lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -93,6 +92,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
+            println(node.text)
         }
     }
 
@@ -112,7 +112,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     ) {
                         // we should keep in mind, that in the course of fixing we change the offset
                         val textLenBeforeFix = node.textLength
-                        fixError(fixableType)
+                        fixableType.fix()
                         val textLenAfterFix = node.textLength
                         // offset for all next nodes changed to this delta
                         offset += (textLenAfterFix - textLenBeforeFix)
@@ -135,7 +135,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
-                    val parentIsValArgListOrFunLitOrWhenEntry = listOf<IElementType>(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsValArgListOrFunLitOrWhenEntry = listOf(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
                     findParentNodeMatching(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
@@ -199,10 +199,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkArgumentsList(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         node.findParentNodeWithSpecificType(WHEN_ENTRY)?.let {
             it.findChildByType(BLOCK)?.run {
-                return ValueArgumentList(node, configuration)
+                return ValueArgumentList(node, configuration, positionByOffset)
             } ?: return WhenEntry(it)
         }
-        return ValueArgumentList(node, configuration)
+        return ValueArgumentList(node, configuration, positionByOffset)
     }
 
     /**
@@ -215,7 +215,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (binList.size == 1) {
             return BinaryExpression(node)
         }
-        return LongBinaryExpression(node, configuration, leftOffset, binList)
+        return LongBinaryExpression(node, configuration, leftOffset, binList, positionByOffset)
     }
 
     @Suppress("TOO_MANY_LINES_IN_LAMBDA", "GENERIC_VARIABLE_WRONG_DECLARATION")
@@ -223,7 +223,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         configuration: LineLengthConfiguration
     ): LongLineFixableCases {
-        val isPropertyOrFun = listOf<IElementType>(PROPERTY, FUN)
+        val isPropertyOrFun = listOf(PROPERTY, FUN)
         val funOrPropertyNode = findParentNodeMatching(node, isPropertyOrFun)
         funOrPropertyNode?.let {
             if (it.hasChildOfType(EQ)) {
@@ -241,11 +241,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun parserStringAndDot(node: ASTNode, configuration: LineLengthConfiguration) =
-            if (node.elementType == STRING_TEMPLATE) {
-                parserStringTemplate(node, configuration)
-            } else {
-                parserDotQualifiedExpression(node, configuration)
-            }
+        if (node.elementType == STRING_TEMPLATE) {
+            parserStringTemplate(node, configuration)
+        } else {
+            parserDotQualifiedExpression(node, configuration)
+        }
 
     /**
      * This class finds where the string can be split
@@ -273,7 +273,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             positionByOffset(node.startOffset).second
         }
         val delimiterIndex =
-                node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+            node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
             // we can't split this string, however may be we can move it entirely:
             // case when new line should be inserted after `+`. Example: "first" + "second"
@@ -291,7 +291,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
         val shouldAddTwoSpaces =
-                (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
+            (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
         val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
@@ -317,7 +317,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
-            if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
+        if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
@@ -343,193 +343,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         true
     } catch (e: MalformedURLException) {
         false
-    }
-
-    @Suppress("UnsafeCallOnNullableType", "WHEN_WITHOUT_ELSE")
-    private fun fixError(fixableType: LongLineFixableCases) {
-        when (fixableType) {
-            is FunAndProperty -> fixableType.node.appendNewlineMergingWhiteSpace(
-                null,
-                fixableType.node.findChildByType(EQ)!!.treeNext
-            )
-            is Comment -> fixComment(fixableType)
-            is LongBinaryExpression -> fixLongBinaryExpression(fixableType)
-            is BinaryExpression -> fixBinaryExpression(fixableType.node)
-            is StringTemplate -> fixStringTemplate(fixableType)
-            is DotQualifiedExpression -> fixDotQualifiedExpression(fixableType)
-            is ValueArgumentList -> fixArgumentList(fixableType)
-            is Lambda -> fixLambda(fixableType.node)
-            is WhenEntry -> fixWhenEntry(fixableType)
-            is None -> return
-        }
-    }
-
-    private fun fixWhenEntry(wrongWhenEntry: WhenEntry) {
-        val node = wrongWhenEntry.node
-        node.getFirstChildWithType(ARROW)?.let {
-            node.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
-        }
-    }
-
-    private fun fixDotQualifiedExpression(wrongDotQualifiedExpression: DotQualifiedExpression) {
-        val node = wrongDotQualifiedExpression.node
-        val dot = node.getFirstChildWithType(DOT)
-        val safeAccess = node.getFirstChildWithType(SAFE_ACCESS)
-        val splitNode = if ((dot?.startOffset ?: 0) > (safeAccess?.startOffset ?: 0)) {
-            dot
-        } else {
-            safeAccess
-        }
-        val nodeBeforeDot = splitNode?.treePrev
-        node.appendNewlineMergingWhiteSpace(nodeBeforeDot, splitNode)
-    }
-
-    @Suppress("UnsafeCallOnNullableType", "MagicNumber")
-    private fun fixArgumentsListFirstArgument(wrongArgumentList: ValueArgumentList): Int {
-        val lineLength = wrongArgumentList.maximumLineLength.lineLength
-        val node = wrongArgumentList.node
-        var startOffset = 0
-        node.getFirstChildWithType(COMMA)?.let {
-            if (positionByOffset(it.startOffset).second > lineLength) {
-                node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
-                node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
-                startOffset = wrongArgumentList.maximumLineLength.lineLength.toInt()
-            }
-        } ?: node.getFirstChildWithType(RPAR)?.let {
-            node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
-            node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
-            startOffset = wrongArgumentList.maximumLineLength.lineLength.toInt()
-        }
-        return startOffset
-    }
-
-    /**
-     * Fix arguments in arguments list
-     */
-    private fun fixArgumentList(wrongArgumentList: ValueArgumentList) {
-        val lineLength = wrongArgumentList.maximumLineLength.lineLength
-        val node = wrongArgumentList.node
-        val offset = fixArgumentsListFirstArgument(wrongArgumentList)
-        val listComma = node.getAllChildrenWithType(COMMA).map {
-            it to positionByOffset(it.startOffset - offset).second
-        }.sortedBy { it.second }
-        var lineNumber = 1
-        listComma.forEachIndexed { index, pair ->
-            if (pair.second >= lineNumber * lineLength) {
-                lineNumber++
-                val commaSplit = if (index > 0) {
-                    listComma[index - 1].first
-                } else {
-                    pair.first
-                }
-                node.appendNewlineMergingWhiteSpace(commaSplit.treeNext, commaSplit.treeNext)
-            }
-        }
-        node.getFirstChildWithType(RPAR)?.let {
-            if (positionByOffset(it.treePrev.startOffset).second + it.treePrev.text.length - offset > lineLength * lineNumber && listComma.isNotEmpty()) {
-                listComma.last().first.run {
-                    node.appendNewlineMergingWhiteSpace(this.treeNext, this.treeNext)
-                }
-            }
-        }
-    }
-
-    private fun fixComment(wrongComment: Comment) {
-        val wrongNode = wrongComment.node
-        if (wrongComment.hasNewLineBefore) {
-            val indexLastSpace = wrongComment.indexLastSpace
-            val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
-            wrongNode.treeParent.apply {
-                addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
-                addChild(PsiWhiteSpaceImpl("\n"), wrongNode)
-                addChild(LeafPsiElement(EOL_COMMENT, nodeText), wrongNode)
-                removeChild(wrongNode)
-            }
-        } else {
-            if (wrongNode.treePrev.isWhiteSpace()) {
-                wrongNode.treeParent.removeChild(wrongNode.treePrev)
-            }
-
-            val newLineNodeOnPreviousLine = wrongNode.findAllNodesWithConditionOnLine(wrongNode.getLineNumber() - 1) {
-                it.elementType == WHITE_SPACE && it.textContains('\n')
-            }?.lastOrNull()
-
-            newLineNodeOnPreviousLine?.let {
-                val parent = wrongNode.treeParent
-                parent.removeChild(wrongNode)
-                newLineNodeOnPreviousLine.treeParent.addChild(wrongNode, newLineNodeOnPreviousLine.treeNext)
-                newLineNodeOnPreviousLine.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newLineNodeOnPreviousLine.treeNext.treeNext)
-            }
-        }
-    }
-
-    /**
-     * Fix a binary expression -
-     * If the transfer is done on the Elvis operator, then transfers it to a new line
-     * If not on the Elvis operator, then transfers it to a new line after the operation reference
-     */
-    @Suppress("UnsafeCallOnNullableType")
-    private fun fixBinaryExpression(node: ASTNode) {
-        val nodeOperationReference = node.findChildByType(OPERATION_REFERENCE)
-        val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
-            nodeOperationReference.treeNext
-        } else {
-            if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
-                nodeOperationReference.treePrev
-            } else {
-                nodeOperationReference
-            }
-        }
-        node.appendNewlineMergingWhiteSpace(nextNode, nextNode)
-    }
-
-    /**
-     * Splits Lambda expressions - add splits lines, thereby making the lambda expression a separate line
-     */
-    @Suppress("UnsafeCallOnNullableType")
-    private fun fixLambda(node: ASTNode) {
-        node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(LBRACE)!!.treeNext)
-        node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)!!.treePrev, node.findChildByType(RBRACE)!!.treePrev)
-    }
-
-    @Suppress("UnsafeCallOnNullableType", "COMMENT_WHITE_SPACE")
-    private fun fixStringTemplate(wrongStringTemplate: StringTemplate) {
-        val incorrectText = wrongStringTemplate.node.text
-        val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
-        val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
-        val textBetweenParts =
-                if (wrongStringTemplate.isOneLineString) {
-                    "\" +\n\""
-                } else {
-                    "\n"
-                }
-        val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
-        wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
-    }
-
-    /**
-     * Finds where it is better to fix a Binary expression and fixes it
-     */
-    @Suppress("UnsafeCallOnNullableType")
-    private fun fixLongBinaryExpression(wrongBinaryExpression: LongBinaryExpression) {
-        val anySplitNode =
-                searchSomeSplitInBinaryExpression(wrongBinaryExpression.node, wrongBinaryExpression.maximumLineLength)
-        val rigthSplitnode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
-        val nodeOperationReference = rigthSplitnode?.first?.getFirstChildWithType(OPERATION_REFERENCE)
-        rigthSplitnode?.let {
-            val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
-                nodeOperationReference.treeNext
-            } else {
-                if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
-                    nodeOperationReference.treePrev
-                } else {
-                    nodeOperationReference
-                }
-            }
-            if (!nextNode.text.contains(("\n"))) {
-                rigthSplitnode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
-            }
-        }
     }
 
     /**
@@ -571,35 +384,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    /**
-     * This method stored all the nodes that have BINARY_EXPRESSION or PREFIX_EXPRESSION element type.
-     * Return List of the Pair <node, offset>
-     * First elem in List - Logic Binary Expression (&&  ||)
-     * Second elem in List - Comparison Binary Expression (> < == >= <= !=)
-     * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
-     */
-    @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
-    private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
-        val logicListOperationReference = listOf(OROR, ANDAND)
-        val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ)
-        val binList: MutableList<ASTNode> = mutableListOf()
-        searchBinaryExpression(parent, binList)
-        val rightBinList = binList.map {
-            it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
-        }
-            .sortedBy { it.second }
-            .reversed()
-        val returnList: MutableList<Pair<ASTNode, Int>?> = mutableListOf()
-        addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference, configuration)
-        addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference, configuration)
-        val expression = rightBinList.firstOrNull { (it, offset) ->
-            val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
-            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
-        }
-        returnList.add(expression)
-        return returnList
-    }
 
     /**
      * Runs through the sorted list [rightBinList], finds its last element, the type of which is included in the set [typesList] and adds it in the list [returnList]
@@ -665,7 +449,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 offset <= configuration.lineLength + 1
             }
     }
-    
+
+
     /**
      *
      * [RuleConfiguration] for maximum line length
@@ -681,12 +466,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Class LongLineFixableCases is parent class for several specific error classes
      */
     @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
-    sealed class LongLineFixableCases(val node: ASTNode)
+    abstract class LongLineFixableCases(val node: ASTNode){
+        //var positionByOffset = node.treeParent.calculateLineColByOffset()
+        abstract fun fix()
+    }
 
     /**
      * Class None show error long line have unidentified type or something else that we can't analyze
      */
-    private class None : LongLineFixableCases(KotlinParser().createNode("ERROR"))
+    class None : LongLineFixableCases(KotlinParser().createNode("ERROR")) {
+        override fun fix() {}
+    }
 
     /**
      * Class Comment show that long line should be split in comment
@@ -694,11 +484,37 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * and inline comments (which should be moved entirely to the previous line)
      * @property indexLastSpace index of last space to substring comment
      */
-    private class Comment(
+    class Comment(
         node: ASTNode,
         val hasNewLineBefore: Boolean,
         val indexLastSpace: Int = 0
-    ) : LongLineFixableCases(node)
+    ) : LongLineFixableCases(node) {
+        override fun fix() {
+            if (this.hasNewLineBefore) {
+                val indexLastSpace = this.indexLastSpace
+                val nodeText = "//${node.text.substring(indexLastSpace, node.text.length)}"
+                node.treeParent.apply {
+                    addChild(LeafPsiElement(EOL_COMMENT, node.text.substring(0, indexLastSpace)), node)
+                    addChild(PsiWhiteSpaceImpl("\n"), node)
+                    addChild(LeafPsiElement(EOL_COMMENT, nodeText), node)
+                    removeChild(node)
+                }
+            } else {
+                if (node.treePrev.isWhiteSpace()) {
+                    node.treeParent.removeChild(node.treePrev)
+                }
+                val newLineNodeOnPreviousLine = node.findAllNodesWithConditionOnLine(node.getLineNumber() - 1) {
+                    it.elementType == WHITE_SPACE && it.textContains('\n')
+                }?.lastOrNull()
+                newLineNodeOnPreviousLine?.let {
+                    val parent = node.treeParent
+                    parent.removeChild(node)
+                    newLineNodeOnPreviousLine.treeParent.addChild(node, newLineNodeOnPreviousLine.treeNext)
+                    newLineNodeOnPreviousLine.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newLineNodeOnPreviousLine.treeNext.treeNext)
+                }
+            }
+        }
+    }
 
     /**
      * Class StringTemplate show that long line should be split in string template
@@ -709,12 +525,40 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         val delimiterIndex: Int,
         val isOneLineString: Boolean
-    ) : LongLineFixableCases(node)
+    ) : LongLineFixableCases(node) {
+        override fun fix() {
+            val incorrectText = node.text
+            val firstPart = incorrectText.substring(0, delimiterIndex)
+            val secondPart = incorrectText.substring(delimiterIndex, incorrectText.length)
+            val textBetweenParts =
+                if (isOneLineString) {
+                    "\" +\n\""
+                } else {
+                    "\n"
+                }
+            val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
+            node.treeParent.replaceChild(node, correctNode)
+        }
+    }
 
     /**
      * Class BinaryExpression show that long line should be split in short binary expression? after operation reference
      */
-    private class BinaryExpression(node: ASTNode) : LongLineFixableCases(node)
+    private class BinaryExpression(node: ASTNode) : LongLineFixableCases(node) {
+        override fun fix() {
+            val nodeOperationReference = node.findChildByType(OPERATION_REFERENCE)
+            val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
+                nodeOperationReference.treeNext
+            } else {
+                if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
+                    nodeOperationReference.treePrev
+                } else {
+                    nodeOperationReference
+                }
+            }
+            node.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+        }
+    }
 
     /**
      * Class LongBinaryExpression show that long line should be split between other parts long binary expression,
@@ -727,36 +571,195 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         val maximumLineLength: LineLengthConfiguration,
         val leftOffset: Int,
-        val binList: MutableList<ASTNode>
-    ) : LongLineFixableCases(node)
+        val binList: MutableList<ASTNode>,
+        var positionByOffset: (Int) -> Pair<Int, Int>
+    ) : LongLineFixableCases(node) {
+        /**
+         * Fix a binary expression -
+         * If the transfer is done on the Elvis operator, then transfers it to a new line
+         * If not on the Elvis operator, then transfers it to a new line after the operation reference
+         */
+        override fun fix() {
+            val anySplitNode = searchSomeSplitInBinaryExpression(node, maximumLineLength)
+            val rightSplitNode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
+            val nodeOperationReference = rightSplitNode?.first?.getFirstChildWithType(OPERATION_REFERENCE)
+            rightSplitNode?.let {
+                val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
+                    nodeOperationReference.treeNext
+                } else {
+                    if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
+                        nodeOperationReference.treePrev
+                    } else {
+                        nodeOperationReference
+                    }
+                }
+                if (!nextNode.text.contains(("\n"))) {
+                    rightSplitNode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+                }
+            }
+        }
+
+        /**
+         * This method stored all the nodes that have BINARY_EXPRESSION or PREFIX_EXPRESSION element type.
+         * Return List of the Pair <node, offset>
+         * First elem in List - Logic Binary Expression (&&  ||)
+         * Second elem in List - Comparison Binary Expression (> < == >= <= !=)
+         * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
+         */
+        private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
+            val logicListOperationReference = listOf(OROR, ANDAND)
+            val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ)
+            val binList: MutableList<ASTNode> = mutableListOf()
+            searchBinaryExpression(parent, binList)
+            val rightBinList = binList.map {
+                it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+            }
+                .sortedBy { it.second }
+                .reversed()
+            val returnList: MutableList<Pair<ASTNode, Int>?> = mutableListOf()
+            addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference, configuration)
+            addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference, configuration)
+            val expression = rightBinList.firstOrNull { (it, offset) ->
+                val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
+                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
+                        binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
+            }
+            returnList.add(expression)
+            return returnList
+        }
+
+        private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
+            if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) || node.hasChildOfType(POSTFIX_EXPRESSION)) {
+                node.getChildren(null)
+                    .forEach {
+                        searchBinaryExpression(it, binList)
+                    }
+            }
+            if (node.elementType == BINARY_EXPRESSION) {
+                binList.add(node)
+                binList.add(node.treeParent.findChildByType(PREFIX_EXPRESSION) ?: return)
+            }
+        }
+
+        /**
+         * Runs through the sorted list [rightBinList], finds its last element, the type of which is included in the set [typesList] and adds it in the list [returnList]
+         */
+        private fun addInSmartListBinExpression(
+            returnList: MutableList<Pair<ASTNode, Int>?>,
+            rightBinList: List<Pair<ASTNode, Int>>,
+            typesList: List<IElementType>,
+            configuration: LineLengthConfiguration
+        ) {
+            val expression = rightBinList.firstOrNull { (it, offset) ->
+                val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
+                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
+                        binOperationReference!!.firstChildNode.elementType in typesList
+            }
+            returnList.add(expression)
+        }
+    }
 
     /**
      * Class FunAndProperty show that long line should be split in Fun Or Property: after EQ (between head and body this function)
      */
-    private class FunAndProperty(node: ASTNode) : LongLineFixableCases(node)
+    private class FunAndProperty(node: ASTNode) : LongLineFixableCases(node) {
+        override fun fix(){
+            node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)!!.treeNext)
+        }
+    }
 
     /**
      * Class Lambda show that long line should be split in Lambda: in space after [LBRACE] node and before [RBRACE] node
      */
-    private class Lambda(node: ASTNode) : LongLineFixableCases(node)
+    private class Lambda(node: ASTNode) : LongLineFixableCases(node) {
+        /**
+         * Splits Lambda expressions - add splits lines, thereby making the lambda expression a separate line
+         */
+        override fun fix() {
+            node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(LBRACE)!!.treeNext)
+            node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)!!.treePrev, node.findChildByType(RBRACE)!!.treePrev)
+        }
+    }
 
     /**
      * Class DotQualifiedExpression show that line should be split in DotQualifiedExpression
      */
-    private class DotQualifiedExpression(node: ASTNode) : LongLineFixableCases(node)
+    private class DotQualifiedExpression(node: ASTNode) : LongLineFixableCases(node){
+        override fun fix() {
+            val dot = node.getFirstChildWithType(DOT)
+            val safeAccess = node.getFirstChildWithType(SAFE_ACCESS)
+            val splitNode = if ((dot?.startOffset ?: 0) > (safeAccess?.startOffset ?: 0)) {
+                dot
+            } else {
+                safeAccess
+            }
+            val nodeBeforeDot = splitNode?.treePrev
+            node.appendNewlineMergingWhiteSpace(nodeBeforeDot, splitNode)
+        }
+    }
 
     /**
      * Class ValueArgumentList show that line should be split in ValueArgumentList:
      * @property maximumLineLength - max line length
      */
-    private class ValueArgumentList(node: ASTNode, val maximumLineLength: LineLengthConfiguration) : LongLineFixableCases(node)
+    private class ValueArgumentList(node: ASTNode, val maximumLineLength: LineLengthConfiguration, var positionByOffset: (Int) -> Pair<Int, Int>) : LongLineFixableCases(node) {
+        override fun fix() {
+            val lineLength = maximumLineLength.lineLength
+            val offset = fixFirst()
+            val listComma = node.getAllChildrenWithType(COMMA).map {
+                it to positionByOffset(it.startOffset - offset).second
+            }.sortedBy { it.second }
+            var lineNumber = 1
+            listComma.forEachIndexed { index, pair ->
+                if (pair.second >= lineNumber * lineLength) {
+                    lineNumber++
+                    val commaSplit = if (index > 0) {
+                        listComma[index - 1].first
+                    } else {
+                        pair.first
+                    }
+                    node.appendNewlineMergingWhiteSpace(commaSplit.treeNext, commaSplit.treeNext)
+                }
+            }
+            node.getFirstChildWithType(RPAR)?.let {
+                if (positionByOffset(it.treePrev.startOffset).second + it.treePrev.text.length - offset > lineLength * lineNumber && listComma.isNotEmpty()) {
+                    listComma.last().first.let {
+                        node.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
+                    }
+                }
+            }
+        }
+
+        private fun fixFirst(): Int {
+            val lineLength = maximumLineLength.lineLength
+            var startOffset = 0
+            node.getFirstChildWithType(COMMA)?.let {
+                if (positionByOffset(it.startOffset).second > lineLength) {
+                    node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
+                    node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
+                    startOffset = this.maximumLineLength.lineLength.toInt()
+                }
+            } ?: node.getFirstChildWithType(RPAR)?.let {
+                node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
+                node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
+                startOffset = this.maximumLineLength.lineLength.toInt()
+            }
+            return startOffset
+        }
+    }
 
     /**
      * Class WhenEntry show that line should be split in WhenEntry node:
      * Added [LBRACE] and [RBRACE] nodes
      * Split line in space after [LBRACE] node and before [RBRACE] node
      */
-    private class WhenEntry(node: ASTNode) : LongLineFixableCases(node)
+    private class WhenEntry(node: ASTNode) : LongLineFixableCases(node) {
+        override fun fix() {
+            node.getFirstChildWithType(ARROW)?.let {
+                node.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
+            }
+        }
+    }
 
     /**
      * val text = "first part" +
