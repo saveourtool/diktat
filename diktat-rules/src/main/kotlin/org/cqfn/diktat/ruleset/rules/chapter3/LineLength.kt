@@ -92,7 +92,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            println(node.text)
         }
     }
 
@@ -457,6 +456,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Class None show error long line have unidentified type or something else that we can't analyze
      */
     private class None : LongLineFixableCases(KotlinParser().createNode("ERROR")) {
+        @Suppress("EmptyFunctionBlock")
         override fun fix() {}
     }
 
@@ -576,7 +576,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         nodeOperationReference
                     }
                 }
-                if (!nextNode?.text?.contains(("\n"))!!) {
+                if (nextNode?.text?.contains(("\n")) == true) {
                     rightSplitNode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
                 }
             }
