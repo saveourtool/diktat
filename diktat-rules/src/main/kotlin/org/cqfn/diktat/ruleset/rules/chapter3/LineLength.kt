@@ -83,7 +83,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap()
         )
     }
-    lateinit var positionByOffset: (Int) -> Pair<Int, Int>
+    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -241,11 +241,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun parserStringAndDot(node: ASTNode, configuration: LineLengthConfiguration) =
-        if (node.elementType == STRING_TEMPLATE) {
-            parserStringTemplate(node, configuration)
-        } else {
-            parserDotQualifiedExpression(node, configuration)
-        }
+            if (node.elementType == STRING_TEMPLATE) {
+                parserStringTemplate(node, configuration)
+            } else {
+                parserDotQualifiedExpression(node, configuration)
+            }
 
     /**
      * This class finds where the string can be split
@@ -273,7 +273,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             positionByOffset(node.startOffset).second
         }
         val delimiterIndex =
-            node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+                node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
             // we can't split this string, however may be we can move it entirely:
             // case when new line should be inserted after `+`. Example: "first" + "second"
@@ -291,7 +291,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
         val shouldAddTwoSpaces =
-            (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
+                (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
         val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
@@ -317,7 +317,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
-        if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
+            if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
@@ -384,7 +384,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-
     /**
      * Runs through the sorted list [rightBinList], finds its last element, the type of which is included in the set [typesList] and adds it in the list [returnList]
      */
@@ -450,7 +449,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 
-
     /**
      *
      * [RuleConfiguration] for maximum line length
@@ -466,15 +464,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Class LongLineFixableCases is parent class for several specific error classes
      */
     @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
-    abstract class LongLineFixableCases(val node: ASTNode){
-        //var positionByOffset = node.treeParent.calculateLineColByOffset()
+    abstract class LongLineFixableCases(val node: ASTNode) {
+        /**
+          fix anything nodes
+         */
         abstract fun fix()
     }
 
     /**
      * Class None show error long line have unidentified type or something else that we can't analyze
      */
-    class None : LongLineFixableCases(KotlinParser().createNode("ERROR")) {
+    private class None : LongLineFixableCases(KotlinParser().createNode("ERROR")) {
         override fun fix() {}
     }
 
@@ -484,7 +484,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * and inline comments (which should be moved entirely to the previous line)
      * @property indexLastSpace index of last space to substring comment
      */
-    class Comment(
+    private class Comment(
         node: ASTNode,
         val hasNewLineBefore: Boolean,
         val indexLastSpace: Int = 0
@@ -531,11 +531,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val firstPart = incorrectText.substring(0, delimiterIndex)
             val secondPart = incorrectText.substring(delimiterIndex, incorrectText.length)
             val textBetweenParts =
-                if (isOneLineString) {
-                    "\" +\n\""
-                } else {
-                    "\n"
-                }
+                    if (isOneLineString) {
+                        "\" +\n\""
+                    } else {
+                        "\n"
+                    }
             val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
             node.treeParent.replaceChild(node, correctNode)
         }
@@ -566,6 +566,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * @property maximumLineLength is number of maximum line length
      * @property leftOffset is offset before start [node]
      * @property binList is list of Binary Expression which are children of [node]
+     * @property positionByOffset
      */
     private class LongBinaryExpression(
         node: ASTNode,
@@ -606,6 +607,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
          * Second elem in List - Comparison Binary Expression (> < == >= <= !=)
          * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
          */
+        @Suppress("TYPE_ALIAS")
         private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
             val logicListOperationReference = listOf(OROR, ANDAND)
             val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ)
@@ -644,6 +646,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * Runs through the sorted list [rightBinList], finds its last element, the type of which is included in the set [typesList] and adds it in the list [returnList]
          */
+        @Suppress("TYPE_ALIAS")
         private fun addInSmartListBinExpression(
             returnList: MutableList<Pair<ASTNode, Int>?>,
             rightBinList: List<Pair<ASTNode, Int>>,
@@ -663,7 +666,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * Class FunAndProperty show that long line should be split in Fun Or Property: after EQ (between head and body this function)
      */
     private class FunAndProperty(node: ASTNode) : LongLineFixableCases(node) {
-        override fun fix(){
+        override fun fix() {
             node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)!!.treeNext)
         }
     }
@@ -684,7 +687,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class DotQualifiedExpression show that line should be split in DotQualifiedExpression
      */
-    private class DotQualifiedExpression(node: ASTNode) : LongLineFixableCases(node){
+    private class DotQualifiedExpression(node: ASTNode) : LongLineFixableCases(node) {
         override fun fix() {
             val dot = node.getFirstChildWithType(DOT)
             val safeAccess = node.getFirstChildWithType(SAFE_ACCESS)
@@ -701,8 +704,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class ValueArgumentList show that line should be split in ValueArgumentList:
      * @property maximumLineLength - max line length
+     * @property positionByOffset
      */
-    private class ValueArgumentList(node: ASTNode, val maximumLineLength: LineLengthConfiguration, var positionByOffset: (Int) -> Pair<Int, Int>) : LongLineFixableCases(node) {
+    private class ValueArgumentList(
+        node: ASTNode,
+        val maximumLineLength: LineLengthConfiguration,
+        var positionByOffset: (Int) -> Pair<Int, Int>
+    ) : LongLineFixableCases(node) {
         override fun fix() {
             val lineLength = maximumLineLength.lineLength
             val offset = fixFirst()
