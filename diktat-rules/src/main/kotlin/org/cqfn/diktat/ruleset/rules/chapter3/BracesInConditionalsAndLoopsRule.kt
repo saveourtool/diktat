@@ -161,7 +161,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
             .map { it.expression as KtBlockExpression }
             .filter { block ->
                 block.statements.size == 1 &&
-                        block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
+                    block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
             }
             .forEach {
                 NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {

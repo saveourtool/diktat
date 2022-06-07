@@ -62,10 +62,10 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val isEnums = node.parent({ it.elementType == ENUM_ENTRY }) != null
         val isRanges = node.treeParent.run {
             this.elementType == BINARY_EXPRESSION &&
-                    this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
+                this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
         }
         val isExtensionFunctions = node.parent({ it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() }) != null &&
-                node.parents().find { it.elementType == PROPERTY } == null
+            node.parents().find { it.elementType == PROPERTY } == null
         val result = listOf(isHashFunction, isPropertyDeclaration, isLocalVariable, isValueParameter, isConstant,
             isCompanionObjectProperty, isEnums, isRanges, isExtensionFunctions).zip(mapConfiguration.map { configuration.getParameter(it.key) })
         if (result.any { it.first && it.first != it.second } && !isIgnoreNumber) {
@@ -74,9 +74,9 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun ASTNode.isHashFun() =
-            (this.psi as KtFunction).run {
-                this.nameIdentifier?.text == "hashCode" && this.annotationEntries.map { it.text }.contains("@Override")
-            }
+        (this.psi as KtFunction).run {
+            this.nameIdentifier?.text == "hashCode" && this.annotationEntries.map { it.text }.contains("@Override")
+        }
 
     /**
      * [RuleConfiguration] for configuration
@@ -109,7 +109,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
          * Check if string include a char of number type
          */
         private fun String.isOtherNumberType(): Boolean = ((this.last().uppercase() == "L" || this.last().uppercase() == "U") && this.substring(0, this.lastIndex).isNumber()) ||
-                (this.substring(this.lastIndex - 1).uppercase() == "UL" && this.substring(0, this.lastIndex - 1).isNumber())
+            (this.substring(this.lastIndex - 1).uppercase() == "UL" && this.substring(0, this.lastIndex - 1).isNumber())
     }
 
     companion object {

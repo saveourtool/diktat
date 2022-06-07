@@ -64,9 +64,9 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
         .findAllVariablesWithUsages { propertyNode ->
             propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
-                    (propertyNode.isVar && propertyNode.initializer == null ||
-                            (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
-                            (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
+                (propertyNode.isVar && propertyNode.initializer == null ||
+                    (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
+                    (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
         }
 
         .filterNot { it.value.isEmpty() }
@@ -105,16 +105,16 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("TOO_LONG_FUNCTION")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
         val numLinesAfterLastProp =
-                properties
-                    .last()
-                    .node
-                    .treeNext
-                    .takeIf { it.elementType == WHITE_SPACE }
-                    ?.let {
-                        // minus one is needed to except \n after property
-                        it.numNewLines() - 1
-                    }
-                    ?: 0
+            properties
+                .last()
+                .node
+                .treeNext
+                .takeIf { it.elementType == WHITE_SPACE }
+                ?.let {
+                    // minus one is needed to except \n after property
+                    it.numNewLines() - 1
+                }
+                ?: 0
 
         val sortedProperties = properties.sortedBy { it.node.getLineNumber() }
         // need to check that properties are declared consecutively with only maybe empty lines
@@ -204,12 +204,12 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun KtCallExpression?.isWhitelistedMethod() =
-            this?.run {
-                // `referenceExpression()` can return something different than just a name, e.g. when function returns a function:
-                // `foo()()` `referenceExpression()` will be a `KtCallExpression` as well
-                (referenceExpression() as? KtNameReferenceExpression)?.getReferencedName() in functionInitializers &&
-                        valueArguments.isEmpty()
-            } ?: false
+        this?.run {
+            // `referenceExpression()` can return something different than just a name, e.g. when function returns a function:
+            // `foo()()` `referenceExpression()` will be a `KtCallExpression` as well
+            (referenceExpression() as? KtNameReferenceExpression)?.getReferencedName() in functionInitializers &&
+                valueArguments.isEmpty()
+        } ?: false
 
     private fun warnMessage(
         name: String,

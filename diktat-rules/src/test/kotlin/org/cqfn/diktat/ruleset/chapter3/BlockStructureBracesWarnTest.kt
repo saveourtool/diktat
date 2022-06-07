@@ -48,22 +48,22 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `correct if expression without else`() {
         val withBrace =
-                """
-                    |fun foo() {
-                    |   if (x > 5) {
-                    |       x--
-                    |   }
-                    |}
-                """.trimMargin()
+            """
+                |fun foo() {
+                |   if (x > 5) {
+                |       x--
+                |   }
+                |}
+            """.trimMargin()
         lintMethod(withBrace)
 
         val withoutBrace =
-                """
-                    |fun foo() {
-                    |   if (x > 5)
-                    |       x--
-                    |}
-                """.trimMargin()
+            """
+                |fun foo() {
+                |   if (x > 5)
+                |       x--
+                |}
+            """.trimMargin()
         lintMethod(withoutBrace)
     }
 

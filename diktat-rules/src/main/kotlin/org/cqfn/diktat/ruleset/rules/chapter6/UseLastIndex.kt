@@ -32,7 +32,7 @@ class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
             val operation = node.getFirstChildWithType(OPERATION_REFERENCE)
             val number = node.getFirstChildWithType(INTEGER_CONSTANT)
             it.elementType == DOT_QUALIFIED_EXPRESSION && it.lastChildNode.text == "length" && it.lastChildNode.elementType == REFERENCE_EXPRESSION &&
-                    operation?.text == "-" && number?.text == "1"
+                operation?.text == "-" && number?.text == "1"
         }
         if (listWithRightLength.toList().isNotEmpty()) {
             Warnings.USE_LAST_INDEX.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {

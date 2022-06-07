@@ -47,7 +47,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isSingleLineStatement(node: ASTNode): Boolean =
-            !node.text.contains("\n")
+        !node.text.contains("\n")
 
     /**
      * This method works only with top-level binary expressions. It should be checked before the call.
@@ -94,7 +94,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isStringVar(firstChild: ASTNode, lastChild: ASTNode) = firstChild.elementType == STRING_TEMPLATE ||
-            ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION && lastChild.elementType == STRING_TEMPLATE)
+        ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION && lastChild.elementType == STRING_TEMPLATE)
 
     @Suppress("COMMENT_WHITE_SPACE")
     private fun isPlusBinaryExpression(node: ASTNode): Boolean {
@@ -117,7 +117,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isPlusBinaryExpressionAndFirstElementString(binaryExpressionNode: KtBinaryExpression) =
-            (binaryExpressionNode.left is KtStringTemplateExpression) && PLUS == binaryExpressionNode.operationToken
+        (binaryExpressionNode.left is KtStringTemplateExpression) && PLUS == binaryExpressionNode.operationToken
 
     @Suppress(
         "TOO_LONG_FUNCTION",
@@ -187,34 +187,34 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun KtBinaryExpression.isRvalueConstantExpression() =
-            this.right is KtConstantExpression
+        this.right is KtConstantExpression
 
     private fun KtBinaryExpression.isRvalueStringTemplateExpression() =
-            this.right is KtStringTemplateExpression
+        this.right is KtStringTemplateExpression
 
     private fun KtBinaryExpression.isRvalueCallExpression() =
-            this.right is KtCallExpression
+        this.right is KtCallExpression
 
     private fun KtBinaryExpression.isRvalueReferenceExpression() =
-            this.right is KtReferenceExpression
+        this.right is KtReferenceExpression
 
     private fun KtBinaryExpression.isRvalueParenthesized() =
-            this.right is KtParenthesizedExpression
+        this.right is KtParenthesizedExpression
 
     private fun KtBinaryExpression.isLvalueDotQualifiedExpression() =
-            this.left is KtDotQualifiedExpression
+        this.left is KtDotQualifiedExpression
 
     private fun KtBinaryExpression.isLvalueBinaryExpression() =
-            this.left is KtBinaryExpression
+        this.left is KtBinaryExpression
 
     private fun KtBinaryExpression.isLvalueReferenceExpression() =
-            this.left is KtReferenceExpression
+        this.left is KtReferenceExpression
 
     private fun KtBinaryExpression.isLvalueConstantExpression() =
-            this.left is KtConstantExpression
+        this.left is KtConstantExpression
 
     private fun KtBinaryExpression.isRvalueExpression() =
-            this.right is KtExpression
+        this.right is KtExpression
 
     companion object {
         const val NAME_ID = "abr-string-concatenation"
