@@ -67,11 +67,30 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 CLASS -> checkClassElements(node)
                 VALUE_PARAMETER -> checkValueParameter(node)
                 PRIMARY_CONSTRUCTOR -> checkParameterList(node.findChildByType(VALUE_PARAMETER_LIST))
+                BLOCK -> checkKDocPresent(node)
                 else -> {
                     // this is a generated else block
                 }
             }
         }
+    }
+
+    private fun checkKDocPresent(node: ASTNode) {
+        node.findAllDescendantsWithSpecificType(KDOC).forEach {
+            Warnings.COMMENTED_BY_KDOC.warnAndFix(
+                    configRules,
+                    emitWarn,
+                    isFixMode,
+                    "Redundant asterisk in block comment: \\**",
+                    it.startOffset,
+                    it
+            ){
+                val correctNode = PsiCommentImpl(BLOCK_COMMENT, it.text.replace("/**", "/*"))
+                it.treeParent.addChild(correctNode, it)
+                it.treeParent.removeChild(it)
+            }
+        }
+
     }
 
     private fun checkParameterList(node: ASTNode?) {
@@ -92,8 +111,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(valueParameterNode: ASTNode) {
         if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-            !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
-                !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+                !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
+                        !valueParameterNode.hasChildOfType(VAR_KEYWORD)
         ) {
             return
         }
@@ -300,9 +319,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
-        // checking that all top level class declarations and functions have kDoc
-        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-            .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+            // checking that all top level class declarations and functions have kDoc
+            (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+                .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc

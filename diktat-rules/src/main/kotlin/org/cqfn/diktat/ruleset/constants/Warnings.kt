@@ -89,6 +89,7 @@ enum class Warnings(
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "2.2.1", "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "2.2.1", "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "2.4.2", "you should not comment out code, use VCS to save it in history and delete this block"),
+    COMMENTED_BY_KDOC(true, "2.1.1", "you should not comment inside code blocks using kdoc syntax"),
     WRONG_NEWLINES_AROUND_KDOC(true, "2.4.1", "there should be a blank line above the kDoc and there should not be no blank lines after kDoc"),
     FIRST_COMMENT_NO_BLANK_LINE(true, "2.4.1", "there should not be any blank lines before first comment"),
     COMMENT_WHITE_SPACE(true, "2.4.1", "there should be a white space between code and comment also between code start token and comment text"),

@@ -12,12 +12,43 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
+
+    @Test
+    @Tag(WarningNames.COMMENTED_BY_KDOC)
+    fun `Should warn if kdoc comment is inside code block`() {
+        lintMethod(
+                """
+                    |package org.cqfn.diktat.example
+                    |
+                    |/**
+                    |  * right place for kdoc         
+                    |  */
+                    |class Example {
+                    |/**
+                    |  * right place for kdoc         
+                    |  */
+                    |    fun doGood(){
+                    |        /**
+                    |         * wrong place for kdoc         
+                    |         */
+                    |        /*
+                    |         * right place for block comment         
+                    |        */
+                    |        // right place for eol comment
+                    |        1+2            
+                    |    }
+                    |}
+            """.trimMargin(),
+                LintError(line=11, col=9, ruleId=this.ruleId, detail="${Warnings.COMMENTED_BY_KDOC.warnText()} Redundant asterisk in block comment: \\**", true)
+        )
+    }
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
