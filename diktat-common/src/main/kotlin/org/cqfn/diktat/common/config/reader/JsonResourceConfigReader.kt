@@ -46,7 +46,7 @@ abstract class JsonResourceConfigReader<T> {
      * @return [BufferedReader] representing loaded resource
      */
     protected open fun getConfigFile(resourceFileName: String): BufferedReader? =
-        classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
+            classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
 
     /**
      * you can specify your own parser, in example for parsing stream as a json

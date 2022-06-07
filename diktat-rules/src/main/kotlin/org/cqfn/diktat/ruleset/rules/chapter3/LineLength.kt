@@ -241,11 +241,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun parserStringAndDot(node: ASTNode, configuration: LineLengthConfiguration) =
-            if (node.elementType == STRING_TEMPLATE) {
-                parserStringTemplate(node, configuration)
-            } else {
-                parserDotQualifiedExpression(node, configuration)
-            }
+        if (node.elementType == STRING_TEMPLATE) {
+            parserStringTemplate(node, configuration)
+        } else {
+            parserDotQualifiedExpression(node, configuration)
+        }
 
     /**
      * This class finds where the string can be split
@@ -273,7 +273,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             positionByOffset(node.startOffset).second
         }
         val delimiterIndex =
-                node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+            node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
             // we can't split this string, however may be we can move it entirely:
             // case when new line should be inserted after `+`. Example: "first" + "second"
@@ -291,7 +291,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
         val shouldAddTwoSpaces =
-                (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
+            (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
         val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
@@ -317,7 +317,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
-            if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
+        if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
@@ -344,7 +344,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     } catch (e: MalformedURLException) {
         false
     }
-
 
     /**
      * This method uses recursion to store binary node in the order in which they are located
@@ -532,11 +531,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val firstPart = incorrectText.substring(0, delimiterIndex)
             val secondPart = incorrectText.substring(delimiterIndex, incorrectText.length)
             val textBetweenParts =
-                    if (isOneLineString) {
-                        "\" +\n\""
-                    } else {
-                        "\n"
-                    }
+                if (isOneLineString) {
+                    "\" +\n\""
+                } else {
+                    "\n"
+                }
             val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
             node.treeParent.replaceChild(node, correctNode)
         }
@@ -625,7 +624,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val expression = rightBinList.firstOrNull { (it, offset) ->
                 val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
                 offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                        binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
+                    binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
             }
             returnList.add(expression)
             return returnList
@@ -657,7 +656,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val expression = rightBinList.firstOrNull { (it, offset) ->
                 val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
                 offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                        binOperationReference!!.firstChildNode.elementType in typesList
+                    binOperationReference!!.firstChildNode.elementType in typesList
             }
             returnList.add(expression)
         }
