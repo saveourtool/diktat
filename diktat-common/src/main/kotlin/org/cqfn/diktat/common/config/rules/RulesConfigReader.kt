@@ -202,7 +202,7 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
  * @return true if the code block is marked with annotation that is in `ignored list` in the rule
  */
 fun List<RulesConfig>.isAnnotatedWithIgnoredAnnotation(rule: Rule, annotations: Set<String>): Boolean =
-    getRuleConfig(rule)
+        getRuleConfig(rule)
         ?.ignoreAnnotated
         ?.map { it.trim() }
         ?.map { it.trim('"') }
