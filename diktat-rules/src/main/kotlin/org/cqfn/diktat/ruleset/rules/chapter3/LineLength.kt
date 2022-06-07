@@ -385,24 +385,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Runs through the sorted list [rightBinList], finds its last element, the type of which is included in the set [typesList] and adds it in the list [returnList]
-     */
-    @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
-    private fun addInSmartListBinExpression(
-        returnList: MutableList<Pair<ASTNode, Int>?>,
-        rightBinList: List<Pair<ASTNode, Int>>,
-        typesList: List<IElementType>,
-        configuration: LineLengthConfiguration
-    ) {
-        val expression = rightBinList.firstOrNull { (it, offset) ->
-            val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
-            offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                binOperationReference!!.firstChildNode.elementType in typesList
-        }
-        returnList.add(expression)
-    }
-
-    /**
      * Finds the first binary expression closer to the separator
      */
     @Suppress("UnsafeCallOnNullableType")
@@ -444,7 +426,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 it to offset
             }
             .sortedBy { it.second }
-            .lastOrNull { (it, offset) ->
+            .lastOrNull { (_, offset) ->
                 offset <= configuration.lineLength + 1
             }
     }
@@ -547,8 +529,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private class BinaryExpression(node: ASTNode) : LongLineFixableCases(node) {
         override fun fix() {
             val nodeOperationReference = node.findChildByType(OPERATION_REFERENCE)
-            val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
-                nodeOperationReference.treeNext
+            val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
+                nodeOperationReference?.treeNext
             } else {
                 if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
                     nodeOperationReference.treePrev
@@ -585,8 +567,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val rightSplitNode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
             val nodeOperationReference = rightSplitNode?.first?.getFirstChildWithType(OPERATION_REFERENCE)
             rightSplitNode?.let {
-                val nextNode = if (nodeOperationReference!!.firstChildNode.elementType != ELVIS) {
-                    nodeOperationReference.treeNext
+                val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
+                    nodeOperationReference?.treeNext
                 } else {
                     if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
                         nodeOperationReference.treePrev
@@ -594,7 +576,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         nodeOperationReference
                     }
                 }
-                if (!nextNode.text.contains(("\n"))) {
+                if (!nextNode?.text?.contains(("\n"))!!) {
                     rightSplitNode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
                 }
             }
@@ -614,7 +596,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val binList: MutableList<ASTNode> = mutableListOf()
             searchBinaryExpression(parent, binList)
             val rightBinList = binList.map {
-                it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)!!.startOffset).second
+                it to positionByOffset(it.getFirstChildWithType(OPERATION_REFERENCE)?.startOffset ?: 0).second
             }
                 .sortedBy { it.second }
                 .reversed()
@@ -622,8 +604,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             addInSmartListBinExpression(returnList, rightBinList, logicListOperationReference, configuration)
             addInSmartListBinExpression(returnList, rightBinList, compressionListOperationReference, configuration)
             val expression = rightBinList.firstOrNull { (it, offset) ->
-                val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
-                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
+                val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)?.firstChildNode?.elementType
+                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text?.length ?: 0) <= configuration.lineLength + 1 &&
                     binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
             }
             returnList.add(expression)
@@ -655,8 +637,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         ) {
             val expression = rightBinList.firstOrNull { (it, offset) ->
                 val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
-                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference!!.firstChildNode.elementType in typesList
+                offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text?.length ?: 0) <= configuration.lineLength + 1 &&
+                    binOperationReference?.firstChildNode?.elementType in typesList
             }
             returnList.add(expression)
         }
@@ -667,7 +649,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     private class FunAndProperty(node: ASTNode) : LongLineFixableCases(node) {
         override fun fix() {
-            node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)!!.treeNext)
+            node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)?.treeNext)
         }
     }
 
@@ -679,8 +661,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
          * Splits Lambda expressions - add splits lines, thereby making the lambda expression a separate line
          */
         override fun fix() {
-            node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(LBRACE)!!.treeNext)
-            node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)!!.treePrev, node.findChildByType(RBRACE)!!.treePrev)
+            node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)?.treeNext, node.findChildByType(LBRACE)?.treeNext)
+            node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)?.treePrev, node.findChildByType(RBRACE)?.treePrev)
         }
     }
 
@@ -743,12 +725,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             var startOffset = 0
             node.getFirstChildWithType(COMMA)?.let {
                 if (positionByOffset(it.startOffset).second > lineLength) {
-                    node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
+                    node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)?.treeNext, node.findChildByType(LPAR)?.treeNext)
                     node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
                     startOffset = this.maximumLineLength.lineLength.toInt()
                 }
             } ?: node.getFirstChildWithType(RPAR)?.let {
-                node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)!!.treeNext, node.findChildByType(LPAR)!!.treeNext)
+                node.appendNewlineMergingWhiteSpace(node.findChildByType(LPAR)?.treeNext, node.findChildByType(LPAR)?.treeNext)
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(RPAR), node.findChildByType(RPAR))
                 startOffset = this.maximumLineLength.lineLength.toInt()
             }
