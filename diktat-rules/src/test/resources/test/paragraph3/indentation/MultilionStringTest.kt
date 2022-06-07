@@ -2,11 +2,9 @@ package test.paragraph3.indentation
 
 fun checkScript() {
     lintMethod(
-        """
-                |val q = 1
-                |
-            """.trimMargin(),
-        fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+                """
+                    |val A = "ASD"
+                            """.trimMargin(),
     )
 }
 

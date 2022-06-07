@@ -102,6 +102,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 log.warn("Not going to check indentation because there are tabs")
             }
             checkNewlineAtEnd(node)
+            println(node.text)
         }
     }
 
@@ -231,7 +232,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                             it == "trimMargin()"
                 } == true) {
             fixStringLiteral(whiteSpace, expectedIndent, actualIndent)
-            println(nextNodeDot)
         }
     }
 
@@ -243,12 +243,13 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         expectedIndent: Int,
         actualIndent: Int
     ) {
-        val nextNodeDot = if (whiteSpace.node.treeNext.elementType == DOT_QUALIFIED_EXPRESSION) {
-            whiteSpace.node.treeNext
+        val nextNode = whiteSpace.node.treeNext
+        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
+            nextNode
         } else {
-            whiteSpace.node.treeNext.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
         }
-        val textIndent = " ".repeat(actualIndent + INDENT_SIZE)
+        val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
         val templateEntries = nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries?.forEach { node ->
             if (!node.text.contains("\n")) {

@@ -294,6 +294,11 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         }
     }
 
+    @Test
+    fun `multilion string`() {
+        fixAndCompareSmokeTest("MultilionStringExpected.kt", "MultilionStringTest.kt")
+    }
+
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
