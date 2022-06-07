@@ -13,6 +13,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -35,6 +36,7 @@ import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiCommentImpl
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
@@ -67,7 +69,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 CLASS -> checkClassElements(node)
                 VALUE_PARAMETER -> checkValueParameter(node)
                 PRIMARY_CONSTRUCTOR -> checkParameterList(node.findChildByType(VALUE_PARAMETER_LIST))
-                BLOCK -> checkKDocPresent(node)
+                BLOCK -> checkKdocPresent(node)
                 else -> {
                     // this is a generated else block
                 }
@@ -75,22 +77,16 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun checkKDocPresent(node: ASTNode) {
+    private fun checkKdocPresent(node: ASTNode) {
         node.findAllDescendantsWithSpecificType(KDOC).forEach {
             Warnings.COMMENTED_BY_KDOC.warnAndFix(
-                    configRules,
-                    emitWarn,
-                    isFixMode,
-                    "Redundant asterisk in block comment: \\**",
-                    it.startOffset,
-                    it
-            ){
-                val correctNode = PsiCommentImpl(BLOCK_COMMENT, it.text.replace("/**", "/*"))
-                it.treeParent.addChild(correctNode, it)
+                configRules, emitWarn, isFixMode,
+                "Redundant asterisk in block comment: \\**", it.startOffset, it
+            ) {
+                it.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, it.text.replace("/**", "/*")), it)
                 it.treeParent.removeChild(it)
             }
         }
-
     }
 
     private fun checkParameterList(node: ASTNode?) {
@@ -111,8 +107,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(valueParameterNode: ASTNode) {
         if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
-                        !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+            !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
+                !valueParameterNode.hasChildOfType(VAR_KEYWORD)
         ) {
             return
         }
@@ -319,9 +315,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
-            // checking that all top level class declarations and functions have kDoc
-            (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-                .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+        // checking that all top level class declarations and functions have kDoc
+        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+            .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc
