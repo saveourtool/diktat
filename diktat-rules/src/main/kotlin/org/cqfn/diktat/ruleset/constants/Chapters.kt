@@ -56,7 +56,7 @@ fun Warnings.isRuleFromActiveChapter(configRules: List<RulesConfig>): Boolean {
 fun Warnings.getChapterByWarning() = Chapters.values().find { it.number == this.ruleId.first().toString() }!!
 
 private fun validate(chapter: String) =
-        require(chapter in Chapters.values().map { it.title }) {
-            val closestMatch = Chapters.values().minByOrNull { Levenshtein.distance(it.title, chapter) }
-            "Chapter name <$chapter> in configuration file is invalid, did you mean <$closestMatch>?"
-        }
+    require(chapter in Chapters.values().map { it.title }) {
+        val closestMatch = Chapters.values().minByOrNull { Levenshtein.distance(it.title, chapter) }
+        "Chapter name <$chapter> in configuration file is invalid, did you mean <$closestMatch>?"
+    }

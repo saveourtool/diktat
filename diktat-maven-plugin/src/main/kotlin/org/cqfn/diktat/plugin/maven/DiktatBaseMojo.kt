@@ -109,7 +109,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
-                if (excludes.isNotEmpty()) " and excluding $excludes" else ""
+            if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
         val ruleSets by lazy {
@@ -236,24 +236,24 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     ) {
         val text = file.readText()
         val params =
-                KtLint.ExperimentalParams(
-                    fileName = file.relativeTo(mavenProject.basedir).path,
-                    text = text,
-                    ruleSets = ruleSets,
-                    userData = mapOf("file_path" to file.path),
-                    script = file.extension.equals("kts", ignoreCase = true),
-                    cb = { lintError, isCorrected ->
-                        if (baselineErrors.none {
-                            // ktlint's BaselineReporter stores only these fields
-                            it.line == lintError.line && it.col == lintError.col &&
-                                    it.ruleId == lintError.ruleId
-                        }) {
-                            reporterImpl.onLintError(file.path, lintError, isCorrected)
-                            lintErrors.add(lintError)
-                        }
-                    },
-                    debug = debug
-                )
+            KtLint.ExperimentalParams(
+                fileName = file.relativeTo(mavenProject.basedir).path,
+                text = text,
+                ruleSets = ruleSets,
+                userData = mapOf("file_path" to file.path),
+                script = file.extension.equals("kts", ignoreCase = true),
+                cb = { lintError, isCorrected ->
+                    if (baselineErrors.none {
+                        // ktlint's BaselineReporter stores only these fields
+                        it.line == lintError.line && it.col == lintError.col &&
+                            it.ruleId == lintError.ruleId
+                    }) {
+                        reporterImpl.onLintError(file.path, lintError, isCorrected)
+                        lintErrors.add(lintError)
+                    }
+                },
+                debug = debug
+            )
         runAction(params)
     }
 }

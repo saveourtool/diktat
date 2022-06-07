@@ -32,55 +32,55 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `checking that suppression with ignoredAnnotation works`() {
         val code =
-                """
-                    @MySuperSuppress()
-                    fun foo() {
-                        val a = 1
-                    }
-                """.trimIndent()
+            """
+                @MySuperSuppress()
+                fun foo() {
+                    val a = 1
+                }
+            """.trimIndent()
         lintMethod(code, rulesConfigList = rulesConfigBooleanFunctions)
     }
 
     @Test
     fun `checking that suppression with ignore everything works`() {
         val code =
-                """
-                    @Suppress("diktat")
-                    fun foo() {
-                        val a = 1
-                    }
-                """.trimIndent()
+            """
+                @Suppress("diktat")
+                fun foo() {
+                    val a = 1
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
     @Test
     fun `checking that suppression with a targeted inspection name works`() {
         val code =
-                """
-                    @Suppress("IDENTIFIER_LENGTH")
-                    fun foo() {
-                        val a = 1
-                    }
-                """.trimIndent()
+            """
+                @Suppress("IDENTIFIER_LENGTH")
+                fun foo() {
+                    val a = 1
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
     @Test
     fun `negative scenario for other annotation`() {
         val code =
-                """
-                    @MySuperSuppress111()
-                    fun foo() {
-                        val a = 1
-                    }
-                """.trimIndent()
+            """
+                @MySuperSuppress111()
+                fun foo() {
+                    val a = 1
+                }
+            """.trimIndent()
         lintMethod(
             code,
             LintError(3,
                 9,
                 ruleId,
                 "[IDENTIFIER_LENGTH] identifier's length is incorrect, it" +
-                        " should be in range of [2, 64] symbols: a", false),
+                    " should be in range of [2, 64] symbols: a", false),
             rulesConfigList = rulesConfigBooleanFunctions,
         )
     }

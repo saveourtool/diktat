@@ -193,7 +193,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =
-            GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.4")
+        GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.4")
 
     private fun MutableList<String>.addInput(file: File) {
         add(file.toRelativeString(project.projectDir))
@@ -226,7 +226,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     }
 
     private fun getJavaExecJvmVersion(): JavaVersion = if (GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.7") &&
-            javaLauncher.isPresent
+        javaLauncher.isPresent
     ) {
         // Java Launchers are available since 6.7, but may not always be configured
         javaLauncher.map { it.metadata.jvmVersion }.map(JavaVersion::toVersion).get()
@@ -247,10 +247,10 @@ fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension,
                                     diktatConfiguration: Configuration,
                                     patternSet: PatternSet
 ): TaskProvider<DiktatJavaExecTaskBase> =
-        tasks.register(
-            DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-            diktatExtension, diktatConfiguration, patternSet
-        )
+    tasks.register(
+        DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+        diktatExtension, diktatConfiguration, patternSet
+    )
 
 /**
  * @param diktatExtension [DiktatExtension] with some values for task configuration
@@ -262,7 +262,7 @@ fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension,
                                   diktatConfiguration: Configuration,
                                   patternSet: PatternSet
 ): TaskProvider<DiktatJavaExecTaskBase> =
-        tasks.register(
-            DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-            diktatExtension, diktatConfiguration, patternSet, listOf("-F ")
-        )
+    tasks.register(
+        DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+        diktatExtension, diktatConfiguration, patternSet, listOf("-F ")
+    )

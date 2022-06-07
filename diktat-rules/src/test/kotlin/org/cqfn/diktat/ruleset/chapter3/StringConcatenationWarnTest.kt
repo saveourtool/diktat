@@ -23,7 +23,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + \"string\" + value + \"other value\"", canBeAutoCorrected)
+                " \"my string\" + \"string\" + value + \"other value\"", canBeAutoCorrected)
         )
     }
 
@@ -36,7 +36,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + 1 + 2 + 3", canBeAutoCorrected)
+                " \"my string\" + 1 + 2 + 3", canBeAutoCorrected)
         )
     }
 
@@ -50,7 +50,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " (1 + 2).toString() + \"my string\" + 3", canBeAutoCorrected)
+                " (1 + 2).toString() + \"my string\" + 3", canBeAutoCorrected)
         )
     }
 
@@ -64,7 +64,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " (1 + 2).toString() + \"my string\" + 3 + \"string\" + myObject + myObject", canBeAutoCorrected)
+                " (1 + 2).toString() + \"my string\" + 3 + \"string\" + myObject + myObject", canBeAutoCorrected)
         )
     }
 
@@ -78,7 +78,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " (1 + 2).toString() + \"my string\" + (\"string\" + myObject) + myObject", canBeAutoCorrected)
+                " (1 + 2).toString() + \"my string\" + (\"string\" + myObject) + myObject", canBeAutoCorrected)
         )
     }
 
@@ -92,7 +92,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | }
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + \"other string\" + (1 + 2 + 3)", canBeAutoCorrected)
+                " \"my string\" + \"other string\" + (1 + 2 + 3)", canBeAutoCorrected)
         )
     }
 
@@ -106,7 +106,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + \"other string\" + (1 + 2 + 3)", canBeAutoCorrected)
+                " \"my string\" + \"other string\" + (1 + 2 + 3)", canBeAutoCorrected)
         )
     }
 
@@ -120,7 +120,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + (1 + 2 + 3) + (\"other string\" + 3) + (1 + 2 + 3)", canBeAutoCorrected)
+                " \"my string\" + (1 + 2 + 3) + (\"other string\" + 3) + (1 + 2 + 3)", canBeAutoCorrected)
         )
     }
 
@@ -133,8 +133,8 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + (1 + 2 + 3) + (\"other string\" + 3) + (1 + (2 + 3)) +" +
-                    " (\"third string\" + (\"str\" + 5))", canBeAutoCorrected)
+                " \"my string\" + (1 + 2 + 3) + (\"other string\" + 3) + (1 + (2 + 3)) +" +
+                " (\"third string\" + (\"str\" + 5))", canBeAutoCorrected)
         )
     }
 
@@ -147,7 +147,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                    " \"my string\" + (\"third string\" + (\"str\" + 5 * 12 / 100))", canBeAutoCorrected)
+                " \"my string\" + (\"third string\" + (\"str\" + 5 * 12 / 100))", canBeAutoCorrected)
         )
     }
 

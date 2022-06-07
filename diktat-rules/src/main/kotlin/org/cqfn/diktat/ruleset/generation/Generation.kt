@@ -26,10 +26,10 @@ import kotlin.io.path.writeLines
  * The comment that will be added to the generated sources file.
  */
 private val autoGenerationComment =
-        """
-            | This document was auto generated, please don't modify it.
-            | This document contains all enum properties from Warnings.kt as Strings.
-        """.trimMargin()
+    """
+        | This document was auto generated, please don't modify it.
+        | This document contains all enum properties from Warnings.kt as Strings.
+    """.trimMargin()
 
 fun main() {
     generateWarningNames()

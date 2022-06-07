@@ -29,9 +29,9 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
             val referenceExpression = node.findChildByType(ElementType.REFERENCE_EXPRESSION)?.text
             val valueArgumentList = node.findChildByType(ElementType.VALUE_ARGUMENT_LIST)
             if (referenceExpression in setOf("print", "println") &&
-                    node.treePrev?.elementType != ElementType.DOT &&
-                    valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
-                    node.findChildByType(ElementType.LAMBDA_ARGUMENT) == null) {
+                node.treePrev?.elementType != ElementType.DOT &&
+                valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
+                node.findChildByType(ElementType.LAMBDA_ARGUMENT) == null) {
                 Warnings.DEBUG_PRINT.warn(
                     configRules, emitWarn, isFixMode,
                     "found $referenceExpression()", node.startOffset, node,
@@ -45,7 +45,7 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == ElementType.DOT_QUALIFIED_EXPRESSION) {
             val isConsole = node.firstChildNode.let { referenceExpression ->
                 referenceExpression.elementType == ElementType.REFERENCE_EXPRESSION &&
-                        referenceExpression.firstChildNode.let { it.elementType == ElementType.IDENTIFIER && it.text == "console" }
+                    referenceExpression.firstChildNode.let { it.elementType == ElementType.IDENTIFIER && it.text == "console" }
             }
             if (isConsole) {
                 val logMethod = node.lastChildNode

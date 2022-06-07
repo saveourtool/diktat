@@ -345,6 +345,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         false
     }
 
+
     /**
      * This method uses recursion to store binary node in the order in which they are located
      * Also binList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
@@ -397,7 +398,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference!!.firstChildNode.elementType in typesList
+                binOperationReference!!.firstChildNode.elementType in typesList
         }
         returnList.add(expression)
     }

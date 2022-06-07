@@ -28,21 +28,21 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  */
 @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
 fun KtExpression.containsOnlyConstants(): Boolean =
-        when (this) {
-            is KtConstantExpression -> true
-            is KtStringTemplateExpression -> entries.all { it.expression?.containsOnlyConstants() ?: true }
-            // left and right are marked @Nullable @IfNotParsed, so it should be safe to `!!`
-            is KtBinaryExpression -> left!!.containsOnlyConstants() && right!!.containsOnlyConstants()
-            is KtDotQualifiedExpression -> receiverExpression.containsOnlyConstants() &&
-                    (selectorExpression is KtReferenceExpression ||
-                            ((selectorExpression as? KtCallExpression)
-                                ?.valueArgumentList
-                                ?.arguments
-                                ?.all { it.getArgumentExpression()!!.containsOnlyConstants() }
-                                ?: false)
-                    )
-            else -> false
-        }
+    when (this) {
+        is KtConstantExpression -> true
+        is KtStringTemplateExpression -> entries.all { it.expression?.containsOnlyConstants() ?: true }
+        // left and right are marked @Nullable @IfNotParsed, so it should be safe to `!!`
+        is KtBinaryExpression -> left!!.containsOnlyConstants() && right!!.containsOnlyConstants()
+        is KtDotQualifiedExpression -> receiverExpression.containsOnlyConstants() &&
+            (selectorExpression is KtReferenceExpression ||
+                ((selectorExpression as? KtCallExpression)
+                    ?.valueArgumentList
+                    ?.arguments
+                    ?.all { it.getArgumentExpression()!!.containsOnlyConstants() }
+                    ?: false)
+            )
+        else -> false
+    }
 
 /**
  * Get block inside which the property is declared.
@@ -51,11 +51,11 @@ fun KtExpression.containsOnlyConstants(): Boolean =
  */
 @Suppress("UnsafeCallOnNullableType")
 fun KtProperty.getDeclarationScope() =
-        // FixMe: class body is missing here
-        getParentOfType<KtBlockExpression>(true)
-            .let { if (it is KtIfExpression) it.then!! else it }
-            .let { if (it is KtTryExpression) it.tryBlock else it }
-            as KtBlockExpression?
+    // FixMe: class body is missing here
+    getParentOfType<KtBlockExpression>(true)
+        .let { if (it is KtIfExpression) it.then!! else it }
+        .let { if (it is KtTryExpression) it.tryBlock else it }
+        as KtBlockExpression?
 
 /**
  * Method that tries to find a local property declaration with the same name as current [KtNameReferenceExpression] element
@@ -71,9 +71,9 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
             .mapNotNull { it as? KtProperty }
             .find {
                 it.isLocal &&
-                        it.hasInitializer() &&
-                        it.name?.equals(getReferencedName())
-                            ?: false
+                    it.hasInitializer() &&
+                    it.name?.equals(getReferencedName())
+                        ?: false
             }
     }
     .firstOrNull()

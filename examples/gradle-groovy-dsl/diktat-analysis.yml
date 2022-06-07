@@ -208,7 +208,7 @@
     # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
-    extendedIndentAfterOperators: true
+    extendedIndentAfterOperators: false
     # The indentation size for each file
     indentationSize: 4
 # Checks that there is no empty blocks in a file.

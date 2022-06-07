@@ -65,7 +65,7 @@ abstract class DiktatRule(
     }
 
     private fun areInspectionsDisabled(): Boolean =
-            inspections.none { configRules.isRuleEnabled(it) }
+        inspections.none { configRules.isRuleEnabled(it) }
 
     /**
      * Logic of the rule

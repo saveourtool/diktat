@@ -26,13 +26,13 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     /**
      * If true, if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
      */
-    val extendedIndentAfterOperators = config["extendedIndentAfterOperators"]?.toBoolean() ?: true
+    val extendedIndentAfterOperators = config["extendedIndentAfterOperators"]?.toBoolean() ?: false
 
     /**
      * If true, when dot qualified expression starts on a new line, this line will be indented with
      * two indentations instead of one
      */
-    val extendedIndentBeforeDot = config["extendedIndentBeforeDot"]?.toBoolean() ?: true
+    val extendedIndentBeforeDot = config["extendedIndentBeforeDot"]?.toBoolean() ?: false
 
     /**
      * The indentation size for each file
