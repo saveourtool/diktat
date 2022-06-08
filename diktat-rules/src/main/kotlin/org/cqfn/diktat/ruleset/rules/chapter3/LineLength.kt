@@ -100,7 +100,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
-            println(node.text)
         }
     }
 
@@ -456,7 +455,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
     abstract class LongLineFixableCases(val node: ASTNode) {
         /**
-          Abstract fix - fix anything nodes
+          * Abstract fix - fix anything nodes
          */
         abstract fun fix()
     }
@@ -571,6 +570,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
          * If the transfer is done on the Elvis operator, then transfers it to a new line
          * If not on the Elvis operator, then transfers it to a new line after the operation reference
          */
+        @Suppress("UnsafeCallOnNullableType")
         override fun fix() {
             val anySplitNode = searchSomeSplitInBinaryExpression(node, maximumLineLength)
             val rightSplitNode = anySplitNode[0] ?: anySplitNode[1] ?: anySplitNode[2]
