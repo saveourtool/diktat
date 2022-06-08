@@ -519,6 +519,9 @@
   enabled: true
   configuration:
     isRangeToIgnore: false
+# Check if there is a call of print()\println() or console.log(). Assumption that it's a debug print
+- name: DEBUG_PRINT
+  enabled: true
 # Check that typealias name is in PascalCase
 - name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true
