@@ -455,7 +455,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
     abstract class LongLineFixableCases(val node: ASTNode) {
         /**
-          * Abstract fix - fix anything nodes
+         * Abstract fix - fix anything nodes
          */
         abstract fun fix()
     }
