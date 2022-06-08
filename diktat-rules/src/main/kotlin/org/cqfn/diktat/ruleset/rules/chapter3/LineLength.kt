@@ -100,6 +100,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
+            println(node.text)
         }
     }
 
@@ -454,6 +455,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
     abstract class LongLineFixableCases(val node: ASTNode) {
+
         /**
           Abstract fix - fix anything nodes
          */
@@ -584,7 +586,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         nodeOperationReference
                     }
                 }
-                if (nextNode?.text?.contains(("\n")) == true) {
+                if (!nextNode?.text?.contains(("\n"))!!) {
                     rightSplitNode.first.appendNewlineMergingWhiteSpace(nextNode, nextNode)
                 }
             }
