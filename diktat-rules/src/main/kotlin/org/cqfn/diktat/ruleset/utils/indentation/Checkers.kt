@@ -83,7 +83,10 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
      * 3. there are no more arguments after this node
      */
     private fun isCheckNeeded(whiteSpace: PsiWhiteSpace) =
-        whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+        whiteSpace.parent
+            .node
+            .elementType
+            .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
             whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
             // no need to trigger when there are no more parameters in the list
             whiteSpace.siblings(forward = true, withItself = false).any {
