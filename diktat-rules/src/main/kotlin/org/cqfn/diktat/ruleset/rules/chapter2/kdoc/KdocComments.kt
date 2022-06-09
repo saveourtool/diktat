@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
@@ -32,6 +33,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -79,15 +81,19 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkKdocPresent(node: ASTNode) {
         node.findAllDescendantsWithSpecificType(KDOC).forEach {
-            Warnings.COMMENTED_BY_KDOC.warnAndFix(
-                configRules, emitWarn, isFixMode,
-                "Redundant asterisk in block comment: \\**", it.startOffset, it
-            ) {
-                it.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, it.text.replace("/**", "/*")), it)
-                it.treeParent.removeChild(it)
+            if(!checkKdocBeforeLegalStructInsideBlock(it)) {
+                Warnings.COMMENTED_BY_KDOC.warnAndFix(
+                    configRules, emitWarn, isFixMode,
+                    "Redundant asterisk in block comment: \\**", it.startOffset, it
+                ) {
+                    it.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, it.text.replace("/**", "/*")), it)
+                    it.treeParent.removeChild(it)
+                }
             }
         }
     }
+    private fun checkKdocBeforeLegalStructInsideBlock(node: ASTNode) =
+        listOf(FUN_KEYWORD,CLASS).contains(node.nextSibling { it.elementType != WHITE_SPACE }?.elementType)
 
     private fun checkParameterList(node: ASTNode?) {
         val kdocBeforeClass = node

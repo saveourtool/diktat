@@ -847,7 +847,7 @@ private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<
     var forwardDirection = true
     // We additionaly consider the offset and line for current node in aim to speed up the search
     // and not start any time from beginning of file, if possible
-    // 
+    //
     // If current line is closer to the requested line, start search from it
     // otherwise search from the beginning of file
     var lineOffset = if (line < currentLine) {
