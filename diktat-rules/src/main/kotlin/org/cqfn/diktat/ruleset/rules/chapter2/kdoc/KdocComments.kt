@@ -81,19 +81,24 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkKdocPresent(node: ASTNode) {
         node.findAllDescendantsWithSpecificType(KDOC).forEach {
-            if(!checkKdocBeforeLegalStructInsideBlock(it)) {
-                Warnings.COMMENTED_BY_KDOC.warnAndFix(
-                    configRules, emitWarn, isFixMode,
-                    "Redundant asterisk in block comment: \\**", it.startOffset, it
-                ) {
-                    it.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, it.text.replace("/**", "/*")), it)
-                    it.treeParent.removeChild(it)
-                }
+            checkKdocInsideBlock(it)
+        }
+    }
+
+    private fun checkKdocInsideBlock(kdocNode: ASTNode) {
+        if (!checkKdocBeforeLegalStructInsideBlock(kdocNode)) {
+            Warnings.COMMENTED_BY_KDOC.warnAndFix(
+                configRules, emitWarn, isFixMode,
+                "Redundant asterisk in block comment: \\**", kdocNode.startOffset, kdocNode
+            ) {
+                kdocNode.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, kdocNode.text.replace("/**", "/*")), kdocNode)
+                kdocNode.treeParent.removeChild(kdocNode)
             }
         }
     }
+
     private fun checkKdocBeforeLegalStructInsideBlock(node: ASTNode) =
-        listOf(FUN_KEYWORD,CLASS).contains(node.nextSibling { it.elementType != WHITE_SPACE }?.elementType)
+        listOf(FUN_KEYWORD, CLASS).contains(node.nextSibling { it.elementType != WHITE_SPACE }?.elementType)
 
     private fun checkParameterList(node: ASTNode?) {
         val kdocBeforeClass = node
