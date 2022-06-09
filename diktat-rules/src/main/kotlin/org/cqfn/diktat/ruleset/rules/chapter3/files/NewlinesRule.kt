@@ -115,6 +115,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         when (node.elementType) {
             SEMICOLON -> handleSemicolon(node)
             OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)
+            // this logic regulates indentation with elements - so that the symbol and the subsequent expression are on the same line
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
             COMMA -> handleComma(node)
@@ -122,6 +123,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
+            // this logic splits long expressions into multiple lines
             DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedAndSafeAccessExpression(node)
             else -> {
             }
@@ -130,7 +132,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION", "MagicNumber")
     private fun handDotQualifiedAndSafeAccessExpression(node: ASTNode) {
-        val listParentTypesNoFix = listOf<IElementType>(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
+        val listParentTypesNoFix = listOf(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
             VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
         if (isNotFindParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
             val listDot = node.findAllNodesWithCondition(
