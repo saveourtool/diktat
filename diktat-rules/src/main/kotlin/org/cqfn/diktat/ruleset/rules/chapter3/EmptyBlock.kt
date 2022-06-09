@@ -42,7 +42,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isNewLine(node: ASTNode) =
-            node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: false
+        node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: false
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
@@ -89,15 +89,15 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isAnonymousSamClass(node: ASTNode): Boolean =
-            if (node.elementType == FUNCTION_LITERAL && node.hasParent(CALL_EXPRESSION)) {
-                // We are checking identifier because it is not class in AST,
-                // SAM conversions are indistinguishable from lambdas.
-                // So we just verify that identifier is in PascalCase
-                val valueArgument = node.findParentNodeWithSpecificType(CALL_EXPRESSION)!!
-                valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
-            } else {
-                false
-            }
+        if (node.elementType == FUNCTION_LITERAL && node.hasParent(CALL_EXPRESSION)) {
+            // We are checking identifier because it is not class in AST,
+            // SAM conversions are indistinguishable from lambdas.
+            // So we just verify that identifier is in PascalCase
+            val valueArgument = node.findParentNodeWithSpecificType(CALL_EXPRESSION)!!
+            valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
+        } else {
+            false
+        }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isLambdaUsedAsFunction(node: ASTNode): Boolean {

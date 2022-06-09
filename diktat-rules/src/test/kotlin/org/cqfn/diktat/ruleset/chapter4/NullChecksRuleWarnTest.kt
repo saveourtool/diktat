@@ -47,7 +47,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
             LintError(3, 11, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar == null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar == null", true),
         )
     }
 
@@ -64,7 +64,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
         )
     }
 
@@ -83,7 +83,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
             LintError(2, 27, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
         )
     }
 
@@ -101,7 +101,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar !== null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar !== null", true),
         )
     }
 
@@ -172,7 +172,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
             LintError(2, 10, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} use '.let/.also/?:/e.t.c'" +
-                    " instead of myVar != null", true),
+                " instead of myVar != null", true),
         )
     }
 
@@ -186,7 +186,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
             LintError(2, 14, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use 'requireNotNull' instead of require(myVar != null)", true),
+                " use 'requireNotNull' instead of require(myVar != null)", true),
         )
     }
 

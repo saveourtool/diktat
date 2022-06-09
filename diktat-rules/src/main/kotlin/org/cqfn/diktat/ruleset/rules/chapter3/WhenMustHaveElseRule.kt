@@ -120,7 +120,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
 
         // Checks if `when` is the last statement in lambda body
         if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL &&
-                node.treeParent.lastChildNode == node) {
+            node.treeParent.lastChildNode == node) {
             return false
         }
 

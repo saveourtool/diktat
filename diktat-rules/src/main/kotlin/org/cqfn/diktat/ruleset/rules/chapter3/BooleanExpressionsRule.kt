@@ -95,10 +95,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         val logicalExpressions = otherBinaryExpressions.filter { otherBinaryExpression ->
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
             (otherBinaryExpression.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
-                    // todo: support xor; for now skip all expressions that are nested in xor
-                    otherBinaryExpression.parents()
-                        .takeWhile { it != node }
-                        .none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
+                // todo: support xor; for now skip all expressions that are nested in xor
+                otherBinaryExpression.parents()
+                    .takeWhile { it != node }
+                    .none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
         }
         // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
         val elementaryBooleanExpressions = booleanBinaryExpressions
@@ -111,13 +111,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .filterNot {
                 // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
                 it.elementType == BINARY_EXPRESSION ||
-                        // !(a || b) should be skipped too, `a` and `b` should be present later
-                        (it.psi as? KtPrefixExpression)?.lastChild
-                            ?.node
-                            ?.removeAllParentheses()
-                            ?.elementType == BINARY_EXPRESSION ||
-                        // `true` and `false` are valid tokens for jBool, so we keep them.
-                        it.text == "true" || it.text == "false"
+                    // !(a || b) should be skipped too, `a` and `b` should be present later
+                    (it.psi as? KtPrefixExpression)?.lastChild
+                        ?.node
+                        ?.removeAllParentheses()
+                        ?.elementType == BINARY_EXPRESSION ||
+                    // `true` and `false` are valid tokens for jBool, so we keep them.
+                    it.text == "true" || it.text == "false"
             }
         (logicalExpressions + elementaryBooleanExpressions).forEach { expression ->
             expressionsReplacement.addExpression(expression)
@@ -137,9 +137,9 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.collectElementaryExpressions() = this
         .findAllNodesWithCondition { astNode ->
             astNode.elementType == BINARY_EXPRESSION &&
-                    // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
-                    (astNode == this || astNode.parents().takeWhile { it != this }
-                        .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
+                // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
+                (astNode == this || astNode.parents().takeWhile { it != this }
+                    .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
         }
         .partition {
             val operationReferenceText = (it.psi as KtBinaryExpression).operationReference.text
@@ -227,8 +227,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         // There should be three operands and three operation references in order to consider the expression
         // Moreover the operation references between operands should alternate.
         if (expressionsReplacement.size() < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
-                numberOfOperationReferences < DISTRIBUTIVE_LAW_MIN_OPERATIONS ||
-                !isSequenceAlternate(operationSequence)) {
+            numberOfOperationReferences < DISTRIBUTIVE_LAW_MIN_OPERATIONS ||
+            !isSequenceAlternate(operationSequence)) {
             return null
         }
         return if (operationSequence.first() == '&') {

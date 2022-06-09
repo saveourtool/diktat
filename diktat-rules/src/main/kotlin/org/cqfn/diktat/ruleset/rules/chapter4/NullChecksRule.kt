@@ -113,7 +113,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.let { it.findChildByType(BLOCK) ?: it }
             ?.let { astNode ->
                 astNode.hasChildOfType(BREAK) &&
-                        (astNode.psi as? KtBlockExpression)?.statements?.size != 1
+                    (astNode.psi as? KtBlockExpression)?.statements?.size != 1
             } ?: false
         return (!isBlockInIfWithBreak && !isOneLineBlockInIfWithBreak)
     }
@@ -170,8 +170,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     ): String = when {
         // if (a != null) {  } -> a ?: editedElse
         (thenCodeLines.isNullOrEmpty() && elseEditedCodeLines.isNotEmpty()) ||
-                // if (a != null) { a } else { ... } -> a ?: editedElse
-                (thenCodeLines?.singleOrNull() == variableName && elseEditedCodeLines.isNotEmpty()) -> variableName
+            // if (a != null) { a } else { ... } -> a ?: editedElse
+            (thenCodeLines?.singleOrNull() == variableName && elseEditedCodeLines.isNotEmpty()) -> variableName
         // if (a != null) { a.foo() } -> a?.foo()
         thenCodeLines?.singleOrNull()?.startsWith("$variableName.") ?: false -> "$variableName?${thenCodeLines?.firstOrNull()!!.removePrefix(variableName)}"
         // if (a != null) { break } -> a?.let { ... }
@@ -180,7 +180,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun getDefaultCaseThenCodeLines(variableName: String, thenCodeLines: List<String>?): String =
-            "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
+        "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
 
     private fun getDefaultCaseElseCodeLines(elseCodeLines: List<String>): String = "?: run {${elseCodeLines.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
 
@@ -226,25 +226,25 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
-            treeParent
-                .getFirstChildWithType(type)
-                ?.text
-                ?.trim('{', '}')
-                ?.split("\n")
-                ?.filter { it.isNotBlank() }
-                ?.map { it.trim() }
-                ?.toList()
+        treeParent
+            .getFirstChildWithType(type)
+            ?.text
+            ?.trim('{', '}')
+            ?.split("\n")
+            ?.filter { it.isNotBlank() }
+            ?.map { it.trim() }
+            ?.toList()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
-            // check that binary expression has `null` as right or left operand
-            setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
-                    // checks that it is the comparison condition
-                    setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
-                        .contains(condition.operationToken) &&
-                    // no need to raise warning or fix null checks in complex expressions
-                    !condition.isComplexCondition() &&
-                    !condition.isInLambda()
+        // check that binary expression has `null` as right or left operand
+        setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
+            // checks that it is the comparison condition
+            setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
+                .contains(condition.operationToken) &&
+            // no need to raise warning or fix null checks in complex expressions
+            !condition.isComplexCondition() &&
+            !condition.isInLambda()
 
     /**
      * checks if condition is a complex expression. For example:
@@ -284,7 +284,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isRequireFun(referenceExpression: ASTNode) =
-            referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
+        referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
 
     companion object {
         const val NAME_ID = "ach-null-checks"

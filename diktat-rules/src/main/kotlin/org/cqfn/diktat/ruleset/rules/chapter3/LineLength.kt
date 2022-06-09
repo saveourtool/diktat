@@ -94,7 +94,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
-                        !isKdocValid(newNode)
+                    !isKdocValid(newNode)
                 ) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
@@ -240,7 +240,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkFunAndProperty(wrongNode: ASTNode) =
-            if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
+        if (wrongNode.hasChildOfType(EQ)) FunAndProperty(wrongNode) else None()
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
@@ -355,11 +355,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
         val textBetwenParts =
-                if (wrongStringTemplate.isOneLineString) {
-                    "\" +\n\""
-                } else {
-                    "\n"
-                }
+            if (wrongStringTemplate.isOneLineString) {
+                "\" +\n\""
+            } else {
+                "\n"
+            }
         val correctNode = KotlinParser().createNode("$firstPart$textBetwenParts$secondPart")
         wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
@@ -397,11 +397,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) ||
-                node.hasChildOfType(POSTFIX_EXPRESSION)) {
+            node.hasChildOfType(POSTFIX_EXPRESSION)) {
             node.getChildren(null)
                 .filter {
                     it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED ||
-                            it.elementType == POSTFIX_EXPRESSION
+                        it.elementType == POSTFIX_EXPRESSION
                 }
                 .forEach {
                     searchBinaryExpression(it, binList)
@@ -437,7 +437,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)!!.firstChildNode.elementType
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
+                binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
         }
         returnList.add(expression)
         return returnList
@@ -456,7 +456,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val expression = rightBinList.firstOrNull { (it, offset) ->
             val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
             offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text!!.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference!!.firstChildNode.elementType in typesList
+                binOperationReference!!.firstChildNode.elementType in typesList
         }
         returnList.add(expression)
     }
