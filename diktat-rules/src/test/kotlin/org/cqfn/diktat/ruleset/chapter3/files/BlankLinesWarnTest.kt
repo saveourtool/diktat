@@ -14,7 +14,7 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${BlankLinesRule.NAME_ID}"
     private val consecutiveLinesWarn = "${TOO_MANY_BLANK_LINES.warnText()} do not use more than two consecutive blank lines"
     private fun blankLinesInBlockWarn(isBeginning: Boolean) =
-            "${TOO_MANY_BLANK_LINES.warnText()} do not put newlines ${if (isBeginning) "in the beginning" else "at the end"} of code blocks"
+        "${TOO_MANY_BLANK_LINES.warnText()} do not put newlines ${if (isBeginning) "in the beginning" else "at the end"} of code blocks"
 
     @Test
     @Tag(WarningNames.TOO_MANY_BLANK_LINES)

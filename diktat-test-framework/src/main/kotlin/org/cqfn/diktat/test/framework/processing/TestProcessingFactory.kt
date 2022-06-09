@@ -27,7 +27,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             ?.let { File(it.file) }
             ?: run {
                 log.error("Not able to get directory with test configuration files: " +
-                        argReader.properties.testConfigsRelativePath)
+                    argReader.properties.testConfigsRelativePath)
                 exitProcess(STATUS_FIVE)
             }
         try {
@@ -57,7 +57,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
         }
 
         val testStream: Stream<String> =
-                if (argReader.properties.isParallelMode) testList.parallelStream() else testList.stream()
+            if (argReader.properties.isParallelMode) testList.parallelStream() else testList.stream()
 
         testStream
             .map { test: String -> findTestInResources(test) }
@@ -71,9 +71,9 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     }
 
     private fun findTestInResources(test: String): TestConfig? =
-            TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json", javaClass.classLoader)
-                .config
-                ?.setTestName(test)
+        TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json", javaClass.classLoader)
+            .config
+            ?.setTestName(test)
 
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun processTest(testConfig: TestConfig): Boolean {

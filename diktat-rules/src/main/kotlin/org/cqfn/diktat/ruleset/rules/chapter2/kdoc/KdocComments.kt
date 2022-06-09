@@ -92,8 +92,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(valueParameterNode: ASTNode) {
         if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
-                        !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+            !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
+                !valueParameterNode.hasChildOfType(VAR_KEYWORD)
         ) {
             return
         }
@@ -306,9 +306,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
-            // checking that all top level class declarations and functions have kDoc
-            (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-                .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+        // checking that all top level class declarations and functions have kDoc
+        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+            .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc

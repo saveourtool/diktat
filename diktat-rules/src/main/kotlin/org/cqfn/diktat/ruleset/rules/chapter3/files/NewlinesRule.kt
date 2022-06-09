@@ -232,7 +232,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
-                        (!isFirstCall() || !isMultilineLambda(treeParent))
+                    (!isFirstCall() || !isMultilineLambda(treeParent))
             } else {
                 if (isInvalidCallsChain(dropLeadingProperties = false) && node.isInParentheses()) {
                     checkForComplexExpression(node)
@@ -450,9 +450,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (numEntries > configuration.maxParametersInOneLine) {
             when (node.elementType) {
                 VALUE_PARAMETER_LIST -> handleFirstValue(node, VALUE_PARAMETER, "first parameter should be placed on a separate line " +
-                        "or all other parameters should be aligned with it in declaration of <${node.getParentIdentifier()}>")
+                    "or all other parameters should be aligned with it in declaration of <${node.getParentIdentifier()}>")
                 VALUE_ARGUMENT_LIST -> handleFirstValue(node, VALUE_ARGUMENT, "first value argument (%s) should be placed on the new line " +
-                        "or all other parameters should be aligned with it")
+                    "or all other parameters should be aligned with it")
                 else -> {
                 }
             }
@@ -493,8 +493,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .children()
         .filter {
             (it.elementType == COMMA && !it.treeNext.isNewLineNode()) ||
-                    // Move RPAR to the new line
-                    (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.isNewLineNode())
+                // Move RPAR to the new line
+                (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.isNewLineNode())
         }
         .toList()
         .takeIf { it.isNotEmpty() }
@@ -533,10 +533,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         // if statements here have the only right order - don't change it
 
         if (psi.children.isNotEmpty() && !psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
-                !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
+            !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
             val firstChild = psi.firstChild
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
-                    firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
+                firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                 getOrderedCallExpressions(firstChild.firstChild, result)
             }
             result.add(firstChild.node
@@ -586,10 +586,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme: there could be other cases when dot means something else
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
-            parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
+        parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
 
     private fun PsiElement.isFirstChildElementType(elementType: IElementType) =
-            this.firstChild.node.elementType == elementType
+        this.firstChild.node.elementType == elementType
 
     /**
      * This method collects chain calls and checks it
@@ -641,13 +641,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      *  taking all expressions inside complex expression until we reach lambda arguments
      */
     private fun ASTNode.getParentExpressions() =
-            parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
+        parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
     private fun isMultilineLambda(node: ASTNode): Boolean =
-            (node.findAllDescendantsWithSpecificType(LAMBDA_ARGUMENT)
-                .firstOrNull()
-                ?.text
-                ?.count { it == '\n' } ?: -1) > 0
+        (node.findAllDescendantsWithSpecificType(LAMBDA_ARGUMENT)
+            .firstOrNull()
+            ?.text
+            ?.count { it == '\n' } ?: -1) > 0
 
     /**
      * Getting the first call expression in call chain
@@ -665,8 +665,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      * This method should be called on OPERATION_REFERENCE in the middle of BINARY_EXPRESSION
      */
     private fun ASTNode.isInfixCall() = elementType == OPERATION_REFERENCE &&
-            firstChildNode.elementType == IDENTIFIER &&
-            treeParent.elementType == BINARY_EXPRESSION
+        firstChildNode.elementType == IDENTIFIER &&
+        treeParent.elementType == BINARY_EXPRESSION
 
     /**
      * This method checks that complex expression should be replace with new variable

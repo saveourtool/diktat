@@ -54,11 +54,11 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
             val typeReferenceNode = node.findChildByType(TYPE_REFERENCE)!!
             // check that property has nullable type, right value one of allow expression
             if (!node.hasChildOfType(NULL) &&
-                    node.findAllDescendantsWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() &&
-                    typeReferenceNode.hasChildOfType(NULLABLE_TYPE) &&
-                    typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
-                    (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||
-                            node.findChildByType(CALL_EXPRESSION)!!.findChildByType(REFERENCE_EXPRESSION)!!.text in allowExpression)) {
+                node.findAllDescendantsWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() &&
+                typeReferenceNode.hasChildOfType(NULLABLE_TYPE) &&
+                typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
+                (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||
+                    node.findChildByType(CALL_EXPRESSION)!!.findChildByType(REFERENCE_EXPRESSION)!!.text in allowExpression)) {
                 NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
                     node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
             } else if (node.hasChildOfType(NULL)) {
@@ -93,21 +93,21 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun findFixableForCollectionParam(referenceText: String): FixedParam? =
-            when (referenceText) {
-                "List", "Iterable" -> FixedParam(null, null, "emptyList()")
-                "Map" -> FixedParam(null, null, "emptyMap()")
-                "Array" -> FixedParam(null, null, "emptyArray()")
-                "Set" -> FixedParam(null, null, "emptySet()")
-                "Sequence" -> FixedParam(null, null, "emptySequence()")
-                "Queue" -> FixedParam(null, null, "LinkedList()")
-                "MutableList" -> FixedParam(null, null, "mutableListOf()")
-                "MutableMap" -> FixedParam(null, null, "mutableMapOf()")
-                "MutableSet" -> FixedParam(null, null, "mutableSetOf()")
-                "LinkedList" -> FixedParam(null, null, "LinkedList()")
-                "LinkedHashMap" -> FixedParam(null, null, "LinkedHashMap()")
-                "LinkedHashSet" -> FixedParam(null, null, "LinkedHashSet()")
-                else -> null
-            }
+        when (referenceText) {
+            "List", "Iterable" -> FixedParam(null, null, "emptyList()")
+            "Map" -> FixedParam(null, null, "emptyMap()")
+            "Array" -> FixedParam(null, null, "emptyArray()")
+            "Set" -> FixedParam(null, null, "emptySet()")
+            "Sequence" -> FixedParam(null, null, "emptySequence()")
+            "Queue" -> FixedParam(null, null, "LinkedList()")
+            "MutableList" -> FixedParam(null, null, "mutableListOf()")
+            "MutableMap" -> FixedParam(null, null, "mutableMapOf()")
+            "MutableSet" -> FixedParam(null, null, "mutableSetOf()")
+            "LinkedList" -> FixedParam(null, null, "LinkedList()")
+            "LinkedHashMap" -> FixedParam(null, null, "LinkedHashMap()")
+            "LinkedHashSet" -> FixedParam(null, null, "LinkedHashSet()")
+            else -> null
+        }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun findSubstitution(node: ASTNode, fixedParam: FixedParam) {

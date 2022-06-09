@@ -55,6 +55,22 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     }
 
     @Test
+    @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
+    fun `anonymous function`() {
+        val code = """
+            package org.cqfn.diktat.test
+
+            fun foo() {
+                val sum: (Int) -> Int = fun(x): Int = x + x
+            }
+
+        """.trimIndent()
+        lintMethod(code,
+            LintError(3, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+        )
+    }
+
+    @Test
     @Tags(
         Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG),
         Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG),

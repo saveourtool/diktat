@@ -127,7 +127,7 @@
     newlineAtEnd: true
     extendedIndentOfParameters: false
     alignedParameters: true
-    extendedIndentAfterOperators: true
+    extendedIndentAfterOperators: false
     indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true

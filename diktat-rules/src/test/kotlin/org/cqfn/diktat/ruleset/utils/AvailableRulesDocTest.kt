@@ -19,7 +19,7 @@ class AvailableRulesDocTest {
             val ruleName = splitMarkDown[SPLIT_MARK].trim()
 
             if (!ruleName.startsWith(TABLE_DELIMITER) &&
-                    !ruleName.startsWith(RULE_NAME_HEADER)) {
+                !ruleName.startsWith(RULE_NAME_HEADER)) {
                 listWithRulesFromDoc.add(ruleName)
             }
         }
@@ -36,7 +36,7 @@ class AvailableRulesDocTest {
             val ruleFound = allRulesFromDoc.find { it.trim() == ruleName } != null
             Assertions.assertTrue(ruleFound) {
                 val docs = "| | | $ruleName" +
-                        "|  |  |  | |"
+                    "|  |  |  | |"
                 """
                     Cannot find warning $ruleName in $AVAILABLE_RULES_FILE.
                     You can fix it by adding the following description below with more info to $AVAILABLE_RULES_FILE:

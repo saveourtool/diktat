@@ -62,7 +62,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     private val configuration by lazy {
         if (trailingConfig.isEmpty()) {
             log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
-                    " configuration options. See [available-rules.md] for possible configuration options.")
+                " configuration options. See [available-rules.md] for possible configuration options.")
         }
         TrailingCommaConfiguration(trailingConfig)
     }

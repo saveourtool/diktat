@@ -99,16 +99,16 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
             val list = getFirstChildWithType(MODIFIER_LIST)!!
             return list.getChildren(null)
                 .none { it.elementType in badModifiers } &&
-                    classBody?.getAllChildrenWithType(FUN)
-                        ?.isEmpty()
-                        ?: false &&
-                    getFirstChildWithType(SUPER_TYPE_LIST) == null
+                classBody?.getAllChildrenWithType(FUN)
+                    ?.isEmpty()
+                    ?: false &&
+                getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
-                getFirstChildWithType(SUPER_TYPE_LIST) == null &&
-                // if there is any prop with logic in accessor then don't recommend to convert class to data class
-                classBody?.let(::areGoodProps)
-                    ?: true
+            getFirstChildWithType(SUPER_TYPE_LIST) == null &&
+            // if there is any prop with logic in accessor then don't recommend to convert class to data class
+            classBody?.let(::areGoodProps)
+                ?: true
     }
 
     /**
