@@ -19,7 +19,7 @@ class Example {
         /**
          * Converts this AST node and all its children to pretty string representation
          */
-        fun prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
+        fun Example.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
             return "test"
         }
     }
