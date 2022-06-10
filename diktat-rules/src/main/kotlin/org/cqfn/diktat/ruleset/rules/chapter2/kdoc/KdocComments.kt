@@ -20,7 +20,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
@@ -33,7 +32,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -80,25 +78,20 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkKdocPresent(node: ASTNode) {
-        node.findAllDescendantsWithSpecificType(KDOC).forEach {
-            checkKdocInsideBlock(it)
+        node.findChildrenMatching { it.elementType == KDOC }.forEach {
+            warnKdocInsideBlock(it)
         }
     }
 
-    private fun checkKdocInsideBlock(kdocNode: ASTNode) {
-        if (!checkKdocBeforeLegalStructInsideBlock(kdocNode)) {
-            Warnings.COMMENTED_BY_KDOC.warnAndFix(
-                configRules, emitWarn, isFixMode,
-                "Redundant asterisk in block comment: \\**", kdocNode.startOffset, kdocNode
-            ) {
-                kdocNode.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, kdocNode.text.replace("/**", "/*")), kdocNode)
-                kdocNode.treeParent.removeChild(kdocNode)
-            }
+    private fun warnKdocInsideBlock(kdocNode: ASTNode) {
+        Warnings.COMMENTED_BY_KDOC.warnAndFix(
+            configRules, emitWarn, isFixMode,
+            "Redundant asterisk in block comment: \\**", kdocNode.startOffset, kdocNode
+        ) {
+            kdocNode.treeParent.addChild(PsiCommentImpl(BLOCK_COMMENT, kdocNode.text.replace("/**", "/*")), kdocNode)
+            kdocNode.treeParent.removeChild(kdocNode)
         }
     }
-
-    private fun checkKdocBeforeLegalStructInsideBlock(node: ASTNode) =
-        listOf(FUN_KEYWORD, CLASS).contains(node.nextSibling { it.elementType != WHITE_SPACE }?.elementType)
 
     private fun checkParameterList(node: ASTNode?) {
         val kdocBeforeClass = node
@@ -325,10 +318,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun checkTopLevelDoc(node: ASTNode) =
+    private fun checkTopLevelDoc(node: ASTNode) {
         // checking that all top level class declarations and functions have kDoc
-        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+        return (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
             .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+    }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc
