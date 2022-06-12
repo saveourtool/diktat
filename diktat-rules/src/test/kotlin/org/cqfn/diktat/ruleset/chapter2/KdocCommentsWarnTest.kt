@@ -52,13 +52,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(
-                line = 11,
-                col = 9,
-                ruleId = this.ruleId,
-                detail = "${Warnings.COMMENTED_BY_KDOC.warnText()} Redundant asterisk in block comment: \\**",
-                true
-            )
+            LintError( 11, 9, ruleId,"${Warnings.COMMENTED_BY_KDOC.warnText()} " +
+                    "Redundant asterisk in block comment: \\**", true)
         )
     }
 
