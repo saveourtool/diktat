@@ -44,9 +44,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |        // right place for eol comment
                     |        1+2
                     |        /**
-                    |         * Converts this AST node and all its children to pretty string representation
+                    |         * right place for kdoc
                     |         */
-                    |
                     |        fun prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
                     |            return "test"
                     |        }
