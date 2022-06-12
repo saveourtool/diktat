@@ -38,10 +38,6 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |        /**
                     |         * wrong place for kdoc
                     |         */
-                    |        /*
-                    |         * right place for block comment
-                    |        */
-                    |        // right place for eol comment
                     |        1+2
                     |        /**
                     |         * right place for kdoc
@@ -55,7 +51,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
         lintMethod(
             code,
             LintError(
-                11, 9, ruleId, "${Warnings.COMMENTED_BY_KDOC.warnText()} " + "redundant asterisk", true
+                11, 9, ruleId, "${Warnings.COMMENTED_BY_KDOC.warnText()} redundant asterisk", true
             )
         )
     }
