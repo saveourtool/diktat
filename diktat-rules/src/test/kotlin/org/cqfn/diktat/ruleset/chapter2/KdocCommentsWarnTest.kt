@@ -23,7 +23,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Test
     @Tag(WarningNames.COMMENTED_BY_KDOC)
     fun `Should warn if kdoc comment is inside code block`() {
-        lintMethod(
+        val code =
             """
                     |package org.cqfn.diktat.example
                     |
@@ -51,9 +51,12 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |        }
                     |    }
                     |}
-            """.trimMargin(),
-            LintError( 11, 9, ruleId,"${Warnings.COMMENTED_BY_KDOC.warnText()} " +
-                    "Redundant asterisk in block comment: \\**", true)
+            """.trimMargin()
+        lintMethod(
+            code,
+            LintError(
+                11, 9, ruleId, "${Warnings.COMMENTED_BY_KDOC.warnText()} " + "redundant asterisk", true
+            )
         )
     }
 
