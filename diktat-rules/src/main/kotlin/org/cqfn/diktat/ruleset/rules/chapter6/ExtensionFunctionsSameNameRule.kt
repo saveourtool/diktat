@@ -38,7 +38,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     listOf(EXTENSION_FUNCTION_SAME_SIGNATURE)
 ) {
     override fun logic(node: ASTNode) {
-        /**
+        /*
          * 1) Collect all classes that extend other classes (collect related classes)
          * 2) Collect all extension functions with same signature
          * 3) Check if classes of functions are related

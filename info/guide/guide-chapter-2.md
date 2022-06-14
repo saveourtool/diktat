@@ -33,7 +33,6 @@ Use a single-line form when you store the entire KDoc block in one line (and the
 #### <a name="r2.1.1"></a> 2.1.1 Using KDoc for the public, protected, or internal code elements
 
 At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
-Other code blocks can also have KDocs if needed.
 Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
 All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
 
@@ -83,6 +82,34 @@ fun isEmptyList(list: List<String>) = list.size == 0
 ```
 
 **Note:** You can skip KDocs for a method's override if it is almost the same as the superclass method.
+- 
+- Don't use Kdoc comments inside code blocks as block comments
+
+**Incorrect Example:**
+
+```kotlin
+class Example {
+  fun doGood() {
+    /**
+     * wrong place for kdoc
+     */
+    1 + 2
+  }
+}
+```
+
+**Correct Example:**
+
+```kotlin
+class Example {
+  fun doGood() {
+    /*
+     * right place for block comment
+    */
+    1 + 2
+  }
+}
+```
 
 #### <a name="r2.1.2"></a> 2.1.2 Describing methods that have arguments, a return value, or can throw an exception in the KDoc block
 
