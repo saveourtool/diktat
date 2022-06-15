@@ -105,7 +105,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 log.warn("Not going to check indentation because there are tabs")
             }
             checkNewlineAtEnd(node)
-            println(node.text)
         }
     }
 
@@ -178,18 +177,21 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode, context:IndentContext): Boolean {
+    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode): Boolean {
         val nextNode = nodeWhiteSpace.treeNext
-        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
-            nextNode
-        } else {
-            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
-        }
-        nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
-            if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
-                val openingQuote = positionByOffset(it.getFirstChildWithType(OPEN_QUOTE)?.startOffset?:0).second
-                val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text?.length ?: -1
-                return openingQuote == closingQuote
+        if (nextNode.elementType == VALUE_ARGUMENT) {
+            val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
+                nextNode
+            } else {
+                nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+            }
+            nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
+                if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
+                    val openingQuote = positionByOffset(it.getFirstChildWithType(OPEN_QUOTE)?.startOffset ?: 0).second
+                    val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text
+                        ?.length ?: -1
+                    return openingQuote == closingQuote
+                }
             }
         }
         return true
@@ -221,7 +223,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, context)
+        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode)
 
         if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
