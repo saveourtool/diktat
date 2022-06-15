@@ -178,15 +178,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun closeQuoterOffset(nodeWhiteSpace: ASTNode): Int {
-        val nextNode = nodeWhiteSpace.treeNext
-        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
-            nextNode
-        } else {
-            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
-        }
-        return nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text?.length ?: -1
-    }
+    private fun closeQuoterOffset(nodeWhiteSpace: ASTNode) =
+        nodeWhiteSpace.treeNext?.getFirstChildWithType(STRING_TEMPLATE)?.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text?.length ?: -1
 
     @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
@@ -217,7 +210,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val closeQuoterShift = closeQuoterOffset(astNode)
 
-        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || (closeQuoterShift != expectedIndent && closeQuoterShift > 0)) {
+        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || (closeQuoterShift != indentError.actual && closeQuoterShift > 0)) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
