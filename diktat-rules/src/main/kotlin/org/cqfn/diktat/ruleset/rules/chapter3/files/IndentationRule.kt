@@ -177,7 +177,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode): Boolean {
+    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode, expectedIndent: Int): Boolean {
         val nextNode = nodeWhiteSpace.treeNext
         if (nextNode.elementType == VALUE_ARGUMENT) {
             val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
@@ -187,10 +187,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
                 if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
-                    val openingQuote = positionByOffset(it.getFirstChildWithType(OPEN_QUOTE)?.startOffset ?: 0).second
                     val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text
                         ?.length ?: -1
-                    return openingQuote == closingQuote
+                    return expectedIndent == closingQuote
                 }
             }
         }
@@ -223,10 +222,16 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode)
+        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, expectedIndent)
 
-        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
+        if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
+                whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
+                checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
+                whiteSpace.node.indentBy(expectedIndent)
+            }
+        } else if (!difOffsetCloseAndOpenQuote){
+            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "the same number of indents to the opening and closing quotes was expected",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
                 whiteSpace.node.indentBy(expectedIndent)
