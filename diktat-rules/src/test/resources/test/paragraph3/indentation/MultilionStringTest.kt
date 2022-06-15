@@ -1,13 +1,46 @@
 package test.paragraph3.indentation
 
-fun checkScript() {
+//test of correct opening quotation mark and incorrect closing quotation mark
+fun multilionString() {
     lintMethod(
-                """
-                    |val A = "ASD"
-                            """.trimMargin(),
+            """
+                |val q = 1
+                |
+                        """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
     )
 }
 
-fun lintMethod(trimMargin: String, fileName: String) {
-    TODO("Not yet implemented")
+//test of incorrect opening quotation mark and incorrect closing quotation mark1
+fun multilionString() {
+    lintMethod(
+    """
+            |val q = 1
+            |
+    """.trimMargin(),
+        fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+    )
 }
+
+//test of incorrect opening quotation mark and incorrect closing quotation mark2
+fun multilionString() {
+    lintMethod(
+                """
+                        |val q = 1
+                        |
+                """.trimMargin(),
+        fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+    )
+}
+
+//test of incorrect opening quotation mark and incorrect closing quotation mark with incorrect shift
+fun multilionString() {
+    lintMethod(
+                """
+                        |val q = 1
+                        |
+                                """.trimMargin(),
+                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+    )
+}
+

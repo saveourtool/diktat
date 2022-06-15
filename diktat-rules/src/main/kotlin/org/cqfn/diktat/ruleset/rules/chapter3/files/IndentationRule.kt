@@ -22,6 +22,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -32,6 +33,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_END
 import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_START
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
+import com.pinterest.ktlint.core.ast.ElementType.OPEN_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
@@ -79,6 +81,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     private lateinit var filePath: String
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
+    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -175,9 +178,20 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun closeQuoterOffset(nodeWhiteSpace: ASTNode): Int {
+        val nextNode = nodeWhiteSpace.treeNext
+        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
+            nextNode
+        } else {
+            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+        }
+        return nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text?.length ?: -1
+    }
+
     @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
         context.maybeIncrement()
+        positionByOffset = astNode.treeParent.calculateLineColByOffset()
 
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.elementType in decreasingTokens) {
@@ -201,7 +215,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
+        val closeQuoterShift = closeQuoterOffset(astNode)
+
+        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || (closeQuoterShift != expectedIndent && closeQuoterShift > 0)) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
