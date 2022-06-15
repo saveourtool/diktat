@@ -59,7 +59,10 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule(NAME_ID) {
 
     private fun checkScript(node: ASTNode) {
         val isLambdaArgument = node.firstChildNode.hasChildOfType(LAMBDA_ARGUMENT)
-        val isLambdaInsideValueArgument = node.firstChildNode.findChildByType(VALUE_ARGUMENT_LIST)?.findChildByType(VALUE_ARGUMENT)?.findChildByType(LAMBDA_EXPRESSION) != null
+        val isLambdaInsideValueArgument = node.firstChildNode
+            .findChildByType(VALUE_ARGUMENT_LIST)
+            ?.findChildByType(VALUE_ARGUMENT)
+            ?.findChildByType(LAMBDA_EXPRESSION) != null
         if (!isLambdaArgument && !isLambdaInsideValueArgument) {
             warnRunInScript(node)
         }

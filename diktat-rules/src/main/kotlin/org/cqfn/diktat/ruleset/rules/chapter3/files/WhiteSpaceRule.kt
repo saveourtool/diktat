@@ -337,12 +337,18 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             else -> {
             }
         }
-        val isDeclaration = node.treeParent.elementType == VALUE_PARAMETER_LIST && node.treeParent.treeParent.elementType.let {
-            it == PRIMARY_CONSTRUCTOR || it == FUN || it == CALL_EXPRESSION
-        }
-        val isCall = node.treeParent.elementType == VALUE_ARGUMENT_LIST && node.treeParent.treeParent.elementType.let {
-            it == CONSTRUCTOR_DELEGATION_CALL || it == CALL_EXPRESSION
-        }
+        val isDeclaration = node.treeParent.elementType == VALUE_PARAMETER_LIST && node.treeParent
+            .treeParent
+            .elementType
+            .let {
+                it == PRIMARY_CONSTRUCTOR || it == FUN || it == CALL_EXPRESSION
+            }
+        val isCall = node.treeParent.elementType == VALUE_ARGUMENT_LIST && node.treeParent
+            .treeParent
+            .elementType
+            .let {
+                it == CONSTRUCTOR_DELEGATION_CALL || it == CALL_EXPRESSION
+            }
         if (isDeclaration || isCall) {
             handleToken(node, 0, 0)
         } else {
