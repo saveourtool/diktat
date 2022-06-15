@@ -243,11 +243,16 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         actualIndent: Int
     ) {
         val nextNode = whiteSpace.node.treeNext
-        if (nextNode != null &&
-            nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
-            nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
-            nextNode.firstChildNode.text.startsWith("\"\"\"") &&
-            nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
+            nextNode
+        } else {
+            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+        }
+        if (nextNodeDot != null &&
+            nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
+            nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
+            nextNodeDot.firstChildNode.text.startsWith("\"\"\"") &&
+            nextNodeDot.findChildByType(CALL_EXPRESSION)?.text?.let {
                 it == "trimIndent()" ||
                     it == "trimMargin()"
             } == true) {
