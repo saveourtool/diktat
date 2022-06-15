@@ -7,18 +7,22 @@ import org.slf4j.LoggerFactory
 
 import java.io.File
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.ArrayList
-import java.util.stream.Collectors
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.name
+import kotlin.io.path.readLines
 
 /**
  * A class that is capable of comparing files content
  */
-class FileComparator {
-    private val expectedResultFile: File
-    private val actualResultList: List<String>
+class FileComparator(
+    private val expectedResultFile: Path,
+    private val expectedResultList: List<String> = readFile(expectedResultFile),
+    private val actualResultFile: Path,
+    private val actualResultList: List<String> = readFile(actualResultFile)
+) {
     private val diffGenerator = DiffRowGenerator(
+        columnWidth = Int.MAX_VALUE,
         showInlineDiffs = true,
         mergeOriginalRevised = false,
         inlineDiffByWord = false,
@@ -26,15 +30,21 @@ class FileComparator {
         newTag = { _, start -> if (start) "<" else ">" },
     )
 
-    constructor(expectedResultFile: File, actualResultList: List<String>) {
-        this.expectedResultFile = expectedResultFile
-        this.actualResultList = actualResultList
-    }
+    constructor(
+        expectedResultFile: File,
+        actualResultList: List<String>
+    ) : this(
+        expectedResultFile.toPath(),
+        actualResultFile = Path("No file name.kt"),
+        actualResultList = actualResultList
+    )
 
-    constructor(expectedResultFile: File, actualResultFile: File) {
-        this.expectedResultFile = expectedResultFile
-        this.actualResultList = readFile(actualResultFile.absolutePath)
-    }
+    constructor(
+        expectedResultFile: File,
+        actualResultFile: File
+    ) : this(
+        expectedResultFile.toPath(),
+        actualResultFile = actualResultFile.toPath())
 
     /**
      * @return true in case files are different
@@ -47,12 +57,11 @@ class FileComparator {
     )
     fun compareFilesEqual(): Boolean {
         try {
-            val expect = readFile(expectedResultFile.absolutePath)
-            if (expect.isEmpty()) {
+            if (expectedResultList.isEmpty()) {
                 return false
             }
             val regex = (".*// ;warn:(\\d+):(\\d+): (.*)").toRegex()
-            val expectWithoutWarn = expect.filterNot { line ->
+            val expectWithoutWarn = expectedResultList.filterNot { line ->
                 line.contains(regex)
             }
             val patch = diff(expectWithoutWarn, actualResultList)
@@ -75,32 +84,31 @@ class FileComparator {
             }
 
             log.error("""
-                |Expected result from <${expectedResultFile.name}> and actual formatted are different.
+                |Expected result from <${expectedResultFile.name}> and <${actualResultFile.name}> formatted are different.
                 |See difference below:
                 |$joinedDeltas
                 """.trimMargin()
             )
         } catch (e: RuntimeException) {
-            log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <$actualResultList>", e)
+            log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultFile.name}>", e)
         }
         return false
     }
 
-    /**
-     * @param fileName - file where to write these list to, separated with newlines
-     * @return a list of lines from the file
-     */
-    private fun readFile(fileName: String): List<String> {
-        var list: List<String> = ArrayList()
-        try {
-            Files.newBufferedReader(Paths.get(fileName)).use { list = it.lines().collect(Collectors.toList()) }
-        } catch (e: IOException) {
-            log.error("Not able to read file: $fileName")
-        }
-        return list
-    }
-
     companion object {
         private val log = LoggerFactory.getLogger(FileComparator::class.java)
+
+        /**
+         * @param file file where to write these list to, separated with newlines.
+         * @return a list of lines from the file, or an empty list if an I/O error
+         *   has occurred.
+         */
+        private fun readFile(file: Path): List<String> =
+            try {
+                file.readLines()
+            } catch (e: IOException) {
+                log.error("Not able to read file: $file")
+                emptyList()
+            }
     }
 }
