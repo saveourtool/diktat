@@ -40,7 +40,6 @@ import java.time.LocalDate
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.encodeToString
 
 typealias RuleToConfig = Map<String, Map<String, String>>
 
@@ -292,11 +291,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).noneMatch {
             it.ruleId == "diktat-ruleset:local-variables"
         }
-    }
-
-    @Test
-    fun `multilion string`() {
-        fixAndCompareSmokeTest("MultilionStringExpected.kt", "MultilionStringTest.kt")
     }
 
     companion object {
