@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
@@ -20,26 +21,63 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
 
     @Test
+    @Tag(WarningNames.COMMENTED_BY_KDOC)
+    fun `Should warn if kdoc comment is inside code block`() {
+        val code =
+            """
+                    |package org.cqfn.diktat.example
+                    |
+                    |/**
+                    |  * right place for kdoc
+                    |  */
+                    |class Example {
+                    |/**
+                    |  * right place for kdoc
+                    |  */
+                    |    fun doGood(){
+                    |        /**
+                    |         * wrong place for kdoc
+                    |         */
+                    |        1+2
+                    |        /**
+                    |         * right place for kdoc
+                    |         */
+                    |        fun prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
+                    |            return "test"
+                    |        }
+                    |    }
+                    |}
+            """.trimMargin()
+        lintMethod(
+            code,
+            LintError(
+                11, 9, ruleId, "${Warnings.COMMENTED_BY_KDOC.warnText()} Redundant asterisk in block comment: \\**", true
+            )
+        )
+    }
+
+    @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `all public classes should be documented with KDoc`() {
         val code =
-                """
-                    class SomeGoodName {
-                        private class InternalClass {
-                        }
+            """
+                class SomeGoodName {
+                    private class InternalClass {
                     }
+                }
 
-                    public open class SomeOtherGoodName {
-                    }
+                public open class SomeOtherGoodName {
+                }
 
-                    open class SomeNewGoodName {
-                    }
+                open class SomeNewGoodName {
+                }
 
-                    public class SomeOtherNewGoodName {
-                    }
+                public class SomeOtherNewGoodName {
+                }
 
-                """.trimIndent()
-        lintMethod(code,
+            """.trimIndent()
+        lintMethod(
+            code,
             LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
             LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
             LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
@@ -51,12 +89,14 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `all internal classes should be documented with KDoc`() {
         val code =
-                """
-                    internal class SomeGoodName {
-                    }
-                """.trimIndent()
-        lintMethod(code, LintError(
-            1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
+            """
+                internal class SomeGoodName {
+                }
+            """.trimIndent()
+        lintMethod(
+            code, LintError(
+                1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"
+            )
         )
     }
 
@@ -64,17 +104,18 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `all internal and public functions on top-level should be documented with Kdoc`() {
         val code =
-                """
-                    fun someGoodName() {
-                    }
+            """
+                fun someGoodName() {
+                }
 
-                    internal fun someGoodNameNew(): String {
-                        return " ";
-                    }
-                    
-                    fun main() {}
-                """.trimIndent()
-        lintMethod(code,
+                internal fun someGoodNameNew(): String {
+                    return " ";
+                }
+
+                fun main() {}
+            """.trimIndent()
+        lintMethod(
+            code,
             LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
             LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
@@ -84,10 +125,10 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `all internal and public functions on top-level should be documented with Kdoc (positive case)`() {
         val code =
-                """
-                    private fun someGoodName() {
-                    }
-                """.trimIndent()
+            """
+                private fun someGoodName() {
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
@@ -95,10 +136,10 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `positive Kdoc case with private class`() {
         val code =
-                """
-                    private class SomeGoodName {
-                    }
-                """.trimIndent()
+            """
+                private class SomeGoodName {
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
@@ -106,29 +147,30 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `Kdoc should present for each class element`() {
         val code =
-                """
-                    /**
-                    * class that contains fields, functions and public subclasses
-                    **/
-                    class SomeGoodName {
-                        val variable: String = ""
-                        private val privateVariable: String = ""
-                        fun perfectFunction() {
-                        }
-
-                        private fun privateFunction() {
-                        }
-
-                        class InternalClass {
-                        }
-
-                        private class InternalClass {
-                        }
-                        
-                        public fun main() {}
+            """
+                /**
+                * class that contains fields, functions and public subclasses
+                **/
+                class SomeGoodName {
+                    val variable: String = ""
+                    private val privateVariable: String = ""
+                    fun perfectFunction() {
                     }
-                """.trimIndent()
-        lintMethod(code,
+
+                    private fun privateFunction() {
+                    }
+
+                    class InternalClass {
+                    }
+
+                    private class InternalClass {
+                    }
+
+                    public fun main() {}
+                }
+            """.trimIndent()
+        lintMethod(
+            code,
             LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
             LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
             LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
@@ -139,30 +181,31 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `Kdoc shouldn't not be mandatory for overridden functions and props`() {
         val code =
-                """
-                    /**
-                    * class that contains fields, functions and public subclasses
-                    **/
-                    class SomeGoodName : Another {
-                        val variable: String = ""
-                        private val privateVariable: String = ""
-                        override val someVal: String = ""
-                        fun perfectFunction() {
-                        }
-
-                        override fun overrideFunction() {
-                        }
-
-                        class InternalClass {
-                        }
-
-                        private class InternalClass {
-                        }
-                        
-                        public fun main() {}
+            """
+                /**
+                * class that contains fields, functions and public subclasses
+                **/
+                class SomeGoodName : Another {
+                    val variable: String = ""
+                    private val privateVariable: String = ""
+                    override val someVal: String = ""
+                    fun perfectFunction() {
                     }
-                """.trimIndent()
-        lintMethod(code,
+
+                    override fun overrideFunction() {
+                    }
+
+                    class InternalClass {
+                    }
+
+                    private class InternalClass {
+                    }
+
+                    public fun main() {}
+                }
+            """.trimIndent()
+        lintMethod(
+            code,
             LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
             LintError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
             LintError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
@@ -193,44 +236,45 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                         private class InternalClass {
                         }
                     }
-                """.trimIndent())
+                """.trimIndent()
+        )
     }
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `Kdoc should present for each class element (positive)`() {
         val code =
-                """
+            """
+                /**
+                * class that contains fields, functions and public subclasses
+                **/
+                class SomeGoodName {
                     /**
                     * class that contains fields, functions and public subclasses
                     **/
-                    class SomeGoodName {
-                        /**
-                        * class that contains fields, functions and public subclasses
-                        **/
-                        val variable: String = ""
+                    val variable: String = ""
 
-                        private val privateVariable: String = ""
+                    private val privateVariable: String = ""
 
-                        /**
-                        * class that contains fields, functions and public subclasses
-                        **/
-                        fun perfectFunction() {
-                        }
-
-                        private fun privateFunction() {
-                        }
-
-                        /**
-                        * class that contains fields, functions and public subclasses
-                        **/
-                        class InternalClass {
-                        }
-
-                        private class InternalClass {
-                        }
+                    /**
+                    * class that contains fields, functions and public subclasses
+                    **/
+                    fun perfectFunction() {
                     }
-                """.trimIndent()
+
+                    private fun privateFunction() {
+                    }
+
+                    /**
+                    * class that contains fields, functions and public subclasses
+                    **/
+                    class InternalClass {
+                    }
+
+                    private class InternalClass {
+                    }
+                }
+            """.trimIndent()
         lintMethod(code)
     }
 
@@ -374,7 +418,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |    * some descriptions
                     |    * @return fdv
                     |    */
-                    |    
+                    |
                     |   val name: String,
                     |   anotherName: String,
                     |   OneMoreName: String
@@ -398,7 +442,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |    * sdcjkh
                     |    * @property name text2
                     |    */
-                    |   val name: String, 
+                    |   val name: String,
                     |   ) {
                     |}
                 """.trimMargin(),
@@ -415,7 +459,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | * text
                     | */
                     |class Example (
-                    |   private val name: String, 
+                    |   private val name: String,
                     |   ) {
                     |}
                 """.trimMargin()
@@ -432,7 +476,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | * @property
                     | */
                     |class Example (
-                    |   val name: String, 
+                    |   val name: String,
                     |   ) {
                     |}
                 """.trimMargin(),
@@ -447,7 +491,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
         lintMethod(
             """
                     |class Example (
-                    |   val name: String, 
+                    |   val name: String,
                     |   private val surname: String
                     |   ) {
                     |}
@@ -467,7 +511,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | * @property kek
                     | */
                     |class Example (
-                    |   val name: String, 
+                    |   val name: String,
                     |   private val surname: String
                     |   ) {
                     |}

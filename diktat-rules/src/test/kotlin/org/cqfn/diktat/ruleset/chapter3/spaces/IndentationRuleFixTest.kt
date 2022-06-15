@@ -17,7 +17,8 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 "newlineAtEnd" to "true",  // expected file should have two newlines at end in order to be read by BufferedReader correctly
                 "extendedIndentOfParameters" to "true",
                 "alignedParameters" to "true",
-                "extendedIndentAfterOperators" to "true"
+                "extendedIndentAfterOperators" to "true",
+                "extendedIndentBeforeDot" to "true",
             )
         )
     )

@@ -69,6 +69,6 @@ private fun ASTNode.argList(): ASTNode? {
 }
 
 private fun checkNodeIsFun(node: ASTNode) =
-        require(node.elementType == ElementType.FUN) {
-            "This utility method operates on nodes of type ElementType.FUN only"
-        }
+    require(node.elementType == ElementType.FUN) {
+        "This utility method operates on nodes of type ElementType.FUN only"
+    }

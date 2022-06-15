@@ -89,6 +89,7 @@ enum class Warnings(
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "2.2.1", "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "2.2.1", "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "2.4.2", "you should not comment out code, use VCS to save it in history and delete this block"),
+    COMMENTED_BY_KDOC(true, "2.1.1", "you should not comment inside code blocks using kdoc syntax"),
     WRONG_NEWLINES_AROUND_KDOC(true, "2.4.1", "there should be a blank line above the kDoc and there should not be no blank lines after kDoc"),
     FIRST_COMMENT_NO_BLANK_LINE(true, "2.4.1", "there should not be any blank lines before first comment"),
     COMMENT_WHITE_SPACE(true, "2.4.1", "there should be a white space between code and comment also between code start token and comment text"),
@@ -105,7 +106,7 @@ enum class Warnings(
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(true, "3.2.1", "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(true, "3.1.4", "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(true, "3.1.4", "there should be no blank lines between properties without comments; comment, KDoc or annotation on property should have blank" +
-            " line before"),
+        " line before"),
     TOP_LEVEL_ORDER(true, "3.1.5", "the declaration part of a top level elements should be in the proper order"),
     BRACES_BLOCK_STRUCTURE_ERROR(true, "3.2.2", "braces should follow 1TBS style"),
     WRONG_INDENTATION(true, "3.3.1", "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
@@ -136,7 +137,7 @@ enum class Warnings(
     FILE_NAME_MATCH_CLASS(true, "3.1.2", "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
     COLLAPSE_IF_STATEMENTS(true, "3.16.1", "avoid using redundant nested if-statements, which could be collapsed into a single one"),
     CONVENTIONAL_RANGE(true, "3.17.1", "use conventional rule for range case"),
-    DEBUG_PRINT(false, "3.18.1", "use a dedicate logging library"),
+    DEBUG_PRINT(false, "3.18.1", "use a dedicated logging library"),
 
     // ======== chapter 4 ========
     NULLABLE_PROPERTY_TYPE(true, "4.3.1", "try to avoid use of nullable types"),

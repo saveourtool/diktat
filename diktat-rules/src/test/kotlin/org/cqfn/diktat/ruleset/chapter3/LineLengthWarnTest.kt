@@ -24,11 +24,11 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
             mapOf("lineLength" to "40"))
     )
     private val wrongUrl = "dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
-            "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
-            "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
+        "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
+        "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
     private val correctUrl = "https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
-            "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
-            "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
+        "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
+        "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
 
     @Test
     @Tag(WarningNames.LONG_LINE)

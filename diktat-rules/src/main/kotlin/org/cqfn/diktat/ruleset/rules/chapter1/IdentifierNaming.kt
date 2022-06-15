@@ -169,7 +169,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 // check if identifier of a property has a confusing name
                 if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
-                        node.elementType == ElementType.PROPERTY
+                    node.elementType == ElementType.PROPERTY
                 ) {
                     warnConfusingName(variableName)
                 }
@@ -193,7 +193,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                             ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }
                         if (variableName.treeParent.psi.run {
                             (this is KtProperty && isMember) ||
-                                    (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
+                                (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
                         }) {
                             // For class members also check `@property` KDoc tag.
                             // If we are here, then `variableName` is definitely a node from a class or an object.
@@ -257,7 +257,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                 .map { it.getIdentifierName()!! }
         } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
-                node.treeParent.treeParent.elementType == FUNCTION_TYPE
+            node.treeParent.treeParent.elementType == FUNCTION_TYPE
         ) {
             listOfNotNull(node.getIdentifierName())
         } else {
@@ -371,8 +371,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
      * 4) backticks are prohibited in the naming of non-test methods
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun checkFunctionName(node: ASTNode): List<ASTNode> {
-        val functionName = node.getIdentifierName()!!
+    private fun checkFunctionName(node: ASTNode): List<ASTNode>? {
+        val functionName = node.getIdentifierName() ?: return null
 
         // basic check for camel case
         if (!functionName.text.isLowerCamelCase()) {
@@ -434,7 +434,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         nodes.forEach {
             val isValidOneCharVariable = oneCharIdentifiers.contains(it.text) && isVariable
             if (it.text != "_" && !it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) &&
-                    !isValidOneCharVariable && !isValidCatchIdentifier(it)
+                !isValidOneCharVariable && !isValidCatchIdentifier(it)
             ) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
             }

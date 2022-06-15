@@ -17,7 +17,7 @@ class DummyWarning(configRules: List<RulesConfig>) : DiktatRule(
         Warnings.FILE_NAME_MATCH_CLASS
     )
 ) {
-    @Suppress("UNUSED")
+    @Suppress("UNUSED", "VarCouldBeVal")
     private lateinit var filePath: String
 
     @Suppress("EmptyFunctionBlock")

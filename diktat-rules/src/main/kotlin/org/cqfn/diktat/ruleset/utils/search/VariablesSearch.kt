@@ -103,11 +103,11 @@ abstract class VariablesSearch(val node: ASTNode,
             // FixMe: in class or a file the declaration can easily go after the usage (by lines of code)
             block.getChildrenOfType<KtProperty>()
                 .any { it.nameAsName == property.nameAsName && expression.node.isGoingAfter(it.node) } ||
-                    block.parent
-                        .let { it as? KtFunctionLiteral }
-                        ?.valueParameters
-                        ?.any { it.nameAsName == property.nameAsName }
-                        ?: false
+                block.parent
+                    .let { it as? KtFunctionLiteral }
+                    ?.valueParameters
+                    ?.any { it.nameAsName == property.nameAsName }
+                    ?: false
             // FixMe: also see very strange behavior of Kotlin in tests (disabled)
         }
 }

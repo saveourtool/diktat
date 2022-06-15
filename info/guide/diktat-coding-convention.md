@@ -501,6 +501,33 @@ class Example(
   val bar: Bar
 )
 ```
+- Don't use Kdoc comments inside code blocks as block comments
+
+**Incorrect Example:**
+
+```kotlin
+class Example {
+  fun doGood() {
+    /**
+     * wrong place for kdoc
+     */
+    1 + 2
+  }
+}
+```
+
+**Correct Example:**
+
+```kotlin
+class Example {
+  fun doGood() {
+    /*
+     * right place for block comment
+    */
+    1 + 2
+  }
+}
+```
 
 **Exceptions:**
 

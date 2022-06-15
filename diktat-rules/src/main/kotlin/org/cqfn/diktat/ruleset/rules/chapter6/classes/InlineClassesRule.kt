@@ -33,9 +33,9 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     override fun logic(node: ASTNode) {
         val configuration = configRules.getCommonConfiguration()
         if (node.elementType == CLASS &&
-                !(node.psi as KtClass).isInterface() &&
-                configuration.kotlinVersion >= minKtVersion &&
-                configuration.kotlinVersion < maxKtVersion
+            !(node.psi as KtClass).isInterface() &&
+            configuration.kotlinVersion >= minKtVersion &&
+            configuration.kotlinVersion < maxKtVersion
         ) {
             handleClasses(node.psi as KtClass)
         }
@@ -44,8 +44,8 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleClasses(classPsi: KtClass) {
         // Fixme: In Kotlin 1.4.30 inline classes may be used with internal constructors. When it will be released need to check it
         if (hasValidProperties(classPsi) &&
-                !isExtendingClass(classPsi.node) &&
-                classPsi.node.getFirstChildWithType(MODIFIER_LIST)?.getChildren(null)?.all { it.elementType in goodModifiers } != false) {
+            !isExtendingClass(classPsi.node) &&
+            classPsi.node.getFirstChildWithType(MODIFIER_LIST)?.getChildren(null)?.all { it.elementType in goodModifiers } != false) {
             // Fixme: since it's an experimental feature we shouldn't do fixer
             INLINE_CLASS_CAN_BE_USED.warn(configRules, emitWarn, isFixMode, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node)
         }
@@ -56,18 +56,18 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
             return !classPsi.getProperties().single().isVar
         } else if (classPsi.getProperties().isEmpty() && classPsi.hasExplicitPrimaryConstructor()) {
             return classPsi.primaryConstructorParameters.size == 1 &&
-                    !classPsi.primaryConstructorParameters.first().node.hasChildOfType(VAR_KEYWORD) &&
-                    classPsi.primaryConstructor?.visibilityModifierType()?.value?.let { it == "public" } ?: true
+                !classPsi.primaryConstructorParameters.first().node.hasChildOfType(VAR_KEYWORD) &&
+                classPsi.primaryConstructor?.visibilityModifierType()?.value?.let { it == "public" } ?: true
         }
         return false
     }
 
     private fun isExtendingClass(node: ASTNode): Boolean =
-            node
-                .getFirstChildWithType(SUPER_TYPE_LIST)
-                ?.children()
-                ?.any { it.hasChildOfType(CONSTRUCTOR_CALLEE) }
-                ?: false
+        node
+            .getFirstChildWithType(SUPER_TYPE_LIST)
+            ?.children()
+            ?.any { it.hasChildOfType(CONSTRUCTOR_CALLEE) }
+            ?: false
 
     companion object {
         const val NAME_ID = "aaw-inline-classes"
