@@ -109,20 +109,20 @@ class TestComparatorUnit(private val resourceFilePath: String,
             expectedFileContent.joinToString("\n"))
     }
 
-    /**
-     * @param file the file whose content is to be read.
-     * @return file content as a list of lines, or an empty list if an I/O error
-     *   has occurred.
-     */
-    private fun readFile(file: Path): List<String> =
-        try {
-            file.readLines()
-        } catch (e: IOException) {
-            log.error("Not able to read file: $file")
-            emptyList()
-        }
+    private companion object {
+        private val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
 
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
+        /**
+         * @param file the file whose content is to be read.
+         * @return file content as a list of lines, or an empty list if an I/O error
+         *   has occurred.
+         */
+        private fun readFile(file: Path): List<String> =
+            try {
+                file.readLines()
+            } catch (e: IOException) {
+                log.error("Not able to read file: $file")
+                emptyList()
+            }
     }
 }
