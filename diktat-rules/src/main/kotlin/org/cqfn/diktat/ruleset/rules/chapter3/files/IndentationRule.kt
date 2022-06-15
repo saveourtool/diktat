@@ -178,14 +178,27 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun closeQuoterOffset(nodeWhiteSpace: ASTNode) =
-        nodeWhiteSpace.treeNext?.getFirstChildWithType(STRING_TEMPLATE)?.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text?.length ?: -1
+    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode, context:IndentContext): Boolean {
+        val nextNode = nodeWhiteSpace.treeNext
+        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
+            nextNode
+        } else {
+            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+        }
+        nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
+            if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
+                val openingQuote = positionByOffset(it.getFirstChildWithType(OPEN_QUOTE)?.startOffset?:0).second
+                val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text?.length ?: -1
+                return openingQuote == closingQuote
+            }
+        }
+        return true
+    }
 
     @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
         context.maybeIncrement()
         positionByOffset = astNode.treeParent.calculateLineColByOffset()
-
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.elementType in decreasingTokens) {
             // if newline is followed by closing token, it should already be indented less
@@ -208,9 +221,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        val closeQuoterShift = closeQuoterOffset(astNode)
+        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, context)
 
-        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || (closeQuoterShift != indentError.actual && closeQuoterShift > 0)) {
+        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
