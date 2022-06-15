@@ -22,6 +22,7 @@ class FileComparator(
     private val actualResultList: List<String> = readFile(actualResultFile)
 ) {
     private val diffGenerator = DiffRowGenerator(
+        columnWidth = Int.MAX_VALUE,
         showInlineDiffs = true,
         mergeOriginalRevised = false,
         inlineDiffByWord = false,
