@@ -9,6 +9,12 @@ import org.junit.jupiter.api.Test
 
 class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments) {
     @Test
+    @Tag(WarningNames.COMMENTED_BY_KDOC)
+    fun `check fix code block with kdoc comment`() {
+        fixAndCompare("KdocBlockCommentExpected.kt", "KdocBlockCommentTest.kt")
+    }
+
+    @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check fix with class kdoc`() {
         fixAndCompare("ConstructorCommentExpected.kt", "ConstructorCommentTest.kt")

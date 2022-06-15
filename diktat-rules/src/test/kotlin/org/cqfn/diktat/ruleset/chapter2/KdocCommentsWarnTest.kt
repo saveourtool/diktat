@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
@@ -18,6 +19,42 @@ import org.junit.jupiter.api.Test
 
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
+
+    @Test
+    @Tag(WarningNames.COMMENTED_BY_KDOC)
+    fun `Should warn if kdoc comment is inside code block`() {
+        val code =
+            """
+                    |package org.cqfn.diktat.example
+                    |
+                    |/**
+                    |  * right place for kdoc
+                    |  */
+                    |class Example {
+                    |/**
+                    |  * right place for kdoc
+                    |  */
+                    |    fun doGood(){
+                    |        /**
+                    |         * wrong place for kdoc
+                    |         */
+                    |        1+2
+                    |        /**
+                    |         * right place for kdoc
+                    |         */
+                    |        fun prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
+                    |            return "test"
+                    |        }
+                    |    }
+                    |}
+            """.trimMargin()
+        lintMethod(
+            code,
+            LintError(
+                11, 9, ruleId, "${Warnings.COMMENTED_BY_KDOC.warnText()} Redundant asterisk in block comment: \\**", true
+            )
+        )
+    }
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
@@ -39,7 +76,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 }
 
             """.trimIndent()
-        lintMethod(code,
+        lintMethod(
+            code,
             LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
             LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
             LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
@@ -55,8 +93,10 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 internal class SomeGoodName {
                 }
             """.trimIndent()
-        lintMethod(code, LintError(
-            1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
+        lintMethod(
+            code, LintError(
+                1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"
+            )
         )
     }
 
@@ -71,10 +111,11 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 internal fun someGoodNameNew(): String {
                     return " ";
                 }
-                
+
                 fun main() {}
             """.trimIndent()
-        lintMethod(code,
+        lintMethod(
+            code,
             LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
             LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
@@ -124,11 +165,12 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
 
                     private class InternalClass {
                     }
-                    
+
                     public fun main() {}
                 }
             """.trimIndent()
-        lintMethod(code,
+        lintMethod(
+            code,
             LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
             LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
             LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
@@ -158,11 +200,12 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
 
                     private class InternalClass {
                     }
-                    
+
                     public fun main() {}
                 }
             """.trimIndent()
-        lintMethod(code,
+        lintMethod(
+            code,
             LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
             LintError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
             LintError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
@@ -193,7 +236,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                         private class InternalClass {
                         }
                     }
-                """.trimIndent())
+                """.trimIndent()
+        )
     }
 
     @Test
@@ -374,7 +418,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |    * some descriptions
                     |    * @return fdv
                     |    */
-                    |    
+                    |
                     |   val name: String,
                     |   anotherName: String,
                     |   OneMoreName: String
@@ -398,7 +442,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |    * sdcjkh
                     |    * @property name text2
                     |    */
-                    |   val name: String, 
+                    |   val name: String,
                     |   ) {
                     |}
                 """.trimMargin(),
@@ -415,7 +459,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | * text
                     | */
                     |class Example (
-                    |   private val name: String, 
+                    |   private val name: String,
                     |   ) {
                     |}
                 """.trimMargin()
@@ -432,7 +476,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | * @property
                     | */
                     |class Example (
-                    |   val name: String, 
+                    |   val name: String,
                     |   ) {
                     |}
                 """.trimMargin(),
@@ -447,7 +491,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
         lintMethod(
             """
                     |class Example (
-                    |   val name: String, 
+                    |   val name: String,
                     |   private val surname: String
                     |   ) {
                     |}
@@ -467,7 +511,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | * @property kek
                     | */
                     |class Example (
-                    |   val name: String, 
+                    |   val name: String,
                     |   private val surname: String
                     |   ) {
                     |}

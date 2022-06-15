@@ -7,7 +7,7 @@
     # testDirs: test
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.6
+    kotlinVersion: 1.7
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -99,6 +99,9 @@
   enabled: true
 # Checks that underscore is correctly used to split package naming
 - name: INCORRECT_PACKAGE_SEPARATOR
+  enabled: true
+# Checks that code block doesn't contain kdoc comments
+- name: COMMENTED_BY_KDOC
   enabled: true
 # Checks that there is no @deprecated tag in kdoc
 - name: KDOC_NO_DEPRECATED_TAG
