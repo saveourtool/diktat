@@ -96,7 +96,10 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.elementType == ARRAY_ACCESS_EXPRESSION
 
         return if (onlyOneRefExpr && !isArrayAccessExpression) {
-            (!(node.treeNext.text.first().isLetterOrDigit()  // checking if first letter is valid
+            (!(node.treeNext
+                .text
+                .first()
+                .isLetterOrDigit()  // checking if first letter is valid
                 || node.treeNext.text.startsWith("_")) || node.treeNext.elementType == CLOSING_QUOTE)
         } else if (!isArrayAccessExpression) {
             node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT)  // it also fixes "${1.0}asd" cases

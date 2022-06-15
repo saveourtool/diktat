@@ -202,7 +202,10 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // Check if provided copyright node differs only in the first date from pattern
     private fun isCopyRightTextMatchesPattern(copyrightNode: ASTNode?, copyrightPattern: String): Boolean {
-        val copyrightText = copyrightNode?.text?.replace("/*", "")?.replace("*/", "")?.replace("*", "")
+        val copyrightText = copyrightNode?.text
+            ?.replace("/*", "")
+            ?.replace("*/", "")
+            ?.replace("*", "")
 
         val datesInPattern = hyphenRegex.find(copyrightPattern)?.value
         val datesInCode = copyrightText?.let { hyphenRegex.find(it)?.value }
