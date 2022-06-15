@@ -10,7 +10,7 @@
     # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.6
+    kotlinVersion: 1.7
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
