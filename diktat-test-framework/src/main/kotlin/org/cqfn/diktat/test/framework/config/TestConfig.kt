@@ -31,7 +31,7 @@ class TestConfig internal constructor(
 
     // FixMe: not used by for now, fix the description when the class will be ready
     override fun toString() =
-        """(executionCommand: $executionCommand, expectedResultFile: $expectedResultFile, inPlace: $inPlace,
+            """(executionCommand: $executionCommand, expectedResultFile: $expectedResultFile, inPlace: $inPlace,
                     executionType: $executionCommand)"""
 
     /**
