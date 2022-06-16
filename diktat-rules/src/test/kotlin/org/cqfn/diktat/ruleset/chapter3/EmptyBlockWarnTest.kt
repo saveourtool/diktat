@@ -34,7 +34,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    else {
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
@@ -50,7 +50,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    }
                     |    else {}
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
             rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
@@ -63,7 +63,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
             """
                     |override fun foo() {
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -79,7 +79,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    else {
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
@@ -91,7 +91,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |fun foo() {
                     |   if (node.treeParent != null) return
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -102,7 +102,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |fun foo() {
                     |   run { }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
@@ -114,7 +114,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |fun foo() {
                     |   if (node.treeParent != null) return else println(true)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -128,7 +128,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |   while (x > 0)
                     |       --x
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -138,9 +138,9 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
         lintMethod(
             """
                 |fun foo() {
-                |   val y = listOf<Int>().map { 
-                |   
-                |   } 
+                |   val y = listOf<Int>().map {
+                |
+                |   }
                 |}
             """.trimMargin(),
             LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} do not put newlines in empty lambda", true),
@@ -153,9 +153,9 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
         lintMethod(
             """
                     |fun foo() {
-                    |   val y = listOf<Int>().map { } 
+                    |   val y = listOf<Int>().map { }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }

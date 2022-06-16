@@ -22,7 +22,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |   fun stringInfo(myString: String): Int {
                     |       return myString.count{ "something".contains(it) }
                     |   }
-                    |}   
+                    |}
                     |
                     |class A() {
                     |   fun foo() { }
@@ -40,7 +40,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |       return myString.count{ "something".contains(it) }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtil"),
             LintError(11, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
@@ -76,7 +76,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |       return myString.count{ "something".contains(it) }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
@@ -89,11 +89,11 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     fun foo() {
                         window.addMouseListener(object : MouseAdapter() {
                             override fun mouseClicked(e: MouseEvent) { /*...*/ }
-                        
+
                             override fun mouseEntered(e: MouseEvent) { /*...*/ }
                         })
                     }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -107,7 +107,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |       return myString.count{ "something".contains(it) }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
         )
@@ -119,7 +119,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |       return myString.count{ "something".contains(it) }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
         )
         lintMethod(
@@ -129,7 +129,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |       return myString.count{ "something".contains(it) }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             fileName = "src/test/kotlin/org/cqfn/diktat/UtilTest.kt"
         )
     }

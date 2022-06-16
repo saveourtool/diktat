@@ -29,7 +29,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |       }
                     |       set(value) { field = value }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -49,7 +49,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |       }
                     |       set(value) { field = value }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
         )
     }
@@ -63,7 +63,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |   private var _a: Map<String, Int>? = null
                     |   private val _some:Int? = null
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -77,7 +77,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |   private val some:Int? = null
                     |   private val _prop: String? = null
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -94,7 +94,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |   val some: Int
                     |       get() = 3
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -110,7 +110,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |       }
                     |       set(value) { field = value }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -127,7 +127,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |       }
                     |       set(value) { field = value }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -143,7 +143,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |           field = value
                     |       }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -159,7 +159,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |           a = value
                     |       }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} foo has no corresponding property with name _foo")
         )
     }

@@ -23,7 +23,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |       get() { return field }
                     |       set(value) { field = value }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() { return field }", true),
             LintError(4, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} set(value) { field = value }", true)
         )
@@ -38,7 +38,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |   val prop: Int = 0
                     |       get() = field
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() = field", true)
         )
     }
@@ -50,16 +50,16 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
             """
                     |class Test {
                     |   val prop: Int = 0
-                    |       get() { 
+                    |       get() {
                     |           val b = someLogic(field)
                     |           return b
                     |       }
-                    |       set(value) { 
+                    |       set(value) {
                     |           val res = func(value)
                     |           field = res
                     |       }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -72,7 +72,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |   var testName: String? = null
                     |       private set
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -85,7 +85,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |   val testName = 0
                     |       get
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get", true)
         )
     }

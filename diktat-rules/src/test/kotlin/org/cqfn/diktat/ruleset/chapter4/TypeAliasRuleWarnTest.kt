@@ -25,7 +25,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
             """
                     | val b: MutableMap<String, MutableList<String>>
                     | val b = listof<Int>()
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
@@ -37,7 +37,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
             """
                     | var emitWarn: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
                     | var emitWarn: (offset: Int, (T) -> Boolean) -> Unit
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
             LintError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
@@ -50,11 +50,11 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
             """
                     | var emitWarn: Int
                     | val b = mutableMapOf<String, MutableList<String>>()
-                    | 
+                    |
                     | fun foo(): MutableMap<String, MutableList<String>> {
                     | }
-                    | 
-                """.trimMargin(),
+                    |
+            """.trimMargin(),
             LintError(4, 13, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
@@ -67,8 +67,8 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | var emitWarn: Int
                     | val flag: (T) -> Boolean
                     | val list: List<List<Int>>
-                    | 
-                """.trimMargin(),
+                    |
+            """.trimMargin(),
             LintError(3, 12, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
             rulesConfigList = rulesConfigListShortType
         )
@@ -86,7 +86,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     |       class B : JsonResourceConfigReader<List<RulesConfig>> {}
                     |   }
                     | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
             LintError(3, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
@@ -97,16 +97,16 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
     fun `check correct examle`() {
         lintMethod(
             """
-                    |typealias jsonType = JsonResourceConfigReader<List<RulesConfig>> 
+                    |typealias jsonType = JsonResourceConfigReader<List<RulesConfig>>
                     |class A : JsonResourceConfigReader<List<RulesConfig>>() {
-                    |   
+                    |
                     |   fun foo() : jsonType {}
                     |   val q: jsonType? = null
                     |   fun goo() {
                     |       class B : JsonResourceConfigReader<List<RulesConfig>> {}
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -120,7 +120,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     |       emptyList<Map<Int, Int>>()
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
             rulesConfigList = rulesConfigListShortType
         )

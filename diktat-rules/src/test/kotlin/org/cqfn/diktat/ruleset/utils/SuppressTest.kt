@@ -35,18 +35,18 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                     |
                     |   @Suppress("FUNCTION_NAME_INCORRECT_CASE")
                     |   fun /* */ methODTREE(): String {
-                    |   
+                    |
                     |       fun soMEMETHOD() {
-                    |       
+                    |
                     |       }
                     |
                     |   }
-                    |   
+                    |
                     |   fun /* */ methODTREEASA(): String {
                     |
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(12, 14, ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
                 true)
         )
@@ -64,7 +64,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                     |       var SOMEvar = 5
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -103,7 +103,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                 class SomeClass() {
                     @set:[Suppress("IDENTIFIER_LENGTH") Inject]
                     val a = 5
-                
+
                     fun /* */ method(): String {
 
                     }
@@ -124,7 +124,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                     |   B,
                     |   ;
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
