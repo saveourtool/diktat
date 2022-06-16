@@ -180,11 +180,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode, expectedIndent: Int): Boolean {
         val nextNode = nodeWhiteSpace.treeNext
         if (nextNode.elementType == VALUE_ARGUMENT) {
-            val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
-                nextNode
-            } else {
-                nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
-            }
+            val nextNodeDot = getNextDotExpression(nextNode)
             nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
                 if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
                     val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text
@@ -222,16 +218,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, expectedIndent)
+        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, indentError.actual)
 
-        if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
-            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
-                whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
-                checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
-                whiteSpace.node.indentBy(expectedIndent)
+        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
+            val warnText = if (!difOffsetCloseAndOpenQuote){
+                "the same number of indents to the opening and closing quotes was expected"
+            } else {
+                "expected $expectedIndent but was ${indentError.actual}"
             }
-        } else if (!difOffsetCloseAndOpenQuote){
-            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "the same number of indents to the opening and closing quotes was expected",
+            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, warnText,
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
                 whiteSpace.node.indentBy(expectedIndent)
@@ -247,12 +242,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         expectedIndent: Int,
         actualIndent: Int
     ) {
-        val nextNode = whiteSpace.node.treeNext
-        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
-            nextNode
-        } else {
-            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
-        }
+        val nextNodeDot = getNextDotExpression(whiteSpace.node.treeNext)
         if (nextNodeDot != null &&
             nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
             nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
@@ -261,7 +251,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 it == "trimIndent()" ||
                     it == "trimMargin()"
             } == true) {
-            fixStringLiteral(whiteSpace, expectedIndent, actualIndent)
+            fixStringLiteral(nextNodeDot.firstChildNode, expectedIndent, actualIndent)
         }
     }
 
@@ -270,32 +260,29 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun fixStringLiteral(
-        whiteSpace: PsiWhiteSpace,
+        stringTemplate: ASTNode,
         expectedIndent: Int,
         actualIndent: Int
     ) {
-        val nextNode = whiteSpace.node.treeNext
-        val nextNodeDot = if (nextNode.elementType == DOT_QUALIFIED_EXPRESSION) {
-            nextNode
-        } else {
-            nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
-        }
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
-        val templateEntries = whiteSpace.node
-            .treeNext
-            .firstChildNode
-            .getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+        val templateEntries = stringTemplate.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach { node ->
             if (!node.text.contains("\n")) {
                 fixFirstTemplateEntries(node, textIndent, actualIndent)
             }
         }
-        (templateEntries?.last()?.firstChildNode as LeafPsiElement)
+        (templateEntries.last().firstChildNode as LeafPsiElement)
             .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
                 .last()
                 .firstChildNode
                 .text
                 .trim())
+    }
+
+    private fun getNextDotExpression(node:ASTNode) = if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
+        node
+    } else {
+        node.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
     }
 
     /**

@@ -57,6 +57,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `multiline string`() {
         fixAndCompare("MultilionStringExpected.kt", "MultilionStringTest.kt")
+    }
 
     /**
      * This test has a counterpart under [IndentationRuleWarnTest].
