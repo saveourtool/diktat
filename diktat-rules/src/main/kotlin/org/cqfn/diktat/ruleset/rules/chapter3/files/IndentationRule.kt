@@ -221,7 +221,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, indentError.actual)
 
         if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
-            val warnText = if (!difOffsetCloseAndOpenQuote){
+            val warnText = if (!difOffsetCloseAndOpenQuote) {
                 "the same number of indents to the opening and closing quotes was expected"
             } else {
                 "expected $expectedIndent but was ${indentError.actual}"
@@ -279,7 +279,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 .trim())
     }
 
-    private fun getNextDotExpression(node:ASTNode) = if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
+    private fun getNextDotExpression(node: ASTNode) = if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
         node
     } else {
         node.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
