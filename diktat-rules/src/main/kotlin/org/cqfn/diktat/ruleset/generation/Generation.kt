@@ -31,12 +31,15 @@ private val autoGenerationComment =
         | This document contains all enum properties from Warnings.kt as Strings.
     """.trimMargin()
 
-fun main() {
-    generateWarningNames()
-    validateYear()
+fun main(args: Array<String>) {
+    require(args.size == 2) {
+        "Only to arguments are expected"
+    }
+    generateWarningNames(args[0])
+    validateYear(args[1])
 }
 
-private fun generateWarningNames() {
+private fun generateWarningNames(sourceDirectory: String) {
     val enumValNames = Warnings.values().map { it.name }
 
     val propertyList = enumValNames.map {
@@ -59,11 +62,11 @@ private fun generateWarningNames() {
         .addFileComment(autoGenerationComment)
         .build()
 
-    kotlinFile.writeTo(Paths.get("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
+    kotlinFile.writeTo(Paths.get(sourceDirectory))
 }
 
-private fun validateYear() {
-    val folder = Paths.get("diktat-rules/src/test/resources/test/paragraph2/header")
+private fun validateYear(testResourcesDirectory: String) {
+    val folder = Paths.get(testResourcesDirectory, "test/paragraph2/header")
     Files.list(folder)
         .filter { !it.name.contains("CopyrightDifferentYearTest.kt") }
         .forEach { file ->

@@ -151,6 +151,10 @@
                 </executions>
                 <configuration>
                     <mainClass>org.cqfn.diktat.ruleset.generation.GenerationKt</mainClass>
+                    <arguments>
+                        <argument>${project.build.sourceDirectory}</argument>
+                        <argument>${project.basedir}/src/test/resources</argument>
+                    </arguments>
                 </configuration>
             </plugin>
         </plugins>
