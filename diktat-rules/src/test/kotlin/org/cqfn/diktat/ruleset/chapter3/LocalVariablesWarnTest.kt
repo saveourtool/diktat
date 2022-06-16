@@ -30,7 +30,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |class Example {
                     |    val bar = 0
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -47,7 +47,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        println()
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -59,12 +59,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |class Example {
                     |    fun foo() {
                     |        val bar = 0
-                    |        
+                    |
                     |        baz(bar)
                     |        println()
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -81,7 +81,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        println()
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -95,7 +95,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |    println()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -110,7 +110,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        ?.baz(bar)
                     |    println()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -124,7 +124,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    println()
                     |    baz(bar)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 4)}", false)
         )
     }
@@ -139,7 +139,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        .foo()
                     |    baz(bar)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -149,12 +149,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
         lintMethod(
             """
                     |fun foo() {
-                    |    val bar = 1 + 
+                    |    val bar = 1 +
                     |        2
                     |    println()
                     |    baz(bar)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
@@ -170,7 +170,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    println()
                     |    baz(bar)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
@@ -186,7 +186,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    println()
                     |    baz(bar)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
@@ -205,7 +205,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        println()
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
         )
     }
@@ -224,7 +224,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        qux(bar)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -247,7 +247,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        println()
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
         )
     }
@@ -263,7 +263,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        bar()
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -282,7 +282,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        offset += it.length
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -298,7 +298,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |    return offset
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -317,7 +317,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        offset += it.length
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -335,7 +335,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        return Bar(x)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -352,7 +352,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    val y = bar()
                     |    qux(y)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -368,7 +368,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        bar(x)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -383,7 +383,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        bar(x)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -399,7 +399,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        bar(x)
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
         )
     }
@@ -417,7 +417,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |            bar(x)
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
         )
     }
@@ -434,7 +434,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        foo.baz(it)
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("foo", 3, 5)}", false)
         )
     }
@@ -449,7 +449,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    val y = 1
                     |    foo(x, y)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -465,7 +465,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    val z = 2
                     |    foo(x, y, z)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -483,7 +483,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        foo(a, b, c)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -499,7 +499,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                      |    resOption.isRequired = isRequired
                      |    return resOption
                      |}
-                     """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -513,7 +513,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    println()
                     |    bar(list)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
         )
     }
@@ -532,7 +532,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    )
                     |    Assertions.assertThat(res).isEmpty()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -548,7 +548,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        listOf<String>().forEach { a -> println(a) }
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -564,11 +564,11 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |                   fun for() : String {
                     |                   }
                     |                 }
-                    |               ${"\"\"\""}.trimIndent() 
+                    |               ${"\"\"\""}.trimIndent()
                     |       bar(code)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -581,7 +581,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
                     |       val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>()  // maps function signatures on node it is used by
                     |       val extensionFunctionsPairs = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>()  // pairs extension functions with same signature
-                    |       
+                    |
                     |       extensionFunctionList.forEach { func ->
                     |           if (distinctFunctionSignatures.contains(signature)) {
                     |               val secondFuncClassName = distinctFunctionSignatures[signature]!!.findChildBefore(DOT, TYPE_REFERENCE)!!.text
@@ -594,7 +594,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       }
                     |       return extensionFunctionsPairs
                     |   }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -609,13 +609,13 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       var prevNode: ASTNode
                     |       do {
                     |           prevNode = node
-                    |           node = node.treeParent 
-                    |           if (node.elementType == ElementType.PARENTHESIZED) { 
+                    |           node = node.treeParent
+                    |           if (node.elementType == ElementType.PARENTHESIZED) {
                     |               text += getTextFromParenthesized(node)
                     |           }
                     |       } while (node.elementType != BINARY_EXPRESSION)
                     |   }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -639,7 +639,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |           .toList()
                     |           .reversed()
                     |   }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -654,7 +654,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       var prevNode: ASTNode
                     |       some(text, node, prevNode)
                     |   }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -670,7 +670,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       val prevNode: ASTNode = astNode
                     |       some(text, node, prevNode)
                     |   }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 

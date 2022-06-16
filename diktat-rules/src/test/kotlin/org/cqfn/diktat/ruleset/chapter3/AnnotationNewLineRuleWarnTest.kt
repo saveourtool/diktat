@@ -23,7 +23,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |class A {
                     |   val a = 5
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -35,7 +35,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |@SomeAnnotation class A {
                     |   val a = 5
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -48,7 +48,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |class A {
                     |   val a = 5
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
             LintError(1, 17, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
@@ -62,7 +62,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |@SomeAnnotation @SecondAnnotation class A {
                     |   val a = 5
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
             LintError(1, 17, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
@@ -75,14 +75,14 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |class A {
                     |   val a = 5
-                    |   
+                    |
                     |  @SomeAnnotation
                     |  @SecondAnnotation
                     |  fun someFunc() {
                     |       val a = 3
                     |  }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -93,12 +93,12 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |class A {
                     |   val a = 5
-                    |   
+                    |
                     |  @SomeAnnotation fun someFunc() {
                     |       val a = 3
                     |  }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -109,12 +109,12 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |class A {
                     |   val a = 5
-                    |   
+                    |
                     |  @SomeAnnotation @SecondAnnotation fun someFunc() {
                     |       val a = 3
                     |  }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
             LintError(4, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
@@ -127,13 +127,13 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |class A {
                     |   val a = 5
-                    |   
-                    |  @SomeAnnotation @SecondAnnotation 
+                    |
+                    |  @SomeAnnotation @SecondAnnotation
                     |  fun someFunc() {
                     |       val a = 3
                     |  }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
             LintError(4, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
@@ -149,7 +149,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |constructor(conf: Int) {
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -161,7 +161,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |public class Conf @Inject constructor(conf: Int) {
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -170,13 +170,13 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
     fun `annotation constructor test good 3`() {
         lintMethod(
             """
-                    |public class Conf 
-                    |@Inject 
-                    |@SomeAnnotation 
+                    |public class Conf
+                    |@Inject
+                    |@SomeAnnotation
                     |constructor(conf: Int) {
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -187,10 +187,10 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |public class Conf {
                     |   @FirstAnnotation constructor(conf: Conf) {
-                    |   
+                    |
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -201,10 +201,10 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |public class Conf {
                     |   @FirstAnnotation @SecondAnnotation constructor(conf: Conf) {
-                    |   
+                    |
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @FirstAnnotation not on a single line", true),
             LintError(2, 21, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
@@ -218,7 +218,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |public class Conf @Inject @SomeAnnotation constructor(conf: Int) {
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Inject not on a single line", true),
             LintError(1, 27, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
         )
@@ -229,11 +229,11 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
     fun `annotation constructor test bad 2`() {
         lintMethod(
             """
-                    |public class Conf @Inject 
+                    |public class Conf @Inject
                     |@SomeAnnotation constructor(conf: Int) {
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Inject not on a single line", true),
             LintError(2, 1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
         )
@@ -246,10 +246,10 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |public class Conf {
                     |   fun someFunc(@SomeAnnotation conf: JsonConf, @SecondAnnotation some: Int) {
-                    |   
+                    |
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -260,10 +260,10 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
             """
                     |public class Conf {
                     |   fun someFunc(@SomeAnnotation @AnotherAnnotation conf: JsonConf, @SecondAnnotation @ThirdAnnotation some: Int) {
-                    |   
+                    |
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -275,7 +275,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |@ExperimentalStdlibApi  // to use `scan` on sequence
                     |   @Suppress("WRONG_NEWLINES")
                     |   override fun checkNode() {}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -305,7 +305,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |
                     |@Foo
                     |@goo val loader: DataLoader
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
             LintError(1, 32, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Hello not on a single line", true),
         )

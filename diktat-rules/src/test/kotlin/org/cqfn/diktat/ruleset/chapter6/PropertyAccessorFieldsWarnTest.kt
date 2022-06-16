@@ -26,7 +26,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       field = value
                     |   }
                     |   get() = field
-                    |   
+                    |
                     |   var isNotEmpty: Boolean = true
                     |   set(value) {
                     |       val q = isEmpty.and(true)
@@ -37,7 +37,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       return field
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -53,7 +53,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       println("Side effect")
                     |       isEmpty = values
                     |   }
-                    |   
+                    |
                     |   var isNotEmpty: Boolean = true
                     |   set(value) {
                     |       val q = isNotEmpty.and(true)
@@ -63,13 +63,13 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       println(12345)
                     |       return isNotEmpty
                     |   }
-                    |   
+                    |
                     |   var isNotOk: Boolean = false
                     |   set(values) {
                     |       this.isNotOk = values
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
             LintError(14, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {..."),
             LintError(20, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {...")
@@ -91,19 +91,19 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       }
                     |       isEmpty = values
                     |   }
-                    |   
+                    |
                     |   var isNotOk: Boolean = false
                     |   set(valuess) {
                     |       var isNotOk = true
                     |       isNotOk = valuess
                     |   }
-                    |   
+                    |
                     |   var isOk: Boolean = false
                     |   set(valuess) {
                     |       isOk = valuess
                     |       var isOk = true
                     |   }
-                    |   
+                    |
                     |   var isNotEmpty: Boolean = true
                     |   set(value) {
                     |       val q = isNotEmpty
@@ -111,7 +111,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |   }
                     |   get() = field
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
             LintError(18, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(valuess) {..."),
             LintError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
@@ -127,11 +127,11 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |
                     |   val blaBla: String
                     |       get() = "bla".blaBla("bla")
-                    |   
+                    |
                     |   fun blaBla(string: String): String = this + string
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -147,7 +147,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       get() = foo
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }
