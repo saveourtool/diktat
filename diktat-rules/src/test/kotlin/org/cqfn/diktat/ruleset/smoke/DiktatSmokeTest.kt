@@ -257,11 +257,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
-        val tmpTestFile = javaClass.classLoader.getResource("$resourceFilePath/../../../build.gradle_.kts")!!.toURI().let {
-            val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
-            File(it).copyTo(tmpTestFile)
-            tmpTestFile
-        }
+        val tmpTestFile = javaClass.classLoader
+            .getResource("$resourceFilePath/../../../build.gradle_.kts")!!
+            .toURI()
+            .let {
+                val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
+                File(it).copyTo(tmpTestFile)
+                tmpTestFile
+            }
         val tmpFilePath = "../../../build.gradle.kts"
         fixAndCompare(tmpFilePath, tmpFilePath)
         Assertions.assertTrue(unfixedLintErrors.isEmpty())
@@ -329,9 +332,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `regression - FP of local variables rule`() {
         fixAndCompareSmokeTest("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
-        org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).noneMatch {
-            it.ruleId == "diktat-ruleset:local-variables"
-        }
+        org.assertj
+            .core
+            .api
+            .Assertions
+            .assertThat(unfixedLintErrors)
+            .noneMatch {
+                it.ruleId == "diktat-ruleset:local-variables"
+            }
     }
 
     companion object {

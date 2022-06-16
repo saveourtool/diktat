@@ -18,7 +18,9 @@ val JAVA = arrayOf("abstract", "assert", "boolean",
     "try", "void", "volatile", "while")
 
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
-val KOTLIN = KtTokens.KEYWORDS.types.map { line -> line.toString() }
+val KOTLIN = KtTokens.KEYWORDS
+    .types
+    .map { line -> line.toString() }
     .plus(KtTokens.SOFT_KEYWORDS.types.map { line -> line.toString() })
 
 val loggerPropertyRegex = "(log|LOG|logger)".toRegex()

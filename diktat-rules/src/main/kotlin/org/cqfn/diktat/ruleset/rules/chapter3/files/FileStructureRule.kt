@@ -228,7 +228,9 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         findAllReferences(node)
         packageName = (node.findChildByType(PACKAGE_DIRECTIVE)?.psi as KtPackageDirective).qualifiedName
-        node.findChildByType(IMPORT_LIST)?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))?.toList()
+        node.findChildByType(IMPORT_LIST)
+            ?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))
+            ?.toList()
             ?.forEach { import ->
                 val ktImportDirective = import.psi as KtImportDirective
                 val importName = ktImportDirective.importPath?.importedName?.asString()

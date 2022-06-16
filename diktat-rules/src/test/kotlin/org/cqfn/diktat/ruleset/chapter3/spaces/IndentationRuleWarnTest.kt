@@ -8,11 +8,18 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.assertj.core.api.AbstractSoftAssertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions.assertSoftly
+import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.opentest4j.MultipleFailuresError
+
+import java.util.function.Consumer
 
 @Suppress("LargeClass")
-class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
+class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRuleTestMixin {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
     private val rulesConfigList = listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
@@ -697,5 +704,189 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be properly indented (extendedIndentAfterOperators = true)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
+
+        lintMultipleMethods(
+            expressionBodyFunctionsContinuationIndent,
+            lintErrors = emptyArray(),
+            customConfig.asRulesConfigList()
+        )
+    }
+
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be properly indented (extendedIndentAfterOperators = false)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
+
+        lintMultipleMethods(
+            expressionBodyFunctionsSingleIndent,
+            lintErrors = emptyArray(),
+            customConfig.asRulesConfigList()
+        )
+    }
+
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be reported if mis-indented (extendedIndentAfterOperators = true)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
+
+        assertSoftly { softly ->
+            expressionBodyFunctionsSingleIndent.forEach { code ->
+                softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
+                    .describedAs("lint result for \"$code\"")
+                    .isNotEmpty
+                    .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
+                        assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
+                        assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
+                        assertThat(lintError.detail).matches(warnTextRegex)
+                    })
+            }
+        }
+    }
+
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be reported if mis-indented (extendedIndentAfterOperators = false)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
+
+        assertSoftly { softly ->
+            expressionBodyFunctionsContinuationIndent.forEach { code ->
+                softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
+                    .describedAs("lint result for \"$code\"")
+                    .isNotEmpty
+                    .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
+                        assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
+                        assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
+                        assertThat(lintError.detail).matches(warnTextRegex)
+                    })
+            }
+        }
+    }
+
+    /**
+     * @see warnTextRegex
+     */
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
+
+    /**
+     * When within a scope of an `AbstractSoftAssertions`, collects failures
+     * thrown by [block], correctly accumulating multiple failures from nested
+     * soft assertions (if any).
+     *
+     * @see org.assertj.core.api.AssertionErrorCollector.collectAssertionError
+     */
+    private fun AbstractSoftAssertions.collectAssertionErrors(block: () -> Unit) =
+        try {
+            block()
+        } catch (mfe: MultipleFailuresError) {
+            mfe.failures.forEach { failure ->
+                when (failure) {
+                    is AssertionError -> collectAssertionError(failure)
+                    else -> fail(failure.toString(), failure)
+                }
+            }
+        } catch (ae: AssertionError) {
+            collectAssertionError(ae)
+        } catch (th: Throwable) {
+            fail(th.toString(), th)
+        }
+
+    /**
+     * Similar to [lintMethod], but can be invoked from a scope of
+     * `AbstractSoftAssertions` in order to accumulate test results from linting
+     * _multiple_ code fragments.
+     *
+     * @param rulesConfigList the list of rules which can optionally override
+     *   the [default value][LintTestBase.rulesConfigList].
+     * @see lintMethod
+     */
+    private fun AbstractSoftAssertions.lintMethodSoftly(
+        @Language("kotlin") code: String,
+        vararg lintErrors: LintError,
+        rulesConfigList: List<RulesConfig>? = null,
+        fileName: String? = null
+    ) {
+        require(code.isNotBlank()) {
+            "code is blank"
+        }
+
+        collectAssertionErrors {
+            lintMethod(code, lintErrors = lintErrors, rulesConfigList, fileName)
+        }
+    }
+
+    /**
+     * Tests multiple code [fragments] using the same
+     * [rule configuration][rulesConfigList].
+     *
+     * All code fragments get concatenated together and the resulting, bigger
+     * fragment gets tested, too.
+     *
+     * @param rulesConfigList the list of rules which can optionally override
+     *   the [default value][LintTestBase.rulesConfigList].
+     * @see lintMethod
+     */
+    private fun lintMultipleMethods(
+        @Language("kotlin") fragments: Array<String>,
+        vararg lintErrors: LintError,
+        rulesConfigList: List<RulesConfig>? = null,
+        fileName: String? = null
+    ) {
+        require(fragments.isNotEmpty()) {
+            "code fragments is an empty array"
+        }
+
+        assertSoftly { softly ->
+            sequence {
+                yieldAll(fragments.asSequence())
+
+                /*
+                 * All fragments concatenated.
+                 */
+                yield(fragments.concatenated())
+            }.forEach { fragment ->
+                softly.lintMethodSoftly(
+                    fragment,
+                    lintErrors = lintErrors,
+                    rulesConfigList,
+                    fileName
+                )
+            }
+        }
+    }
+
+    companion object {
+        /**
+         * @see warnText
+         */
+        @Language("RegExp")
+        private val warnTextRegex = "^\\Q${WRONG_INDENTATION.warnText()}\\E expected \\d+ but was \\d+$"
+    }
 }
