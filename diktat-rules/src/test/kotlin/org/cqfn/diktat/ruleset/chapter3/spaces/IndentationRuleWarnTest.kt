@@ -94,7 +94,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                 |    val zero = 0
                 |}
             """.trimMargin(),
-            LintError(3, 2, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
         )
     }
 
