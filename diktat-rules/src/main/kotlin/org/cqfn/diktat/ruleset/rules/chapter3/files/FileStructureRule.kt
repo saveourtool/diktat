@@ -19,7 +19,6 @@ import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.ignoreImports
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
-import org.cqfn.diktat.ruleset.utils.removePrefix
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -283,7 +282,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 // the importedName method removes the quotes, but the node.text method does not
                 it.text.replace("`", "")
             }
-        val referencesFromKDocs = node.findAllDescendantsWithSpecificType(KDOC)
+        val referencesFromKdocs = node.findAllDescendantsWithSpecificType(KDOC)
             .flatMap { it.findAllDescendantsWithSpecificType(KDOC_MARKDOWN_LINK) }
             .map { it.text.removePrefix("[").removeSuffix("]") }
             .flatMap {
@@ -294,7 +293,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                     listOf(it)
                 }
             }
-        return (referencesFromOperations + referencesFromExpressions + referencesFromKDocs).toSet()
+        return (referencesFromOperations + referencesFromExpressions + referencesFromKdocs).toSet()
     }
 
     private fun rearrangeImports(
