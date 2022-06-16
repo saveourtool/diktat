@@ -29,6 +29,8 @@ import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
+typealias ExpressionCreator<K> = (List<Expression<K>?>) -> Expression<K>
+
 /**
  * Rule that checks if the boolean expression can be simplified.
  */
@@ -339,5 +341,3 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 }
-
-typealias ExpressionCreator<K> = (List<Expression<K>?>) -> Expression<K>
