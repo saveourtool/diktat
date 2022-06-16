@@ -26,7 +26,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   while(true) {
                     |       println()
                     |   }
-                    |   
+                    |
                     |   when(x) {
                     |       10 -> {10}
                     |       else -> {
@@ -35,22 +35,22 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |           }
                     |       }
                     |   }
-                    |   
+                    |
                     |   val x = {
                     |       if (true) {
                     |           if (false) {
                     |               while(false) {
-                    |                   10 
-                    |               } 
-                    |           } 
-                    |       } 
+                    |                   10
+                    |               }
+                    |           }
+                    |       }
                     |   }
-                    |   
+                    |
                     |   for(x in 1..2){
                     |       println(x)
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -73,7 +73,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       println("dscsds")
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
@@ -90,7 +90,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |           try {
                     |               try{
                     |                   try{
-                    |                   
+                    |
                     |                   } catch(ex: Exception){
                     |                       try{
                     |                           println("hi")
@@ -103,7 +103,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       println("dscsds")
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
@@ -119,7 +119,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       if (false) {
                     |           fun goo() {
                     |               if(true) {
-                    |               
+                    |
                     |               }
                     |           }
                     |       }
@@ -127,7 +127,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       println("dscsds")
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -159,7 +159,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 8, ruleId, "${NESTED_BLOCK.warnText()} goo", false)
         )
     }
@@ -187,7 +187,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                         }
                         return result
                     }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -196,9 +196,9 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     fun `check with anonymous class`() {
         lintMethod(
             """
-                    
+
                     val q = list.filter {it == 0}
-                    
+
                     val keyListener = KeyAdapter { keyEvent ->
                         if (true) {
                         } else if (false) {
@@ -209,12 +209,12 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                             }
                         }
                     }
-                    
-                    val keyListener = object : KeyAdapter() { 
+
+                    val keyListener = object : KeyAdapter() {
                         override fun keyPressed(keyEvent : KeyEvent) {
                         }
-                    } 
-                """.trimMargin(),
+                    }
+            """.trimMargin(),
             LintError(4, 50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
             rulesConfigList = rulesConfigList
         )
@@ -236,17 +236,17 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |           }
                     |       }
                     |   }
-                    |   
+                    |
                     |   fun goo() {
                     |       if(true){
                     |           if(false){
-                    |               if(true){ 
+                    |               if(true){
                     |               }
                     |           }
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }

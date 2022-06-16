@@ -273,28 +273,28 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             """
                     |class Example {
                     |    override fun toString() = "example"
-                    |    
+                    |
                     |    override fun equals(other: Any?) = false
-                    |    
+                    |
                     |    override fun hashCode() = 42
                     |}
                     |
                     |fun main() { }
-                """.trimMargin()
+            """.trimMargin()
         )
 
         lintMethod(
             """
                     |class Example {
                     |    override fun toString(): String { return "example" }
-                    |    
+                    |
                     |    override fun equals(other: Any?): Boolean { return false }
-                    |    
+                    |
                     |    override fun hashCode(): Int { return 42 }
                     |}
                     |
                     |fun main(vararg args: String) { }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -307,24 +307,24 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |    fun setX(x: Type) {
                     |        this.x = x
                     |    }
-                    |    
+                    |
                     |    fun getX(): Type {
                     |        return x
                     |    }
-                    |    
+                    |
                     |    fun getY() = this.y
-                    |    
+                    |
                     |    fun setY(y: Type) {
                     |        this.validate(y)
                     |        this.y = y
                     |    }
-                    |    
+                    |
                     |    fun getZ(): TypeZ {
                     |        baz(z)
                     |        return z
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
             LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
         )
@@ -336,7 +336,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         lintMethod(
             """
                     |fun foo() { }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false)
         )
     }
@@ -350,7 +350,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     | * Returns X
                     | */
                     |fun getX(): TypeX { return x }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
         )
     }
@@ -362,10 +362,10 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             """
                     |class Some : A {
                     |   override fun foo() {}
-                    |   
+                    |
                     |   override fun bar(t: T): U { return U() }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -374,12 +374,12 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     fun `should check if KfDoc is not trivial`() {
         lintMethod(
             """
-                    |fun foo(x: Int): TypeX { 
+                    |fun foo(x: Int): TypeX {
                     |   val q = goo()
                     |   throw UnsupportedOperationException()
-                    |   return qwe 
+                    |   return qwe
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
         )
     }
@@ -391,7 +391,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             """
                     |fun hasNoChildren() = children.size == 0
                     |fun getFirstChild() = children.elementAtOrNull(0)
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} hasNoChildren", true),
             LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getFirstChild", true)
         )
@@ -404,7 +404,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             """
                     |@GetMapping("/projects")
                     |fun getProjects() = projectService.getProjects(x.prop())
-                """.trimMargin(),
+            """.trimMargin(),
         )
     }
 
@@ -415,7 +415,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             """
                     |actual fun writeToConsoleAc(msg: String, outputType: OutputStreamType) {}
                     |expect fun writeToConsoleEx(msg: String, outputType: OutputStreamType) {}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} writeToConsoleEx", true),
         )
     }

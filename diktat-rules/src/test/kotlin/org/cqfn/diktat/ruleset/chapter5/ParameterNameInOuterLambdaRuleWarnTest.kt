@@ -32,7 +32,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       println(s)
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -51,7 +51,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       println(it)
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -76,7 +76,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -101,7 +101,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -126,7 +126,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(10, 8, ruleId, "${Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.warnText()} lambda without arguments has inner lambda", false),
             rulesConfigList = rulesConfigList
         )
@@ -152,7 +152,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -177,7 +177,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }

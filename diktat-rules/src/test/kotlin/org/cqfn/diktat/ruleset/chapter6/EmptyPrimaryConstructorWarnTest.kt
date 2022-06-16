@@ -40,7 +40,7 @@ class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstruc
                     |class Some3 private constructor () {
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some", true),
             LintError(8, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some1", true)
         )
@@ -57,7 +57,7 @@ class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstruc
                     |
                     |class Some2 @Inject constructor() {
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

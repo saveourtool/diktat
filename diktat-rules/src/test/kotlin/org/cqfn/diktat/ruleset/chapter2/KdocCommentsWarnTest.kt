@@ -236,7 +236,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                         private class InternalClass {
                         }
                     }
-                """.trimIndent()
+            """.trimIndent()
         )
     }
 
@@ -289,7 +289,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |class Example {
                     |    override fun toString() = ""
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -308,7 +308,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   val name: String
                     |) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
@@ -322,7 +322,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |public class Example (
                     |   override val serializersModule: SerializersModule = EmptySerializersModule
                     |)
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -343,7 +343,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   OneMoreName: String
                     |   )
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -362,7 +362,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   OneMoreName: String
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
@@ -381,7 +381,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   OneMoreName: String
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
         )
     }
@@ -401,7 +401,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   OneMoreName: String
                     |   ) {
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -424,7 +424,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   OneMoreName: String
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
         )
     }
@@ -445,7 +445,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   val name: String,
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
         )
     }
@@ -462,7 +462,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   private val name: String,
                     |   ) {
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -479,7 +479,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   val name: String,
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property Name text", false),
             LintError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
@@ -495,7 +495,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   private val surname: String
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
             LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
@@ -515,7 +515,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   private val surname: String
                     |   ) {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
         )
     }

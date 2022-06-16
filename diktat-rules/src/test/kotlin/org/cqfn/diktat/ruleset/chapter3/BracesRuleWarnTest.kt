@@ -23,7 +23,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        bar()
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -35,10 +35,10 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |fun foo() {
                     |    if (x > 0)
                     |        bar()
-                    |        
+                    |
                     |    if (y < 0) baz()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
             LintError(5, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true)
         )
@@ -58,7 +58,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        baz()
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -75,7 +75,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    else
                     |        baz()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
             LintError(4, 10, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
             LintError(6, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
@@ -90,7 +90,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |fun foo() {
                     |    if (x > 0) bar() else baz()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -184,7 +184,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
             |fun foo() {
             |    if (a) {
             |        bar()
-            |    } else 
+            |    } else
             |        c.baz(b.apply {id = 5})
             |}
             """.trimMargin(),
@@ -202,7 +202,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        bar()
                     |    } else if (x == 0) bar() else baz()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 12, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
             LintError(4, 30, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
@@ -218,7 +218,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    else if (x == 0)
                     |    else foo()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
             LintError(3, 10, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
             LintError(4, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
@@ -246,7 +246,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        }
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true),
             LintError(8, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true)
         )
@@ -262,7 +262,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        println(i)
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -275,7 +275,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    for (i in 1..100)
                     |        println(i)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} FOR", true)
         )
     }
@@ -290,7 +290,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        println("")
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -303,7 +303,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    while (condition)
                     |        println("")
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHILE", true)
         )
     }
@@ -318,7 +318,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        println("")
                     |    } while (condition)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -330,7 +330,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |fun foo() {
                     |    do println(i) while (condition)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
         )
     }
@@ -343,7 +343,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |fun foo() {
                     |    do while (condition)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
         )
     }

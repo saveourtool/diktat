@@ -53,7 +53,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |${"\t"}val zero = 0
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} tabs are not allowed for indentation", true)
         )
     }
@@ -67,7 +67,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |   val zero = 0
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, warnText(4, 3), true)
         )
     }
@@ -80,7 +80,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |class Example {
                     |    val zero = 0
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
         )
     }
@@ -90,11 +90,11 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
     fun `should warn if no new line at the end of file, last child whitespace`() {
         lintMethod(
             """
-                    |class Example {
-                    |    val zero = 0
-                    |} 
-                """.trimMargin(),
-            LintError(3, 2, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+                |class Example {
+                |    val zero = 0
+                |}
+            """.trimMargin(),
+            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
         )
     }
 
@@ -108,7 +108,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |}
                     |
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file TestFileName.kt", true)
         )
     }
@@ -133,7 +133,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -152,13 +152,13 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |            t2,
                     |            t3
                     |    )
-                    |    
+                    |
                     |    val e2 = Example(t1, t2,
                     |            t3
                     |    )
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -173,7 +173,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |              val field3: Type3) {
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -189,7 +189,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |              val field3: Type3) {
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, warnText(8, 14), true),
             LintError(3, 1, ruleId, warnText(8, 14), true),
             LintError(4, 1, ruleId, warnText(8, 14), true),
@@ -207,7 +207,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |            b
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -223,7 +223,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |class Example {
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -238,12 +238,12 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    }
                     |
                     |    val b =
-                    |        list.filter { 
+                    |        list.filter {
                     |            predicate(it)
                     |        }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -263,7 +263,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |        }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -278,7 +278,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |class Example {
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, warnText(1, 0), true),
             LintError(3, 1, ruleId, warnText(1, 0), true)
         )
@@ -305,7 +305,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |        as? Baz
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -317,18 +317,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |fun foo() {
                     |    for (i in 1..100)
                     |        println(i)
-                    |    
+                    |
                     |    do
                     |        println()
                     |    while (condition)
-                    |    
+                    |
                     |    if (condition)
                     |        bar()
                     |    else
                     |        baz()
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -340,18 +340,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |fun foo() {
                     |    for (i in 1..100)
                     |    println(i)
-                    |    
+                    |
                     |    do
                     |    println()
                     |    while (condition)
-                    |    
+                    |
                     |    if (condition)
                     |    bar()
                     |    else
                     |    baz()
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 1, ruleId, warnText(8, 4), true),
             LintError(6, 1, ruleId, warnText(8, 4), true),
             LintError(10, 1, ruleId, warnText(8, 4), true),
@@ -369,20 +369,20 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |        bar()
                     |    } else
                     |        baz()
-                    |        
+                    |
                     |    if (condition)
                     |        bar()
                     |    else {
                     |        baz()
                     |    }
-                    |        
+                    |
                     |    if (condition)
                     |        bar()
                     |    else if (condition2) {
                     |        baz()
                     |    } else
                     |        qux()
-                    |        
+                    |
                     |    if (condition)
                     |        bar()
                     |    else if (condition2)
@@ -392,7 +392,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -419,7 +419,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    )
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -436,7 +436,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    )
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = disabledOptionsRulesConfigList
         )
     }
@@ -449,15 +449,15 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |class Example {
                     |    private val foo
                     |        get() = 0
-                    |        
+                    |
                     |    private var backing = 0
-                    |    
+                    |
                     |    var bar
                     |        get() = backing
                     |        set(value) { backing = value }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -469,15 +469,15 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |class Example {
                     |    private val foo
                     |            get() = 0
-                    |        
+                    |
                     |    private var backing = 0
-                    |    
+                    |
                     |    var bar
                     |    get() = backing
                     |    set(value) { backing = value }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 1, ruleId, warnText(8, 12), true),
             LintError(8, 1, ruleId, warnText(8, 4), true),
             LintError(9, 1, ruleId, warnText(8, 4), true)
@@ -503,7 +503,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    )
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -528,7 +528,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |            }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = listOf(
                 RulesConfig(WRONG_INDENTATION.name, true,
                     mapOf(
@@ -558,7 +558,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -580,7 +580,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 1, ruleId, warnText(12, 8), true),
             LintError(7, 1, ruleId, warnText(12, 8), true),
             LintError(10, 1, ruleId, warnText(12, 8), true)
@@ -619,7 +619,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -651,7 +651,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                     |        )
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -668,7 +668,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                 |            .bar()
                 |        }"
                 |    }
-                |    
+                |
                 |    val b = "${'$'}{ foo().bar() }"
                 |}
                 |
