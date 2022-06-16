@@ -549,15 +549,17 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
 }
 
 /**
- * If [whiteSpaceNode] is not null and has type [WHITE_SPACE], prepend a line break to it's text.
- * Otherwise, insert a new node with a line break before [beforeNode]
+ * If [whiteSpaceNode] is not null and has type [WHITE_SPACE] and this [WHITE_SPACE] contains 1 line, prepend a line break to it's text.
+ * If [whiteSpaceNode] is null or has`t type [WHITE_SPACE], insert a new node with a line break before [beforeNode]
  *
  * @param whiteSpaceNode a node that can possibly be modified
  * @param beforeNode a node before which a new WHITE_SPACE node will be inserted
  */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
-        (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
+        if (whiteSpaceNode.text.lines().size == 1) {
+            (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
+        }
     } else {
         addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
     }

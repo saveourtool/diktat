@@ -268,6 +268,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * If it is triple-quoted string template we need to indent all its parts
      */
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun fixStringLiteral(
         whiteSpace: PsiWhiteSpace,
         expectedIndent: Int,
@@ -280,8 +281,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             nextNode.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
         }
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
-        val templateEntries = nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
-        templateEntries?.forEach { node ->
+        val templateEntries = whiteSpace.node
+            .treeNext
+            .firstChildNode
+            .getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+        templateEntries.forEach { node ->
             if (!node.text.contains("\n")) {
                 fixFirstTemplateEntries(node, textIndent, actualIndent)
             }
@@ -305,8 +309,14 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val correctedText = StringBuilder()
         // shift of the node depending on its initial string template indent
-        val nodeStartIndent = if (node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE > 0) {
-            node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE
+        val nodeStartIndent = if (node.firstChildNode
+            .text
+            .takeWhile { it == ' ' }
+            .count() - actualIndent - INDENT_SIZE > 0) {
+            node.firstChildNode
+                .text
+                .takeWhile { it == ' ' }
+                .count() - actualIndent - INDENT_SIZE
         } else {
             0
         }

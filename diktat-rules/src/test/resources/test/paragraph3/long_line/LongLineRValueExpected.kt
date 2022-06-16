@@ -14,7 +14,6 @@ fun foo() {
                 name.map { val str =
  "This string should be split" }
             }
-
         }
     }
 

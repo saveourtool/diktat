@@ -16,6 +16,7 @@ import com.pinterest.ktlint.core.VisitorProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
@@ -24,7 +25,8 @@ import java.util.function.Consumer
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
-private val log = LoggerFactory.getLogger("TestUtils")
+@Suppress("WRONG_WHITESPACE")
+private val log = LoggerFactory.getLogger({}.javaClass)
 
 @Suppress("TYPE_ALIAS")
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
@@ -82,7 +84,7 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
 @OptIn(FeatureInAlphaState::class)
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-                    text: String,
+                    @Language("kotlin") text: String,
                     fileName: String,
                     rulesConfigList: List<RulesConfig>? = null,
                     cb: LintErrorCallback = defaultCallback
