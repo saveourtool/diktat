@@ -262,14 +262,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Rule that checks that the expression can be simplified by distributive law.
      * Distributive law - A && B || A && C -> A && (B || C) or (A || B) && (A || C) -> A || (B && C)
      */
+    @Suppress("UnsafeCallOnNullableType")
     private class DistributiveLaw<K> : Rule<NExpression<K>, K>() {
-        override fun applyInternal(input: NExpression<K>?, options: ExprOptions<K>?): Expression<K> {
-            requireNotNull(input) {
-                "input expression is null"
-            }
-            val exprFactory = requireNotNull(options?.exprFactory) {
-                "jbool issue: Failed to get exprFactory"
-            }
+        override fun applyInternal(input: NExpression<K>, options: ExprOptions<K>): Expression<K> {
+            val exprFactory = options.exprFactory!!
             val orExpressionCreator: ExpressionCreator<K> = { expressions -> exprFactory.or(expressions.toTypedArray()) }
             val andExpressionCreator: ExpressionCreator<K> = { expressions -> exprFactory.and(expressions.toTypedArray()) }
             return when (input) {
@@ -284,9 +280,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             upperExpressionCreator: ExpressionCreator<K>,
             innerExpressionCreator: ExpressionCreator<K>
         ): Expression<K> {
-            val commonExpression = requireNotNull(findCommonExpression(input.children)) {
-                "Common expression is not found for $input"
-            }
+            // we can be here only after `isApply` -- common exists
+            val commonExpression = findCommonExpression(input.children)!!
             return upperExpressionCreator(
                 listOf(commonExpression,
                     innerExpressionCreator(
