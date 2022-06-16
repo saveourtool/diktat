@@ -6,7 +6,6 @@ import org.cqfn.diktat.ruleset.rules.chapter5.AvoidNestedFunctionsRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import generated.WarningNames.AVOID_NESTED_FUNCTIONS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
