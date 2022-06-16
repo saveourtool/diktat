@@ -39,8 +39,8 @@ fun foo() {
     val variable =
  Methoooooooooooooooooooooooooood() ?: "some loooooong string"
 
-    val variable = Methooooood() ?: "some" +
-" looong string"
+    val variable = Methooooood()
+ ?: "some looong string"
 
     var headerKdoc = firstCodeNode.prevSibling {
  it.elementType == KDOC

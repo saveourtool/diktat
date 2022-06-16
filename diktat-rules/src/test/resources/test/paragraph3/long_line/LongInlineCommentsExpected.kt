@@ -45,7 +45,8 @@ fun foo() {
         // ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ElementType.IF -> handleIfElse(node)
         ElementType.EOL_COMMENT, ElementType.BLOCK_COMMENT -> handleEolAndBlockComments(node, configuration)
-        ElementType.KDOC -> handleKdocComments(node, configuration)
+        ElementType.KDOC ->
+ handleKdocComments(node, configuration)
         // ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 else -> {
             // this is a generated else block
