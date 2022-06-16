@@ -279,9 +279,11 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-        private fun applyInternal(input: NExpression<K>,
-                                  upperExpressionCreator: ExpressionCreator<K>,
-                                  innerExpressionCreator: ExpressionCreator<K>): Expression<K> {
+        private fun applyInternal(
+            input: NExpression<K>,
+            upperExpressionCreator: ExpressionCreator<K>,
+            innerExpressionCreator: ExpressionCreator<K>
+        ): Expression<K> {
             val commonExpression = requireNotNull(findCommonExpression(input.children)) {
                 "Common expression is not found for $input"
             }
@@ -292,9 +294,11 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                     )))
         }
 
-        private fun excludeChild(expression: Expression<K>,
-                                 expressionCreator: ExpressionCreator<K>,
-                                 childToExclude: Expression<K>): Expression<K> {
+        private fun excludeChild(
+            expression: Expression<K>,
+            expressionCreator: ExpressionCreator<K>,
+            childToExclude: Expression<K>
+        ): Expression<K> {
             val leftChildren = expression.children.filterNot { it.equals(childToExclude) }
             return if (leftChildren.size == 1) {
                 leftChildren.first()
