@@ -33,7 +33,7 @@ private val autoGenerationComment =
 
 fun main(args: Array<String>) {
     require(args.size == 2) {
-        "Only to arguments are expected"
+        "Only two arguments are expected: <source root> <test resource root>"
     }
     generateWarningNames(args[0])
     validateYear(args[1])
