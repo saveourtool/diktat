@@ -141,8 +141,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
                 """.trimMargin(),
-            LintError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", false),
-            LintError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", false)
+            LintError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", true),
+            LintError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", true)
         )
     }
 
@@ -223,7 +223,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |}
                 """.trimMargin(),
             LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 130", false),
-            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", false)
+            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", true)
+
         )
     }
 
@@ -235,7 +236,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |@Query(value = "ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
                     |fun foo() = println("ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", false),
+            LintError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", true),
             LintError(2, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 89", true),
             rulesConfigList = shortLineLength
         )
