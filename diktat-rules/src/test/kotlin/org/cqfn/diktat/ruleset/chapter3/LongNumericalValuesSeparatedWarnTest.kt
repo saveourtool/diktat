@@ -34,7 +34,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val flo2 = 192.31234134134435_5345
                     |   val hundred = 100
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
             LintError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", true),
             LintError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
@@ -64,7 +64,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val flo = 192.312_341_341_345
                     |   val ten = 10
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -81,7 +81,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val bytes = 0b110100
                     |   val flo = 192.312
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", true),
             LintError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234566L", true),
             LintError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999L", true),
@@ -98,9 +98,9 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
         lintMethod(
             """
                     |fun foo(val one = 100_000_000) {
-                    |   
+                    |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -110,9 +110,9 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
         lintMethod(
             """
                     |fun foo(val one = 100000000) {
-                    |   
+                    |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000", true)
         )
     }

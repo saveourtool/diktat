@@ -24,7 +24,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                     |       else -> {}
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -39,7 +39,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                     |    }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
@@ -54,7 +54,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                     |       1 -> print("x is neither 1 nor 2")
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -70,7 +70,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                     |           }
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -87,7 +87,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                     |        }
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 

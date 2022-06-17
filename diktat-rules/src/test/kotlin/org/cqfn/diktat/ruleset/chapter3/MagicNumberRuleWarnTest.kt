@@ -49,7 +49,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   val f = "qwe\$\{12\}hhe"
                 |}
                 |
-                |@Override                
+                |@Override
                 |fun hashCode(): Int {
                 |   return 32
                 |}
@@ -59,7 +59,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |       private const val AA = 4
                 |   }
                 |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
             LintError(3, 12, ruleId, "${MAGIC_NUMBER.warnText()} 128L", false),
             LintError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 3.4f", false),
@@ -84,11 +84,11 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   B(50),
                 |   C(3),
                 |}
-                |@Override                
+                |@Override
                 |fun hashCode(): Int {
                 |   return 32
                 |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 13, ruleId, "${MAGIC_NUMBER.warnText()} -1", false),
             LintError(3, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
             LintError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 0xff", false),
@@ -102,13 +102,13 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
     fun `check ignore top level constants`() {
         lintMethod(
             """
-            |const val topLevel = 31
-            |
-            |val shouldTrigger = 32
-            |
-            |fun some() {
-            |
-            |}
+                |const val topLevel = 31
+                |
+                |val shouldTrigger = 32
+                |
+                |fun some() {
+                |
+                |}
             """.trimMargin(),
             LintError(3, 21, ruleId, "${MAGIC_NUMBER.warnText()} 32", false),
         )
@@ -142,7 +142,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |}
                 |
                 |fun Int.foo() = 2
-                """.trimMargin(), rulesConfigList = rulesConfigMagicNumber
+            """.trimMargin(), rulesConfigList = rulesConfigMagicNumber
         )
     }
 
@@ -200,7 +200,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   B(50),
                 |   C(3),
                 |}
-                |@Override                
+                |@Override
                 |fun hashCode(): Int {
                 |   return 32
                 |}

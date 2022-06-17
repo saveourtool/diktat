@@ -21,7 +21,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
             """
                     | val a = "my string" + "string" + value + "other value"
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + \"string\" + value + \"other value\"", canBeAutoCorrected)
         )
@@ -34,7 +34,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
             """
                     | val a = "my string" + 1 + 2 + 3
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + 1 + 2 + 3", canBeAutoCorrected)
         )
@@ -48,7 +48,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
             """
                     | val a = (1 + 2).toString() + "my string" + 3
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " (1 + 2).toString() + \"my string\" + 3", canBeAutoCorrected)
         )
@@ -62,7 +62,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val myObject = 12
                     | val a = (1 + 2).toString() + "my string" + 3 + "string" + myObject + myObject
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " (1 + 2).toString() + \"my string\" + 3 + \"string\" + myObject + myObject", canBeAutoCorrected)
         )
@@ -76,7 +76,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val myObject = 12
                     | val a = (1 + 2).toString() + "my string" + ("string" + myObject) + myObject
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " (1 + 2).toString() + \"my string\" + (\"string\" + myObject) + myObject", canBeAutoCorrected)
         )
@@ -90,7 +90,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | fun foo1(){
                     |     foo("my string" + "other string" + (1 + 2 + 3))
                     | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + \"other string\" + (1 + 2 + 3)", canBeAutoCorrected)
         )
@@ -104,7 +104,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val myObject = 12
                     | val a = "my string" + "other string" + (1 + 2 + 3)
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + \"other string\" + (1 + 2 + 3)", canBeAutoCorrected)
         )
@@ -118,7 +118,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val myObject = 12
                     | val a = "my string" + (1 + 2 + 3) + ("other string" + 3) + (1 + 2 + 3)
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + (1 + 2 + 3) + (\"other string\" + 3) + (1 + 2 + 3)", canBeAutoCorrected)
         )
@@ -131,7 +131,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
             """
                     | val a = "my string" + (1 + 2 + 3) + ("other string" + 3) + (1 + (2 + 3)) + ("third string" + ("str" + 5))
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + (1 + 2 + 3) + (\"other string\" + 3) + (1 + (2 + 3)) +" +
                 " (\"third string\" + (\"str\" + 5))", canBeAutoCorrected)
@@ -143,9 +143,9 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
     fun `string concatenation - other binary operators`() {
         lintMethod(
             """
-                    | val a = "my string" + ("third string" + ("str" + 5 * 12 / 100)) 
+                    | val a = "my string" + ("third string" + ("str" + 5 * 12 / 100))
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                 " \"my string\" + (\"third string\" + (\"str\" + 5 * 12 / 100))", canBeAutoCorrected)
         )
@@ -160,7 +160,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |  "string" + value +
                     |  other + value
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -172,7 +172,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val a = "my string" +
                     |  "string" + value
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

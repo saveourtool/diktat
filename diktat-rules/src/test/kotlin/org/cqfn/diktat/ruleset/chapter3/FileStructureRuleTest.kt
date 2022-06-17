@@ -79,7 +79,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |import org.junit.Test
                 |import org.cqfn.diktat.Foo
                 |
-                |class Example { 
+                |class Example {
                 |val x: Test = null
                 |val y: Foo = null
                 |}
@@ -273,7 +273,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |import org.cqfn.diktat.example.Foo
                 |
-                |class Example { 
+                |class Example {
                 |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.example.Foo - unused import", true)
@@ -289,7 +289,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |import org.cqfn.diktat.Foo
                 |
-                |class Example { 
+                |class Example {
                 |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.Foo - unused import", true)
@@ -305,7 +305,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |import org.cqfn.diktat.Foo
                 |
-                |class Example { 
+                |class Example {
                 |val x: Foo = null
                 |}
             """.trimMargin(),
@@ -321,7 +321,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |import kotlin.io.path.div
                 |
-                |class Example { 
+                |class Example {
                 |val pom = kotlin.io.path.createTempFile().toFile()
                 |val x = listOf(pom.parentFile.toPath() / "src/main/kotlin/exclusion")
                 |}
@@ -480,6 +480,85 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} tasks.getValue - unused import", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `import in KDoc #1`() {
+        lintMethod(
+            """
+                |import java.io.IOException
+                |
+                |interface BluetoothApi {
+                |
+                |    /**
+                |     * Send array of bytes to bluetooth output stream.
+                |     * This call is asynchronous.
+                |     *
+                |     * Note that this operation can still throw an [IOException] if the remote device silently
+                |     * closes the connection so the pipe gets broken.
+                |     *
+                |     * @param bytes data to send
+                |     * @return true if success, false if there was an error or device has been disconnected
+                |     */
+                |    fun trySend(bytes: ByteArray): Boolean
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `import in KDoc #2`() {
+        lintMethod(
+            """
+                |import java.io.IOException
+                |import java.io.IOException as IOE
+                |import java.io.UncheckedIOException
+                |import java.io.UncheckedIOException as UIOE
+                |
+                |interface BluetoothApi {
+                |    /**
+                |     * @see IOException
+                |     * @see [UncheckedIOException]
+                |     * @see IOE
+                |     * @see [UIOE]
+                |     */
+                |    fun trySend(bytes: ByteArray): Boolean
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `import in KDoc #3`() {
+        lintMethod(
+            """
+                |package com.example
+                |
+                |import com.example.Library1 as Lib1
+                |import com.example.Library1.doSmth as doSmthElse1
+                |import com.example.Library2 as Lib2
+                |import com.example.Library2.doSmth as doSmthElse2
+                |
+                |object Library1 {
+                |    fun doSmth(): Unit = TODO()
+                |}
+                |
+                |object Library2 {
+                |    fun doSmth(): Unit = TODO()
+                |}
+                |
+                |/**
+                | * @see Lib1.doSmth
+                | * @see doSmthElse1
+                | * @see [Lib2.doSmth]
+                | * @see [doSmthElse2]
+                | */
+                |class Client
+            """.trimMargin(),
         )
     }
 }

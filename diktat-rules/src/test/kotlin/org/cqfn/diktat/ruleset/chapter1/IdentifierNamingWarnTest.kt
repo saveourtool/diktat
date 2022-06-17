@@ -321,7 +321,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 const val M_GLOB = ""
                 val aPrefix = ""
             """.trimIndent()
-
         lintMethod(code,
             LintError(1, 11, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} M_GLOB", true),
             LintError(2, 5, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} aPrefix", true)
@@ -336,7 +335,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 val I_AM_CONSTANT1  = ""
                 const val I_AM_CONSTANT2  = ""
             """.trimIndent()
-
         lintMethod(code,
             LintError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} I_AM_CONSTANT1", true),
             LintError(1, 5, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} I_AM_CONSTANT1", true),
@@ -358,7 +356,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-
         lintMethod(code,
             LintError(5, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} STRANGECASE", true)
         )
@@ -376,7 +373,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-
         lintMethod(code,
             LintError(3, 35, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} STRANGECASE", true)
         )
@@ -387,13 +383,13 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     fun `FUNCTION_BOOLEAN_PREFIX - positive example`() {
         lintMethod(
             """
-                    fun ASTNode.hasEmptyLineAfter(): Boolean { }    
-                    fun hasEmptyLineAfter(): Boolean { }    
-                    fun ASTNode.isEmpty(): Boolean { }    
-                    fun isEmpty(): Boolean { }    
+                    fun ASTNode.hasEmptyLineAfter(): Boolean { }
+                    fun hasEmptyLineAfter(): Boolean { }
+                    fun ASTNode.isEmpty(): Boolean { }
+                    fun isEmpty(): Boolean { }
                     override fun empty(): Boolean { }
                     override fun ASTNode.empty(): Boolean { }
-                """.trimIndent()
+            """.trimIndent()
         )
     }
 
@@ -402,11 +398,11 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     fun `FUNCTION_BOOLEAN_PREFIX - negative example`() {
         lintMethod(
             """
-                    fun ASTNode.emptyLineAfter(): Boolean { }    
-                    fun emptyLineAfter(): Boolean { }    
-                    fun ASTNode.empty(): Boolean { }    
-                    fun empty(): Boolean { }    
-                """.trimIndent(),
+                    fun ASTNode.emptyLineAfter(): Boolean { }
+                    fun emptyLineAfter(): Boolean { }
+                    fun ASTNode.empty(): Boolean { }
+                    fun empty(): Boolean { }
+            """.trimIndent(),
             LintError(1, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", true),
             LintError(2, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", true),
             LintError(3, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", true),
@@ -419,12 +415,12 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     fun `all prefixes for boolean methods`() {
         lintMethod(
             """
-                    fun hasEmptyLineAfter(): Boolean { }    
-                    fun haveEmptyLineAfter(): Boolean { }    
-                    fun isEmpty(): Boolean { }    
+                    fun hasEmptyLineAfter(): Boolean { }
+                    fun haveEmptyLineAfter(): Boolean { }
+                    fun isEmpty(): Boolean { }
                     fun shouldBeEmpty(): Boolean { }
                     fun areEmpty(): Boolean { }
-                """.trimIndent()
+            """.trimIndent()
         )
     }
 
@@ -436,7 +432,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     fun equalsSome(): Boolean { }
                     fun fooBar(): Boolean { }
                     fun equivalentToAnother(): Boolean { }
-                """.trimIndent(),
+            """.trimIndent(),
             rulesConfigList = rulesConfigBooleanFunctions
         )
     }
@@ -447,15 +443,15 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
         // valid example, should not cause exceptions
         lintMethod(
             """
-                    fun foo(predicate: (Int) -> Boolean) = Unit    
-                """.trimIndent()
+                    fun foo(predicate: (Int) -> Boolean) = Unit
+            """.trimIndent()
         )
 
         // identifier names in function types are still checked if present
         lintMethod(
             """
-                    fun foo(predicate: (a: Int) -> Boolean) = Unit    
-                """.trimIndent(),
+                    fun foo(predicate: (a: Int) -> Boolean) = Unit
+            """.trimIndent(),
             LintError(1, 21, ruleId, "${IDENTIFIER_LENGTH.warnText()} a", false)
         )
     }
@@ -469,7 +465,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                                 override fun visit(node: ASTNode) {}
                                 })
             """.trimIndent()
-
         lintMethod(code)
     }
 
@@ -484,7 +479,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-
         lintMethod(code)
     }
 
@@ -501,7 +495,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-
         lintMethod(code, LintError(4, 17, ruleId, "${IDENTIFIER_LENGTH.warnText()} e", false))
     }
 
@@ -516,7 +509,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-
         lintMethod(code)
     }
 
@@ -529,7 +521,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     val `foo variable` = ""
                 }
             """.trimIndent()
-
         lintMethod(code,
             LintError(1, 5, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `foo function`"),
             LintError(1, 20, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `argument with backstick`"),
@@ -546,7 +537,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 fun `test function with backstick`() {
                 }
             """.trimIndent()
-
         lintMethod(code)
     }
 
@@ -561,7 +551,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
                 }
             """.trimIndent()
-
         lintMethod(code, LintError(3, 9, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `should not be used`"))
     }
 
@@ -572,7 +561,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
             """
                 class `my class name` {}
             """.trimIndent()
-
         lintMethod(code, LintError(1, 7, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `my class name`"))
     }
 
@@ -614,7 +602,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-
         lintMethod(code)
     }
 
@@ -632,7 +619,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     B
                 }
             """.trimIndent()
-
         lintMethod(code,
             LintError(2, 9, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: obj, dgt", false),
             LintError(2, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} D", true),

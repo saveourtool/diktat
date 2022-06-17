@@ -88,4 +88,14 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     fun `fix expression in condition`() {
         fixAndCompare("LongExpressionInConditionExpected.kt", "LongExpressionInConditionTest.kt", rulesConfigListLineLength)
     }
+
+    @Test
+    fun `fix long Dot Qualified Expression`() {
+        fixAndCompare("LongDotQualifiedExpressionExpected.kt", "LongDotQualifiedExpressionTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `fix long value arguments list`() {
+        fixAndCompare("LongValueArgumentsListExpected.kt", "LongValueArgumentsListTest.kt", rulesConfigListLineLength)
+    }
 }

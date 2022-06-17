@@ -106,7 +106,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                   class TestPackageName {
                     typealias RelatedClasses = List<Pair<String, String>>
                   }
-                """.trimIndent()
+            """.trimIndent()
         )
     }
 

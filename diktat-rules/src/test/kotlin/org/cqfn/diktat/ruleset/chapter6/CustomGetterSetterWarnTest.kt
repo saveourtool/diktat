@@ -26,7 +26,7 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        }
                     |        get() = this.hashCode() * 2
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
             LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
@@ -38,14 +38,14 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
         lintMethod(
             """
                     |class A {
-                    |  
+                    |
                     |        fun set(value) {
                     |            println("Side effect")
                     |        }
-                    |        
+                    |
                     |        fun get() = 47
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
         )
     }
 
@@ -62,7 +62,7 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        }
                     |        get() = this.hashCode() * 2
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
@@ -80,7 +80,7 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        }
                     |        get() = this.hashCode() * 2
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 19, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
             LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )

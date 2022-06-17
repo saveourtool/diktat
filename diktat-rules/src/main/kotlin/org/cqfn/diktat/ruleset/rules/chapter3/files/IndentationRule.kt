@@ -22,6 +22,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -39,6 +40,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -78,6 +80,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     private lateinit var filePath: String
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
+    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -173,10 +176,25 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode, expectedIndent: Int): Boolean {
+        val nextNode = nodeWhiteSpace.treeNext
+        if (nextNode.elementType == VALUE_ARGUMENT) {
+            val nextNodeDot = getNextDotExpression(nextNode)
+            nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
+                if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
+                    val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text
+                        ?.length ?: -1
+                    return expectedIndent == closingQuote
+                }
+            }
+        }
+        return true
+    }
+
     @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
         context.maybeIncrement()
-
+        positionByOffset = astNode.treeParent.calculateLineColByOffset()
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.elementType in decreasingTokens) {
             // if newline is followed by closing token, it should already be indented less
@@ -199,8 +217,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
-            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
+        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, indentError.actual)
+
+        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
+            val warnText = if (!difOffsetCloseAndOpenQuote) {
+                "the same number of indents to the opening and closing quotes was expected"
+            } else {
+                "expected $expectedIndent but was ${indentError.actual}"
+            }
+            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, warnText,
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
                 whiteSpace.node.indentBy(expectedIndent)
@@ -216,29 +241,30 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         expectedIndent: Int,
         actualIndent: Int
     ) {
-        val nextNode = whiteSpace.node.treeNext
-        if (nextNode != null &&
-            nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
-            nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
-            nextNode.firstChildNode.text.startsWith("\"\"\"") &&
-            nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+        val nextNodeDot = getNextDotExpression(whiteSpace.node.treeNext)
+        if (nextNodeDot != null &&
+            nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
+            nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
+            nextNodeDot.firstChildNode.text.startsWith("\"\"\"") &&
+            nextNodeDot.findChildByType(CALL_EXPRESSION)?.text?.let {
                 it == "trimIndent()" ||
                     it == "trimMargin()"
             } == true) {
-            fixStringLiteral(whiteSpace, expectedIndent, actualIndent)
+            fixStringLiteral(nextNodeDot.firstChildNode, expectedIndent, actualIndent)
         }
     }
 
     /**
      * If it is triple-quoted string template we need to indent all its parts
      */
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun fixStringLiteral(
-        whiteSpace: PsiWhiteSpace,
+        stringTemplate: ASTNode,
         expectedIndent: Int,
         actualIndent: Int
     ) {
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
-        val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+        val templateEntries = stringTemplate.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach { node ->
             if (!node.text.contains("\n")) {
                 fixFirstTemplateEntries(node, textIndent, actualIndent)
@@ -252,6 +278,12 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 .trim())
     }
 
+    private fun getNextDotExpression(node: ASTNode) = if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
+        node
+    } else {
+        node.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+    }
+
     /**
      * This method fixes all lines of string template except the last one
      * Also it considers $foo insertions in string
@@ -263,8 +295,14 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val correctedText = StringBuilder()
         // shift of the node depending on its initial string template indent
-        val nodeStartIndent = if (node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE > 0) {
-            node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE
+        val nodeStartIndent = if (node.firstChildNode
+            .text
+            .takeWhile { it == ' ' }
+            .count() - actualIndent - INDENT_SIZE > 0) {
+            node.firstChildNode
+                .text
+                .takeWhile { it == ' ' }
+                .count() - actualIndent - INDENT_SIZE
         } else {
             0
         }

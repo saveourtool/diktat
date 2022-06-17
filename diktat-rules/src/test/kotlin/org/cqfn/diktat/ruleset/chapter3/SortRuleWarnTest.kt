@@ -38,7 +38,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   D,
                     |   ;
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -54,7 +54,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   B,
                     |   ;
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
@@ -70,7 +70,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   RED(0xFF0000),
                     |   ;
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -84,7 +84,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   RED(0xFF0000),
                     |   BLUE(0x0000FF),
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
@@ -99,7 +99,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   RED(0xFF0000),
                     |   BLUE(0x0000FF)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
@@ -114,7 +114,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   GREEN(0x00FF00),
                     |   RED(0xFF0000),
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -126,14 +126,14 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |enum class Warnings {
                     |   WAITING {
                     |      override fun signal() = TALKING
-                    |   }, 
+                    |   },
                     |   TALKING  {
                     |      override fun signal() = TALKING
                     |   },
                     |   ;
                     |   abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 21, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
@@ -146,14 +146,14 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |enum class Warnings {
                     |   WAITING {
                     |      override fun signal() = TALKING
-                    |   }, 
+                    |   },
                     |   TALKING  {
                     |      override fun signal() = TALKING
                     |   },
                     |   ;
                     |   abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin(), rulesConfigList = rulesConfigNotSortEnum
+            """.trimMargin(), rulesConfigList = rulesConfigNotSortEnum
         )
     }
 
@@ -171,7 +171,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |       private const val A = 5
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
         )
     }
@@ -192,7 +192,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |       private const val Db = 5
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true),
             LintError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
         )
@@ -214,7 +214,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |       private const val Db = 5
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
         )
     }
@@ -235,7 +235,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |       private const val Db = 5
                     |   }
                     |}
-                """.trimMargin(), rulesConfigList = rulesConfigNotSortProperty
+            """.trimMargin(), rulesConfigList = rulesConfigNotSortProperty
         )
     }
 
@@ -258,14 +258,14 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |enum class Warnings {
                     |   WAITING {
                     |      override fun signal() = TALKING
-                    |   }, 
+                    |   },
                     |   TALKING  {
                     |      override fun signal() = TALKING
                     |   },
                     |   ;
                     |   abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin(), rulesConfigList = rulesConfigNotSortBoth
+            """.trimMargin(), rulesConfigList = rulesConfigNotSortBoth
         )
     }
 
@@ -280,7 +280,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |       private const val B = 4
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -299,7 +299,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |       private val SIMPLE_VALUE = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

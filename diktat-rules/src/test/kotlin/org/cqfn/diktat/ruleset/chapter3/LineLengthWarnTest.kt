@@ -53,7 +53,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   fun foo() {
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = shortLineLength
         )
     }
@@ -82,7 +82,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   fun foo() {
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 163", false)
         )
     }
@@ -110,7 +110,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   fun foo() {
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigListLineLength
         )
     }
@@ -140,9 +140,9 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |       val str = "sdjhkjdfhkjsdhfkshfkjshkfhsdkjfhskjdfhkshdfkjsdhfkjsdhfkshdkfhsdkjfhskdjfhkjsdfhkjsdhfjksdhfkjsdhfjkhsdkjfhskdjfhksdfhskdhf"
                     |   }
                     |}
-                """.trimMargin(),
-            LintError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", false),
-            LintError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", false)
+            """.trimMargin(),
+            LintError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", true),
+            LintError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", true)
         )
     }
 
@@ -157,7 +157,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |import org.cqfn.diktat.util.lintMethod
                     |
                     |/**
-                    | * This is very important URL https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8    
+                    | * This is very important URL https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     | * $correctUrl this text can be on another line
                     | * @param a
@@ -171,7 +171,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |       val str = "sdjhkjdfhkjsdhfkshfkjshkfhsdkjfhskjdfhkshdfkjsdhfkjsdhfkshdkfhsdkjfhskdjfhkjsdfhkjsdhfjksdhfkjsdhfjkhsdkjfhskdjfhksdfhskdhf"
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 163, but was 195", false),
             rulesConfigList = rulesConfigListLineLength
         )
@@ -200,7 +200,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |       println(123)
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -221,9 +221,10 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |       println("dhfgkjdhfgkjhdkfjghdkjfghdkjfhgkdfhgdkghkghdkjfhgdkghfkdjhfgkjdhfgjkdhfgkjddhfgkdhfgjkdh")
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 130", false),
-            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", false)
+            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", true)
+
         )
     }
 
@@ -235,7 +236,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |@Query(value = "ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
                     |fun foo() = println("ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", false),
+            LintError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", true),
             LintError(2, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 89", true),
             rulesConfigList = shortLineLength
         )
