@@ -757,7 +757,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
         assertSoftly { softly ->
             expressionBodyFunctionsSingleIndent.forEach { code ->
                 softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
-                    .describedAs("lint result for \"$code\"")
+                    .describedAs("lint result for ${code.describe()}")
                     .isNotEmpty
                     .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
                         assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
@@ -782,7 +782,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
         assertSoftly { softly ->
             expressionBodyFunctionsContinuationIndent.forEach { code ->
                 softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
-                    .describedAs("lint result for \"$code\"")
+                    .describedAs("lint result for ${code.describe()}")
                     .isNotEmpty
                     .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
                         assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)

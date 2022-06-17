@@ -37,5 +37,5 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     /**
      * The indentation size for each file
      */
-    val indentationSize = config["indentationSize"]?.toInt() ?: IndentationRule.INDENT_SIZE
+    val indentationSize = config["indentationSize"]?.toInt() ?: IndentationRule.DEFAULT_INDENT_SIZE
 }
