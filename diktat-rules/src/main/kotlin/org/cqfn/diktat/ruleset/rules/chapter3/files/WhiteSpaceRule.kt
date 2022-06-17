@@ -115,7 +115,6 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         )
     }
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
-    private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
         when (node.elementType) {
@@ -383,6 +382,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     // val offset = positionByOffset(this.startOffset).second
     // }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         if (requiredSpacesBefore == 1) {
             selfOrParentsTreePrev()?.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }?.leaveSingleWhiteSpace()
