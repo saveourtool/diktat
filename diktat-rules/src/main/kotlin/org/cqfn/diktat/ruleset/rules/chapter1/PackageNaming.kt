@@ -80,10 +80,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
             }
         } ?: if (visitorCounter.incrementAndGet() == 1) {
-            log.error(
-                "Not able to find an external configuration for domain" +
-                    " name in the common configuration (is it missing in yml config?)"
-            )
+            log.error("Not able to find an external configuration for domain" +
+                    " name in the common configuration (is it missing in yml config?)")
         } else {
             @Suppress("RedundantUnitExpression")
             Unit
