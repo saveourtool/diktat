@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
@@ -13,7 +12,6 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -383,18 +381,18 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    // private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
-    // positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
-    // val offset = positionByOffset(this.startOffset).second
-    // }
+    @Suppress("UnsafeCallOnNullableType")
+    private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
+        positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
+        val offset = positionByOffset(this.startOffset).second
+        return offset + this.text.length >= configuration.lineLength
+    }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         if (requiredSpacesBefore == 1) {
             selfOrParentsTreePrev()?.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }?.leaveSingleWhiteSpace()
-            positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
-            val offset = positionByOffset(this.startOffset).second
-            if (offset + this.text.length >= configuration.lineLength && this.firstChildNode.elementType == ELVIS) {
+            if (this.isNeedNewLineInOperatorReferences() && this.firstChildNode.elementType == ELVIS) {
                 this.treePrev.let { this.treeParent.appendNewlineMergingWhiteSpace(it, it) }
             }
         } else if (requiredSpacesBefore == 0) {
@@ -402,9 +400,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         if (requiredSpacesAfter == 1) {
             leaveSingleWhiteSpace()
-            positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
-            val offset = positionByOffset(this.startOffset).second
-            if (offset + this.text.length >= configuration.lineLength && this.firstChildNode.elementType != ELVIS) {
+            if (this.isNeedNewLineInOperatorReferences() && this.firstChildNode.elementType != ELVIS) {
                 this.treeNext.let { this.treeParent.appendNewlineMergingWhiteSpace(it, it) }
             }
         } else if (requiredSpacesAfter == 0) {
