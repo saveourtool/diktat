@@ -4,8 +4,8 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
@@ -109,14 +109,12 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(WRONG_WHITESPACE, LONG_LINE, WRONG_INDENTATION)
 ) {
-    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
-
     private val configuration by lazy {
         LineLength.LineLengthConfiguration(
             configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap()
         )
     }
-
+    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
@@ -380,10 +378,10 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    //private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
-    //    positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
-    //    val offset = positionByOffset(this.startOffset).second
-    //}
+    // private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
+    // positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
+    // val offset = positionByOffset(this.startOffset).second
+    // }
 
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         if (requiredSpacesBefore == 1) {
@@ -456,16 +454,9 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             ""
         }
 
-    class LineLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        /**
-         * Maximum allowed line length
-         */
-        val lineLength = config["lineLength"]?.toLongOrNull() ?: MAX_LENGTH
-    }
-
     companion object {
-        private const val MAX_LENGTH = 120L
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+        private const val MAX_LENGTH = 120L
         const val NAME_ID = "zcs-horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
