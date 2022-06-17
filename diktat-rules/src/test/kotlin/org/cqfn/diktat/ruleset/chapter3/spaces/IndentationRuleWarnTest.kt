@@ -12,13 +12,16 @@ import org.assertj.core.api.AbstractSoftAssertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
+import org.junit.jupiter.api.MethodOrderer.MethodName
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import org.opentest4j.MultipleFailuresError
 
 import java.util.function.Consumer
 
 @Suppress("LargeClass")
+@TestMethodOrder(MethodName::class)
 class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRuleTestMixin {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
     private val rulesConfigList = listOf(
@@ -864,14 +867,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
         }
 
         assertSoftly { softly ->
-            sequence {
-                yieldAll(fragments.asSequence())
-
-                /*
-                 * All fragments concatenated.
-                 */
-                yield(fragments.concatenated())
-            }.forEach { fragment ->
+            fragments.asSequenceWithConcatenation().forEach { fragment ->
                 softly.lintMethodSoftly(
                     fragment,
                     lintErrors = lintErrors,

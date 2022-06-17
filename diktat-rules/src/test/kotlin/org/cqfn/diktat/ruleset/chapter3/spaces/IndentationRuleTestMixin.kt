@@ -65,7 +65,12 @@ internal interface IndentationRuleTestMixin {
                 """
                 |private fun lerp(start: Float, stop: Float, fraction: Float): Float =
                 |    (1 - fraction) * start + fraction * stop
-                """.trimMargin()
+                """.trimMargin(),
+
+                """
+                |fun foo() =
+                |    println()
+                """.trimMargin(),
             )
 
     /**
@@ -120,6 +125,83 @@ internal interface IndentationRuleTestMixin {
                 |private fun lerp(start: Float, stop: Float, fraction: Float): Float =
                 |        (1 - fraction) * start + fraction * stop
                 """.trimMargin(),
+
+                """
+                |fun foo() =
+                |        println()
+                """.trimMargin(),
+            )
+
+    /**
+     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
+     *
+     * @see whitespaceInStringLiteralsContinuationIndent
+     */
+    @Suppress("CUSTOM_GETTERS_SETTERS")
+    val whitespaceInStringLiteralsSingleIndent: Array<String>
+        @Language("kotlin")
+        get() =
+            arrayOf(
+                """
+                |@Test
+                |fun `test method name`() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            @Suppress("diktat")
+                |            fun foo() {
+                |                val a = 1
+                |            }
+                |        ""${'"'}.trimIndent()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun checkScript() {
+                |    lintMethod(
+                |        ""${'"'}
+                |                    |val A = "aa"
+                |        ""${'"'}.trimMargin(),
+                |    )
+                |}
+                """.trimMargin(),
+            )
+
+    /**
+     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
+     *
+     * @see whitespaceInStringLiteralsSingleIndent
+     */
+    @Suppress("CUSTOM_GETTERS_SETTERS")
+    val whitespaceInStringLiteralsContinuationIndent: Array<String>
+        @Language("kotlin")
+        get() =
+            arrayOf(
+                """
+                |@Test
+                |fun `test method name`() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                @Suppress("diktat")
+                |                fun foo() {
+                |                    val a = 1
+                |                }
+                |            ""${'"'}.trimIndent()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun checkScript() {
+                |    lintMethod(
+                |            ""${'"'}
+                |                        |val A = "aa"
+                |            ""${'"'}.trimMargin(),
+                |    )
+                |}
+                """.trimMargin(),
             )
 
     /**
@@ -170,11 +252,37 @@ internal interface IndentationRuleTestMixin {
         )
 
     /**
+     * Allows to simultaneously enable or disable _all_ `extendedIndent*` flags.
+     *
+     * @param enabled whether the _continuation indent_ should be enabled or
+     *   disabled.
+     * @return an array of map entries.
+     */
+    fun extendedIndent(enabled: Boolean): Array<Pair<String, Any>> =
+        arrayOf(
+            "extendedIndentOfParameters" to enabled,
+            "extendedIndentAfterOperators" to enabled,
+            "extendedIndentBeforeDot" to enabled)
+
+    /**
      * @return the concatenated content of this array (elements separated with
      *   blank lines).
      */
-    fun Array<String>.concatenated(): String =
+    private fun Array<String>.concatenated(): String =
         joinToString(separator = "\n\n")
+
+    /**
+     * @return a sequence which returns the elements of this array and,
+     *   additionally, the result of concatenation of all the elements.
+     */
+    fun Array<String>.asSequenceWithConcatenation(): Sequence<String> =
+        sequence {
+            yieldAll(asSequence())
+
+            if (size > 1) {
+                yield(concatenated())
+            }
+        }
 
     /**
      * @return `true` if known-to-fail unit tests can be muted on the CI server.
