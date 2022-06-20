@@ -8,8 +8,9 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule.Companion.NEWLINE
-import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule.Companion.SPACE
+import org.cqfn.diktat.ruleset.utils.NEWLINE
+import org.cqfn.diktat.ruleset.utils.SPACE
+import org.cqfn.diktat.ruleset.utils.TAB
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
@@ -27,6 +28,8 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
+import org.cqfn.diktat.ruleset.utils.isSpaceCharacter
+import org.cqfn.diktat.ruleset.utils.lastIndent
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
@@ -506,9 +509,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          */
         const val DEFAULT_INDENT_SIZE = 4
         const val NAME_ID = "zct-indentation"
-        internal const val NEWLINE = '\n'
-        internal const val SPACE = ' '
-        internal const val TAB = '\t'
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
         private val matchingTokens = increasingTokens.zip(decreasingTokens)
@@ -558,17 +558,3 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 }
-
-/**
- * @property expected expected indentation as a number of spaces
- * @property actual actual indentation as a number of spaces
- */
-internal data class IndentationError(val expected: Int, val actual: Int)
-
-/**
- * @return indentation of the last line of this string
- */
-internal fun String.lastIndent() = substringAfterLast(NEWLINE).count(::isSpaceCharacter)
-
-private fun isSpaceCharacter(ch: Char): Boolean =
-    ch == SPACE

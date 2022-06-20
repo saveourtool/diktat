@@ -13,6 +13,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -43,6 +44,7 @@ class DiktatRuleSetProviderTest {
             .map { it.nameWithoutExtension }
             .filterNot { it in ignoreFile }
         val rulesName = DiktatRuleSetProvider().get()
+            .asSequence()
             .onEachIndexed { index, rule ->
                 if (index != 0) {
                     Assertions.assertTrue(
@@ -53,8 +55,9 @@ class DiktatRuleSetProviderTest {
             }
             .map { (it as? DiktatRuleSetProvider.OrderedRule)?.rule ?: it }
             .map { it::class.simpleName!! }
-            .filter { it != "DummyWarning" }
-        Assertions.assertEquals(filesName.sorted().toList(), rulesName.sorted())
+            .filterNot { it == "DummyWarning" }
+            .toList()
+        assertThat(rulesName.sorted()).containsExactlyElementsOf(filesName.sorted().toList())
     }
 
     @Test
@@ -122,6 +125,9 @@ class DiktatRuleSetProviderTest {
     }
 
     companion object {
-        private val ignoreFile = listOf("DiktatRuleSetProvider", "DiktatRule")
+        private val ignoreFile = listOf(
+            "DiktatRuleSetProvider",
+            "DiktatRule",
+            "IndentationError")
     }
 }
