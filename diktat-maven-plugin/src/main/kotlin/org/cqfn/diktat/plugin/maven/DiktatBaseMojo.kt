@@ -7,7 +7,6 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import com.pinterest.ktlint.core.internal.CurrentBaseline
 import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
@@ -94,7 +93,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     /**
      * @param params instance of [KtLint.ExperimentalParams] used in analysis
      */
-    @OptIn(FeatureInAlphaState::class)
     abstract fun runAction(params: KtLint.ExperimentalParams)
 
     /**
@@ -228,7 +226,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
     }
 
-    @OptIn(FeatureInAlphaState::class)
     private fun checkFile(file: File,
                           lintErrors: MutableList<LintError>,
                           baselineErrors: List<LintError>,
@@ -237,10 +234,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val text = file.readText()
         val params =
             KtLint.ExperimentalParams(
-                fileName = file.relativeTo(mavenProject.basedir).path,
+                fileName = file.path,
                 text = text,
                 ruleSets = ruleSets,
-                userData = mapOf("file_path" to file.path),
                 script = file.extension.equals("kts", ignoreCase = true),
                 cb = { lintError, isCorrected ->
                     if (baselineErrors.none {

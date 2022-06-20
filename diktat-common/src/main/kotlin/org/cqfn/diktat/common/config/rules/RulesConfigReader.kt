@@ -33,6 +33,13 @@ const val DIKTAT_COMMON = "DIKTAT_COMMON"
 const val DIKTAT = "diktat"
 
 /**
+ * this constant will be used everywhere in the code to mark usage of Diktat ruleset
+ */
+const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
+const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
+const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
+
+/**
  * This interface represents individual inspection in rule set.
  */
 interface Rule {

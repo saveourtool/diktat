@@ -1,9 +1,9 @@
 package org.cqfn.diktat.plugin.gradle
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MIN_JVM_REQUIRES_ADD_OPENS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
@@ -30,6 +30,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import javax.inject.Inject
+
 
 /**
  * A base diktat task for gradle <6.8, which wraps [JavaExec].

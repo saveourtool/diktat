@@ -60,7 +60,6 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
                 ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
                     rulesConfigList ?: this.rulesConfigList).get()),
                 cb = { lintError, _ -> lintErrors += lintError },
-                userData = mapOf("file_path" to actualFileName)
             )
         )
 
