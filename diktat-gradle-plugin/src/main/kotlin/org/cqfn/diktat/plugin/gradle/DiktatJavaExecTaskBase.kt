@@ -31,7 +31,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import javax.inject.Inject
 
-
 /**
  * A base diktat task for gradle <6.8, which wraps [JavaExec].
  *
