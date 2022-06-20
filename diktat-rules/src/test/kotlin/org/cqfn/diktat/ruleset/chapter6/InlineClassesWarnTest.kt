@@ -1,9 +1,9 @@
 package org.cqfn.diktat.ruleset.chapter6
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -173,7 +173,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
         lintMethod(
             """
                 |class LocalCommandExecutor internal constructor(private val command: String) {
-                |   
+                |
                 |}
             """.trimMargin(),
             rulesConfigList = rulesConfigListSameVersion
@@ -186,7 +186,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
         lintMethod(
             """
                 |class LocalCommandExecutor public constructor(private val command: String) {
-                |   
+                |
                 |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", false),
@@ -200,7 +200,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
         lintMethod(
             """
                 |class LocalCommandExecutor @Inject constructor(private val command: String) {
-                |   
+                |
                 |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", false),

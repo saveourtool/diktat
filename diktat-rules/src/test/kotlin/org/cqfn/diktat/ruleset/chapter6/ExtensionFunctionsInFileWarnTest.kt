@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -86,9 +86,9 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
         lintMethod(
             """
                 |class Some {
-                |   
+                |
                 |   fun Some.str() {
-                |   
+                |
                 |   }
                 |}
             """.trimMargin()
@@ -102,7 +102,7 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
             """
                 |class Some {
                 |   fun foo() {
-                |   
+                |
                 |   }
                 |}
                 |
@@ -120,7 +120,7 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
             """
                 |class Some {
                 |   fun foo() {
-                |   
+                |
                 |   }
                 |}
                 |

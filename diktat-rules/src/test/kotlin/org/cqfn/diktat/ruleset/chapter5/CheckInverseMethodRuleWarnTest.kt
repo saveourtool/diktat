@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.CheckInverseMethodRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -20,7 +20,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
             """
                     |fun some() {
                     |   if (list.isEmpty()) {
-                    |       // some cool logic 
+                    |       // some cool logic
                     |   }
                     |}
             """.trimMargin()
@@ -34,7 +34,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
             """
                     |fun some() {
                     |   if (!list.isEmpty()) {
-                    |       // some cool logic 
+                    |       // some cool logic
                     |   }
                     |}
             """.trimMargin(),
@@ -49,7 +49,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
             """
                     |fun some() {
                     |   if (!  list.isEmpty()) {
-                    |       // some cool logic 
+                    |       // some cool logic
                     |   }
                     |}
             """.trimMargin(),
@@ -64,7 +64,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
             """
                     |fun some() {
                     |   if (! /*cool comment*/ list.isEmpty()) {
-                    |       // some cool logic 
+                    |       // some cool logic
                     |   }
                     |}
             """.trimMargin(),
