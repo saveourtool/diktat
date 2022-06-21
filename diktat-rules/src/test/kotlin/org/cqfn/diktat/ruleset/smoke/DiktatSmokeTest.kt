@@ -342,6 +342,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             }
     }
 
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `fix can cause long line`() {
+        fixAndCompareSmokeTest("ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
+    }
+
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
