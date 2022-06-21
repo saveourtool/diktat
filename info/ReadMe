@@ -2,6 +2,6 @@ UPDATE README
 
 - To update the code style text in the main README, you need to change the contents of the file guide-chapter-n.md , the paragraph in which you added/changed the rule contained in /IdeaProjects/diktat/info/
 
-- And perform generation using gradle generate Full Documentation and generate Available Rules contained in /IdeaProjects/diktat/info/build.gradle.kts
+- And perform generation using gradle `generateFullDoc` and `generateAvailableRules` contained in /IdeaProjects/diktat/info/build.gradle.kts
 
 - You do not need to change the contents of the diktat-coding-convention file
