@@ -291,7 +291,7 @@ val abcdef = "my splitted" +
                 " string"
 ```
 
-- Opening and closing quotes in multiline string should have same indentation:
+- Opening and closing quotes in multiline string should have the same indentation:
 
 ```kotlin
 lintMethod(
@@ -359,7 +359,7 @@ Line length should be less than 120 symbols. Otherwise, it should be split.
 If `complex property` initializing is too long, It should be split into priorities:
 1. Logic Binary Expression (`&&` , `||`)
 2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
-   1. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
+3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -381,7 +381,7 @@ val complexProperty = (1 + 2 + 3 > 0) &&
     (23 * 4 > 10 * 6)
 ```
 
-Long line should be split in `Elvis Operator` (`?:`):
+Long line which should be split in `Elvis Operator` (`?:`):
 
 **Invalid example:**
 ```kotlin
@@ -456,9 +456,9 @@ fun foo() =
 ```
 
 `Long binary expression` should be split into priorities:
-1. Logic Binary Expression (**&&**  **||**)
-2. Comparison Binary Expression (**>** **<** **==** **>=** **<=** **!=**)
-3. Other types (Arithmetical and Bit operation) (**+** **-** * **/** **%** **>>** **<<** **/*=** **+=** **-=** **/=** **%=** **++** **--** **!** **in** **!in** etc)
+1. Logic Binary Expression (`&&` , `||`)
+2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
+3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -471,7 +471,7 @@ if (( x >  100) ||
     y < 100 && !isFoo()) {}
 ```
 
-`String template` also can be split in white space in string text:
+Long `string template` should be split into several lines:
 
 **Invalid example:**
 ```kotlin
