@@ -158,6 +158,48 @@ internal interface IndentationRuleTestMixin {
                 """.trimMargin(),
 
                 """
+                |fun f0() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            |@Suppress("diktat")
+                |            |fun foo() {
+                |            |    val a = 1
+                |            |}
+                |        ""${'"'}.trimMargin()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f1() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            |@Suppress("diktat")
+                |            |fun foo() {
+                |            |    val a = 1
+                |            |}
+                |        ""${'"'}.trimMargin("|")
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f2() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            >@Suppress("diktat")
+                |            >fun foo() {
+                |            >    val a = 1
+                |            >}
+                |        ""${'"'} . trimMargin ( marginPrefix = ">" )
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
                 |fun checkScript() {
                 |    lintMethod(
                 |        ""${'"'}
@@ -189,6 +231,48 @@ internal interface IndentationRuleTestMixin {
                 |                    val a = 1
                 |                }
                 |            ""${'"'}.trimIndent()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f0() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                |@Suppress("diktat")
+                |                |fun foo() {
+                |                |    val a = 1
+                |                |}
+                |            ""${'"'}.trimMargin()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f1() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                |@Suppress("diktat")
+                |                |fun foo() {
+                |                |    val a = 1
+                |                |}
+                |            ""${'"'}.trimMargin("|")
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f2() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                >@Suppress("diktat")
+                |                >fun foo() {
+                |                >    val a = 1
+                |                >}
+                |            ""${'"'} . trimMargin ( marginPrefix = ">" )
                 |    lintMethod(code)
                 |}
                 """.trimMargin(),
