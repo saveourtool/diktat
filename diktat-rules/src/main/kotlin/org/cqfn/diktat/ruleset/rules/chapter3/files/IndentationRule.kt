@@ -368,7 +368,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          */
         val regularStringPart = templateEntry.firstChildNode as LeafPsiElement
         val regularStringPartText = regularStringPart.checkRegularStringPart().text
-        val nodeStartIndentOrNegative = regularStringPartText.leadingSpaceCount() - actualIndent - DEFAULT_INDENT_SIZE
+        val nodeStartIndentOrNegative = (regularStringPartText.leadingSpaceCount() - actualIndent).unindent()
         // shift of the node depending on its initial string template indent
         val nodeStartIndent = nodeStartIndentOrNegative.zeroIfNegative()
 
@@ -385,7 +385,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
 
             else -> {
-                val textIndent = (expectedIndent + DEFAULT_INDENT_SIZE).spaces
+                val textIndent = expectedIndent.indent().spaces
 
                 when {
                     // if string template is after literal_string
@@ -412,6 +412,30 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
+     * Increases the indentation level by [level] * [IndentationConfig.indentationSize].
+     *
+     * @param level the indentation level, 1 by default.
+     * @see unindent
+     * @see IndentationConfig.indentationSize
+     * @see IndentContext.maybeIncrement
+     * @see IndentContext.dec
+     */
+    private fun Int.indent(level: Int = 1): Int =
+        this + level * configuration.indentationSize
+
+    /**
+     * Decreases the indentation level by [level] * [IndentationConfig.indentationSize].
+     *
+     * @param level the indentation level, 1 by default.
+     * @see indent
+     * @see IndentationConfig.indentationSize
+     * @see IndentContext.maybeIncrement
+     * @see IndentContext.dec
+     */
+    private fun Int.unindent(level: Int = 1): Int =
+        this - level * configuration.indentationSize
+
+    /**
      * Class that contains state needed to calculate indent and keep track of exceptional indents.
      * Tokens from [increasingTokens] are stored in stack [activeTokens]. When [WHITE_SPACE] with line break is encountered,
      * if stack is not empty, indentation is increased. When token from [decreasingTokens] is encountered, it's counterpart is removed
@@ -432,6 +456,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * Checks whether indentation needs to be incremented and increments in this case.
+         *
+         * @see dec
+         * @see Int.indent
+         * @see Int.unindent
          */
         fun maybeIncrement() {
             if (activeTokens.isNotEmpty() && activeTokens.peek() != WHITE_SPACE) {
@@ -442,6 +470,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param token a token that caused indentation decrement, for example a closing brace
+         *
+         * @see maybeIncrement
+         * @see Int.indent
+         * @see Int.unindent
          */
         fun dec(token: IElementType) {
             if (activeTokens.peek() == WHITE_SPACE) {
@@ -502,12 +534,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(IndentationRule::class.java)
-
-        /**
-         * The default indent size (space characters), configurable via
-         * `indentationSize`.
-         */
-        const val DEFAULT_INDENT_SIZE = 4
         const val NAME_ID = "zct-indentation"
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
