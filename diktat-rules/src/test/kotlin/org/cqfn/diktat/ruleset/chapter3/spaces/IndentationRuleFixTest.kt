@@ -241,7 +241,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
 
                 if (!lintResult.isSuccessful) {
                     softly.assertThat(lintResult.actualContent)
-                        .describedAs("lint result for \"$actual\"")
+                        .describedAs("lint result for ${actual.describe()}")
                         .isEqualTo(lintResult.expectedContent)
                 }
             }
