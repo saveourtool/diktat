@@ -1105,6 +1105,17 @@ val abcdef = "my splitted" +
                 " string"
 ```
 
+- Opening and closing quotes in multiline string should have same indentation
+
+```kotlin
+lintMethod(
+            """
+                    |val q = 1
+                    |
+            """.trimMargin()
+    )
+```
+
 - A list of supertypes should be indented with `4 spaces` if they are on different lines or with `8 spaces` if the leading colon is also on a separate line
 
 ```kotlin
