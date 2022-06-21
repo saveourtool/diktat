@@ -37,6 +37,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
@@ -46,6 +47,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_START
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.REGULAR_STRING_PART
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
@@ -244,7 +246,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Checks if it is triple-quoted string template with trimIndent() or trimMargin() function.
+     * Checks if it is a triple-quoted string template with
+     * [trimIndent()][String.trimIndent] or [trimMargin(...)][String.trimMargin]
+     * function.
      */
     private fun checkStringLiteral(
         whiteSpace: PsiWhiteSpace,
@@ -256,10 +260,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
             nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
             nextNodeDot.firstChildNode.text.startsWith("\"\"\"") &&
-            nextNodeDot.findChildByType(CALL_EXPRESSION)?.text?.let {
-                it == "trimIndent()" ||
-                    it == "trimMargin()"
-            } == true) {
+            nextNodeDot.findChildByType(CALL_EXPRESSION).isTrimIndentOrMarginCall()) {
             fixStringLiteral(nextNodeDot.firstChildNode, expectedIndent, actualIndent)
         }
     }
@@ -290,40 +291,60 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         actualIndent: Int
     ) {
         val templateEntries = stringTemplate.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
-        templateEntries.asSequence().filterIndexed { index, templateEntry ->
+        val templateEntriesLastIndex = templateEntries.size - 1
+        var templateEntryFollowingNewline = false
+
+        templateEntries.forEachIndexed { index, templateEntry ->
             val text = templateEntry.text
-            val containsNewline = text.contains(NEWLINE)
 
-            if (containsNewline) {
+            when {
+                text.contains(NEWLINE) -> {
+                    /*
+                     * Set the flag.
+                     */
+                    templateEntryFollowingNewline = true
+
+                    /*
+                     * In real-life cases observed, whenever a `LITERAL_STRING_TEMPLATE_ENTRY`
+                     * _contains_ a newline character, it is _exactly_ a newline character.
+                     */
+                    check(text.length == 1) {
+                        val escapedText = text.replace(NEWLINE.toString(), "\\n")
+
+                        "A LITERAL_STRING_TEMPLATE_ENTRY at index $index contains extra characters in addition to the newline, " +
+                            "entry: \"$escapedText\", " +
+                            "string template: ${stringTemplate.text}"
+                    }
+                }
+
                 /*
-                 * In real-life cases observed, whenever a `LITERAL_STRING_TEMPLATE_ENTRY`
-                 * _contains_ a newline character, it is _exactly_ a newline character.
+                 * This is the last string template fragment which is usually followed
+                 * with the closing `"""` and the `.trimIndent()` or `.trimMargin(...)` call.
                  */
-                check(text.length == 1) {
-                    val escapedText = text.replace(NEWLINE.toString(), "\\n")
+                index == templateEntriesLastIndex -> {
+                    val lastRegularStringPart = templateEntries.last().firstChildNode as LeafPsiElement
+                    lastRegularStringPart.checkRegularStringPart().apply {
+                        val textWithoutIndent = text.trimStart()
+                        rawReplaceWithText(expectedIndent.spaces + textWithoutIndent)
+                    }
+                }
 
-                    "A LITERAL_STRING_TEMPLATE_ENTRY at index $index contains extra characters in addition to the newline, " +
-                        "entry: \"$escapedText\", " +
-                        "string template: ${stringTemplate.text}"
+                /*
+                 * Either this is the very first string template entry, or an
+                 * entry which immediately follows the newline.
+                 */
+                index == 0 || templateEntryFollowingNewline -> {
+                    fixFirstTemplateEntries(
+                        templateEntry,
+                        expectedIndent = expectedIndent,
+                        actualIndent = actualIndent)
+
+                    /*
+                     * Re-set the flag.
+                     */
+                    templateEntryFollowingNewline = false
                 }
             }
-
-            !containsNewline
-        }.forEach { templateEntry ->
-            fixFirstTemplateEntries(
-                templateEntry,
-                expectedIndent = expectedIndent,
-                actualIndent = actualIndent)
-        }
-
-        /*
-         * This is the last string template fragment which is usually followed
-         * with the closing `"""` and the `.trimIndent()` or `.trimMargin()` call.
-         */
-        val lastRegularStringPart = templateEntries.last().firstChildNode as LeafPsiElement
-        lastRegularStringPart.checkRegularStringPart().apply {
-            val textWithoutIndent = text.trimStart()
-            rawReplaceWithText(expectedIndent.spaces + textWithoutIndent)
         }
     }
 
@@ -368,9 +389,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          */
         val regularStringPart = templateEntry.firstChildNode as LeafPsiElement
         val regularStringPartText = regularStringPart.checkRegularStringPart().text
-        val nodeStartIndentOrNegative = (regularStringPartText.leadingSpaceCount() - actualIndent).unindent()
         // shift of the node depending on its initial string template indent
-        val nodeStartIndent = nodeStartIndentOrNegative.zeroIfNegative()
+        val nodeStartIndent = (regularStringPartText.leadingSpaceCount() - actualIndent).unindent().zeroIfNegative()
 
         val isPrevStringTemplate = templateEntry.treePrev.elementType in stringLiteralTokens
         val isNextStringTemplate = templateEntry.treeNext.elementType in stringLiteralTokens
@@ -381,20 +401,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
                 // if string template is before literal_string
                 else -> regularStringPartText.trimEnd()
-
             }
 
-            else -> {
-                val textIndent = expectedIndent.indent().spaces
-
-                when {
-                    // if string template is after literal_string
-                    isNextStringTemplate -> textIndent + nodeStartIndent.spaces + regularStringPartText.trimStart()
-
-                    // if there is no string template in literal_string
-                    else -> textIndent + nodeStartIndent.spaces + regularStringPartText.trim()
-                }
-            }
+            // if string template is after literal_string
+            // or if there is no string template in literal_string
+            else -> (expectedIndent.indent() + nodeStartIndent).spaces + regularStringPartText.trimStart()
         }
 
         regularStringPart.rawReplaceWithText(correctedText)
@@ -539,6 +550,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
         private val matchingTokens = increasingTokens.zip(decreasingTokens)
         private val stringLiteralTokens = listOf(SHORT_STRING_TEMPLATE_ENTRY, LONG_STRING_TEMPLATE_ENTRY)
+        private val knownTrimFunctionPatterns = setOf("trimIndent", "trimMargin")
 
         /**
          * @return a string which consists of `N` [space][SPACE] characters.
@@ -547,6 +559,30 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private val Int.spaces: String
             get() =
                 SPACE.toString().repeat(n = this)
+
+        /**
+         * @return `true` if this is a [String.trimIndent] or [String.trimMargin]
+         * call, `false` otherwise.
+         */
+        private fun ASTNode?.isTrimIndentOrMarginCall(): Boolean {
+            this ?: return false
+
+            require(elementType == CALL_EXPRESSION) {
+                "The elementType of this node is $elementType while $CALL_EXPRESSION expected"
+            }
+
+            val referenceExpression = firstChildNode ?: return false
+            if (referenceExpression.elementType != REFERENCE_EXPRESSION) {
+                return false
+            }
+
+            val identifier = referenceExpression.firstChildNode ?: return false
+            if (identifier.elementType != IDENTIFIER) {
+                return false
+            }
+
+            return identifier.text in knownTrimFunctionPatterns
+        }
 
         /**
          * Checks this [REGULAR_STRING_PART] child of a [LITERAL_STRING_TEMPLATE_ENTRY].
