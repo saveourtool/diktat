@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 
 /**
  * [RuleConfiguration] for indentation logic
@@ -37,5 +36,13 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     /**
      * The indentation size for each file
      */
-    val indentationSize = config["indentationSize"]?.toInt() ?: IndentationRule.DEFAULT_INDENT_SIZE
+    val indentationSize = config["indentationSize"]?.toInt() ?: DEFAULT_INDENT_SIZE
+
+    private companion object {
+        /**
+         * The default indent size (space characters), configurable via
+         * `indentationSize`.
+         */
+        private const val DEFAULT_INDENT_SIZE = 4
+    }
 }
