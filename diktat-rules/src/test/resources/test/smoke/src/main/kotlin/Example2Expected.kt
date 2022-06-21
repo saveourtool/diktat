@@ -1,3 +1,4 @@
+// ;warn:1:1: [HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE] files that contain multiple or no classes should contain description of what is inside of this file: there are 2 declared classes and/or objects (cannot be auto-corrected){{.*}}
 package org.cqfn.diktat
 
 import org.slf4j.LoggerFactory
@@ -11,6 +12,7 @@ import java.util.Properties
  */
 @ExperimentalStdlibApi public data class Example(val foo: Int, val bar: Double) : SuperExample("lorem ipsum")
 
+// ;warn:36:3: [EMPTY_BLOCK_STRUCTURE_ERROR] incorrect format of empty block: empty blocks are forbidden unless it is function with override keyword (cannot be auto-corrected){{.*}}
 private class TestException : Exception()
 /* this class is unused */
 // private class Test : RuntimeException()
