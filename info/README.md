@@ -4,4 +4,4 @@ UPDATE MAIN README
 
 * After the updates you **NEED TO PERFORM GENERATION** using gradle `generateFullDoc` and `generateAvailableRules` contained in `/IdeaProjects/diktat/info/build.gradle.kts`
 
-* You DO NOT **NEED TO CHANGE** the contents of the `diktat-coding-convention` file
+* You **DO NOT NEED TO CHANGE** the contents of the `diktat-coding-convention` file
