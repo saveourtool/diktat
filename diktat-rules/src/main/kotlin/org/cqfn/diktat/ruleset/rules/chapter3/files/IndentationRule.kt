@@ -291,7 +291,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         actualIndent: Int
     ) {
         val templateEntries = stringTemplate.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
-        val templateEntriesSize = templateEntries.size
+        val templateEntriesLastIndex = templateEntries.size - 1
         var templateEntryFollowingNewline = false
 
         templateEntries.forEachIndexed { index, templateEntry ->
@@ -321,7 +321,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  * This is the last string template fragment which is usually followed
                  * with the closing `"""` and the `.trimIndent()` or `.trimMargin(...)` call.
                  */
-                index == templateEntriesSize - 1 -> {
+                index == templateEntriesLastIndex -> {
                     val lastRegularStringPart = templateEntries.last().firstChildNode as LeafPsiElement
                     lastRegularStringPart.checkRegularStringPart().apply {
                         val textWithoutIndent = text.trimStart()
