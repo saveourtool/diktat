@@ -282,7 +282,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
-        const val NAME_ID = "aah-package-naming"
+        const val NAME_ID = "package-naming"
 
         /**
          * Directory which is considered the start of sources file tree

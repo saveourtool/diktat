@@ -115,6 +115,6 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abj-range"
+        const val NAME_ID = "range"
     }
 }

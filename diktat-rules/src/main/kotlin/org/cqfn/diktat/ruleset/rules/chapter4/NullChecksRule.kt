@@ -287,6 +287,6 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
 
     companion object {
-        const val NAME_ID = "ach-null-checks"
+        const val NAME_ID = "null-checks"
     }
 }

@@ -51,6 +51,6 @@ class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aav-last-index"
+        const val NAME_ID = "last-index"
     }
 }

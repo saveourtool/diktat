@@ -32,6 +32,11 @@ class OrderedRuleSetTest {
                 // do nothing
             }
         }
+        // validate that second rule which will be modified doesn't contain VisitorModifier.RunAfterRule
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            OrderedRuleSet("visitor-modifier", rule, ruleWithRunAfterRule)
+        }
+        // validate that first rule which won't be modified doesn't contain VisitorModifier.RunAfterRule
         Assertions.assertThrows(IllegalArgumentException::class.java) {
             OrderedRuleSet("visitor-modifier", ruleWithRunAfterRule, rule)
         }
@@ -58,7 +63,8 @@ class OrderedRuleSetTest {
             }
         }
 
-        val orderedRuleSet = OrderedRuleSet("id", rule1, rule2)
+        val ruleSetId = "id"
+        val orderedRuleSet = OrderedRuleSet(ruleSetId, rule1, rule2)
 
         val orderedRuleSetIterator = orderedRuleSet.iterator()
         val orderedRule1 = orderedRuleSetIterator.next()
@@ -75,7 +81,7 @@ class OrderedRuleSetTest {
             }
             .first()
             .let {
-                Assertions.assertEquals(rule1.id, it.ruleId,
+                Assertions.assertEquals(ruleSetId + ":" + rule1.id, it.ruleId,
                     "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
             }
     }

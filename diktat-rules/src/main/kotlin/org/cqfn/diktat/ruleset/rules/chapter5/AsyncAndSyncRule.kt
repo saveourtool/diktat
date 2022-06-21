@@ -43,6 +43,6 @@ class AsyncAndSyncRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.isRunBlocking() = this.elementType == REFERENCE_EXPRESSION && this.text == "runBlocking" && this.treeParent.hasChildOfType(LAMBDA_ARGUMENT)
 
     companion object {
-        const val NAME_ID = "acf-sync-in-async"
+        const val NAME_ID = "sync-in-async"
     }
 }

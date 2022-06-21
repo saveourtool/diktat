@@ -39,6 +39,6 @@ class CustomLabel(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abk-custom-label"
+        const val NAME_ID = "custom-label"
     }
 }

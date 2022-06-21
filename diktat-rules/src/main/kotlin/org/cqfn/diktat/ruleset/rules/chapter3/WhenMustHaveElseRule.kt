@@ -164,6 +164,6 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aal-no-else-in-when"
+        const val NAME_ID = "no-else-in-when"
     }
 }

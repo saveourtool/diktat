@@ -57,7 +57,7 @@ class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aay-inverse-method"
+        const val NAME_ID = "inverse-method"
         val methodMap = mapOf(
             "isEmpty()" to "isNotEmpty()",
             "isBlank()" to "isNotBlank()",

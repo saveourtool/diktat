@@ -12,21 +12,21 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * @param id ID of RuleSet
  * @param rules rules which belongs to current RuleSet
  */
-class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = rules) {
-
-    private val orderedIterator: Iterator<Rule> = adjustRules(id, listOf(super.iterator())).iterator()
-
-    /**
-     * @return ordered iterator of rules
-     */
-    override fun iterator(): Iterator<Rule> {
-        return orderedIterator
-    }
+class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjustRules(id, rules = rules)) {
 
     companion object {
-        private fun adjustRules(ruleSetId: String, rules: Sequence<Rule>): Sequence<Rule> {
-            return rules.take(1) +
-                    rules.zipWithNext { prevRule, rule -> OrderedRule(ruleSetId, rule, prevRule) }
+        private fun adjustRules(ruleSetId: String, vararg rules: Rule): Array<out Rule> {
+            if (rules.isEmpty()) {
+                return rules
+            }
+            return rules.mapIndexed { index, rule ->
+                if (index == 0) {
+                    checkVisitorModifiers(rule)
+                    rule
+                } else {
+                    OrderedRule(ruleSetId, rule, rules[index - 1])
+                }
+            }.toTypedArray()
         }
 
         private class OrderedRule(ruleSetId: String, val rule: Rule, prevRule: Rule) : Rule(rule.id, adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
@@ -44,9 +44,7 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = rules
 
         private fun adjustVisitorModifiers(ruleSetId: String, rule: Rule, prevRule: Rule): Set<Rule.VisitorModifier> {
             val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
-            require(visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
-                "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
-            }
+            checkVisitorModifiers(rule)
             require(rule.id != prevRule.id) {
                 "PrevRule has same ID as rule: ${rule.id}"
             }
@@ -57,7 +55,16 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = rules
             )
         }
 
-        fun Rule.delegatee(): Rule = if (this is OrderedRule) this.rule else this
+        private fun checkVisitorModifiers(rule: Rule) {
+            require(rule.visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
+                "Rule ${rule.id} contains VisitorModifier.RunAfterRule"
+            }
+        }
+
+        /**
+         * @return a rule to which a logic is delegated
+         */
+        internal fun Rule.delegatee(): Rule = if (this is OrderedRule) this.rule else this
 
         /**
          * @return RuleSet with ordered rules

@@ -151,6 +151,6 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     }
 
     companion object {
-        const val NAME_ID = "ack-extension-functions-same-name"
+        const val NAME_ID = "extension-functions-same-name"
     }
 }
