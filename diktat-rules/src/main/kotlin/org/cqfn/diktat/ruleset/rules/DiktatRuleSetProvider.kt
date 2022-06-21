@@ -3,9 +3,9 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.dummy.DummyWarning
+import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.ordered
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
@@ -81,10 +81,8 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -231,13 +229,10 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             .map {
                 it.invoke(configRules)
             }
-        val orderedRules = rules.mapIndexed { index, rule ->
-            if (index != 0) OrderedRule(rule, rules[index - 1]) else rule
-        }
         return RuleSet(
             DIKTAT_RULE_SET_ID,
-            rules = orderedRules.toTypedArray()
-        )
+            rules = rules.toTypedArray()
+        ).ordered()
     }
 
     private fun validate(config: RulesConfig) =
@@ -269,43 +264,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
-    /**
-     * This is a wrapper around Ktlint Rule which adjusts visitorModifiers to keep order with prevRule
-     * Added as a workaround after introducing a new logic for sorting KtLint Rules: https://github.com/pinterest/ktlint/issues/1478
-     *
-     * @property rule KtLink Rule which this class wraps
-     *
-     * @param prevRule previous KtLink Rule, the wrapped rule is called after prevRule
-     */
-    internal class OrderedRule(val rule: Rule, prevRule: Rule) : Rule(rule.id, adjustVisitorModifiers(rule, prevRule)) {
-        /**
-         * Delegating a call of this method
-         */
-        override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
-        ) {
-            rule.visit(node, autoCorrect, emit)
-        }
-    }
-
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
-
-        private fun adjustVisitorModifiers(rule: Rule, prevRule: Rule): Set<Rule.VisitorModifier> {
-            val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
-            require(visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
-                "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
-            }
-            require(rule.id != prevRule.id) {
-                "PrevRule has same ID as rule: ${rule.id}"
-            }
-            return visitorModifiers + Rule.VisitorModifier.RunAfterRule(
-                ruleId = prevRule.id,
-                loadOnlyWhenOtherRuleIsLoaded = false,
-                runOnlyWhenOtherRuleIsEnabled = false
-            )
-        }
     }
 }
