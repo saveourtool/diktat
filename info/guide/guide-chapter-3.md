@@ -291,7 +291,7 @@ val abcdef = "my splitted" +
                 " string"
 ```
 
-- Opening and closing quotes in multiline string should have same indentation
+- Opening and closing quotes in multiline string should have same indentation:
 
 ```kotlin
 lintMethod(
@@ -356,10 +356,10 @@ try {
 
 Line length should be less than 120 symbols. Otherwise, it should be split.
 
-If `complex property` initializing is too long, It should be split into priorities: \
-1. Logic Binary Expression (&&  ||) \
-2. Comparison Binary Expression (> < == >= <= !=) \
-3. Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
+If `complex property` initializing is too long, It should be split into priorities:
+1. Logic Binary Expression (`&&` , `||`)
+2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
+   1. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -381,7 +381,7 @@ val complexProperty = (1 + 2 + 3 > 0) &&
     (23 * 4 > 10 * 6)
 ```
 
-If long line should be split in `Elvis Operator` (?:), it`s done like this
+Long line should be split in `Elvis Operator` (`?:`):
 
 **Invalid example:**
 ```kotlin
@@ -393,7 +393,7 @@ val value = first
     ?: second
 ```
 
-If long line in `Dot Qualified Expression` or `Safe Access Expression`, it`s done like this:
+Long line in `Dot Qualified Expression` or `Safe Access Expression`:
 
 **Invalid example:**
 ```kotlin
@@ -415,7 +415,7 @@ val value = This.Is?.Very?.Long
     ?.Safe?.Access?.Expression
 ```
 
-if `value arguments list` is too long, it also should be split:
+Long `value arguments list`:
 
 **Invalid example:**
 ```kotlin
@@ -455,9 +455,9 @@ fun foo() =
     goo().write("TooLong")
 ```
 
-Long `binary expression` should be split into priorities: \
-1. Logic Binary Expression (**&&**  **||**) \
-2. Comparison Binary Expression (**>** **<** **==** **>=** **<=** **!=**) \
+`Long binary expression` should be split into priorities:
+1. Logic Binary Expression (**&&**  **||**)
+2. Comparison Binary Expression (**>** **<** **==** **>=** **<=** **!=**)
 3. Other types (Arithmetical and Bit operation) (**+** **-** * **/** **%** **>>** **<<** **/*=** **+=** **-=** **/=** **%=** **++** **--** **!** **in** **!in** etc)
 
 **Invalid example:**
@@ -471,16 +471,16 @@ if (( x >  100) ||
     y < 100 && !isFoo()) {}
 ```
 
-`String template` also can be split in white space in string text
+`String template` also can be split in white space in string text:
 
 **Invalid example:**
 ```kotlin
-val nameString = "This is very long string template"
+val nameString = "This is a very long string template"
 ```
 
 **Valid example:**
 ```kotlin
-val nameString = "This is very long" +
+val nameString = "This is a very long" +
         " string template"
 ```
 
@@ -488,17 +488,17 @@ Long `Lambda argument` should be split:
 
 **Invalid example:**
 ```kotlin
-val variable = a?.filter { it.elementType == true } ?: null
+val variable = a?.filter { it.elementType == IDENTIFIER } ?: null
 ```
 
 **Valid example:**
 ```kotlin
 val variable = a?.filter {
-    it.elementType == true
+    it.elementType == IDENTIFIER
 } ?: null
 ```
 
-Long one line `When Entry` should be split:
+Long one-line `When Entry` should be split:
 
 **Invalid example:**
 ```kotlin
@@ -515,7 +515,7 @@ when(elem) {
 }
 ```
 
-If the examples above do not fit, but the line needs to be split and this in `property`, this is fixed like thisЖ
+If the examples above do not fit, but the line needs to be split and this in `property`, this is fixed like this:
 
 **Invalid example:**
 ```kotlin
@@ -524,7 +524,7 @@ val element = veryLongNameFunction(firstParam)
 **Valid example:**
 ```kotlin
 val element =
-    varyLongNameFunction(firstParam)
+    veryLongNameFunction(firstParam)
 ```
 
 `Eol comment` also can be split, but it depends on comment location.
@@ -652,7 +652,7 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
             .findChildByType(IDENTIFIER)
         if (grandIdentifier != null) {}
 ```
-**Second valid example**:
+**Another valid example**:
 ```kotlin
         val grandIdentifier = node.treeParent
             .treeParent
