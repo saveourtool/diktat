@@ -83,7 +83,7 @@ Kotlin allows several top-level declaration types: classes, objects, interfaces,
 When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
 When declaring top-level structures, keep the following order:
 1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
-2. typealiases (grouped by their visibility modifiers)
+2. Type-aliases (grouped by their visibility modifiers)
 2. Interfaces, classes and objects (grouped by their visibility modifiers)
 3. Extension functions
 4. Other functions
@@ -287,7 +287,7 @@ fun visit(
 - Such operators as `+`/`-`/`*` can be indented with `8 spaces`:
 
 ```kotlin
-val abcdef = "my splitted" +
+val abcdef = "my split" +
                 " string"
 ```
 
@@ -528,7 +528,7 @@ val element =
 ```
 
 `Eol comment` also can be split, but it depends on comment location.
-If this comment is on the same line with code it should be on line before:
+If this comment is on the same line with code it should be on the line before:
 
 **Invalid example:**
 ```kotlin
@@ -1118,7 +1118,7 @@ val someString = myArgument
 
 <!-- =============================================================================== -->
 ### <a name="c3.16"></a> 3.16 Conditional Statements
-This section describes the general rules related to the сonditional statements.
+This section describes the general rules related to the conditional statements.
 
 #### <a name="r3.16.1"></a> 3.16.1 Collapsing redundant nested if-statements
 The nested if-statements, when possible, should be collapsed into a single one
@@ -1197,7 +1197,7 @@ print("I'M HERE")
 println("test")
 ```
 
-Additionaly, need to avoid the following statements on Kotlin JS:
+Additionally, need to avoid the following statements on Kotlin JS:
 ```kotlin
 console.info("info test")
 console.log("test")
