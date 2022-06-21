@@ -5,8 +5,8 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
-import org.cqfn.diktat.ruleset.rules.chapter3.files.lastIndent
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.lastIndent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD

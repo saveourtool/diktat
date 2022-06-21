@@ -304,7 +304,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          */
         private val kmmTargets = listOf("common", "jvm", "js", "android", "ios", "androidNativeArm32", "androidNativeArm64", "iosArm32", "iosArm64", "iosX64",
             "watchosArm32", "watchosArm64", "watchosX86", "tvosArm64", "tvosX64", "macosX64", "linuxArm64", "linuxArm32Hfp", "linuxMips32", "linuxMipsel32", "linuxX64",
-            "mingwX64", "mingwX86", "wasm32")
+            "mingwX64", "mingwX86", "wasm32", "macosArm64")
 
         /**
          * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
