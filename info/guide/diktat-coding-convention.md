@@ -31,35 +31,35 @@ I [Preface](#c0)
     * [2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks](#r2.4.1)
     * [2.4.2 Do not comment on unused code blocks](#r2.4.2)
     * [2.4.3 Code delivered to the client should not contain TODO/FIXME comments](#r2.4.3)
-    
+
 [3. General formatting (typesetting)](#c3)
 * [3.1 File-related rules](#c3.1)
     * [3.1.1 Avoid files that are too long](#r3.1.1)
     * [3.1.2 Code blocks in the source file should be separated by one blank line](#r3.1.2)
-    * [3.1.3 Import statements order](#r3.1.3)  
-    * [3.1.4 Order of declaration parts of class-like code structures](#r3.1.4)      
+    * [3.1.3 Import statements order](#r3.1.3)
+    * [3.1.4 Order of declaration parts of class-like code structures](#r3.1.4)
     * [3.1.5 Order of declaration of top-level code structures](#r3.1.5)
-* [3.2 Braces](#c3.2)    
-    * [3.2.1 Using braces in conditional statements and loop blocks](#r3.2.1)           
-    * [3.2.2 Opening braces are placed at the end of the line in *non-empty* blocks and block structures](#r3.2.2)               
-* [3.3 Indentation](#c3.3)            
-* [3.4 Empty blocks](#c3.4) 
-* [3.5 Line length](#c3.5) 
-* [3.6 Line breaks (newlines)](#c3.6) 
-    * [3.6.1 Each line can have a maximum of one statement](#r3.6.1) 
-    * [3.6.2 Rules for line-breaking](#r3.6.2) 
+* [3.2 Braces](#c3.2)
+    * [3.2.1 Using braces in conditional statements and loop blocks](#r3.2.1)
+    * [3.2.2 Opening braces are placed at the end of the line in *non-empty* blocks and block structures](#r3.2.2)
+* [3.3 Indentation](#c3.3)
+* [3.4 Empty blocks](#c3.4)
+* [3.5 Line length](#c3.5)
+* [3.6 Line breaks (newlines)](#c3.6)
+    * [3.6.1 Each line can have a maximum of one statement](#r3.6.1)
+    * [3.6.2 Rules for line-breaking](#r3.6.2)
 * [3.7 Using blank lines](#c3.7)
 * [3.8 Horizontal space](#c3.8)
-    * [3.8.1 Usage of whitespace for code separation](#r3.8.1) 
-    * [3.8.2 No spaces for horizontal alignment](#r3.8.2) 
+    * [3.8.1 Usage of whitespace for code separation](#r3.8.1)
+    * [3.8.2 No spaces for horizontal alignment](#r3.8.2)
 * [3.9 Enumerations](#c3.9)
 * [3.10 Variable declaration](#c3.10)
     * [3.10.1 Declare one variable per line](#r3.10.1)
     * [3.10.2 Variables should be declared near the line where they are first used](#r3.10.2)
-* [3.11 'When' expression](#c3.11)  
-* [3.12 Annotations](#c3.12)  
-* [3.13 Block comments](#c3.13)  
-* [3.14 Modifiers and constant values](#c3.14) 
+* [3.11 'When' expression](#c3.11)
+* [3.12 Annotations](#c3.12)
+* [3.13 Block comments](#c3.13)
+* [3.14 Modifiers and constant values](#c3.14)
     * [3.14.1 Declaration with multiple modifiers](#r3.14.1)
     * [3.14.2 Separate long numerical values with an underscore](#r3.14.2)
  * [3.15 Strings](#c3.15)
@@ -72,50 +72,50 @@ I [Preface](#c0)
 [4. Variables and types](#c4)
 * [4.1 Variables](#c4.1)
     * [4.1.1 Do not use Float and Double types when accurate calculations are needed](#r4.1.1)
-    * [4.1.2 Comparing numeric float type values](#r4.1.2) 
-    * [4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR]](#r4.1.3)         
-* [4.2 Types](#c4.2)       
+    * [4.1.2 Comparing numeric float type values](#r4.1.2)
+    * [4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR]](#r4.1.3)
+* [4.2 Types](#c4.2)
     * [4.2.1 Use Contracts and smart cast as much as possible](#r4.2.1)
-    * [4.2.2 Try to use type alias to represent types making code more readable](#r4.2.2)         
-* [4.3 Null safety and variable declarations](#c4.3)            
+    * [4.2.2 Try to use type alias to represent types making code more readable](#r4.2.2)
+* [4.3 Null safety and variable declarations](#c4.3)
     * [4.3.1 Avoid declaring variables with nullable types, especially from Kotlin stdlib](#r4.3.1)
-    * [4.3.2 Variables of generic types should have an explicit type declaration](#r4.3.2)           
-    * [4.3.3 Null-safety](#r4.3.3)             
+    * [4.3.2 Variables of generic types should have an explicit type declaration](#r4.3.2)
+    * [4.3.3 Null-safety](#r4.3.3)
 
-[5. Functions](#c5)        
-* [5.1 Function design](#c5.1)       
+[5. Functions](#c5)
+* [5.1 Function design](#c5.1)
     * [5.1.1 Avoid functions that are too long ](#r5.1.1)
-    * [5.1.2 Avoid deep nesting of function code blocks, limiting to four levels](#r5.1.2) 
+    * [5.1.2 Avoid deep nesting of function code blocks, limiting to four levels](#r5.1.2)
     * [5.1.3 Avoid using nested functions](#r5.1.3)
-    * [5.1.4 Negated function calls](#r5.1.4)        
-* [5.2 Function arguments](#c5.2)              
+    * [5.1.4 Negated function calls](#r5.1.4)
+* [5.2 Function arguments](#c5.2)
     * [5.2.1 The lambda parameter of the function should be placed at the end of the argument list](#r5.2.1)
-    * [5.2.2 Number of function parameters should be limited to five](#r5.2.2) 
+    * [5.2.2 Number of function parameters should be limited to five](#r5.2.2)
     * [5.2.3 Use default values for function arguments instead of overloading them](#r5.2.3)
     * [5.2.4 Synchronizing code inside asynchronous code](#r5.2.4)
     * [5.2.5 Long lambdas should have explicit parameters](#r5.2.5)
     * [5.2.6 Avoid using unnecessary, custom label](#r5.2.6)
 
-[6. Classes, interfaces, and extension functions](#c6)                 
-* [6.1 Classes](#c6.1)      
+[6. Classes, interfaces, and extension functions](#c6)
+* [6.1 Classes](#c6.1)
     * [6.1.1 Denoting a class with a single constructor](#r6.1.1)
-    * [6.1.2 Prefer data classes instead of classes without any functional logic](#r6.1.2) 
-    * [6.1.3 Do not use the primary constructor if it is empty or useless](#r6.1.3) 
+    * [6.1.2 Prefer data classes instead of classes without any functional logic](#r6.1.2)
+    * [6.1.3 Do not use the primary constructor if it is empty or useless](#r6.1.3)
     * [6.1.4 Do not use redundant init blocks in your class](#r6.1.4)
-    * [6.1.5 Explicit supertype qualification](#r6.1.5) 
-    * [6.1.6 Abstract class should have at least one abstract method](#r6.1.6) 
+    * [6.1.5 Explicit supertype qualification](#r6.1.5)
+    * [6.1.6 Abstract class should have at least one abstract method](#r6.1.6)
     * [6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same](#r6.1.7)
-    * [6.1.8 Avoid using custom getters and setters](#r6.1.8) 
-    * [6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)](#r6.1.9) 
+    * [6.1.8 Avoid using custom getters and setters](#r6.1.8)
+    * [6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)](#r6.1.9)
     * [6.1.10 No trivial getters and setters are allowed in the code](#r6.1.10)
     * [6.1.11 Use 'apply' for grouping object initialization](#r6.1.11)
     * [6.1.12 Prefer Inline classes when a class has a single property](#r6.1.12)
-* [6.2 Extension functions](#c6.2)   
+* [6.2 Extension functions](#c6.2)
     * [6.2.1 Use extension functions for making logic of classes less coupled](#r6.2.1)
     * [6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)](#r6.2.2)
     * [6.2.3 Don't use extension functions for the class in the same file](#r6.2.3)
-* [6.3 Interfaces](#c6.3)            
-* [6.4 Objects](#c6.4)      
+* [6.3 Interfaces](#c6.3)
+* [6.4 Objects](#c6.4)
     * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
     * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2)
 * [6.5 Kts Files](#c6.5)
@@ -129,7 +129,7 @@ I [Preface](#c0)
 
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
-### <a name="c0.1"></a> Purpose of this document   
+### <a name="c0.1"></a> Purpose of this document
 
 The purpose of this document is to provide a specification that software developers could reference to enhance their ability to write consistent, easy-to-read, and high-quality code.
 Such a specification will ultimately improve software development efficiency and product competitiveness.
@@ -162,7 +162,7 @@ Also, we need to consider the following factors when programming on Kotlin:
 
 2. Following Kotlin idioms
 
-    The author of Kotlin, Andrey Breslav, mentioned that Kotlin is both pragmatic and practical, but not academic. 
+    The author of Kotlin, Andrey Breslav, mentioned that Kotlin is both pragmatic and practical, but not academic.
     Its pragmatic features enable ideas to be transformed into real working software easily. Kotlin is closer to natural languages than its predecessors, and it implements the following design principles: readability, reusability, interoperability, security, and tool-friendliness (https://blog.jetbrains.com/kotlin/2018/10/kotlinconf-2018-announcements/).
 
 3. Using Kotlin efficiently
@@ -170,7 +170,7 @@ Also, we need to consider the following factors when programming on Kotlin:
     Some Kotlin features can help you to write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
 
 <!-- =============================================================================== -->
-### <a name="c0.3"></a> Terminology   
+### <a name="c0.3"></a> Terminology
 
 **Rules** — conventions that should be followed when programming.
 
@@ -223,7 +223,7 @@ No special prefix or suffix should be used in names. The following examples are 
 4.	The usage of (``) and free naming for functions and identifiers are prohibited. For example, the following code is not recommended:
 
 ```kotlin
-val `my dummy name-with-minus` = "value" 
+val `my dummy name-with-minus` = "value"
 ```
 
 The only exception is function names in `Unit tests.`
@@ -231,7 +231,7 @@ The only exception is function names in `Unit tests.`
 5.	Backticks (``) should not be used for identifiers, except the names of test methods (marked with @Test annotation):
 ```kotlin
  @Test fun `my test`() { /*...*/ }
-``` 
+```
 6.  The following table contains some characters that may cause confusion. Be careful when using them as identifiers. To avoid issues, use other names instead.
 
 | Expected      | Confusing name           | Suggested name   |
@@ -267,13 +267,13 @@ Package names are in lower case and separated by dots. Code developed within you
 Each file should have a `package` directive.
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
-**Exceptions:** 
+**Exceptions:**
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain.`
 - If the package name starts with a number or other character that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: `com.example._123name`.
 - Underscores are sometimes permitted if the package name contains reserved Java/Kotlin keywords, such as `org.example.hyphenated_name`, `int_.example`.
 
-**Valid example**: 
+**Valid example**:
 ```kotlin
 package your.company.domain.mobilecontrol.views
 ```
@@ -289,15 +289,15 @@ Note that verbs are not used to name classes. However, nouns (such as `Customer`
 
 2.	Test classes start with the name of the class they are testing and end with 'Test'. For example, `HashTest` or `HashIntegrationTest`.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
-class marcoPolo {} 
-class XMLService {} 
+class marcoPolo {}
+class XMLService {}
 interface TAPromotion {}
 class info {}
 ```
 
-**Valid example**: 
+**Valid example**:
 ```kotlin
 class MarcoPolo {}
 class XmlService {}
@@ -319,7 +319,7 @@ a) To get, modify, or calculate a certain value: get + non-boolean field(). Note
 private val field: String
 get() {
 }
-``` 
+```
 Note: The calling property access syntax is preferred to call getter directly. In this case, the Kotlin compiler automatically calls the corresponding getter.
 
 b) `is` + boolean variable name()
@@ -331,11 +331,11 @@ d) `has` + Noun / adjective ()
 e) verb()
 Note: Note: Verb are primarily used for the action objects, such as `document.print ()`
 
-f) verb + noun() 
+f) verb + noun()
 
 g) The Callback function allows the names that use the preposition + verb format, such as: `onCreate()`, `onDestroy()`, `toString()`.
 
-**Invalid example**: 
+**Invalid example**:
 
 ```kotlin
 fun type(): String
@@ -345,7 +345,7 @@ fun DRAW()
 fun KeyListener(Listener)
 ```
 
-**Valid example**: 
+**Valid example**:
 
 ```kotlin
 fun getType(): String
@@ -371,7 +371,7 @@ You can avoid using magic numbers with the following method:
 - Using library functions and APIs. For example, instead of checking that `size == 0`, use `isEmpty()` function. To work with `time`, use built-ins from `java.time API`.
 - Enumerations can be used to name patterns. Refer to [Recommended usage scenario for enumeration in 3.9](#c3.9).
 
-**Invalid example**: 
+**Invalid example**:
 
 ```kotlin
 var int MAXUSERNUM = 200;
@@ -395,13 +395,13 @@ For example: `var namesList: List<String>`
 
 Names of non-constant variables should use `lowerCamelCase`. The name of the final immutable field used to store the singleton object can use the same camel case notation.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
 customername: String
 user: List<String> = listof()
 ```
 
-**Valid example**: 
+**Valid example**:
 ```kotlin
 var customerName: String
 val users: List<String> = listOf();
@@ -416,7 +416,7 @@ The JavaBeans specification automatically generates isXxx() getters for attribut
 However, not all methods returning Boolean type have this notation.
 For Boolean local variables or methods, it is highly recommended that you add non-meaningful prefixes, including is (commonly used by JavaBeans), has, can, should, and must. Modern integrated development environments (IDEs) such as Intellij are already capable of doing this for you when you generate getters in Java. For Kotlin, this process is even more straightforward as everything is on the byte-code level under the hood.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
 val isNoError: Boolean
 val isNotFound: Boolean
@@ -442,7 +442,7 @@ Comments should be accurately and clearly expressed, without repeating the name 
 Comments are not a solution to the wrong code. Instead, you should fix the code as soon as you notice an issue or plan to fix it (by entering a TODO comment, including a Jira number).
 Comments should accurately reflect the code's design ideas and logic and further describe its business logic.
 As a result, other programmers will be able to save time when trying to understand the code.
-Imagine that you are writing the comments to help yourself to understand the original ideas behind the code in the future. 
+Imagine that you are writing the comments to help yourself to understand the original ideas behind the code in the future.
 
 ### <a name="c2.1"></a> 2.1 General form of Kdoc
 
@@ -532,7 +532,7 @@ class Example {
 **Exceptions:**
 
 * For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
-   
+
 * It is optional to add comments for simple one-line methods, such as shown in the example below:
 ```kotlin
 val isEmpty: Boolean
@@ -554,18 +554,18 @@ When the method has such details as arguments, return value, or can throw except
 **Valid examples:**
 
  ```kotlin
-/** 
+/**
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
  * @since 1.6
  */
  protected abstract class Sample {
     /**
-     * This is a long comment with whitespace that should be split in 
+     * This is a long comment with whitespace that should be split in
      * comments on multiple lines if the line comment formatting is enabled.
      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
      * @param fox A quick brown fox jumps over the lazy dog
-     * @return battle between fox and dog 
+     * @return battle between fox and dog
      */
     protected abstract fun foo(Fox fox)
      /**
@@ -575,10 +575,10 @@ When the method has such details as arguments, return value, or can throw except
       * @throws ProblemException if lazy dog wins
       */
     protected fun bar() throws ProblemException {
-        // Some comments / * No need to add a blank line here * /   
+        // Some comments / * No need to add a blank line here * /
         var aVar = ...
 
-        // Some comments  / * Add a blank line before the comment * /   
+        // Some comments  / * Add a blank line before the comment * /
         fun doSome()
     }
  }
@@ -605,9 +605,9 @@ Important notes:
 - The `@since` tag should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
 
 If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
- 
+
 **Exception:**
- 
+
 When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
 See [3.8 Horizontal space](#c3.8).
 
@@ -673,7 +673,7 @@ class Foo
 
 - The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
-English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.` 
+English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.`
 
 - The copyright information should not be written in KDoc style or use single-line comments. It must start from the beginning of the file.
 The following example is a copyright statement for Huawei, without other functional comments:
@@ -714,9 +714,9 @@ It is a good practice to add a blank line between the body of the comment and Kd
 **Valid Examples:**
 
 ```kotlin
-/** 
+/**
  * This is the short overview comment for the example interface.
- * 
+ *
  * @since 1.6
  */
  public interface Example {
@@ -727,17 +727,17 @@ It is a good practice to add a blank line between the body of the comment and Kd
     val bField: String = ...
                       /* Add a blank line above the comment */
     /**
-     * This is a long comment with whitespace that should be split in 
+     * This is a long comment with whitespace that should be split in
      * multiple line comments in case the line comment formatting is enabled.
      *                /* blank line between description and Kdoc tag */
      * @param fox A quick brown fox jumps over the lazy dog
-     * @return the rounds of battle of fox and dog 
+     * @return the rounds of battle of fox and dog
      */
     fun foo(Fox fox)
                       /* Add a blank line above the comment */
      /**
       * These possibilities include: Formatting of header comments
-      * 
+      *
       * @return the rounds of battle of fox and dog
       * @throws ProblemException if lazy dog wins
       */
@@ -745,13 +745,13 @@ It is a good practice to add a blank line between the body of the comment and Kd
         // Some comments  /* Since it is the first member definition in this range, there is no need to add a blank line here */
         var aVar = ...
 
-        // Some comments  /* Add a blank line above the comment */            
+        // Some comments  /* Add a blank line above the comment */
         fun doSome()
     }
  }
 ```
 
-- Leave one single space between the comment on the right side of the code and the code. 
+- Leave one single space between the comment on the right side of the code and the code.
 If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes the code more understandable.
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
 Compared to Java, the `if` statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole `if-statement`.
@@ -796,7 +796,7 @@ A code is not used to store history. Git, svn, or other VCS tools should be used
 Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
 In an attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
 The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
-If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
+If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code.
 
 #### <a name="r2.4.3"></a>2.4.3 Code delivered to the client should not contain TODO/FIXME comments
 
@@ -833,9 +833,9 @@ a) Code blocks should be in the following order:
 5.	Top-class header and top-function header comments
 6.	Top-level classes or functions
 
-b) Each of the preceding code blocks should be separated by a blank line. 
+b) Each of the preceding code blocks should be separated by a blank line.
 
-c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
+c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`).
 
 d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
 
@@ -947,7 +947,7 @@ run {
 This section describes the general rules of using braces in your code.
 #### <a name="r3.2.1"></a> 3.2.1 Using braces in conditional statements and loop blocks
 
-Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
+Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements.
 
 **Valid example:**
 
@@ -960,7 +960,7 @@ when (node.elementType) {
     CLASS -> checkClassElements(node)
 }
 ```
-**Exception:** The only exception is ternary operator in Kotlin (a single line `if () <> else <>` ) 
+**Exception:** The only exception is ternary operator in Kotlin (a single line `if () <> else <>` )
 
 **Invalid example:**
 
@@ -971,7 +971,7 @@ val value = if (string.isEmpty())  // WRONG!
                 1
 ```
 
-**Valid example**: 
+**Valid example**:
 
 ```kotlin
 val value = if (string.isEmpty()) 0 else 1  // Okay
@@ -993,7 +993,7 @@ Follow the K&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 - The closing brace can be followed by a newline character. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
 These keywords should not be split from the closing brace by a newline character.
 
-**Exception cases**: 
+**Exception cases**:
 
 1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2](#r3.6.2)).
 
@@ -1011,9 +1011,9 @@ do {
     } else {
         x--
     }
-} while (x > 0) 
+} while (x > 0)
 ```
- 
+
 **Valid example:**
 
  ```kotlin
@@ -1021,7 +1021,7 @@ do {
             while (condition()) {
                 method()
             }
-            value 
+            value
         }
 
         return MyClass() {
@@ -1055,7 +1055,7 @@ These code blocks should be indented if they are placed on the new line, and the
 someObject
     .map()
     .filter()
-``` 
+```
 -  The code block is placed immediately after the opening parenthesis.
 -  The code block is placed immediately after an arrow in lambda:
 
@@ -1064,11 +1064,11 @@ arg.map { value ->
     foo(value)
 }
 ```
-    
+
 **Exceptions**:
 1.	Argument lists: \
 a) Eight spaces are used to indent argument lists (both in declarations and at call sites). \
-b) Arguments in argument lists can be aligned if they are on different lines. 
+b) Arguments in argument lists can be aligned if they are on different lines.
 
 2.	Eight spaces are used if there is a newline after any binary operator.
 
@@ -1076,41 +1076,41 @@ b) Arguments in argument lists can be aligned if they are on different lines.
 
 4.	Supertype lists: \
 a) Four spaces are used if the colon before the supertype list is on a new line. \
-b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line. 
+b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line.
 
-**Note:** there should be an indentation after all statements such as `if`, `for`, etc. However, according to this code style, such statements require braces. 
+**Note:** there should be an indentation after all statements such as `if`, `for`, etc. However, according to this code style, such statements require braces.
 
 ```kotlin
 if (condition)
     foo()
 ```
 
-**Exceptions**: 
+**Exceptions**:
 - When breaking the parameter list of a method/class constructor, it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
-    
+
 ```kotlin
 fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         params: KtLint.ExperimentalParams,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-) {   
+) {
 }
 ```
-    
+
 - Such operators as `+`/`-`/`*` can be indented with `8 spaces`:
-    
+
 ```kotlin
 val abcdef = "my splitted" +
                 " string"
 ```
-    
+
 - A list of supertypes should be indented with `4 spaces` if they are on different lines or with `8 spaces` if the leading colon is also on a separate line
 
 ```kotlin
 class A :
     B()
-    
+
 class A
     :
         B()
@@ -1122,16 +1122,16 @@ class A
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
-They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface. 
+They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface.
 ```kotlin
-override fun foo() {    
+override fun foo() {
 }
-``` 
+```
 
 **Valid examples** (note once again that generally empty blocks are prohibited):
 
 ```kotlin
-fun doNothing() {} 
+fun doNothing() {}
 
 fun doNothingElse() {
 }
@@ -1159,7 +1159,10 @@ try {
 
 Line length should be less than 120 symbols. Otherwise, it should be split.
 
-If `complex property` initializing is too long, it should be split:
+If `complex property` initializing is too long, It should be split into priorities: \
+1. Logic Binary Expression (&&  ||) \
+2. Comparison Binary Expression (> < == >= <= !=) \
+3. Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
 
 **Invalid example:**
 ```kotlin
@@ -1167,8 +1170,65 @@ val complexProperty = 1 + 2 + 3 + 4
 ```
 **Valid example:**
 ```kotlin
-val complexProperty = 1 + 2
-+ 3 + 4
+val complexProperty = 1 + 2 +
+    3 + 4
+```
+
+**Invalid example:**
+```kotlin
+val complexProperty = (1 + 2 + 3 > 0) && ( 23 * 4 > 10 * 6)
+```
+**Valid example:**
+```kotlin
+val complexProperty = (1 + 2 + 3 > 0) &&
+    (23 * 4 > 10 * 6)
+```
+
+If long line should be split in `Elvis Operator` (?:), it`s done like this
+
+**Invalid example:**
+```kotlin
+val value = first ?: second
+```
+**Valid example:**
+```kotlin
+val value = first
+    ?: second
+```
+
+If long line in `Dot Qualified Expression` or `Safe Access Expression`, it`s done like this:
+
+**Invalid example:**
+```kotlin
+val value = This.Is.Very.Long.Dot.Qualified.Expression
+```
+**Valid example:**
+```kotlin
+val value = This.Is.Very.Long
+    .Dot.Qualified.Expression
+```
+
+**Invalid example:**
+```kotlin
+val value = This.Is?.Very?.Long?.Safe?.Access?.Expression
+```
+**Valid example:**
+```kotlin
+val value = This.Is?.Very?.Long
+    ?.Safe?.Access?.Expression
+```
+
+if `value arguments list` is too long, it also should be split:
+
+**Invalid example:**
+```kotlin
+val result1 = ManyParamInFunction(firstArgument, secondArgument, thirdArgument, fourthArgument, fifthArguments)
+```
+**Valid example:**
+```kotlin
+val result1 = ManyParamInFunction(firstArgument,
+ secondArgument, thirdArgument, fourthArgument,
+ fifthArguments)
 ```
 
 If `annotation` is too long, it also should be split:
@@ -1180,8 +1240,9 @@ fun foo() {}
 ```
 **Valid example:**
 ```kotlin
-@Query(value = "select * from table " +
-        "where age = 10", nativeQuery = true)
+@Query(
+    value = "select * from table where age = 10",
+    nativeQuery = true)
 fun foo() {}
 ```
 
@@ -1193,11 +1254,14 @@ fun foo() = goo().write("TooLong")
 ```
 **Valid example:**
 ```kotlin
-fun foo() = 
+fun foo() =
     goo().write("TooLong")
 ```
 
-Long `binary expression` should be split:
+Long `binary expression` should be split into priorities: \
+1. Logic Binary Expression (**&&**  **||**) \
+2. Comparison Binary Expression (**>** **<** **==** **>=** **<=** **!=**) \
+3. Other types (Arithmetical and Bit operation) (**+** **-** * **/** **%** **>>** **<<** **/*=** **+=** **-=** **/=** **%=** **++** **--** **!** **in** **!in** etc)
 
 **Invalid example:**
 ```kotlin
@@ -1208,6 +1272,62 @@ if (( x >  100) || y < 100 && !isFoo()) {}
 ```kotlin
 if (( x >  100) ||
     y < 100 && !isFoo()) {}
+```
+
+`String template` also can be split in white space in string text
+
+**Invalid example:**
+```kotlin
+val nameString = "This is very long string template"
+```
+
+**Valid example:**
+```kotlin
+val nameString = "This is very long" +
+        " string template"
+```
+
+Long `Lambda argument` should be split:
+
+**Invalid example:**
+```kotlin
+val variable = a?.filter { it.elementType == true } ?: null
+```
+
+**Valid example:**
+```kotlin
+val variable = a?.filter {
+    it.elementType == true
+} ?: null
+```
+
+Long one line `When Entry` should be split:
+
+**Invalid example:**
+```kotlin
+when(elem) {
+    true -> long.argument.whenEntry
+}
+```
+**Valid example:**
+```kotlin
+when(elem) {
+    true -> {
+        long.argument.whenEntry
+    }
+}
+```
+
+If the examples above do not fit, but the line needs to be split and this in `property`, this is fixed like thisЖ
+
+**Invalid example:**
+```kotlin
+val element = veryLongNameFunction(firstParam)
+```
+**Valid example:**
+```kotlin
+val element =
+    varyLongNameFunction(firstParam)
 ```
 
 `Eol comment` also can be split, but it depends on comment location.
@@ -1252,7 +1372,7 @@ All characters in the ASCII character set include letters (such as `a, A`), numb
 Wide characters are also called "full-width" characters. Chinese characters (such as `中, 文`), Chinese punctuation (`，` , `；` ), full-width letters and numbers (such as `Ａ、３`) are "full-width" characters.
 Each one of these characters represents two narrow characters.
 
-- Any line that exceeds this limit (`120 narrow symbols`) should be wrapped, as described in the [Newline section](#c3.5). 
+- Any line that exceeds this limit (`120 narrow symbols`) should be wrapped, as described in the [Newline section](#c3.5).
 
 **Exceptions:**
 
@@ -1281,25 +1401,25 @@ val b = ""
 
 1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
     There should be no redundant semicolon at the end of the lines.
- 
+
 When a newline character is needed to split the line, it should be placed after such operators as `&&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
 However, the newline character should be placed before operators such as `.`, `?.`, `?:`, and `::`.
 
 Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
      if (node !=
              null && test != null) {}
 ```
- 
-**Valid example**: 
+
+**Valid example**:
 ```kotlin
-         if (node != null && 
+         if (node != null &&
                  test != null) {
          }
 ```
-  
+
 **Note:** You need to follow the functional style, meaning each function call in a chain with `.` should start at a new line if the chain of functions contains more than one call:
 ```kotlin
   val value = otherValue!!
@@ -1308,39 +1428,48 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
               val a = true
               true
           }
-          .size    
+          .size
 ```
 **Note:** The parser prohibits the separation of the `!!` operator from the value it is checking.
 
 **Exception**: If a functional chain is used inside the branches of a ternary operator, it does not need to be split with newlines.
 
-**Valid example**:  
+**Valid example**:
 ```kotlin
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
-```  
+```
 
 **Note:** If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
- if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
+ if (node.treeParent.treeParent?.treeParent.findChildByType(IDENTIFIER) != null) {}
 ```
- 
-**Valid example**: 
+
+**Valid example**:
 ```kotlin
         val grandIdentifier = node
             .treeParent
             .treeParent
+            ?.treeParent
             .findChildByType(IDENTIFIER)
         if (grandIdentifier != null) {}
 ```
-  
+**Second valid example**:
+```kotlin
+        val grandIdentifier = node.treeParent
+            .treeParent
+            ?.treeParent
+            .findChildByType(IDENTIFIER)
+        if (grandIdentifier != null) {}
+```
+
 2)	Newlines should be placed after the assignment operator (`=`).
 3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace `(`.
     A brace should be placed immediately after the name without any spaces in declarations or at call sites.
 4)	Newlines should be placed right after the comma (`,`).
 5)	If a lambda statement contains more than one line in its body, a newline should be placed after an arrow if the lambda statement has explicit parameters.
-    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`). 
+    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`).
     The following examples illustrate this rule:
 
 
@@ -1351,7 +1480,7 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
     }
 ```
 
-**Valid example:** 
+**Valid example:**
 ```kotlin
 value.map { name ->
     foo()
@@ -1361,10 +1490,10 @@ value.map { name ->
 val someValue = { node:String -> node }
 ```
 
-6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions). 
+6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions).
    The below example shows the style that should not be used.
-   
-Instead of: 
+
+Instead of:
 ```kotlin
 override fun toString(): String { return "hi" }
 ```
@@ -1375,7 +1504,7 @@ override fun toString() = "hi"
 
 7)  If an argument list in a function declaration (including constructors) or function call contains more than two arguments, these arguments should be split by newlines in the following style.
 
-**Valid example:** 
+**Valid example:**
  ```kotlin
 class Foo(val a: String,
           b: String,
@@ -1398,7 +1527,7 @@ Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generall
 and append [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 It makes the resolving of merge conflicts easier.
 
-**Valid example:** 
+**Valid example:**
  ```kotlin
 fun foo(
         a: String,
@@ -1427,7 +1556,7 @@ Destructuring declarations
 
 8) If the supertype list has more than two elements, they should be separated by newlines.
 
-**Valid example:** 
+**Valid example:**
 ```kotlin
 class MyFavouriteVeryLongClassHolder :
     MyLongHolder<MyFavouriteVeryLongClass>(),
@@ -1447,7 +1576,7 @@ Reduce unnecessary blank lines and maintain a compact code size. By reducing unn
 **Valid example:**
 ```kotlin
 fun baz() {
-        
+
     doSomething()  // No need to add blank lines at the beginning and end of the code block
     // ...
 
@@ -1476,8 +1605,8 @@ Follow the recommendations below for using space to separate keywords:
  ```
 
 4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
-    For example: 
-    
+    For example:
+
  - A colon in generic structures with the `where` keyword:  `where T : Type`
  - Arrow in lambdas: `(str: String) -> str.length()`
 
@@ -1496,21 +1625,21 @@ Follow the recommendations below for using space to separate keywords:
     However, note that this code style prohibits the use of (`;`) in the middle of a line ([see 3.3.2](#r3.2.2)).
     There should be no whitespaces at the end of a line.
     The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, `@param:JsonProperty`).
-    There should be no spaces before `,` , `:` and `;`. 
-    
+    There should be no spaces before `,` , `:` and `;`.
+
     **Exceptions** for spaces and colons:
-    
+
     - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
     - When delegating to a superclass constructor or different constructor of the same class
 
 **Valid example:**
 ```kotlin
   abstract class Foo<out T : Any> : IFoo { }
-  
+
   class FooImpl : Foo() {
       constructor(x: String) : this(x) { /*...*/ }
-      
-      val x = object : IFoo { /*...*/ } 
+
+      val x = object : IFoo { /*...*/ }
   }
 ```
 
@@ -1598,7 +1727,7 @@ use enum class:
 enum class TemperatureScale { CELSIUS, FAHRENHEIT }
 ```
 
-- The variable value only changes within a fixed range and is defined with the enum type. 
+- The variable value only changes within a fixed range and is defined with the enum type.
 - Avoid comparison with magic numbers of `-1, 0, and 1`; use enums instead.
 
 ```kotlin
@@ -1615,7 +1744,7 @@ enum class ComparisonResult {
 This section describes rules for the declaration of variables.
 #### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line
 
-Each property or variable must be declared on a separate line. 
+Each property or variable must be declared on a separate line.
 
 **Invalid example**:
 ```kotlin
@@ -1640,7 +1769,7 @@ The compiler can issue a warning when it is missing.
 ### <a name="c3.12"></a> 3.12 Annotations
 
 Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
-1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
+1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line).
 
 **Valid example**:
 ```kotlin
@@ -1745,7 +1874,7 @@ class Person() {
 This section describes the general rules of using strings.
 
 #### <a name="r3.15.1"></a> 3.15.1 Concatenation of Strings
-String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
+String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals).
 Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
@@ -1866,11 +1995,11 @@ The rules of using variables are explained in the below topics.
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
 Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
 
-The following code example seems to be obvious: 
+The following code example seems to be obvious:
 ```kotlin
     val myValue = 2.0 - 1.1
     println(myValue)
-``` 
+```
 
 However, it will print the following value: `0.8999999999999999`
 
@@ -1883,7 +2012,7 @@ Float values containing more than six or seven decimal numbers will be rounded.
  val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
  ```
 
-**Valid example**: (when precise calculations are needed): 
+**Valid example**: (when precise calculations are needed):
  ```kotlin
     val income = BigDecimal("2.0")
     val expense = BigDecimal("1.1")
@@ -1909,7 +2038,7 @@ if (flt1.equals(flt2)) {
     println("Expected to enter here")
 } else {
     println("But this block will be reached")
-} 
+}
  ```
 
 **Valid example**:
@@ -1954,14 +2083,14 @@ The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/ref
 
 Also, Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html#contracts) that provide enhanced logic for smart-cast.
 Contracts are used and are very stable in `stdlib`, for example:
- 
+
 
 ```kotlin
 fun bar(x: String?) {
     if (!x.isNullOrEmpty()) {
         println("length of '$x' is ${x.length}") // smartcasted to not-null
     }
-} 
+}
 ```
 
 Smart cast and contracts are a better choice because they reduce boilerplate code and features forced type conversion.
@@ -2015,26 +2144,26 @@ Kotlin is declared as a null-safe programming language. However, to achieve comp
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
-```kotlin 
+```kotlin
 val a: Int? = 0
 ```
 
 **Valid example**:
-```kotlin 
+```kotlin
 val a: Int = 0
 ```
 
 Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with `!!` and `?` symbols.
-Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)). 
+Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)).
 Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null`, use `emptyList()`.
 
 **Invalid example**:
-```kotlin 
-val a: List<Int>? = null 
+```kotlin
+val a: List<Int>? = null
 ```
 
 **Valid example**:
-```kotlin 
+```kotlin
 val a: List<Int> = emptyList()
 ```
 
@@ -2042,7 +2171,7 @@ val a: List<Int> = emptyList()
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
 
 ```kotlin
-val myVariable: Map<Int, String> = emptyMap<Int, String>() 
+val myVariable: Map<Int, String> = emptyMap<Int, String>()
 ```
 
 However, the compiler can inherit type parameters from the r-value (value assigned to a variable). Therefore, it will not force users to declare the type explicitly.
@@ -2050,19 +2179,19 @@ These declarations are not recommended because programmers would need to find th
 
 **Invalid example**:
 ```kotlin
-val myVariable = emptyMap<Int, String>() 
+val myVariable = emptyMap<Int, String>()
 ```
 
 **Valid example**:
 ```kotlin
-val myVariable: Map<Int, String> = emptyMap() 
+val myVariable: Map<Int, String> = emptyMap()
 ```
 
 #### <a name="r4.3.3"></a> 4.3.3 Null-safety
 
-Try to avoid explicit null checks (explicit comparison with `null`) 
+Try to avoid explicit null checks (explicit comparison with `null`)
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
-However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin. 
+However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin.
 
 There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
 
@@ -2135,7 +2264,7 @@ if (myVar != null) {
 } else if (anotherCondition) {
     println("Other condition")
 }
-``` 
+```
 
 ```kotlin
 if (myVar == null || otherValue == 5 && isValid) {}
@@ -2148,8 +2277,8 @@ This section describes the rules of using functions in your code.
 <!-- =============================================================================== -->
 ### <a name="c5.1"></a> 5.1 Function design
 Developers can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
-You should utilize this approach, along with functional style, when writing Kotlin code. 
-The concepts behind functional style are as follows: 
+You should utilize this approach, along with functional style, when writing Kotlin code.
+The concepts behind functional style are as follows:
 Functions are the smallest unit of combinable and reusable code.
 They should have clean logic, **high cohesion**, and **low coupling** to organize the code effectively.
 The code in functions should be simple and not conceal the author's original intentions.
@@ -2160,7 +2289,7 @@ The only exceptions to this are state machines.
 
 Kotlin is [designed](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java) to support and encourage functional programming, featuring the corresponding built-in mechanisms.
 Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
-As [previously discussed](#r4.1.3), Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input. 
+As [previously discussed](#r4.1.3), Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input.
 The pipeline data flow for the pure function comprises a functional paradigm. It is easy to implement concurrent programming when you have chains of function calls, where each step features the following characteristics:
 1.	Simplicity
 2.	Verifiability
@@ -2172,13 +2301,13 @@ The pipeline data flow for the pure function comprises a functional paradigm. It
 
 There can be only one side effect in this data stream, which can be placed only at the end of the execution queue.
 
-#### <a name="r5.1.1"></a> 5.1.1 Avoid functions that are too long 
+#### <a name="r5.1.1"></a> 5.1.1 Avoid functions that are too long
 
 The function should be displayable on one screen and only implement one certain logic.
 If a function is too long, it often means complex and could be split or simplified. Functions should consist of 30 lines (non-empty and non-comment) in total.
 
 **Exception:** Some functions that implement complex algorithms may exceed 30 lines due to aggregation and comprehensiveness.
-Linter warnings for such functions **can be suppressed**. 
+Linter warnings for such functions **can be suppressed**.
 
 Even if a long function works well, new problems or bugs may appear due to the function's complex logic once it is modified by someone else.
 Therefore, it is recommended to split such functions into several separate and shorter functions that are easier to manage.
@@ -2186,7 +2315,7 @@ This approach will enable other programmers to read and modify the code properly
 #### <a name="r5.1.2"></a> 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels
 
 The nesting depth of a function's code block is the depth of mutual inclusion between the code control blocks in the function (for example: if, for, while, and when).
-Each nesting level will increase the amount of effort needed to read the code because you need to remember the current "stack" (for example, entering conditional statements and loops). 
+Each nesting level will increase the amount of effort needed to read the code because you need to remember the current "stack" (for example, entering conditional statements and loops).
 **Exception:** The nesting levels of the lambda expressions, local classes, and anonymous classes in functions are calculated based on the innermost function. The nesting levels of enclosing methods are not accumulated.
 Functional decomposition should be implemented to avoid confusion for the developer who reads the code.
 This will help the reader switch between contexts.
@@ -2197,37 +2326,37 @@ With nested functions, the visibility context may not be evident to the code rea
 
 **Invalid example**:
 ```kotlin
-fun foo() { 
-    fun nested():String { 
-        return "String from nested function" 
-    } 
-    println("Nested Output: ${nested()}") 
-} 
-```  
+fun foo() {
+    fun nested():String {
+        return "String from nested function"
+    }
+    println("Nested Output: ${nested()}")
+}
+```
 #### <a name="r5.1.4"></a> 5.1.4 Negated function calls
 Don't use negated function calls if it can be replaced with negated version of this function
 
 **Invalid example**:
 ```kotlin
-fun foo() { 
+fun foo() {
     val list = listOf(1, 2, 3)
-  
+
     if (!list.isEmpty()) {
         // Some cool logic
     }
-} 
-``` 
+}
+```
 
 **Valid example**:
 ```kotlin
-fun foo() { 
+fun foo() {
     val list = listOf(1, 2, 3)
-  
+
     if (list.isNotEmpty()) {
         // Some cool logic
     }
-} 
-``` 
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c5.2"></a> 5.2 Function arguments
@@ -2244,7 +2373,7 @@ fun myFoo(someArg: Int, myLambda: () -> Unit) {
 }
 
 // usage
-myFoo(1) { 
+myFoo(1) {
 println("hey")
 }
 ```
@@ -2269,14 +2398,14 @@ private fun foo(arg: Int) {
 private fun foo() {
     // ...
 }
-``` 
+```
 
 **Valid example**:
 ```kotlin
  private fun foo(arg: Int = 0) {
      // ...
  }
-``` 
+```
 #### <a name="r5.2.4"></a> 5.2.4 Synchronizing code inside asynchronous code
 Try to avoid using `runBlocking` in asynchronous code
 
@@ -2285,14 +2414,14 @@ Try to avoid using `runBlocking` in asynchronous code
 GlobalScope.async {
     runBlocking {
         count++
-    }   
+    }
 }
 ```
 #### <a name="r5.2.5"></a> 5.2.5 Long lambdas should have explicit parameters
 The lambda without parameters shouldn't be too long.
 If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
 
-#### <a name="r5.2.6"></a> 5.2.6 Avoid using unnecessary, custom label 
+#### <a name="r5.2.6"></a> 5.2.6 Avoid using unnecessary, custom label
 Expressions with unnecessary, custom labels generally increase complexity and worsen the maintainability of the code.
 
 **Invalid example**:
@@ -2336,12 +2465,12 @@ class Test {
 
 **Valid example**:
 ```kotlin
-class Test(var a: Int) { 
+class Test(var a: Int) {
     // ...
 }
 
 // in case of any annotations or modifiers used on a constructor:
-class Test private constructor(var a: Int) { 
+class Test private constructor(var a: Int) {
     // ...
 }
 ```
@@ -2366,7 +2495,7 @@ class Test {
 class Test {
     var a: Int = 0
     var b: Int = 0
-    
+
     constructor(a:Int, b: Int) {
         this.a = a
         this.b = b
@@ -2375,7 +2504,7 @@ class Test {
 
 // or
 class Test(var a: Int = 0, var b: Int = 0)
- 
+
 // or
 class Test() {
     var a: Int = 0
@@ -2437,13 +2566,13 @@ make the code logic more coupled. It is always enough to use one `init` block to
 
 **Invalid example**:
 ```kotlin
-class YourClass(var name: String) {    
+class YourClass(var name: String) {
     init {
         println("First initializer block that prints ${name}")
     }
-    
+
     val property = "Property: ${name.length}".also(::println)
-    
+
     init {
         println("Second initializer block that prints ${name.length}")
     }
@@ -2464,7 +2593,7 @@ class YourClass(var name: String) {
 }
 ```
 
-The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
+The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks.
 Therefore if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
 In some cases, this rule can be in clash with [6.1.1](#r6.1.1), but that should not stop you.
 
@@ -2509,7 +2638,7 @@ When the abstract class has no abstract methods, it was set `abstract` incorrect
 ```kotlin
 abstract class NotAbstract {
     fun foo() {}
-    
+
     fun test() {}
 }
 ```
@@ -2518,14 +2647,14 @@ abstract class NotAbstract {
 ```kotlin
 abstract class NotAbstract {
     abstract fun foo()
-    
+
     fun test() {}
 }
 
 // OR
 class NotAbstract {
     fun foo() {}
-    
+
     fun test() {}
 }
 ```
@@ -2553,35 +2682,35 @@ Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/refer
 Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
 
 **Invalid example:**
-```kotlin 
+```kotlin
 class A {
     var size: Int = 0
         set(value) {
             println("Side effect")
             field = value
         }
-        // user of this class does not expect calling A.size receive size * 2 
+        // user of this class does not expect calling A.size receive size * 2
         get() = field * 2
 }
 ```
 
 From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
 
-However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
-The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
+However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class.
+The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter.
 Use extra functions instead to avoid confusion.
 
 
 
 **Valid example**:
-```kotlin 
+```kotlin
 class A {
     var size: Int = 0
     fun initSize(value: Int) {
         // some custom logic
     }
-    
-    // this will not confuse developer and he will get exactly what he expects    
+
+    // this will not confuse developer and he will get exactly what he expects
     fun goodNameThatDescribesThisGetter() = this.size * 2
 }
 ```
@@ -2610,7 +2739,7 @@ However, in Kotlin, trivial getters/setters are generated by default. There is n
 **Invalid example**:
 ```kotlin
 class A {
-    var a: Int = 0 
+    var a: Int = 0
     get() = field
     set(value: Int) { field = value }
 
@@ -2621,7 +2750,7 @@ class A {
 **Valid example**:
 ```kotlin
 class A {
-    var a: Int = 0 
+    var a: Int = 0
     get() = field
     set(value: Int) { field = value }
 
@@ -2632,15 +2761,15 @@ class A {
 #### <a name="r6.1.11"></a> 6.1.11 Use 'apply' for grouping object initialization
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
-In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
- 
+In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:
+
 **Invalid example**:
 ```kotlin
 class HttpClient(var name: String) {
     var url: String = ""
     var port: String = ""
     var timeout = 0
-    
+
     fun doRequest() {}
 }
 
@@ -2649,9 +2778,9 @@ fun main() {
     httpClient.url = "http://example.com"
     httpClient.port = "8080"
     httpClient.timeout = 100
-    
+
     httpCLient.doRequest()
-}   
+}
 
 ```
 
@@ -2697,7 +2826,7 @@ inline class Password(val value: String)
 ### <a name="c6.2"></a>6.2 Extension functions
 This section describes the rules of using extension functions in your code.
 
-[Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin. 
+[Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin.
 It gives you a chance to extend classes that were already implemented in external libraries and helps you to make classes less heavy.
 Extension functions are resolved statically.
 
@@ -2732,11 +2861,11 @@ You should not use extension functions for the class in the same file, where it 
 **Invalid example**:
 ```kotlin
 class SomeClass {
-    
+
 }
 
 fun SomeClass.deleteAllSpaces() {
-    
+
 }
 ```
 
@@ -2775,7 +2904,7 @@ Avoid using utility classes/objects; use extensions instead. As described in [6.
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
 **Invalid example**:
-```kotlin 
+```kotlin
 object StringUtil {
     fun stringInfo(myString: String): Int {
         return myString.count{ "something".contains(it) }
