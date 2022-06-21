@@ -285,6 +285,26 @@ internal interface IndentationRuleTestMixin {
         }
 
     /**
+     * @return a brief description of this code fragment.
+     */
+    fun String.describe(): String {
+        val lines = splitToSequence('\n')
+
+        var first: String? = null
+
+        val count = lines.onEachIndexed { index, line ->
+            if (index == 0) {
+                first = line
+            }
+        }.count()
+
+        return when (count) {
+            1 -> "\"$this\""
+            else -> "\"$first\u2026\" ($count line(s))"
+        }
+    }
+
+    /**
      * @return `true` if known-to-fail unit tests can be muted on the CI server.
      */
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
