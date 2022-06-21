@@ -19,9 +19,9 @@ a) Code blocks should be in the following order:
 5.	Top-class header and top-function header comments
 6.	Top-level classes or functions
 
-b) Each of the preceding code blocks should be separated by a blank line. 
+b) Each of the preceding code blocks should be separated by a blank line.
 
-c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
+c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`).
 
 d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
 
@@ -133,7 +133,7 @@ run {
 This section describes the general rules of using braces in your code.
 #### <a name="r3.2.1"></a> 3.2.1 Using braces in conditional statements and loop blocks
 
-Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
+Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements.
 
 **Valid example:**
 
@@ -146,7 +146,7 @@ when (node.elementType) {
     CLASS -> checkClassElements(node)
 }
 ```
-**Exception:** The only exception is ternary operator in Kotlin (a single line `if () <> else <>` ) 
+**Exception:** The only exception is ternary operator in Kotlin (a single line `if () <> else <>` )
 
 **Invalid example:**
 
@@ -157,7 +157,7 @@ val value = if (string.isEmpty())  // WRONG!
                 1
 ```
 
-**Valid example**: 
+**Valid example**:
 
 ```kotlin
 val value = if (string.isEmpty()) 0 else 1  // Okay
@@ -179,7 +179,7 @@ Follow the K&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 - The closing brace can be followed by a newline character. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
 These keywords should not be split from the closing brace by a newline character.
 
-**Exception cases**: 
+**Exception cases**:
 
 1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2](#r3.6.2)).
 
@@ -197,9 +197,9 @@ do {
     } else {
         x--
     }
-} while (x > 0) 
+} while (x > 0)
 ```
- 
+
 **Valid example:**
 
  ```kotlin
@@ -207,7 +207,7 @@ do {
             while (condition()) {
                 method()
             }
-            value 
+            value
         }
 
         return MyClass() {
@@ -241,7 +241,7 @@ These code blocks should be indented if they are placed on the new line, and the
 someObject
     .map()
     .filter()
-``` 
+```
 -  The code block is placed immediately after the opening parenthesis.
 -  The code block is placed immediately after an arrow in lambda:
 
@@ -250,11 +250,11 @@ arg.map { value ->
     foo(value)
 }
 ```
-    
+
 **Exceptions**:
 1.	Argument lists: \
 a) Eight spaces are used to indent argument lists (both in declarations and at call sites). \
-b) Arguments in argument lists can be aligned if they are on different lines. 
+b) Arguments in argument lists can be aligned if they are on different lines.
 
 2.	Eight spaces are used if there is a newline after any binary operator.
 
@@ -262,41 +262,52 @@ b) Arguments in argument lists can be aligned if they are on different lines.
 
 4.	Supertype lists: \
 a) Four spaces are used if the colon before the supertype list is on a new line. \
-b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line. 
+b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line.
 
-**Note:** there should be an indentation after all statements such as `if`, `for`, etc. However, according to this code style, such statements require braces. 
+**Note:** there should be an indentation after all statements such as `if`, `for`, etc. However, according to this code style, such statements require braces.
 
 ```kotlin
 if (condition)
     foo()
 ```
 
-**Exceptions**: 
+**Exceptions**:
 - When breaking the parameter list of a method/class constructor, it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
-    
+
 ```kotlin
 fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         params: KtLint.ExperimentalParams,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-) {   
+) {
 }
 ```
-    
+
 - Such operators as `+`/`-`/`*` can be indented with `8 spaces`:
-    
+
 ```kotlin
 val abcdef = "my splitted" +
                 " string"
 ```
-    
+
+- Opening and closing quotes in multiline string should have same indentation
+
+```kotlin
+lintMethod(
+            """
+                    |val q = 1
+                    |
+            """.trimMargin()
+    )
+```
+
 - A list of supertypes should be indented with `4 spaces` if they are on different lines or with `8 spaces` if the leading colon is also on a separate line
 
 ```kotlin
 class A :
     B()
-    
+
 class A
     :
         B()
@@ -308,16 +319,16 @@ class A
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
-They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface. 
+They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface.
 ```kotlin
-override fun foo() {    
+override fun foo() {
 }
-``` 
+```
 
 **Valid examples** (note once again that generally empty blocks are prohibited):
 
 ```kotlin
-fun doNothing() {} 
+fun doNothing() {}
 
 fun doNothingElse() {
 }
@@ -345,7 +356,10 @@ try {
 
 Line length should be less than 120 symbols. Otherwise, it should be split.
 
-If `complex property` initializing is too long, it should be split:
+If `complex property` initializing is too long, It should be split into priorities: \
+1. Logic Binary Expression (&&  ||) \
+2. Comparison Binary Expression (> < == >= <= !=) \
+3. Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
 
 **Invalid example:**
 ```kotlin
@@ -353,8 +367,65 @@ val complexProperty = 1 + 2 + 3 + 4
 ```
 **Valid example:**
 ```kotlin
-val complexProperty = 1 + 2
-+ 3 + 4
+val complexProperty = 1 + 2 +
+    3 + 4
+```
+
+**Invalid example:**
+```kotlin
+val complexProperty = (1 + 2 + 3 > 0) && ( 23 * 4 > 10 * 6)
+```
+**Valid example:**
+```kotlin
+val complexProperty = (1 + 2 + 3 > 0) &&
+    (23 * 4 > 10 * 6)
+```
+
+If long line should be split in `Elvis Operator` (?:), it`s done like this
+
+**Invalid example:**
+```kotlin
+val value = first ?: second
+```
+**Valid example:**
+```kotlin
+val value = first
+    ?: second
+```
+
+If long line in `Dot Qualified Expression` or `Safe Access Expression`, it`s done like this:
+
+**Invalid example:**
+```kotlin
+val value = This.Is.Very.Long.Dot.Qualified.Expression
+```
+**Valid example:**
+```kotlin
+val value = This.Is.Very.Long
+    .Dot.Qualified.Expression
+```
+
+**Invalid example:**
+```kotlin
+val value = This.Is?.Very?.Long?.Safe?.Access?.Expression
+```
+**Valid example:**
+```kotlin
+val value = This.Is?.Very?.Long
+    ?.Safe?.Access?.Expression
+```
+
+if `value arguments list` is too long, it also should be split:
+
+**Invalid example:**
+```kotlin
+val result1 = ManyParamInFunction(firstArgument, secondArgument, thirdArgument, fourthArgument, fifthArguments)
+```
+**Valid example:**
+```kotlin
+val result1 = ManyParamInFunction(firstArgument,
+ secondArgument, thirdArgument, fourthArgument,
+ fifthArguments)
 ```
 
 If `annotation` is too long, it also should be split:
@@ -366,8 +437,9 @@ fun foo() {}
 ```
 **Valid example:**
 ```kotlin
-@Query(value = "select * from table " +
-        "where age = 10", nativeQuery = true)
+@Query(
+    value = "select * from table where age = 10",
+    nativeQuery = true)
 fun foo() {}
 ```
 
@@ -379,11 +451,14 @@ fun foo() = goo().write("TooLong")
 ```
 **Valid example:**
 ```kotlin
-fun foo() = 
+fun foo() =
     goo().write("TooLong")
 ```
 
-Long `binary expression` should be split:
+Long `binary expression` should be split into priorities: \
+1. Logic Binary Expression (**&&**  **||**) \
+2. Comparison Binary Expression (**>** **<** **==** **>=** **<=** **!=**) \
+3. Other types (Arithmetical and Bit operation) (**+** **-** * **/** **%** **>>** **<<** **/*=** **+=** **-=** **/=** **%=** **++** **--** **!** **in** **!in** etc)
 
 **Invalid example:**
 ```kotlin
@@ -394,6 +469,62 @@ if (( x >  100) || y < 100 && !isFoo()) {}
 ```kotlin
 if (( x >  100) ||
     y < 100 && !isFoo()) {}
+```
+
+`String template` also can be split in white space in string text
+
+**Invalid example:**
+```kotlin
+val nameString = "This is very long string template"
+```
+
+**Valid example:**
+```kotlin
+val nameString = "This is very long" +
+        " string template"
+```
+
+Long `Lambda argument` should be split:
+
+**Invalid example:**
+```kotlin
+val variable = a?.filter { it.elementType == true } ?: null
+```
+
+**Valid example:**
+```kotlin
+val variable = a?.filter {
+    it.elementType == true
+} ?: null
+```
+
+Long one line `When Entry` should be split:
+
+**Invalid example:**
+```kotlin
+when(elem) {
+    true -> long.argument.whenEntry
+}
+```
+**Valid example:**
+```kotlin
+when(elem) {
+    true -> {
+        long.argument.whenEntry
+    }
+}
+```
+
+If the examples above do not fit, but the line needs to be split and this in `property`, this is fixed like thisЖ
+
+**Invalid example:**
+```kotlin
+val element = veryLongNameFunction(firstParam)
+```
+**Valid example:**
+```kotlin
+val element =
+    varyLongNameFunction(firstParam)
 ```
 
 `Eol comment` also can be split, but it depends on comment location.
@@ -438,7 +569,7 @@ All characters in the ASCII character set include letters (such as `a, A`), numb
 Wide characters are also called "full-width" characters. Chinese characters (such as `中, 文`), Chinese punctuation (`，` , `；` ), full-width letters and numbers (such as `Ａ、３`) are "full-width" characters.
 Each one of these characters represents two narrow characters.
 
-- Any line that exceeds this limit (`120 narrow symbols`) should be wrapped, as described in the [Newline section](#c3.5). 
+- Any line that exceeds this limit (`120 narrow symbols`) should be wrapped, as described in the [Newline section](#c3.5).
 
 **Exceptions:**
 
@@ -467,25 +598,25 @@ val b = ""
 
 1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
     There should be no redundant semicolon at the end of the lines.
- 
+
 When a newline character is needed to split the line, it should be placed after such operators as `&&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
 However, the newline character should be placed before operators such as `.`, `?.`, `?:`, and `::`.
 
 Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
      if (node !=
              null && test != null) {}
 ```
- 
-**Valid example**: 
+
+**Valid example**:
 ```kotlin
-         if (node != null && 
+         if (node != null &&
                  test != null) {
          }
 ```
-  
+
 **Note:** You need to follow the functional style, meaning each function call in a chain with `.` should start at a new line if the chain of functions contains more than one call:
 ```kotlin
   val value = otherValue!!
@@ -494,39 +625,48 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
               val a = true
               true
           }
-          .size    
+          .size
 ```
 **Note:** The parser prohibits the separation of the `!!` operator from the value it is checking.
 
 **Exception**: If a functional chain is used inside the branches of a ternary operator, it does not need to be split with newlines.
 
-**Valid example**:  
+**Valid example**:
 ```kotlin
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
-```  
+```
 
 **Note:** If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
 
-**Invalid example**: 
+**Invalid example**:
 ```kotlin
- if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
+ if (node.treeParent.treeParent?.treeParent.findChildByType(IDENTIFIER) != null) {}
 ```
- 
-**Valid example**: 
+
+**Valid example**:
 ```kotlin
         val grandIdentifier = node
             .treeParent
             .treeParent
+            ?.treeParent
             .findChildByType(IDENTIFIER)
         if (grandIdentifier != null) {}
 ```
-  
+**Second valid example**:
+```kotlin
+        val grandIdentifier = node.treeParent
+            .treeParent
+            ?.treeParent
+            .findChildByType(IDENTIFIER)
+        if (grandIdentifier != null) {}
+```
+
 2)	Newlines should be placed after the assignment operator (`=`).
 3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace `(`.
     A brace should be placed immediately after the name without any spaces in declarations or at call sites.
 4)	Newlines should be placed right after the comma (`,`).
 5)	If a lambda statement contains more than one line in its body, a newline should be placed after an arrow if the lambda statement has explicit parameters.
-    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`). 
+    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`).
     The following examples illustrate this rule:
 
 
@@ -537,7 +677,7 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
     }
 ```
 
-**Valid example:** 
+**Valid example:**
 ```kotlin
 value.map { name ->
     foo()
@@ -547,10 +687,10 @@ value.map { name ->
 val someValue = { node:String -> node }
 ```
 
-6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions). 
+6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions).
    The below example shows the style that should not be used.
-   
-Instead of: 
+
+Instead of:
 ```kotlin
 override fun toString(): String { return "hi" }
 ```
@@ -561,7 +701,7 @@ override fun toString() = "hi"
 
 7)  If an argument list in a function declaration (including constructors) or function call contains more than two arguments, these arguments should be split by newlines in the following style.
 
-**Valid example:** 
+**Valid example:**
  ```kotlin
 class Foo(val a: String,
           b: String,
@@ -584,7 +724,7 @@ Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generall
 and append [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 It makes the resolving of merge conflicts easier.
 
-**Valid example:** 
+**Valid example:**
  ```kotlin
 fun foo(
         a: String,
@@ -613,7 +753,7 @@ Destructuring declarations
 
 8) If the supertype list has more than two elements, they should be separated by newlines.
 
-**Valid example:** 
+**Valid example:**
 ```kotlin
 class MyFavouriteVeryLongClassHolder :
     MyLongHolder<MyFavouriteVeryLongClass>(),
@@ -633,7 +773,7 @@ Reduce unnecessary blank lines and maintain a compact code size. By reducing unn
 **Valid example:**
 ```kotlin
 fun baz() {
-        
+
     doSomething()  // No need to add blank lines at the beginning and end of the code block
     // ...
 
@@ -662,8 +802,8 @@ Follow the recommendations below for using space to separate keywords:
  ```
 
 4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
-    For example: 
-    
+    For example:
+
  - A colon in generic structures with the `where` keyword:  `where T : Type`
  - Arrow in lambdas: `(str: String) -> str.length()`
 
@@ -682,21 +822,21 @@ Follow the recommendations below for using space to separate keywords:
     However, note that this code style prohibits the use of (`;`) in the middle of a line ([see 3.3.2](#r3.2.2)).
     There should be no whitespaces at the end of a line.
     The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, `@param:JsonProperty`).
-    There should be no spaces before `,` , `:` and `;`. 
-    
+    There should be no spaces before `,` , `:` and `;`.
+
     **Exceptions** for spaces and colons:
-    
+
     - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
     - When delegating to a superclass constructor or different constructor of the same class
 
 **Valid example:**
 ```kotlin
   abstract class Foo<out T : Any> : IFoo { }
-  
+
   class FooImpl : Foo() {
       constructor(x: String) : this(x) { /*...*/ }
-      
-      val x = object : IFoo { /*...*/ } 
+
+      val x = object : IFoo { /*...*/ }
   }
 ```
 
@@ -784,7 +924,7 @@ use enum class:
 enum class TemperatureScale { CELSIUS, FAHRENHEIT }
 ```
 
-- The variable value only changes within a fixed range and is defined with the enum type. 
+- The variable value only changes within a fixed range and is defined with the enum type.
 - Avoid comparison with magic numbers of `-1, 0, and 1`; use enums instead.
 
 ```kotlin
@@ -801,7 +941,7 @@ enum class ComparisonResult {
 This section describes rules for the declaration of variables.
 #### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line
 
-Each property or variable must be declared on a separate line. 
+Each property or variable must be declared on a separate line.
 
 **Invalid example**:
 ```kotlin
@@ -826,7 +966,7 @@ The compiler can issue a warning when it is missing.
 ### <a name="c3.12"></a> 3.12 Annotations
 
 Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
-1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
+1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line).
 
 **Valid example**:
 ```kotlin
@@ -932,7 +1072,7 @@ class Person() {
 This section describes the general rules of using strings.
 
 #### <a name="r3.15.1"></a> 3.15.1 Concatenation of Strings
-String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
+String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals).
 Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
