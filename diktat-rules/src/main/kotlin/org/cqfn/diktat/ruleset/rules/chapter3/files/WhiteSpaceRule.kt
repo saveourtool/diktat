@@ -116,7 +116,6 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
         when (node.elementType) {
-            FILE -> positionByOffset = node.calculateLineColByOffset()
             // keywords
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
@@ -458,7 +457,6 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
-        private const val MAX_LENGTH = 120L
         const val NAME_ID = "zcs-horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list

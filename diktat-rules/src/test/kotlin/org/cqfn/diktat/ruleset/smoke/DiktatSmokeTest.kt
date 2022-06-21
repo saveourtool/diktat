@@ -348,11 +348,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompareSmokeTest("ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 
-    @Test
-    fun `wrong combination fix LongLine and WrongNewLines`() {
-        fixAndCompareSmokeTest("ComboFixLongLineAndWrongNewLinesExpected.kt", "ComboFixLongLineAndWrongNewLinesTest.kt")
-    }
-
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
