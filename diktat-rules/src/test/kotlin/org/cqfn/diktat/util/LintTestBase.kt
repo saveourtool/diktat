@@ -5,7 +5,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.intellij.lang.annotations.Language
 
 /**
@@ -43,7 +42,6 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @return the list of lint errors.
      * @see lintMethod
      */
-    @OptIn(FeatureInAlphaState::class)
     protected fun lintResult(
         @Language("kotlin") code: String,
         rulesConfigList: List<RulesConfig>? = null,
