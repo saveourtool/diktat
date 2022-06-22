@@ -291,7 +291,7 @@ val abcdef = "my split" +
                 " string"
 ```
 
-- Opening and closing quotes in multiline string should have the same indentation:
+- Opening and closing quotes in multiline string with `trimMargin()` or `trimIndent()` method should have the same indentation:
 
 ```kotlin
 lintMethod(
