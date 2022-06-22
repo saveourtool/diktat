@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.internal.CurrentBaseline
+import com.pinterest.ktlint.core.internal.containsLintError
 import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
@@ -239,11 +240,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 ruleSets = ruleSets,
                 script = file.extension.equals("kts", ignoreCase = true),
                 cb = { lintError, isCorrected ->
-                    if (baselineErrors.none {
-                        // ktlint's BaselineReporter stores only these fields
-                        it.line == lintError.line && it.col == lintError.col &&
-                            it.ruleId == lintError.ruleId
-                    }) {
+                    if (!baselineErrors.containsLintError(lintError)) {
                         reporterImpl.onLintError(file.path, lintError, isCorrected)
                         lintErrors.add(lintError)
                     }
