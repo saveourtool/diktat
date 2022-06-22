@@ -77,7 +77,7 @@ class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         // FixMe: should be moved to properties
-        const val NAME_ID = "aag-file-naming"
+        const val NAME_ID = "file-naming"
         val validExtensions = listOf(".kt", ".kts")
     }
 }

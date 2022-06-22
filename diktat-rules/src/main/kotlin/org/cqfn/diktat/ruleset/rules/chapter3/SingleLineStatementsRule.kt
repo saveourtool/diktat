@@ -47,7 +47,7 @@ class SingleLineStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aaq-statement"
+        const val NAME_ID = "statement"
         private val semicolonToken = TokenSet.create(SEMICOLON)
     }
 }

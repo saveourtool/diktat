@@ -783,7 +783,7 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = getRootNode().also {
-    require(it.elementType == FILE) { "Root node type is not FILE, but file_path is present in user_data only in FILE nodes" }
+    require(it.elementType == FILE) { "Root node type is not FILE, but ${KtLint.FILE_PATH_USER_DATA_KEY} is present in user_data only in FILE nodes" }
 }.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
 }
@@ -831,6 +831,15 @@ fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
         }
     }
     return node
+}
+
+private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
+    var shouldContinue = true
+    return takeWhile {
+        val result = shouldContinue
+        shouldContinue = pred(it)
+        result
+    }
 }
 
 private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =

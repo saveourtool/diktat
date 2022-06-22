@@ -51,6 +51,6 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val MAX_SIZE = 2000L
-        const val NAME_ID = "ace-file-size"
+        const val NAME_ID = "file-size"
     }
 }

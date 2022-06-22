@@ -707,7 +707,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private val log = LoggerFactory.getLogger(NewlinesRule::class.java)
         const val MAX_CALLS_IN_ONE_LINE = 3
-        const val NAME_ID = "zcr-newlines"
+        const val NAME_ID = "newlines"
 
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline

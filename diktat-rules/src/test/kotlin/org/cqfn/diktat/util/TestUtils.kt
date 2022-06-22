@@ -12,7 +12,6 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import com.pinterest.ktlint.core.VisitorProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
@@ -81,7 +80,6 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
  * @param cb callback to be called on unhandled [LintError]s
  * @return formatted code
  */
-@OptIn(FeatureInAlphaState::class)
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                     @Language("kotlin") text: String,
@@ -97,13 +95,7 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
             fileName = fileName.removeSuffix("_copy"),
             script = fileName.removeSuffix("_copy").endsWith("kts"),
             cb = cb,
-            userData = mapOf("file_path" to fileName.removeSuffix("_copy")),
-        ),
-        VisitorProvider(
-            ruleSets = ruleSets,
             debug = true,
-            // setting this to `true` breaks smoke test
-            isUnitTestContext = false,
         )
     )
 }

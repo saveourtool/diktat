@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.util.LintTestBase
@@ -26,17 +26,17 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     |    if (some != null && some != null && some == null) {
                     |       goo()
                     |    }
-                    |    
+                    |
                     |    if (some != null && some == 7) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a > 3 && b > 3 && a > 3) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a && a && b > 4) {
-                    |    
+                    |
                     |    }
                     |}
             """.trimMargin(),
@@ -53,23 +53,23 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
             """
                     |fun foo() {
                     |    if (some != null && (some != null || a > 5)) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a > 5 || (a > 5 && b > 6)) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (!!(a > 5 && q > 6)) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a > 5 && false) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a > 5 || (!(a > 5) && b > 5)) {
-                    |    
+                    |
                     |    }
                     |}
             """.trimMargin(),
@@ -88,11 +88,11 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
             """
                     |fun foo() {
                     |    if ((a > 5 || b > 5) && (a > 5 || c > 5)) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a > 5 && b > 5 || a > 5 && c > 5) {
-                    |    
+                    |
                     |    }
                     |}
             """.trimMargin(),
@@ -108,11 +108,11 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
             """
                     |fun foo() {
                     |    if ((a > 5 || b > 5) && (a > 5 || c > 5) && (a > 5 || d > 5)) {
-                    |    
+                    |
                     |    }
-                    |    
+                    |
                     |    if (a > 5 && b > 5 || a > 5 && c > 5 || a > 5 || d > 5) {
-                    |    
+                    |
                     |    }
                     |}
             """.trimMargin(),
@@ -128,7 +128,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
             """
                     |fun foo() {
                     |    if (a.and(b)) {
-                    |    
+                    |
                     |    }
                     |}
             """.trimMargin()
@@ -233,31 +233,31 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                 fun foo() {
                     // nested boolean expressions in lambdas
                     if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {}
-                    
+
                     if (rightSide != null && leftSide != null &&
                         rightSide.size == leftSide.size &&
                         rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {}
-                    
+
                     // nested lambda with if-else
                     if (currentProperty.nextSibling { if (it.elementType == PROPERTY) true else false } == nextProperty) {}
-                    
+
                     // nested boolean expressions in lambdas with multi-line expressions
                     if (node.elementType == TYPE_REFERENCE && node
                         .parents()
                         .map { it.elementType }
                         .none { it == SUPER_TYPE_LIST || it == TYPEALIAS }) {}
-                        
+
                     // binary expression with boolean literal
                     if (result?.flag == true) {}
-                    
+
                     if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {}
-                    
+
                     // with in and !in
                     if (!isImportOrPackage && previousNonWhiteSpaceNode in acc.last()) {}
                     if (node.elementType == LABEL_QUALIFIER && node.text !in labels && node.treeParent.elementType in stopWords) {}
-                    
+
                     if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {}
-                    
+
                     if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes } ||
                         listOfNodesAfterNestedIf.any { it.elementType !in allowedTypes }) {
                             return null

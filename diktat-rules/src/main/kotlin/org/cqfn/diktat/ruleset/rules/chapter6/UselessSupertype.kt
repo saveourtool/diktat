@@ -141,7 +141,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aaj-useless-override"
+        const val NAME_ID = "useless-override"
         private val superType = listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY)
     }
 }

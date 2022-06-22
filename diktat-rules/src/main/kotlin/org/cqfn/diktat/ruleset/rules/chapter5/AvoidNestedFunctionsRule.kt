@@ -101,6 +101,6 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
         (node.psi as KtFunction).valueParameters.map { it.name!! }
 
     companion object {
-        const val NAME_ID = "acj-avoid-nested-functions"
+        const val NAME_ID = "avoid-nested-functions"
     }
 }

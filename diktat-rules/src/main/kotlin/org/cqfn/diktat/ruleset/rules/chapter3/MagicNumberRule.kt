@@ -114,7 +114,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val IGNORE_TEST = true
-        const val NAME_ID = "aca-magic-number"
+        const val NAME_ID = "magic-number"
         val ignoreNumbersList = listOf("-1", "1", "0", "2", "0U", "1U", "2U", "-1L", "0L", "1L", "2L", "0UL", "1UL", "2UL")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,

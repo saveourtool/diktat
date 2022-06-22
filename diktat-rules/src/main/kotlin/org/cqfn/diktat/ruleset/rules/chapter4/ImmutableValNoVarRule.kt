@@ -55,6 +55,6 @@ class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
     companion object {
-        const val NAME_ID = "aci-no-var-rule"
+        const val NAME_ID = "no-var-rule"
     }
 }
