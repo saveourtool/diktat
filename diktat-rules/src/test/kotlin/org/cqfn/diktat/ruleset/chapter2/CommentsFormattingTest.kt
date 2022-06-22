@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.LintTestBase
 

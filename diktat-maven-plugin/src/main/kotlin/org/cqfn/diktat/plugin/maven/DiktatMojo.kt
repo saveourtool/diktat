@@ -38,12 +38,11 @@ class DiktatFixMojo : DiktatBaseMojo() {
     @OptIn(FeatureInAlphaState::class)
     override fun runAction(params: KtLint.ExperimentalParams) {
         val fileName = params.fileName
-        val filePath = params.userData["file_path"] ?: error("File path should be provided")
-        val fileContent = File(filePath).readText(charset("UTF-8"))
+        val fileContent = File(fileName).readText(charset("UTF-8"))
         val formattedText = KtLint.format(params)
         if (fileContent != formattedText) {
             log.info("Original and formatted content differ, writing to $fileName...")
-            File(filePath).writeText(formattedText, charset("UTF-8"))
+            File(fileName).writeText(formattedText, charset("UTF-8"))
         }
     }
 }

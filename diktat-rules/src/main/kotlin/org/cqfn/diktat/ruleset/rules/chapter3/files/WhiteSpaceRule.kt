@@ -1,9 +1,16 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
@@ -23,8 +30,10 @@ import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -96,8 +105,14 @@ import org.slf4j.LoggerFactory
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(WRONG_WHITESPACE)
+    listOf(WRONG_WHITESPACE, LONG_LINE, WRONG_INDENTATION)
 ) {
+    private val configuration by lazy {
+        LineLength.LineLengthConfiguration(
+            configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap()
+        )
+    }
+    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
         when (node.elementType) {
@@ -274,7 +289,6 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION || it == PROPERTY } ||
             node.elementType != OPERATION_REFERENCE) {
             val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
-
             handleToken(node, requiredNumSpaces, requiredNumSpaces)
         }
     }
@@ -366,15 +380,28 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
+    private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
+        positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
+        val offset = positionByOffset(this.startOffset).second
+        return offset + this.text.length >= configuration.lineLength
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         if (requiredSpacesBefore == 1) {
             selfOrParentsTreePrev()?.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }?.leaveSingleWhiteSpace()
+            if (this.isNeedNewLineInOperatorReferences() && this.firstChildNode.elementType == ELVIS) {
+                this.treePrev.let { this.treeParent.appendNewlineMergingWhiteSpace(it, it) }
+            }
         } else if (requiredSpacesBefore == 0) {
             selfOrParentsTreePrev()?.removeIfWhiteSpace()
         }
-
         if (requiredSpacesAfter == 1) {
             leaveSingleWhiteSpace()
+            if (this.isNeedNewLineInOperatorReferences() && this.firstChildNode.elementType != ELVIS) {
+                this.treeNext.let { this.treeParent.appendNewlineMergingWhiteSpace(it, it) }
+            }
         } else if (requiredSpacesAfter == 0) {
             // for `!!` and possibly other postfix expressions treeNext can be null
             (treeNext ?: treeParent.treeNext).removeIfWhiteSpace()
@@ -430,7 +457,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
-        const val NAME_ID = "zcs-horizontal-whitespace"
+        const val NAME_ID = "horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
         private val keywordsWithSpaceAfter = TokenSet.create(

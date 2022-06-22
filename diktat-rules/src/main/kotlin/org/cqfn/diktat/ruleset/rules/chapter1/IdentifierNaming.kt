@@ -483,7 +483,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
-        const val NAME_ID = "aai-identifier-naming"
+        const val NAME_ID = "identifier-naming"
 
         // FixMe: this should be moved to properties
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")

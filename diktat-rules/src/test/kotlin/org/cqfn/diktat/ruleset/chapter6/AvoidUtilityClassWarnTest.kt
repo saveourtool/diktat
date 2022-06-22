@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidUtilityClass
 import org.cqfn.diktat.util.LintTestBase
 

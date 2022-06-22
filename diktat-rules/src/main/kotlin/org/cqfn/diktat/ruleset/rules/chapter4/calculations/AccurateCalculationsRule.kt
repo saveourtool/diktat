@@ -120,7 +120,7 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abt-accurate-calculations"
+        const val NAME_ID = "accurate-calculations"
         private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
             KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
             KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,

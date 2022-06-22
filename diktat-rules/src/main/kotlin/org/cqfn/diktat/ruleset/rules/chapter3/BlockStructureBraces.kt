@@ -273,6 +273,6 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "zcn-block-structure"
+        const val NAME_ID = "block-structure"
     }
 }

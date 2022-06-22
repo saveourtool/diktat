@@ -73,6 +73,6 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "acd-blank-lines"
+        const val NAME_ID = "blank-lines"
     }
 }

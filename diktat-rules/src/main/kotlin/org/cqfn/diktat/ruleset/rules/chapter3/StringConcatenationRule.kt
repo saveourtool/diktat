@@ -217,6 +217,6 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
         this.right is KtExpression
 
     companion object {
-        const val NAME_ID = "abr-string-concatenation"
+        const val NAME_ID = "string-concatenation"
     }
 }

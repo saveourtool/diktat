@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -757,9 +757,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
         assertSoftly { softly ->
             expressionBodyFunctionsSingleIndent.forEach { code ->
                 softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
-                    .describedAs("lint result for \"$code\"")
+                    .describedAs("lint result for ${code.describe()}")
                     .isNotEmpty
-                    .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
+                    .hasSizeBetween(1, 20).allSatisfy(Consumer { lintError ->
                         assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
                         assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
                         assertThat(lintError.detail).matches(warnTextRegex)
@@ -782,9 +782,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
         assertSoftly { softly ->
             expressionBodyFunctionsContinuationIndent.forEach { code ->
                 softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
-                    .describedAs("lint result for \"$code\"")
+                    .describedAs("lint result for ${code.describe()}")
                     .isNotEmpty
-                    .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
+                    .hasSizeBetween(1, 20).allSatisfy(Consumer { lintError ->
                         assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
                         assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
                         assertThat(lintError.detail).matches(warnTextRegex)

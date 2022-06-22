@@ -267,6 +267,6 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         .node
 
     companion object {
-        const val NAME_ID = "aab-single-constructor"
+        const val NAME_ID = "single-constructor"
     }
 }

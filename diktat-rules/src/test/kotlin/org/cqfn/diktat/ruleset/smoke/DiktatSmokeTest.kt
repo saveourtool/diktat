@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -13,7 +14,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
@@ -340,6 +340,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             .noneMatch {
                 it.ruleId == "diktat-ruleset:local-variables"
             }
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `fix can cause long line`() {
+        fixAndCompareSmokeTest("ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 
     companion object {

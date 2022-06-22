@@ -8,7 +8,6 @@ import org.cqfn.diktat.util.FixTestBase
 import generated.WarningNames
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.MethodOrderer.MethodName
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -104,10 +103,6 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `expression body functions should be reformatted if mis-indented (extendedIndentAfterOperators = true)`(@TempDir tempDir: Path) {
-        assumeTrue(testsCanBeMuted()) {
-            "Skipping a known-to-fail test"
-        }
-
         val defaultConfig = IndentationConfig("newlineAtEnd" to false)
         val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
 
@@ -126,10 +121,6 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `expression body functions should be reformatted if mis-indented (extendedIndentAfterOperators = false)`(@TempDir tempDir: Path) {
-        assumeTrue(testsCanBeMuted()) {
-            "Skipping a known-to-fail test"
-        }
-
         val defaultConfig = IndentationConfig("newlineAtEnd" to false)
         val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
 
@@ -176,10 +167,6 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `no whitespace should be injected into multi-line string literals (mis-indented code reformatted, extendedIndent = true)`(@TempDir tempDir: Path) {
-        assumeTrue(testsCanBeMuted()) {
-            "Skipping a known-to-fail test"
-        }
-
         val defaultConfig = IndentationConfig("newlineAtEnd" to false)
         val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = true))
 
@@ -196,10 +183,6 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `no whitespace should be injected into multi-line string literals (mis-indented code reformatted, extendedIndent = false)`(@TempDir tempDir: Path) {
-        assumeTrue(testsCanBeMuted()) {
-            "Skipping a known-to-fail test"
-        }
-
         val defaultConfig = IndentationConfig("newlineAtEnd" to false)
         val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = false))
 
@@ -241,7 +224,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
 
                 if (!lintResult.isSuccessful) {
                     softly.assertThat(lintResult.actualContent)
-                        .describedAs("lint result for \"$actual\"")
+                        .describedAs("lint result for ${actual.describe()}")
                         .isEqualTo(lintResult.expectedContent)
                 }
             }
