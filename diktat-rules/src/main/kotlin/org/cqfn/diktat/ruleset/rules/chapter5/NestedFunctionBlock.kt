@@ -65,7 +65,7 @@ class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_NESTED_BLOCK_COUNT = 4L
-        const val NAME_ID = "abn-nested-block"
+        const val NAME_ID = "nested-block"
 
         /**
          * Nodes of these types reset counter of nested blocks

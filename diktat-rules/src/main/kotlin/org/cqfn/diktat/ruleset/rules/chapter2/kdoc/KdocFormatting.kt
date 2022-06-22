@@ -379,7 +379,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aae-kdoc-formatting"
+        const val NAME_ID = "kdoc-formatting"
         val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yy-dd-mm", "yyyy-mm-dd", "yy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm")
             .map {
                 DateTimeFormatter.ofPattern(it)

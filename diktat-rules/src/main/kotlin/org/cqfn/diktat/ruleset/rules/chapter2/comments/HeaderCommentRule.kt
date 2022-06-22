@@ -275,7 +275,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
         const val CURR_YEAR_PATTERN = ";@currYear;"
-        const val NAME_ID = "zcp-header-comment"
+        const val NAME_ID = "header-comment"
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year

@@ -34,6 +34,6 @@ class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aao-avoid-empty-primary-constructor"
+        const val NAME_ID = "avoid-empty-primary-constructor"
     }
 }

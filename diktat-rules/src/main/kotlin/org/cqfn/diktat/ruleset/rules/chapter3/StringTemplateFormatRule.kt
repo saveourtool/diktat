@@ -109,6 +109,6 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abs-string-template-format"
+        const val NAME_ID = "string-template-format"
     }
 }

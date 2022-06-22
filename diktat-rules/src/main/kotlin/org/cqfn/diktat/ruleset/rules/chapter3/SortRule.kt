@@ -186,6 +186,6 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abp-sort-rule"
+        const val NAME_ID = "sort-rule"
     }
 }

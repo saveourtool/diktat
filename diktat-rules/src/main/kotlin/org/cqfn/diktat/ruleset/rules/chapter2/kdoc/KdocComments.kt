@@ -352,7 +352,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun isTopLevelFunctionStandard(node: ASTNode): Boolean = node.elementType == FUN && node.isStandardMethod()
 
     companion object {
-        const val NAME_ID = "aac-kdoc-comments"
+        const val NAME_ID = "kdoc-comments"
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
     }
 }
