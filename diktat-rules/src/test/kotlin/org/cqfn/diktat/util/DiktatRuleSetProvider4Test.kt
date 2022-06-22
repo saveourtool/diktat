@@ -6,7 +6,6 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.delegatee
@@ -15,7 +14,6 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -65,6 +63,7 @@ class DiktatRuleSetProviderTest {
         private val ignoreFile = listOf(
             "DiktatRuleSetProvider",
             "DiktatRule",
-            "IndentationError")
+            "IndentationError",
+            "OrderedRuleSet")
     }
 }
