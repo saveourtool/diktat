@@ -4,8 +4,6 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.dummy.DummyWarning
-import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.ordered
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
@@ -142,9 +140,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
         val rules = listOf(
-            // test warning that can be used for manual testing of diktat
-            ::DummyWarning,
-
             // comments & documentation
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
@@ -232,7 +227,8 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         return RuleSet(
             DIKTAT_RULE_SET_ID,
             rules = rules.toTypedArray()
-        ).ordered()
+        )
+//            .ordered()
     }
 
     private fun validate(config: RulesConfig) =
