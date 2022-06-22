@@ -209,7 +209,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .forEach { file ->
                 log.debug("Checking file $file")
                 try {
-                    reporterImpl.before(file.path)
+                    reporterImpl.before(file.absolutePath)
                     checkFile(
                         file,
                         lintErrors,
@@ -219,7 +219,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                         ),
                         ruleSets
                     )
-                    reporterImpl.after(file.path)
+                    reporterImpl.after(file.absolutePath)
                 } catch (e: RuleExecutionException) {
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
@@ -235,13 +235,13 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val text = file.readText()
         val params =
             KtLint.ExperimentalParams(
-                fileName = file.path,
+                fileName = file.absolutePath,
                 text = text,
                 ruleSets = ruleSets,
                 script = file.extension.equals("kts", ignoreCase = true),
                 cb = { lintError, isCorrected ->
                     if (!baselineErrors.containsLintError(lintError)) {
-                        reporterImpl.onLintError(file.path, lintError, isCorrected)
+                        reporterImpl.onLintError(file.absolutePath, lintError, isCorrected)
                         lintErrors.add(lintError)
                     }
                 },
