@@ -114,6 +114,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val ruleSets by lazy {
             listOf(DiktatRuleSetProvider(configFile).get())
         }
+        @Suppress("Deprecation")
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: CurrentBaseline(emptyMap(), false)
         reporterImpl = resolveReporter(baselineResults)
@@ -132,6 +133,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
+    @Suppress("Deprecation")
     private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
         val output = if (this.output.isBlank()) {
             if (this.githubActions) {
@@ -240,6 +242,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 ruleSets = ruleSets,
                 script = file.extension.equals("kts", ignoreCase = true),
                 cb = { lintError, isCorrected ->
+                    @Suppress("Deprecation")
                     if (!baselineErrors.containsLintError(lintError)) {
                         reporterImpl.onLintError(file.absolutePath, lintError, isCorrected)
                         lintErrors.add(lintError)
