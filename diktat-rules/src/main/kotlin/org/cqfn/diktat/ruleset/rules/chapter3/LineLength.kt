@@ -28,8 +28,10 @@ import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.EQEQ
+import com.pinterest.ktlint.core.ast.ElementType.EQEQEQ
 import com.pinterest.ktlint.core.ast.ElementType.EXCL
 import com.pinterest.ktlint.core.ast.ElementType.EXCLEQ
+import com.pinterest.ktlint.core.ast.ElementType.EXCLEQEQEQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -604,7 +606,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         @Suppress("TYPE_ALIAS")
         private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
             val logicListOperationReference = listOf(OROR, ANDAND)
-            val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ)
+            val compressionListOperationReference = listOf(GT, LT, EQEQ, GTEQ, LTEQ, EXCLEQ, EQEQEQ, EXCLEQEQEQ)
             val binList: MutableList<ASTNode> = mutableListOf()
             searchBinaryExpression(parent, binList)
             val rightBinList = binList.map {
