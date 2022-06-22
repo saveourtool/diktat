@@ -724,19 +724,6 @@ fun ASTNode.extractLineOfText(): String {
 }
 
 /**
- * @param pred a predicate
- * @return filtered sequence
- */
-private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
-    var shouldContinue = true
-    return takeWhile {
-        val result = shouldContinue
-        shouldContinue = pred(it)
-        result
-    }
-}
-
-/**
  * Checks node has `@Test` annotation
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
@@ -844,6 +831,15 @@ fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
         }
     }
     return node
+}
+
+private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
+    var shouldContinue = true
+    return takeWhile {
+        val result = shouldContinue
+        shouldContinue = pred(it)
+        result
+    }
 }
 
 private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
