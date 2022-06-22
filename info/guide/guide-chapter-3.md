@@ -356,10 +356,10 @@ try {
 
 Line length should be less than 120 symbols. Otherwise, it should be split.
 
-If `complex property` initializer is too long, It should be split into priorities:
+if the initializer of a `complex property` is too long, it should be split into multiple lines using the operators grouped in the following precedence order:
 1. Logic Binary Expression (`&&` , `||`)
-2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
-3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
+2. Comparison Binary Expression (`>` , `<` , `==` , `>=` , `<=` , `!=`, `===`, `!==`)
+3. Other types (Arithmetical and Bitwise operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -416,7 +416,7 @@ val value = This.Is?.A?.Very?.Long
     ?.Safe?.Access?.Expression
 ```
 
-A long `value arguments list`:
+A long `function call arguments`:
 
 **Invalid example:**
 ```kotlin
@@ -456,10 +456,10 @@ fun foo() =
     goo().write("TooLong")
 ```
 
-A `long binary expression` should be split into priorities:
+A `long binary expression` should be split into multiple lines using the operators grouped in the following precedence
 1. Logic Binary Expression (`&&` , `||`)
-2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
-3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
+2. Comparison Binary Expression (`>` , `<` , `==` , `>=` , `<=` , `!=`, `===`, `!==`)
+3. Other types (Arithmetical and Bitwise operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -485,7 +485,7 @@ val nameString = "This is a very long" +
         " string template"
 ```
 
-A long `Lambda argument` should be split:
+A long `lambda argument` should be split:
 
 **Invalid example:**
 ```kotlin
@@ -499,7 +499,7 @@ val variable = a?.filter {
 } ?: null
 ```
 
-A long one-line `When Entry` should be split:
+A long one-line `when expression` should be split:
 
 **Invalid example:**
 ```kotlin
