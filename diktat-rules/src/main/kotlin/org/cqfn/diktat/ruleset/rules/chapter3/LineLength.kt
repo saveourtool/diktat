@@ -601,7 +601,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
          * Return List of the Pair <node, offset>
          * First elem in List - Logic Binary Expression (&&  ||)
          * Second elem in List - Comparison Binary Expression (> < == >= <= != === !==)
-         * Other types (Arithmetical and Bit operation) (+ - * / % >> << *= += -= /= %= ++ -- ! in !in etc)
+         * Other types (Arithmetical and Bitwise operation) (+ - * / % >> << *= += -= /= %= ++ -- & ~ ^ | in !in etc)
          */
         @Suppress("TYPE_ALIAS")
         private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
