@@ -162,7 +162,7 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
     )
 
     companion object {
-        const val NAME_ID = "acg-nullable-type"
+        const val NAME_ID = "nullable-type"
         private val allowExpression = listOf("emptyList", "emptySequence", "emptyArray", "emptyMap", "emptySet",
             "listOf", "mapOf", "arrayOf", "sequenceOf", "setOf")
     }

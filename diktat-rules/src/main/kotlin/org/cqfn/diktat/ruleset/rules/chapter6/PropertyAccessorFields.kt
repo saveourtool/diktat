@@ -57,6 +57,6 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abf-getter-setter-fields"
+        const val NAME_ID = "getter-setter-fields"
     }
 }

@@ -409,6 +409,6 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "zcq-file-structure"
+        const val NAME_ID = "file-structure"
     }
 }

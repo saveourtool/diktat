@@ -57,6 +57,32 @@ internal interface IndentationRuleTestMixin {
                 """.trimMargin(),
 
                 """
+                |private fun createLayoutParams(): WindowManager.LayoutParams =
+                |    WindowManager.LayoutParams().apply {
+                |        type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
+                |        token = composeView.applicationWindowToken
+                |        width = WindowManager.LayoutParams.MATCH_PARENT
+                |        height = WindowManager.LayoutParams.MATCH_PARENT
+                |        format = PixelFormat.TRANSLUCENT
+                |
+                |        // TODO make composable configurable
+                |
+                |        // see https://stackoverflow.com/questions/43511326/android-making-activity-full-screen-with-status-bar-on-top-of-it
+                |        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                |            windowInsetsController?.hide(WindowInsets.Type.statusBars())
+                |        } else {
+                |            @Suppress("DEPRECATION")
+                |            systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE or
+                |                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                |                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                |                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                |                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                |                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+                |        }
+                |    }
+                """.trimMargin(),
+
+                """
                 |val offsetDelta =
                 |    if (shimmerAnimationType != ShimmerAnimationType.FADE) translateAnim.dp
                 |    else 2000.dp
@@ -116,6 +142,32 @@ internal interface IndentationRuleTestMixin {
                 """.trimMargin(),
 
                 """
+                |private fun createLayoutParams(): WindowManager.LayoutParams =
+                |        WindowManager.LayoutParams().apply {
+                |            type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
+                |            token = composeView.applicationWindowToken
+                |            width = WindowManager.LayoutParams.MATCH_PARENT
+                |            height = WindowManager.LayoutParams.MATCH_PARENT
+                |            format = PixelFormat.TRANSLUCENT
+                |
+                |            // TODO make composable configurable
+                |
+                |            // see https://stackoverflow.com/questions/43511326/android-making-activity-full-screen-with-status-bar-on-top-of-it
+                |            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                |                windowInsetsController?.hide(WindowInsets.Type.statusBars())
+                |            } else {
+                |                @Suppress("DEPRECATION")
+                |                systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE or
+                |                        View.SYSTEM_UI_FLAG_FULLSCREEN or
+                |                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                |                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                |                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                |                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+                |            }
+                |        }
+                """.trimMargin(),
+
+                """
                 |val offsetDelta =
                 |        if (shimmerAnimationType != ShimmerAnimationType.FADE) translateAnim.dp
                 |        else 2000.dp
@@ -158,6 +210,48 @@ internal interface IndentationRuleTestMixin {
                 """.trimMargin(),
 
                 """
+                |fun f0() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            |@Suppress("diktat")
+                |            |fun foo() {
+                |            |    val a = 1
+                |            |}
+                |        ""${'"'}.trimMargin()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f1() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            |@Suppress("diktat")
+                |            |fun foo() {
+                |            |    val a = 1
+                |            |}
+                |        ""${'"'}.trimMargin("|")
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f2() {
+                |    @Language("kotlin")
+                |    val code =
+                |        ""${'"'}
+                |            >@Suppress("diktat")
+                |            >fun foo() {
+                |            >    val a = 1
+                |            >}
+                |        ""${'"'} . trimMargin ( marginPrefix = ">" )
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
                 |fun checkScript() {
                 |    lintMethod(
                 |        ""${'"'}
@@ -189,6 +283,48 @@ internal interface IndentationRuleTestMixin {
                 |                    val a = 1
                 |                }
                 |            ""${'"'}.trimIndent()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f0() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                |@Suppress("diktat")
+                |                |fun foo() {
+                |                |    val a = 1
+                |                |}
+                |            ""${'"'}.trimMargin()
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f1() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                |@Suppress("diktat")
+                |                |fun foo() {
+                |                |    val a = 1
+                |                |}
+                |            ""${'"'}.trimMargin("|")
+                |    lintMethod(code)
+                |}
+                """.trimMargin(),
+
+                """
+                |fun f2() {
+                |    @Language("kotlin")
+                |    val code =
+                |            ""${'"'}
+                |                >@Suppress("diktat")
+                |                >fun foo() {
+                |                >    val a = 1
+                |                >}
+                |            ""${'"'} . trimMargin ( marginPrefix = ">" )
                 |    lintMethod(code)
                 |}
                 """.trimMargin(),

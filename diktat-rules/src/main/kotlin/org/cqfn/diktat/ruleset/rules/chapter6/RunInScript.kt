@@ -82,6 +82,6 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule(NAME_ID) {
     }
 
     companion object {
-        const val NAME_ID = "abw-run-script"
+        const val NAME_ID = "run-script"
     }
 }

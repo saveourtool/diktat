@@ -46,6 +46,6 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aby-overloading-default-values"
+        const val NAME_ID = "overloading-default-values"
     }
 }

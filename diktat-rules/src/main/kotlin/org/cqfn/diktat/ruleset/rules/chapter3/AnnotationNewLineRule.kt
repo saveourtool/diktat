@@ -76,6 +76,6 @@ class AnnotationNewLineRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abo-annotation-new-line"
+        const val NAME_ID = "annotation-new-line"
     }
 }

@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.COLLAPSE_IF_STATEMENTS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -30,7 +30,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     } else {
             |         print("some text")
             |     }
-            |} 
+            |}
             """.trimMargin(),
             LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
@@ -47,11 +47,11 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |             firstAction()
             |             secondAction()
             |         }
-            |     }    
+            |     }
             |     if (cond3) {
             |         secondAction()
             |     }
-            |} 
+            |}
             """.trimMargin(),
             LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
@@ -64,11 +64,11 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             """
             |fun foo () {
             |     if (true) {
-            |         
+            |
             |         if (true) {
             |             doSomething()
             |         }
-            |     }    
+            |     }
             |}
             """.trimMargin(),
             LintError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
@@ -167,7 +167,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |         }
             |         // comment 3
             |     }
-            |} 
+            |}
             """.trimMargin(),
             LintError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
@@ -283,7 +283,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |         if (true) {
             |             doSomething()
             |         }
-            |     }    
+            |     }
             |}
             """.trimMargin()
         )
@@ -305,7 +305,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     } else {
             |         secondAction()
             |     }
-            |} 
+            |}
             """.trimMargin(),
         )
     }
@@ -328,7 +328,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     } else {
             |         secondAction()
             |     }
-            |} 
+            |}
             """.trimMargin()
         )
     }
@@ -400,9 +400,9 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |         if (true) {
             |             if (true) {
             |                 doSomething()
-            |             }    
+            |             }
             |         }
-            |     }    
+            |     }
             |}
             """.trimMargin(),
             LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
@@ -426,9 +426,9 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |                         }
             |                     }
             |                 }
-            |             }    
+            |             }
             |         }
-            |     }    
+            |     }
             |}
             """.trimMargin(),
             LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
@@ -473,7 +473,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |        if (true) {
             |           if (true) {
             |               fun3()
-            |           } 
+            |           }
             |        }
             |    } else {
             |        fun4()
@@ -495,11 +495,11 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |             firstAction()
             |             secondAction()
             |         }
-            |     }    
+            |     }
             |     if (cond4) {
             |         secondAction()
             |     }
-            |} 
+            |}
             """.trimMargin(),
             LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
@@ -520,7 +520,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |             secondAction()
             |         }
             |     }
-            |} 
+            |}
             """.trimMargin()
         )
     }

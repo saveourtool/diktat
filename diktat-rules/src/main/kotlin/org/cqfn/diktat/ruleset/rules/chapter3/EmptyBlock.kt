@@ -134,6 +134,6 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aan-empty-block-structure"
+        const val NAME_ID = "empty-block-structure"
     }
 }

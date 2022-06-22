@@ -360,6 +360,6 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
-        const val NAME_ID = "aaf-kdoc-comments-codeblocks-formatting"
+        const val NAME_ID = "kdoc-comments-codeblocks-formatting"
     }
 }
