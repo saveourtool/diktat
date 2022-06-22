@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * @param rules rules which belongs to current RuleSet
  */
 class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjustRules(id, rules = rules)) {
-
     companion object {
         private fun adjustRules(ruleSetId: String, vararg rules: Rule): Array<out Rule> {
             if (rules.isEmpty()) {
@@ -29,20 +28,11 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
             }.toTypedArray()
         }
 
-        private class OrderedRule(ruleSetId: String, val rule: Rule, prevRule: Rule) : Rule(rule.id, adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
-            /**
-             * Delegating a call of this method
-             */
-            override fun visit(
-                node: ASTNode,
-                autoCorrect: Boolean,
-                emit: EmitType
-            ) {
-                rule.visit(node, autoCorrect, emit)
-            }
-        }
-
-        private fun adjustVisitorModifiers(ruleSetId: String, rule: Rule, prevRule: Rule): Set<Rule.VisitorModifier> {
+        private fun adjustVisitorModifiers(
+            ruleSetId: String,
+            rule: Rule,
+            prevRule: Rule
+        ): Set<Rule.VisitorModifier> {
             val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
             checkVisitorModifiers(rule)
             require(rule.id != prevRule.id) {
@@ -70,5 +60,25 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
          * @return RuleSet with ordered rules
          */
         fun RuleSet.ordered(): OrderedRuleSet = OrderedRuleSet(id = id, rules = rules)
+
+        /**
+         * @property rule wraps this rule to keep order
+         */
+        private class OrderedRule(
+            ruleSetId: String,
+            val rule: Rule,
+            prevRule: Rule
+        ) : Rule(rule.id, adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
+            /**
+             * Delegating a call of this method
+             */
+            override fun visit(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType
+            ) {
+                rule.visit(node, autoCorrect, emit)
+            }
+        }
     }
 }
