@@ -1,4 +1,4 @@
-UPDATE MAIN README
+UPDATE THE MAIN README
 
 * To update the codestyle text in the main README, you **NEED TO CHANGE** the content of the file `guide-chapter-<N>.md`, contained in `info/guide`, the corresponding section of the rules that you changed / added.
 
