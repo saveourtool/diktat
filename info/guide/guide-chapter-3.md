@@ -416,7 +416,7 @@ val value = This.Is?.A?.Very?.Long
     ?.Safe?.Access?.Expression
 ```
 
-A long `function call arguments`:
+A long list of `function call arguments`:
 
 **Invalid example:**
 ```kotlin
@@ -456,7 +456,7 @@ fun foo() =
     goo().write("TooLong")
 ```
 
-A `long binary expression` should be split into multiple lines using the operators grouped in the following precedence
+A `long binary expression` should be split into multiple lines using the operators grouped in the following precedence:
 1. Logic Binary Expression (`&&` , `||`)
 2. Comparison Binary Expression (`>` , `<` , `==` , `>=` , `<=` , `!=`, `===`, `!==`)
 3. Other types (Arithmetical and Bitwise operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
@@ -499,7 +499,7 @@ val variable = a?.filter {
 } ?: null
 ```
 
-A long one-line `when expression` should be split:
+A long `when-expression` body spanning only a single line should be split:
 
 **Invalid example:**
 ```kotlin
