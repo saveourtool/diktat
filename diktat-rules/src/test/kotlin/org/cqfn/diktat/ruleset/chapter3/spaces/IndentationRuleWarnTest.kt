@@ -759,7 +759,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                 softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
                     .describedAs("lint result for ${code.describe()}")
                     .isNotEmpty
-                    .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
+                    .hasSizeBetween(1, 20).allSatisfy(Consumer { lintError ->
                         assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
                         assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
                         assertThat(lintError.detail).matches(warnTextRegex)
@@ -784,7 +784,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRule
                 softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
                     .describedAs("lint result for ${code.describe()}")
                     .isNotEmpty
-                    .hasSizeBetween(1, 3).allSatisfy(Consumer { lintError ->
+                    .hasSizeBetween(1, 20).allSatisfy(Consumer { lintError ->
                         assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
                         assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
                         assertThat(lintError.detail).matches(warnTextRegex)
