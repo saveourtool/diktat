@@ -83,7 +83,7 @@ Kotlin allows several top-level declaration types: classes, objects, interfaces,
 When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
 When declaring top-level structures, keep the following order:
 1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
-2. Type-aliases (grouped by their visibility modifiers)
+2. Type aliases (grouped by their visibility modifiers)
 2. Interfaces, classes and objects (grouped by their visibility modifiers)
 3. Extension functions
 4. Other functions
@@ -291,7 +291,7 @@ val abcdef = "my split" +
                 " string"
 ```
 
-- Opening and closing quotes in multiline string with `trimMargin()` or `trimIndent()` method should have the same indentation:
+- Opening and closing quotes in multiline string with [`trimMargin()`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/trim-margin.html) or [`trimIndent()`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/trim-indent.html) method should have the same indentation:
 
 ```kotlin
 lintMethod(
@@ -356,10 +356,10 @@ try {
 
 Line length should be less than 120 symbols. Otherwise, it should be split.
 
-If `complex property` initializing is too long, It should be split into priorities:
+If `complex property` initializer is too long, It should be split into priorities:
 1. Logic Binary Expression (`&&` , `||`)
 2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
-3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
+3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -381,41 +381,42 @@ val complexProperty = (1 + 2 + 3 > 0) &&
     (23 * 4 > 10 * 6)
 ```
 
-Long line which should be split in `Elvis Operator` (`?:`):
+A long expression which should be split into two lines before the `Elvis Operator` (`?:`):
 
 **Invalid example:**
 ```kotlin
 val value = first ?: second
 ```
+
 **Valid example:**
 ```kotlin
 val value = first
     ?: second
 ```
 
-Long line in `Dot Qualified Expression` or `Safe Access Expression`:
+A long line in a `Dot Qualified Expression` or a `Safe Access Expression`:
 
 **Invalid example:**
 ```kotlin
-val value = This.Is.Very.Long.Dot.Qualified.Expression
+val value = This.Is.A.Very.Long.Dot.Qualified.Expression
 ```
 **Valid example:**
 ```kotlin
-val value = This.Is.Very.Long
+val value = This.Is.A.Very.Long
     .Dot.Qualified.Expression
 ```
 
 **Invalid example:**
 ```kotlin
-val value = This.Is?.Very?.Long?.Safe?.Access?.Expression
+val value = This.Is?.A?.Very?.Long?.Safe?.Access?.Expression
 ```
 **Valid example:**
 ```kotlin
-val value = This.Is?.Very?.Long
+val value = This.Is?.A?.Very?.Long
     ?.Safe?.Access?.Expression
 ```
 
-Long `value arguments list`:
+A long `value arguments list`:
 
 **Invalid example:**
 ```kotlin
@@ -428,7 +429,7 @@ val result1 = ManyParamInFunction(firstArgument,
  fifthArguments)
 ```
 
-If `annotation` is too long, it also should be split:
+If an `annotation` is too long, it also should be split:
 
 **Invalid example:**
 ```kotlin
@@ -443,7 +444,7 @@ fun foo() {}
 fun foo() {}
 ```
 
-Long one line `function` should be split:
+A long one line `function` should be split:
 
 **Invalid example:**
 ```kotlin
@@ -455,10 +456,10 @@ fun foo() =
     goo().write("TooLong")
 ```
 
-`Long binary expression` should be split into priorities:
+A `long binary expression` should be split into priorities:
 1. Logic Binary Expression (`&&` , `||`)
 2. Comparison Binary Expression (`>` , `<` , `==` , `>` , `=` , `<=` , `!=`)
-3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
+3. Other types (Arithmetical and Bit operation) (`+` , `-` , `*` , `/` , `%` , `>>` , `<<` , `&` , `|` , `~` , `^` , `>>>` , `<<<` , `*=` , `+=` , `-=` , `/=` , `%=` , `++` , `--` , `in` , `!in` etc)
 
 **Invalid example:**
 ```kotlin
@@ -471,7 +472,7 @@ if (( x >  100) ||
     y < 100 && !isFoo()) {}
 ```
 
-Long `string template` should be split into several lines:
+A long `string template` should be split into several lines:
 
 **Invalid example:**
 ```kotlin
@@ -484,7 +485,7 @@ val nameString = "This is a very long" +
         " string template"
 ```
 
-Long `Lambda argument` should be split:
+A long `Lambda argument` should be split:
 
 **Invalid example:**
 ```kotlin
@@ -498,24 +499,24 @@ val variable = a?.filter {
 } ?: null
 ```
 
-Long one-line `When Entry` should be split:
+A long one-line `When Entry` should be split:
 
 **Invalid example:**
 ```kotlin
-when(elem) {
+when (argument) {
     true -> long.argument.whenEntry
 }
 ```
 **Valid example:**
 ```kotlin
-when(elem) {
+when (argument) {
     true -> {
         long.argument.whenEntry
     }
 }
 ```
 
-If the examples above do not fit, but the line needs to be split and this in `property`, this is fixed like this:
+If none of the above examples are suitable but a code fragment is a property declaration which needs to be split into multiple lines, then the property initializer can be moved into a separate line:
 
 **Invalid example:**
 ```kotlin
@@ -527,8 +528,8 @@ val element =
     veryLongNameFunction(firstParam)
 ```
 
-`Eol comment` also can be split, but it depends on comment location.
-If this comment is on the same line with code it should be on the line before:
+An `eol comment` also can be split, but it depends on comment location.
+If the comment shares the same line with code, it should be moved to the line above:
 
 **Invalid example:**
 ```kotlin
@@ -687,8 +688,7 @@ value.map { name ->
 val someValue = { node:String -> node }
 ```
 
-6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions).
-   The below example shows the style that should not be used.
+6)  When a function body consists of only a single expression, it can be re-written as an [_expression function_](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions).
 
 Instead of:
 ```kotlin
