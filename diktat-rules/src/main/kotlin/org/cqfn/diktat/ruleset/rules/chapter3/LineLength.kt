@@ -600,7 +600,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
          * This method stored all the nodes that have [BINARY_EXPRESSION] or [PREFIX_EXPRESSION] element type.
          * - First elem in List - Logic Binary Expression (`&&`, `||`)
          * - Second elem in List - Comparison Binary Expression (`>`, `<`, `==`, `>=`, `<=`, `!=`, `===`, `!==`)
-         * - Other types (Arithmetical and Bitwise operation) (`+`, `-`, `*`, `/`, `%`, `>>`, `<<`, `&`, `|`, `~`, `^`, `>>>`, `<<<`,`*=`, `+=`, `-=`, `/=`, `%=`, `++`, `--`, `in` `!in`, etc.)
+         * - Other types (Arithmetical and Bitwise operation) (`+`, `-`, `*`, `/`, `%`, `>>`, `<<`, `&`, `|`, `~`, `^`, `>>>`, `<<<`,
+         *   `*=`, `+=`, `-=`, `/=`, `%=`, `++`, `--`, `in` `!in`, etc.)
+         *
          * @return the list of node-to-offset pairs.
          */
         @Suppress("TYPE_ALIAS")
