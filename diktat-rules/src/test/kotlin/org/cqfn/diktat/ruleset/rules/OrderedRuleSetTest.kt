@@ -73,10 +73,7 @@ class OrderedRuleSetTest {
         KtLint.lint(
             KtLint.ExperimentalParams(
                 fileName = TEST_FILE_NAME,
-                text = """
-                        fun foo() {
-                        }
-                        """.trimIndent(),
+                text = "fun foo() { }",
                 ruleSets = listOf(ruleSet),
                 cb = { _, _ -> },
             )
