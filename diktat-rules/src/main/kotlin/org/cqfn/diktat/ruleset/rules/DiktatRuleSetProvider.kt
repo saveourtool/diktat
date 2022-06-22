@@ -1,6 +1,9 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -86,13 +89,6 @@ import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
 import java.io.File
-
-/**
- * this constant will be used everywhere in the code to mark usage of Diktat ruleset
- */
-const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
-const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
-const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
 
 /**
  * [RuleSetProvider] that provides diKTat ruleset.

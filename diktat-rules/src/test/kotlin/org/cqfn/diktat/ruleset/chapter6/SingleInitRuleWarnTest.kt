@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -32,9 +32,9 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
             """
                 |class Example {
                 |    init { println("Lorem ipsum") }
-                |    
+                |
                 |    val foo = 0
-                |    
+                |
                 |    init { println("Dolor sit amet") }
                 |}
             """.trimMargin(),
@@ -66,11 +66,11 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
                 |class A {
                 |    var a: String
                 |    var c: String
-                |    
+                |
                 |    init {
                 |        val b: String = "a"
                 |        a = b
-                |        
+                |
                 |        val d: String = "c"
                 |        c = foo(d)
                 |    }

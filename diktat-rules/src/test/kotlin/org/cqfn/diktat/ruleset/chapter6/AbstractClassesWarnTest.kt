@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.AbstractClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -20,7 +20,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
             """
                 |abstract class Some(val a: Int = 5) {
                 |   abstract fun func() {}
-                |   
+                |
                 |   fun another() {}
                 |}
             """.trimMargin()
@@ -47,7 +47,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
             """
                 |class Some(val a: Int = 5) {
                 |    fun func() {}
-                |    
+                |
                 |    inner abstract class Inner {
                 |       fun another()
                 |    }
@@ -68,7 +68,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 |     */
                 |    @get:Rule
                 |    var coroutineTestRule = CoroutineTestRule()
-                |    
+                |
                 |    /**
                 |     * Run test
                 |     *
@@ -95,7 +95,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 |abstract class BaseUsesProcessor() {
                 |    // Store uses by file
                 |    abstract val a: String
-                |    
+                |
                 |    fun foo() {}
                 |}
             """.trimMargin()

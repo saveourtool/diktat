@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.util.LintTestBase
 
@@ -61,7 +61,7 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
                 |    httpClient.url = "http://example.com"
                 |    // setting port
                 |    httpClient.port = "8080"
-                |    
+                |
                 |    // setting timeout to 100
                 |    httpClient.timeout = 100
                 |    httpClient.doRequest()

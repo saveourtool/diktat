@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.RunInScript
 import org.cqfn.diktat.util.LintTestBase
 
@@ -19,12 +19,12 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
         lintMethod(
             """
                 class A {}
-                
+
                 fun foo() {
                 }
-                
+
                 diktat {}
-                
+
                 diktat({})
 
                 foo/*df*/()
@@ -33,16 +33,16 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                     10
                 )
                 println("hello")
-                
+
                 w.map { it -> it }
-                
+
                 tasks.register("a") {
                     dependsOn("b")
                     doFirst {
                         generateCodeStyle(file("rootDir/guide"), file("rootDir/../wp"))
                     }
                 }
-                
+
             """.trimMargin(),
             LintError(10, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
             LintError(12, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo( //dfdg...", true),
@@ -61,12 +61,12 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 run {
                     println("hello")
                 }
-                
+
                 run{println("hello")}
-                
+
                 val task = tasks.register("a") {
                 }
-                
+
             """.trimMargin(),
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
@@ -80,9 +80,9 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 custom {
                     println("hello")
                 }
-                
+
                 oneMore{println("hello")}
-                
+
                 another {
                     println("hello")
                 }
@@ -97,16 +97,16 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
         lintMethod(
             """
                 class A {}
-                
+
                 fun foo() {
                 }
-                
+
                 if(true) {
                     goo()
                 }
-                
+
                 diktat {}
-                
+
                 diktat({})
 
                 foo/*df*/()
@@ -115,16 +115,16 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                     10
                 )
                 println("hello")
-                
+
                 w.map { it -> it }
-                
+
                 (tasks.register("a") {
                     dependsOn("b")
                     doFirst {
                         generateCodeStyle(file("rootDir/guide"), file("rootDir/../wp"))
                     }
                 })
-                
+
             """.trimMargin(),
             LintError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true),
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
@@ -137,13 +137,13 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
         lintMethod(
             """
                 version = "0.1.0-SNAPSHOT"
-                
+
                 diktat {}
-                
+
                 diktat({})
 
                 foo/*df*/()
-                
+
                 foo().goo()
             """.trimMargin(),
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
@@ -156,9 +156,9 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
         lintMethod(
             """
                 version = "0.1.0-SNAPSHOT"
-                
+
                 diktat {}
-                
+
                 diktat({})
 
                 foo/*df*/()
