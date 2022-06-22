@@ -150,7 +150,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         splitOffset?.let {
                             val parentIsBiExprOrParenthesized = parent.treeParent.elementType in listOf(BINARY_EXPRESSION, PARENTHESIZED)
                             val parentIsFunOrProperty = parent.treeParent.elementType in listOf(FUN, PROPERTY)
-                            if (parentIsBiExprOrParenthesized || (parentIsFunOrProperty && splitOffset >= configuration.lineLength)) {
+                            if (parentIsBiExprOrParenthesized || (parentIsFunOrProperty && splitOffset > configuration.lineLength)) {
                                 parent = parent.treeParent
                             } else {
                                 return checkBinaryExpression(parent, configuration)
