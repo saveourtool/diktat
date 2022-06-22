@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class OrderedRuleSetTest {
-
     @Test
     fun `check OrderedRule with VisitorModifier RunAfterRule`() {
         val rule = mockRule("rule")
@@ -60,12 +59,7 @@ class OrderedRuleSetTest {
     @Test
     @OptIn(FeatureInAlphaState::class)
     fun `KtLint keeps order with RuleVisitorModifierRunAfterRule`() {
-        val code = """
-            fun foo() {
-            }
-        """.trimIndent()
-
-        val ruleIdOrder = mutableListOf<String>()
+        val ruleIdOrder: MutableList<String> = mutableListOf()
         val onVisit: (Rule) -> Unit = {
             ruleIdOrder.add(it.id)
         }
@@ -79,7 +73,10 @@ class OrderedRuleSetTest {
         KtLint.lint(
             KtLint.ExperimentalParams(
                 fileName = TEST_FILE_NAME,
-                text = code,
+                text = """
+                        fun foo() {
+                        }
+                        """.trimIndent(),
                 ruleSets = listOf(ruleSet),
                 cb = { _, _ -> },
             )
@@ -94,9 +91,11 @@ class OrderedRuleSetTest {
     }
 
     companion object {
-        private fun mockRule(id: String,
-                             visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
-                             onVisit: (Rule) -> Unit = { }) = object : Rule(id, visitorModifiers) {
+        private fun mockRule(
+            id: String,
+            visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
+            onVisit: (Rule) -> Unit = { }
+        ) = object : Rule(id, visitorModifiers) {
             override fun visit(
                 node: ASTNode,
                 autoCorrect: Boolean,
