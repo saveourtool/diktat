@@ -87,7 +87,7 @@ class OrderedRuleSetTest {
 
         val rulesSize = expectedRuleIdOrder.size
         Assertions.assertTrue(ruleIdOrder.size % rulesSize == 0, "Rules are called several times but together")
-        for (repeat in 0 until (ruleIdOrder.size % rulesSize)) {
+        for (repeat in 0 until (ruleIdOrder.size / rulesSize)) {
             // check each run for each node
             Assertions.assertEquals(expectedRuleIdOrder, ruleIdOrder.subList(repeat * rulesSize, (repeat + 1) * rulesSize))
         }
