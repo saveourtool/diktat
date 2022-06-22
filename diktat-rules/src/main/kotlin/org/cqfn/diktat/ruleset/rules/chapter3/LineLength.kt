@@ -572,8 +572,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     ) : LongLineFixableCases(node) {
         /**
          * Fix a binary expression -
-         * If the transfer is done on the Elvis operator, then transfers it to a new line
-         * If not on the Elvis operator, then transfers it to a new line after the operation reference
+         * - If the transfer is done on the Elvis operator, then transfers it to a new line
+         * - If not on the Elvis operator, then transfers it to a new line after the operation reference
          */
         @Suppress("UnsafeCallOnNullableType")
         override fun fix() {
@@ -597,11 +597,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         /**
-         * This method stored all the nodes that have BINARY_EXPRESSION or PREFIX_EXPRESSION element type.
-         * Return List of the Pair <node, offset>
-         * First elem in List - Logic Binary Expression (&&  ||)
-         * Second elem in List - Comparison Binary Expression (> < == >= <= != === !==)
-         * Other types (Arithmetical and Bitwise operation) (+ - * / % >> << *= += -= /= %= ++ -- & ~ ^ | in !in etc)
+         * This method stored all the nodes that have [BINARY_EXPRESSION] or [PREFIX_EXPRESSION] element type.
+         * - First elem in List - Logic Binary Expression (`&&`, `||`)
+         * - Second elem in List - Comparison Binary Expression (`>`, `<`, `==`, `>=`, `<=`, `!=`, `===`, `!==`)
+         * - Other types (Arithmetical and Bitwise operation) (`+`, `-`, `*`, `/`, `%`, `>>`, `<<`, `&`, `|`, `~`, `^`, `>>>`, `<<<`,`*=`, `+=`, `-=`, `/=`, `%=`, `++`, `--`, `in` `!in`, etc.)
+         * @return the list of node-to-offset pairs.
          */
         @Suppress("TYPE_ALIAS")
         private fun searchSomeSplitInBinaryExpression(parent: ASTNode, configuration: LineLengthConfiguration): List<Pair<ASTNode, Int>?> {
@@ -754,8 +754,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class WhenEntry show that line should be split in WhenEntry node:
-     * Added [LBRACE] and [RBRACE] nodes
-     * Split line in space after [LBRACE] node and before [RBRACE] node
+     * - Added [LBRACE] and [RBRACE] nodes
+     * - Split line in space after [LBRACE] node and before [RBRACE] node
      */
     private class WhenEntry(node: ASTNode) : LongLineFixableCases(node) {
         override fun fix() {
