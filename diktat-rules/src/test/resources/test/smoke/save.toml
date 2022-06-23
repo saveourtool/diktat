@@ -1,5 +1,5 @@
 [general]
-execCmd="java -jar ktlint -R diktat-snap.jar"
+execCmd="java -jar ktlint -R diktat.jar"
 tags = ["smokeTest"]
 description = "SmokeTest"
 suiteName = "SmokeTest"
