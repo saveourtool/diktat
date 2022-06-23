@@ -100,6 +100,9 @@
 # Checks that underscore is correctly used to split package naming
 - name: INCORRECT_PACKAGE_SEPARATOR
   enabled: true
+# Checks that code block doesn't contain kdoc comments
+- name: COMMENTED_BY_KDOC
+  enabled: true
 # Checks that there is no @deprecated tag in kdoc
 - name: KDOC_NO_DEPRECATED_TAG
   enabled: true
@@ -306,7 +309,7 @@
     # Ignore numbers from test
     ignoreTest: "true"
     # Ignore numbers
-    ignoreNumbers: "-1, 1, 0, 2"
+    ignoreNumbers: "-1, 1, 0, 2, 0U, 1U, 2U, -1L, 0L, 1L, 2L, 0UL, 1UL, 2UL"
     # Is ignore override hashCode function
     ignoreHashCodeFunction: "true"
     # Is ignore property
