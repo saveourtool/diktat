@@ -8,15 +8,19 @@ import org.cqfn.diktat.util.FixTestBase
 import generated.WarningNames
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.MethodOrderer.MethodName
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 import java.nio.file.Path
 
-@TestMethodOrder(MethodName::class)
+@TestMethodOrder(MethodOrderer.DisplayName::class)
 class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     ::IndentationRule,
     listOf(
@@ -62,138 +66,6 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     }
 
     /**
-     * This test has a counterpart under [IndentationRuleWarnTest].
-     *
-     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `expression body functions should remain unchanged if properly indented (extendedIndentAfterOperators = true)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
-
-        lintMultipleMethods(
-            expressionBodyFunctionsContinuationIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * This test has a counterpart under [IndentationRuleWarnTest].
-     *
-     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `expression body functions should remain unchanged if properly indented (extendedIndentAfterOperators = false)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
-
-        lintMultipleMethods(
-            expressionBodyFunctionsSingleIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * This test has a counterpart under [IndentationRuleWarnTest].
-     *
-     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `expression body functions should be reformatted if mis-indented (extendedIndentAfterOperators = true)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
-
-        lintMultipleMethods(
-            actualContent = expressionBodyFunctionsSingleIndent,
-            expectedContent = expressionBodyFunctionsContinuationIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * This test has a counterpart under [IndentationRuleWarnTest].
-     *
-     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `expression body functions should be reformatted if mis-indented (extendedIndentAfterOperators = false)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
-
-        lintMultipleMethods(
-            actualContent = expressionBodyFunctionsContinuationIndent,
-            expectedContent = expressionBodyFunctionsSingleIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `no whitespace should be injected into multi-line string literals (code matches settings, extendedIndent = true)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = true))
-
-        lintMultipleMethods(
-            whitespaceInStringLiteralsContinuationIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `no whitespace should be injected into multi-line string literals (code matches settings, extendedIndent = false)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = false))
-
-        lintMultipleMethods(
-            whitespaceInStringLiteralsSingleIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `no whitespace should be injected into multi-line string literals (mis-indented code reformatted, extendedIndent = true)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = true))
-
-        lintMultipleMethods(
-            actualContent = whitespaceInStringLiteralsSingleIndent,
-            expectedContent = whitespaceInStringLiteralsContinuationIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
-     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
-     */
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `no whitespace should be injected into multi-line string literals (mis-indented code reformatted, extendedIndent = false)`(@TempDir tempDir: Path) {
-        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-        val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = false))
-
-        lintMultipleMethods(
-            actualContent = whitespaceInStringLiteralsContinuationIndent,
-            expectedContent = whitespaceInStringLiteralsSingleIndent,
-            tempDir = tempDir,
-            rulesConfigList = customConfig.asRulesConfigList())
-    }
-
-    /**
      * @param actualContent the original file content (may well be modified as
      *   fixes are applied).
      * @param expectedContent the content the file is expected to have after the
@@ -228,6 +100,175 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                         .isEqualTo(lintResult.expectedContent)
                 }
             }
+        }
+    }
+
+    /**
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     *
+     * @see IndentationRuleWarnTest.ExpressionBodyFunctions
+     */
+    @Nested
+    @DisplayName("Expression body functions")
+    @TestMethodOrder(MethodOrderer.DisplayName::class)
+    inner class ExpressionBodyFunctions {
+        /**
+         * @see IndentationRuleWarnTest.ExpressionBodyFunctions.shouldBeProperlyIndented
+         */
+        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ValueSource(booleans = [false, true])
+        @DisplayName("should remain unchanged if properly indented")
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun shouldRemainUnchangedIfProperlyIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+
+            val expressionBodyFunctions = when {
+                extendedIndentAfterOperators -> expressionBodyFunctionsContinuationIndent
+                else -> expressionBodyFunctionsSingleIndent
+            }
+
+            lintMultipleMethods(
+                expressionBodyFunctions,
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+
+        /**
+         * @see IndentationRuleWarnTest.ExpressionBodyFunctions.shouldBeReportedIfMisIndented
+         */
+        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ValueSource(booleans = [false, true])
+        @DisplayName("should be reformatted if mis-indented")
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun shouldBeReformattedIfMisIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+
+            val expressionBodyFunctionsActual = when {
+                extendedIndentAfterOperators -> expressionBodyFunctionsSingleIndent
+                else -> expressionBodyFunctionsContinuationIndent
+            }
+            val expressionBodyFunctionsExpected = when {
+                extendedIndentAfterOperators -> expressionBodyFunctionsContinuationIndent
+                else -> expressionBodyFunctionsSingleIndent
+            }
+
+            lintMultipleMethods(
+                actualContent = expressionBodyFunctionsActual,
+                expectedContent = expressionBodyFunctionsExpected,
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+    }
+
+    /**
+     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
+     */
+    @Nested
+    @DisplayName("Multi-line string literals")
+    @TestMethodOrder(MethodOrderer.DisplayName::class)
+    inner class MultilineStringLiterals {
+        @ParameterizedTest(name = "extendedIndent = {0}")
+        @ValueSource(booleans = [false, true])
+        @DisplayName("no whitespace should be injected (code matches settings)")
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun noWhitespaceShouldBeInjectedCodeMatchesSettings(extendedIndent: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
+
+            val whitespaceInStringLiterals = when {
+                extendedIndent -> whitespaceInStringLiteralsContinuationIndent
+                else -> whitespaceInStringLiteralsSingleIndent
+            }
+
+            lintMultipleMethods(
+                whitespaceInStringLiterals,
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+
+        @ParameterizedTest(name = "extendedIndent = {0}")
+        @ValueSource(booleans = [false, true])
+        @DisplayName("no whitespace should be injected (mis-indented code reformatted)")
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun noWhitespaceShouldBeInjectedMisIndentedCodeReformatted(extendedIndent: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
+
+            val whitespaceInStringLiteralsActual = when {
+                extendedIndent -> whitespaceInStringLiteralsSingleIndent
+                else -> whitespaceInStringLiteralsContinuationIndent
+            }
+            val whitespaceInStringLiteralsExpected = when {
+                extendedIndent -> whitespaceInStringLiteralsContinuationIndent
+                else -> whitespaceInStringLiteralsSingleIndent
+            }
+
+            lintMultipleMethods(
+                actualContent = whitespaceInStringLiteralsActual,
+                expectedContent = whitespaceInStringLiteralsExpected,
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+    }
+
+    /**
+     * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
+     *
+     * @see IndentationRuleWarnTest.ExpressionsWrappedAfterOperator
+     */
+    @Nested
+    @DisplayName("Expressions wrapped after operator")
+    @TestMethodOrder(MethodOrderer.DisplayName::class)
+    inner class ExpressionsWrappedAfterOperator {
+        /**
+         * @see IndentationRuleWarnTest.ExpressionsWrappedAfterOperator.shouldBeProperlyIndented
+         */
+        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ValueSource(booleans = [false, true])
+        @DisplayName("should be properly indented")
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun shouldRemainUnchangedIfProperlyIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+
+            val expressionsWrappedAfterOperator = when {
+                extendedIndentAfterOperators -> expressionsWrappedAfterOperatorContinuationIndent
+                else -> expressionsWrappedAfterOperatorSingleIndent
+            }
+
+            lintMultipleMethods(
+                expressionsWrappedAfterOperator,
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+
+        /**
+         * @see IndentationRuleWarnTest.ExpressionsWrappedAfterOperator.shouldBeReportedIfMisIndented
+         */
+        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ValueSource(booleans = [false, true])
+        @DisplayName("should be reformatted if mis-indented")
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun shouldBeReformattedIfMisIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+
+            val expressionsWrappedAfterOperatorActual = when {
+                extendedIndentAfterOperators -> expressionsWrappedAfterOperatorSingleIndent
+                else -> expressionsWrappedAfterOperatorContinuationIndent
+            }
+            val expressionsWrappedAfterOperatorExpected = when {
+                extendedIndentAfterOperators -> expressionsWrappedAfterOperatorContinuationIndent
+                else -> expressionsWrappedAfterOperatorSingleIndent
+            }
+
+            lintMultipleMethods(
+                actualContent = expressionsWrappedAfterOperatorActual,
+                expectedContent = expressionsWrappedAfterOperatorExpected,
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
         }
     }
 }
