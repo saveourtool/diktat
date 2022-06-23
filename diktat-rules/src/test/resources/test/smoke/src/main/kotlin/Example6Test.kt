@@ -15,7 +15,7 @@ val bar =
 
 val text =
     """
-       x 
+       x
     """
 
 val dockerFileAsText =
