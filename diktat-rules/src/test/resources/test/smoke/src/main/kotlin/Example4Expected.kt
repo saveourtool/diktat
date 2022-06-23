@@ -39,8 +39,8 @@ fun `method name incorrect, part 4`() {
 }
 
 // ;warn:41:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: foo (cannot be auto-corrected){{.*}}
-// ;warn:41:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected) (diktat-ruleset:aad-kdoc-methods)
-// ;warn:41:1: [WRONG_OVERLOADING_FUNCTION_ARGUMENTS] use default argument instead of function overloading: foo (cannot be auto-corrected) (diktat-ruleset:aby-overloading-default-values)
+// ;warn:41:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected){{.*}}
+// ;warn:41:1: [WRONG_OVERLOADING_FUNCTION_ARGUMENTS] use default argument instead of function overloading: foo (cannot be auto-corrected){{.*}}
 fun foo() {
     foo(
         0,
@@ -52,8 +52,8 @@ fun foo() {
     )
 }
 
-// ;warn:55:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: bar (cannot be auto-corrected) (diktat-ruleset:aac-kdoc-comments)
-// ;warn:55:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: bar (cannot be auto-corrected) (diktat-ruleset:aad-kdoc-methods)
+// ;warn:55:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: bar (cannot be auto-corrected){{.*}}
+// ;warn:55:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: bar (cannot be auto-corrected){{.*}}
 fun bar() {
     val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java).apply {
         inputs = project.fileTree("src").apply {
@@ -63,9 +63,9 @@ fun bar() {
     }
 }
 
-// ;warn:66:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: foo (cannot be auto-corrected) (diktat-ruleset:aac-kdoc-comments)
-// ;warn:66:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected) (diktat-ruleset:aad-kdoc-methods)
-// ;warn:66:1: [WRONG_OVERLOADING_FUNCTION_ARGUMENTS] use default argument instead of function overloading: foo (cannot be auto-corrected) (diktat-ruleset:aby-overloading-default-values)
+// ;warn:66:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: foo (cannot be auto-corrected){{.*}}
+// ;warn:66:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected){{.*}}
+// ;warn:66:1: [WRONG_OVERLOADING_FUNCTION_ARGUMENTS] use default argument instead of function overloading: foo (cannot be auto-corrected){{.*}}
 @Suppress("")
 fun foo() {
     val y = "akgjsaujtmaksdkfasakgjsaujtmaksdkfasakgjsaujtmaksdkfasakgjsaujtm" +
