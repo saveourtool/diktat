@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -18,13 +18,13 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
     fun `valid case where x is used in while loop as some counter`() {
         lintMethod(
             """
-                    | fun foo() { 
+                    | fun foo() {
                     |     var x = 0
                     |     while (x < 10) {
                     |        x++
                     |     }
                     | }
-                """.trimMargin(),
+            """.trimMargin(),
         )
     }
 
@@ -33,7 +33,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
     fun `valid case where y is used in for each loop as some counter, but a is not`() {
         lintMethod(
             """
-                    | fun foo() { 
+                    | fun foo() {
                     |     var a = emptyList()
                     |     a = 15
                     |     var y = 0
@@ -41,7 +41,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
                     |        y = x + 1
                     |     }
                     | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 6, ruleId, "${Warnings.SAY_NO_TO_VAR.warnText()} var a = emptyList()", false)
         )
     }
@@ -51,10 +51,10 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
     fun `For loop with internal counter`() {
         lintMethod(
             """
-                    | fun foo() { 
+                    | fun foo() {
                     |     for (x in 0..10) println(x)
                     | }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -63,10 +63,10 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
     fun `var in class`() {
         lintMethod(
             """
-                    | class A { 
+                    | class A {
                     |     var a = 0
                     | }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -81,7 +81,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
                     |     a = a + 56
                     |     return a
                     | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 6, ruleId, "${Warnings.SAY_NO_TO_VAR.warnText()} var a = 0", false)
         )
     }

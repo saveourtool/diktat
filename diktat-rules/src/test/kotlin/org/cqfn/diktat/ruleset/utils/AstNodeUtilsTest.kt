@@ -14,7 +14,6 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -23,7 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -129,7 +127,7 @@ class AstNodeUtilsTest {
     fun `test getTypeParameterList`() {
         val code = """
             class Array<T>(val size: Int) {
-                
+
             }
         """.trimIndent()
         applyToCode(code, 1) { node, counter ->
@@ -408,7 +406,7 @@ class AstNodeUtilsTest {
     fun `test isNodeFromFileLevel - node isn't from file level`() {
         val code = """
             val x = 2
-            
+
         """.trimIndent()
         applyToCode(code, 8) { node, counter ->
             if (node.elementType != FILE) {

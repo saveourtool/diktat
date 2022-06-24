@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.MultipleModifiersSequence
 import org.cqfn.diktat.util.LintTestBase
 
@@ -20,9 +20,9 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
             """
                     |@Annotation
                     |final public fun foo() {
-                    |   lateinit open protected var a: List<ASTNode>   
+                    |   lateinit open protected var a: List<ASTNode>
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} final should be on position 2, but is on position 1", true),
             LintError(2, 7, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
             LintError(3, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} lateinit should be on position 3, but is on position 1", true),
@@ -36,13 +36,13 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
         lintMethod(
             """
                     |public final fun foo() {
-                    |   protected open lateinit var a: List<ASTNode>   
+                    |   protected open lateinit var a: List<ASTNode>
                     |}
                     |
                     |fun goo() {
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -56,7 +56,7 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                     |inline suspend fun f(crossinline body: () -> Unit) {}
                     |
                     |inline  fun < reified T> membersOf() = T::class.members
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 3, but is on position 1", true),
             LintError(1, 16, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 3", true),
             LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 2, but is on position 1", true),
@@ -73,10 +73,10 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                     |
                     |data protected  class Counter(val dayIndex: Int) {
                     |   operator suspend fun plus(increment: Int): Counter {
-                    |      return Counter(dayIndex + increment) 
+                    |      return Counter(dayIndex + increment)
                     |      }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} enum should be on position 2, but is on position 1", true),
             LintError(1, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
             LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} data should be on position 2, but is on position 1", true),
@@ -93,7 +93,7 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
             """
                     |public @Annotation final fun foo() {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} @Annotation annotation should be before all modifiers", true)
         )
     }
@@ -105,7 +105,7 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
             """
                     |public value class Foo() {
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
         )
     }
 }

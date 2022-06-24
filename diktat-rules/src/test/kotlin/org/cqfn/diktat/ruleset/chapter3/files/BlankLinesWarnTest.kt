@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -14,7 +14,7 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${BlankLinesRule.NAME_ID}"
     private val consecutiveLinesWarn = "${TOO_MANY_BLANK_LINES.warnText()} do not use more than two consecutive blank lines"
     private fun blankLinesInBlockWarn(isBeginning: Boolean) =
-            "${TOO_MANY_BLANK_LINES.warnText()} do not put newlines ${if (isBeginning) "in the beginning" else "at the end"} of code blocks"
+        "${TOO_MANY_BLANK_LINES.warnText()} do not put newlines ${if (isBeginning) "in the beginning" else "at the end"} of code blocks"
 
     @Test
     @Tag(WarningNames.TOO_MANY_BLANK_LINES)
@@ -23,10 +23,10 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
             """
                     |class Example {
                     |    fun foo() {
-                    |    
+                    |
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -36,11 +36,11 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
         lintMethod(
             """
                     |fun foo() {
-                    |   run { 
-                    |   
+                    |   run {
+                    |
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -53,11 +53,11 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
                     |
                     |
                     |    val foo = 0
-                    |    
-                    |    
+                    |
+                    |
                     |    fun bar() { }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 16, ruleId, consecutiveLinesWarn, true),
             LintError(4, 16, ruleId, consecutiveLinesWarn, true)
         )
@@ -71,12 +71,12 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
                     |class Example {
                     |
                     |    fun foo() {
-                    |    
+                    |
                     |        bar()
-                    |        
+                    |
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 16, ruleId, blankLinesInBlockWarn(true), true),
             LintError(3, 16, ruleId, blankLinesInBlockWarn(true), true),
             LintError(5, 14, ruleId, blankLinesInBlockWarn(false), true)
@@ -91,11 +91,11 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
                     |class Example {
                     |    fun foo() {
                     |        bar()
-                    |        
+                    |
                     |    }
-                    |    
+                    |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 14, ruleId, blankLinesInBlockWarn(false), true),
             LintError(5, 6, ruleId, blankLinesInBlockWarn(false), true)
         )

@@ -27,6 +27,19 @@ import kotlinx.serialization.decodeFromString
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
 /**
+ * Common application name, that is used in plugins and can be used to Suppress all diktat inspections on the
+ * particular code block with @Suppress("diktat")
+ */
+const val DIKTAT = "diktat"
+
+/**
+ * this constant will be used everywhere in the code to mark usage of Diktat ruleset
+ */
+const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
+const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
+const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
+
+/**
  * This interface represents individual inspection in rule set.
  */
 interface Rule {
@@ -41,12 +54,14 @@ interface Rule {
  * @property name name of the rule
  * @property enabled
  * @property configuration a map of strings with configuration options
+ * @property ignoreAnnotated if a code block is marked with this annotations - it will not be checked by this rule
  */
 @Serializable
 data class RulesConfig(
     val name: String,
     val enabled: Boolean = true,
-    val configuration: Map<String, String> = emptyMap()
+    val configuration: Map<String, String> = emptyMap(),
+    val ignoreAnnotated: Set<String> = emptySet(),
 )
 
 /**
@@ -187,6 +202,20 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
 }
+
+/**
+ * @param rule diktat inspection
+ * @param annotations set of annotations that are annotating a block of code
+ * @return true if the code block is marked with annotation that is in `ignored list` in the rule
+ */
+fun List<RulesConfig>.isAnnotatedWithIgnoredAnnotation(rule: Rule, annotations: Set<String>): Boolean =
+    getRuleConfig(rule)
+        ?.ignoreAnnotated
+        ?.map { it.trim() }
+        ?.map { it.trim('"') }
+        ?.intersect(annotations)
+        ?.isNotEmpty()
+        ?: false
 
 /**
  * Parse string into KotlinVersion

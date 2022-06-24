@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isAnonymousFunction
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -65,13 +66,14 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isNestedFunction(node: ASTNode): Boolean =
-            node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST)
+        node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST) &&
+            !node.isAnonymousFunction()
 
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
-            parents()
-                .asSequence()
-                .takeWhile { it.elementType != stopNode }
-                .any { it.elementType == FUN }
+        parents()
+            .asSequence()
+            .takeWhile { it.elementType != stopNode }
+            .any { it.elementType == FUN }
 
     /**
      * Checks if local function has no usage of outside properties
@@ -96,9 +98,9 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun getParameterNames(node: ASTNode): List<String> =
-            (node.psi as KtFunction).valueParameters.map { it.name!! }
+        (node.psi as KtFunction).valueParameters.map { it.name!! }
 
     companion object {
-        const val NAME_ID = "acj-avoid-nested-functions"
+        const val NAME_ID = "avoid-nested-functions"
     }
 }

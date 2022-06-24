@@ -44,36 +44,36 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         ?: false
     private fun KtDotQualifiedExpression.isComparisonWithAbs() =
-            takeIf {
-                it.selectorExpression.run {
-                    this is KtCallExpression && getFunctionName() in comparisonFunctions
-                }
+        takeIf {
+            it.selectorExpression.run {
+                this is KtCallExpression && getFunctionName() in comparisonFunctions
             }
-                ?.run {
-                    (selectorExpression as KtCallExpression)
-                        .valueArguments
-                        .singleOrNull()
-                        ?.let { it.getArgumentExpression() as? KtCallExpression }
-                        ?.isAbsOfFloat()
-                        ?: false ||
-                            (receiverExpression as? KtCallExpression).isAbsOfFloat()
-                }
-                ?: false
+        }
+            ?.run {
+                (selectorExpression as KtCallExpression)
+                    .valueArguments
+                    .singleOrNull()
+                    ?.let { it.getArgumentExpression() as? KtCallExpression }
+                    ?.isAbsOfFloat()
+                    ?: false ||
+                    (receiverExpression as? KtCallExpression).isAbsOfFloat()
+            }
+            ?: false
 
     private fun KtBinaryExpression.isComparisonWithAbs() =
-            takeIf { it.operationToken in comparisonOperators }
-                ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
-                ?.run { calleeExpression as? KtNameReferenceExpression }
-                ?.getReferencedName()
-                ?.equals("abs")
-                ?: false
+        takeIf { it.operationToken in comparisonOperators }
+            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+            ?.run { calleeExpression as? KtNameReferenceExpression }
+            ?.getReferencedName()
+            ?.equals("abs")
+            ?: false
 
     private fun isComparisonWithAbs(psiElement: PsiElement) =
-            when (psiElement) {
-                is KtBinaryExpression -> psiElement.isComparisonWithAbs()
-                is KtDotQualifiedExpression -> psiElement.isComparisonWithAbs()
-                else -> false
-            }
+        when (psiElement) {
+            is KtBinaryExpression -> psiElement.isComparisonWithAbs()
+            is KtDotQualifiedExpression -> psiElement.isComparisonWithAbs()
+            else -> false
+        }
 
     private fun checkFloatValue(floatValue: PsiElement?, expression: KtExpression) {
         floatValue?.let {
@@ -120,7 +120,7 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abt-accurate-calculations"
+        const val NAME_ID = "accurate-calculations"
         private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
             KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
             KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,
@@ -136,14 +136,14 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
 
 @Suppress("UnsafeCallOnNullableType")
 private fun PsiElement.isFloatingPoint(): Boolean =
-        node.elementType == ElementType.FLOAT_LITERAL ||
-                node.elementType == ElementType.FLOAT_CONSTANT ||
-                ((this as? KtNameReferenceExpression)
-                    ?.findLocalDeclaration()
-                    ?.initializer
-                    ?.node
-                    ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
-                    ?: false) ||
-                ((this as? KtBinaryExpression)
-                    ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
-                    ?: false)
+    node.elementType == ElementType.FLOAT_LITERAL ||
+        node.elementType == ElementType.FLOAT_CONSTANT ||
+        ((this as? KtNameReferenceExpression)
+            ?.findLocalDeclaration()
+            ?.initializer
+            ?.node
+            ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
+            ?: false) ||
+        ((this as? KtBinaryExpression)
+            ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
+            ?: false)

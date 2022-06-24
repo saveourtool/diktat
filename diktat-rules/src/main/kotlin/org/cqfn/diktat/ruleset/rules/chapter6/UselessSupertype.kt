@@ -121,7 +121,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
         }
         val superNodes = fileNode.findAllNodesWithCondition { superClass ->
             superClass.elementType == CLASS &&
-                    superClass.getIdentifierName()!!.text in superNodesIdentifier
+                superClass.getIdentifierName()!!.text in superNodesIdentifier
         }.mapNotNull { it.findChildByType(CLASS_BODY) }
         if (superNodes.size != superTypeList.size) {
             return null
@@ -131,7 +131,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
             val overrideFunctions = classBody.findAllDescendantsWithSpecificType(FUN)
                 .filter {
                     (if (classBody.treeParent.hasChildOfType(CLASS_KEYWORD)) it.findChildByType(MODIFIER_LIST)!!.hasChildOfType(OPEN_KEYWORD) else true) &&
-                            it.getIdentifierName()!!.text in methodsName
+                        it.getIdentifierName()!!.text in methodsName
                 }
             overrideFunctions.forEach {
                 functionNameMap.compute(it.getIdentifierName()!!.text) { _, oldValue -> (oldValue ?: 0) + 1 }
@@ -141,7 +141,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aaj-useless-override"
+        const val NAME_ID = "useless-override"
         private val superType = listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY)
     }
 }

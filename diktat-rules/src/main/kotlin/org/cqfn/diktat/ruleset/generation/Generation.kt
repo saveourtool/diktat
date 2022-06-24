@@ -26,17 +26,20 @@ import kotlin.io.path.writeLines
  * The comment that will be added to the generated sources file.
  */
 private val autoGenerationComment =
-        """
-            | This document was auto generated, please don't modify it.
-            | This document contains all enum properties from Warnings.kt as Strings.
-        """.trimMargin()
+    """
+        | This document was auto generated, please don't modify it.
+        | This document contains all enum properties from Warnings.kt as Strings.
+    """.trimMargin()
 
-fun main() {
-    generateWarningNames()
-    validateYear()
+fun main(args: Array<String>) {
+    require(args.size == 2) {
+        "Only two arguments are expected: <source root> <test resource root>"
+    }
+    generateWarningNames(args[0])
+    validateYear(args[1])
 }
 
-private fun generateWarningNames() {
+private fun generateWarningNames(sourceDirectory: String) {
     val enumValNames = Warnings.values().map { it.name }
 
     val propertyList = enumValNames.map {
@@ -56,14 +59,14 @@ private fun generateWarningNames() {
         .builder("generated", "WarningNames")
         .addType(fileBody)
         .indent("    ")
-        .addComment(autoGenerationComment)
+        .addFileComment(autoGenerationComment)
         .build()
 
-    kotlinFile.writeTo(Paths.get("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
+    kotlinFile.writeTo(Paths.get(sourceDirectory))
 }
 
-private fun validateYear() {
-    val folder = Paths.get("diktat-rules/src/test/resources/test/paragraph2/header")
+private fun validateYear(testResourcesDirectory: String) {
+    val folder = Paths.get(testResourcesDirectory, "test/paragraph2/header")
     Files.list(folder)
         .filter { !it.name.contains("CopyrightDifferentYearTest.kt") }
         .forEach { file ->

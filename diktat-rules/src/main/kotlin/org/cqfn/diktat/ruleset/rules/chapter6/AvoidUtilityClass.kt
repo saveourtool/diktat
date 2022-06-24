@@ -45,7 +45,7 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkClass(node: ASTNode) {
         // checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
         if (!node.hasChildOfType(IDENTIFIER) || node.hasChildOfType(PRIMARY_CONSTRUCTOR) ||
-                !node.findChildByType(IDENTIFIER)!!.text.lowercase(Locale.getDefault()).contains("util")) {
+            !node.findChildByType(IDENTIFIER)!!.text.lowercase(Locale.getDefault()).contains("util")) {
             return
         }
         node.findChildByType(CLASS_BODY)
@@ -59,7 +59,7 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abe-avoid-utility-class"
+        const val NAME_ID = "avoid-utility-class"
         private val utilityClassChildren = listOf(LBRACE, WHITE_SPACE, FUN, RBRACE, KDOC,
             EOL_COMMENT, BLOCK_COMMENT, OBJECT_DECLARATION)
     }

@@ -47,13 +47,13 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> =
-            node.getAllChildrenWithType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
+        node.getAllChildrenWithType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isExtensionFunctionWithClassName(node: ASTNode, classNames: List<String>): Boolean =
-            node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }?.text in classNames
+        node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }?.text in classNames
 
     companion object {
-        const val NAME_ID = "aax-extension-functions-class-file"
+        const val NAME_ID = "extension-functions-class-file"
     }
 }

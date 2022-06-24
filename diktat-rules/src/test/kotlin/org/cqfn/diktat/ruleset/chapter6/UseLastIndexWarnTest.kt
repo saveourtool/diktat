@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.UseLastIndex
 import org.cqfn.diktat.util.LintTestBase
 
@@ -21,7 +21,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |val A = "AAAAAAAA"
                     |val D = A.B.C.length - 1
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} A.B.C.length - 1", true)
         )
     }
@@ -37,7 +37,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |   -
                     |   1
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -50,7 +50,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |var B =    A.length   -       1  + 214
                     |var C = A.length - 19
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 12, ruleId, "${Warnings.USE_LAST_INDEX.warnText() } A.length   -       1", true)
         )
     }
@@ -63,7 +63,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |val A : String = "AAAA"
                     |var B = A.length-1
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} A.length-1", true)
         )
     }
@@ -78,7 +78,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |val C = 6 + 121
                     |var D = B + C
                     |var E = A.length + 1
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -94,7 +94,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |
                     |val M = "ASDFG".length
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} \"AAAA\".length - 1", true)
         )
     }

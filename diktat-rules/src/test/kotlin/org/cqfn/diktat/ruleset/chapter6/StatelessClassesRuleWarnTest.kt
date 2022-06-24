@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -18,9 +18,9 @@ class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
     fun `should not trigger on class not extending any interface`() {
         lintMethod(
             """
-            |class Some : I() {
-            |   override fun some()
-            |}
+                |class Some : I() {
+                |   override fun some()
+                |}
             """.trimMargin()
         )
     }
@@ -30,13 +30,13 @@ class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
     fun `should trigger on class extending interface`() {
         lintMethod(
             """
-            |class Some : I {
-            |   override fun some()
-            |}
-            |
-            |interface I {
-            |   fun some()
-            |}
+                |class Some : I {
+                |   override fun some()
+                |}
+                |
+                |interface I {
+                |   fun some()
+                |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.OBJECT_IS_PREFERRED.warnText()} class Some", true)
         )
@@ -47,10 +47,10 @@ class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
     fun `should not trigger on class with constructor`() {
         lintMethod(
             """
-            |class Some(b: Int) : I {
-            |   
-            |   override fun some()
-            |}
+                |class Some(b: Int) : I {
+                |
+                |   override fun some()
+                |}
             """.trimMargin()
         )
     }
@@ -60,10 +60,10 @@ class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
     fun `should not trigger on class with no interface in this file`() {
         lintMethod(
             """
-            |class Some : I {
-            |   
-            |   override fun some()
-            |}
+                |class Some : I {
+                |
+                |   override fun some()
+                |}
             """.trimMargin()
         )
     }
@@ -73,10 +73,10 @@ class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
     fun `should not trigger on class with state`() {
         lintMethod(
             """
-            |class Some : I {
-            |   val a = 5
-            |   override fun some()
-            |}
+                |class Some : I {
+                |   val a = 5
+                |   override fun some()
+                |}
             """.trimMargin()
         )
     }

@@ -36,7 +36,7 @@ class KotlinParser {
                 (transaction as PomTransactionBase).run()
             }
 
-            @Suppress("UNCHECKED_CAST")
+            @Suppress("UNCHECKED_CAST", "SpreadOperator")
             override fun <T : PomModelAspect> getModelAspect(aspect: Class<T>): T? {
                 if (aspect == TreeAspect::class.java) {
                     val constructor = ReflectionFactory.getReflectionFactory().newConstructorForSerialization(
@@ -151,7 +151,8 @@ class KotlinParser {
                     .createBlockCodeFragment(text, null)
                     .node
                     .findChildByType(BLOCK)!!
-                    .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
+                    .findChildByType(ERROR_ELEMENT)!!
+                    .findChildByType(IMPORT_LIST)!!
             }
         } else {
             ktPsiFactory
@@ -172,5 +173,5 @@ class KotlinParser {
     }
 
     private fun isContainKdoc(text: String) =
-            text.lines().any { it.trim().startsWith("/**") }
+        text.lines().any { it.trim().startsWith("/**") }
 }

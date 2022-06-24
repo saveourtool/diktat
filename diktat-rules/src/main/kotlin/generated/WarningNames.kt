@@ -108,6 +108,8 @@ public object WarningNames {
 
     public const val COMMENTED_OUT_CODE: String = "COMMENTED_OUT_CODE"
 
+    public const val COMMENTED_BY_KDOC: String = "COMMENTED_BY_KDOC"
+
     public const val WRONG_NEWLINES_AROUND_KDOC: String = "WRONG_NEWLINES_AROUND_KDOC"
 
     public const val FIRST_COMMENT_NO_BLANK_LINE: String = "FIRST_COMMENT_NO_BLANK_LINE"
@@ -193,6 +195,8 @@ public object WarningNames {
     public const val COLLAPSE_IF_STATEMENTS: String = "COLLAPSE_IF_STATEMENTS"
 
     public const val CONVENTIONAL_RANGE: String = "CONVENTIONAL_RANGE"
+
+    public const val DEBUG_PRINT: String = "DEBUG_PRINT"
 
     public const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
 

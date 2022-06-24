@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.util.LintTestBase
 
@@ -24,7 +24,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |* @param a - leftOffset
                     |*/
                     |fun foo(a: Int) {}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -38,7 +38,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |* @param В - russian letter
                     |*/
                     |fun foo(a: Int, B: Int) {}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} foo (a, B)", true),
             LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't present in argument list"),
             LintError(3, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} В param isn't present in argument list")
@@ -54,7 +54,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |* @param A - leftOffset
                     |*/
                     |fun foo() {}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't present in argument list")
         )
     }
@@ -73,7 +73,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |* @param
                     |*/
                     |fun foo (a: Int) {}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(6, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} foo (a)", true)
         )
     }
@@ -88,7 +88,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |* @param b - qwe
                     |*/
                     |fun foo(b: Int, a: Int) {}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -102,7 +102,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |/**
                     |* @param a - qwe
                     |*/
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
         )
     }

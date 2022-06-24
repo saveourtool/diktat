@@ -7,11 +7,13 @@
     # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
     # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
-    kotlinVersion: 1.6
+    kotlinVersion: 1.7
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
+  # all code blocks with MyAnnotation will be ignored and not checked
+  ignoreAnnotated: [ MyAnnotation ]
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
@@ -97,6 +99,9 @@
   enabled: true
 # Checks that underscore is correctly used to split package naming
 - name: INCORRECT_PACKAGE_SEPARATOR
+  enabled: true
+# Checks that code block doesn't contain kdoc comments
+- name: COMMENTED_BY_KDOC
   enabled: true
 # Checks that there is no @deprecated tag in kdoc
 - name: KDOC_NO_DEPRECATED_TAG
@@ -206,7 +211,7 @@
     # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
-    extendedIndentAfterOperators: true
+    extendedIndentAfterOperators: false
     # The indentation size for each file
     indentationSize: 4
 # Checks that there is no empty blocks in a file.
@@ -304,7 +309,7 @@
     # Ignore numbers from test
     ignoreTest: "true"
     # Ignore numbers
-    ignoreNumbers: "-1, 1, 0, 2"
+    ignoreNumbers: "-1, 1, 0, 2, 0U, 1U, 2U, -1L, 0L, 1L, 2L, 0UL, 1UL, 2UL"
     # Is ignore override hashCode function
     ignoreHashCodeFunction: "true"
     # Is ignore property
@@ -512,6 +517,9 @@
   enabled: true
   configuration:
     isRangeToIgnore: false
+# Check if there is a call of print()\println() or console.log(). Assumption that it's a debug print
+- name: DEBUG_PRINT
+  enabled: true
 # Check that typealias name is in PascalCase
 - name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true

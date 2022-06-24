@@ -21,6 +21,7 @@ import org.cqfn.diktat.ruleset.utils.hasKnownKdocTag
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
+import org.cqfn.diktat.ruleset.utils.isAnonymousFunction
 import org.cqfn.diktat.ruleset.utils.isGetterOrSetter
 import org.cqfn.diktat.ruleset.utils.isLocatedInTest
 import org.cqfn.diktat.ruleset.utils.isOverridden
@@ -88,7 +89,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             val config = configRules.getCommonConfiguration()
             val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
-            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
+            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter() && !node.isAnonymousFunction()) {
                 checkSignatureDescription(node)
             }
         } else if (node.elementType == KDOC_SECTION) {
@@ -276,11 +277,11 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kdocTemplate = "/**\n" +
-                    (missingParameters.joinToString("") { " * @param $it\n" } +
-                            (if (returnCheckFailed) " * @return\n" else "") +
-                            explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
-                            " */\n"
-                    )
+                (missingParameters.joinToString("") { " * @param $it\n" } +
+                    (if (returnCheckFailed) " * @return\n" else "") +
+                    explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
+                    " */\n"
+                )
             val kdocNode = KotlinParser().createNode(kdocTemplate).findChildByType(KDOC)!!
             node.appendNewlineMergingWhiteSpace(node.firstChildNode, node.firstChildNode)
             node.addChild(kdocNode, node.firstChildNode)
@@ -308,7 +309,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aad-kdoc-methods"
+        const val NAME_ID = "kdoc-methods"
         private val expressionBodyTypes = setOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         private val allExpressionBodyTypes = setOf(
             DOT_QUALIFIED_EXPRESSION,

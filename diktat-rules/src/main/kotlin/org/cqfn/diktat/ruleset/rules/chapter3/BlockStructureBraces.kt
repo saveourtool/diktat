@@ -255,7 +255,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
-            shouldContainNewline == node.isWhiteSpaceWithNewline()
+        shouldContainNewline == node.isWhiteSpaceWithNewline()
 
     /**
      * Configuration for style of braces in block
@@ -273,6 +273,6 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "zcn-block-structure"
+        const val NAME_ID = "block-structure"
     }
 }

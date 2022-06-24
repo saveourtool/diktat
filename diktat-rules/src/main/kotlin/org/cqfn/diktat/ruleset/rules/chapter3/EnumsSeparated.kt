@@ -67,7 +67,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isEnumOneLine(nodes: List<ASTNode>) =
-            nodes.dropLast(1).none { it.treeNext.isWhiteSpaceWithNewline() }
+        nodes.dropLast(1).none { it.treeNext.isWhiteSpaceWithNewline() }
 
     private fun isEnumSimple(enumEntries: List<ASTNode>): Boolean {
         enumEntries.forEach { node ->
@@ -112,7 +112,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abq-enum-separated"
+        const val NAME_ID = "enum-separated"
         private val simpleValue = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
         private val simpleEnum = listOf(ENUM_ENTRY, WHITE_SPACE, LBRACE, RBRACE)
     }

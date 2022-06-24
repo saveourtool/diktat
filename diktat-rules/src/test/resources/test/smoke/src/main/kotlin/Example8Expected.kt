@@ -1,0 +1,14 @@
+package org.cqfn.diktat
+
+fun foo() {
+    val sum: (Int, Int, Int,) -> Int = fun(
+        x,
+        y,
+        z
+    ): Int = x + y + x
+    println(sum(8, 8, 8))
+}
+
+fun boo() {
+    val message = fun() = println("Hello")
+}

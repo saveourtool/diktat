@@ -5,8 +5,8 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
-import org.cqfn.diktat.ruleset.rules.chapter3.files.lastIndent
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.lastIndent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
@@ -83,12 +83,15 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
      * 3. there are no more arguments after this node
      */
     private fun isCheckNeeded(whiteSpace: PsiWhiteSpace) =
-            whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
-                    whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
-                    // no need to trigger when there are no more parameters in the list
-                    whiteSpace.siblings(forward = true, withItself = false).any {
-                        it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
-                    }
+        whiteSpace.parent
+            .node
+            .elementType
+            .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+            whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+            // no need to trigger when there are no more parameters in the list
+            whiteSpace.siblings(forward = true, withItself = false).any {
+                it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+            }
 
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
@@ -99,8 +102,8 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 ?.treeNext
                 ?.takeIf {
                     it.elementType != WHITE_SPACE &&
-                            // there can be multiline arguments and in this case we don't align parameters with them
-                            !it.textContains('\n')
+                        // there can be multiline arguments and in this case we don't align parameters with them
+                        !it.textContains('\n')
                 }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
@@ -134,7 +137,7 @@ internal class ExpressionIndentationChecker(configuration: IndentationConfig) : 
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
             val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
-                    (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
+                (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
             return CheckResult.from(indentError.actual, expectedIndent, true)
         }
         return null
@@ -162,7 +165,8 @@ internal class KdocIndentationChecker(config: IndentationConfig) : CustomIndenta
 internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.nextSibling.node.elementType == SUPER_TYPE_LIST) {
-            val hasNewlineBeforeColon = whiteSpace.node.prevSibling { it.elementType == COLON }!!
+            val hasNewlineBeforeColon = whiteSpace.node
+                .prevSibling { it.elementType == COLON }!!
                 .treePrev
                 .takeIf { it.elementType == WHITE_SPACE }
                 ?.textContains('\n') ?: false
@@ -182,7 +186,7 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
  */
 internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
-            treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
+        treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
 
     private fun ASTNode.isCommentBeforeDot(): Boolean {
         if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
@@ -196,21 +200,22 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     }
 
     private fun ASTNode.isFromStringTemplate(): Boolean =
-            hasParent(LONG_STRING_TEMPLATE_ENTRY)
+        hasParent(LONG_STRING_TEMPLATE_ENTRY)
 
     @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        whiteSpace.nextSibling.node
+        whiteSpace.nextSibling
+            .node
             .takeIf { nextNode ->
                 (nextNode.isDotBeforeCallOrReference() ||
-                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
-                            type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
-                        } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
+                    nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
+                        type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
+                    } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
             ?.let { node ->
                 if (node.isFromStringTemplate()) {
                     return CheckResult.from(indentError.actual, indentError.expected +
-                            (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                        (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
                 }
 
                 // we need to get indent before the first expression in calls chain
@@ -219,7 +224,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                 }
                     .parentIndent()
                     ?: indentError.expected) +
-                        (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                    (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
             }
         return null
     }
@@ -235,7 +240,7 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         return when (parent) {
             is KtLoopExpression -> nextNode?.elementType == BODY && parent.body !is KtBlockExpression
             is KtIfExpression -> nextNode?.elementType == THEN && parent.then !is KtBlockExpression ||
-                    nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
+                nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
             .takeIf { it }

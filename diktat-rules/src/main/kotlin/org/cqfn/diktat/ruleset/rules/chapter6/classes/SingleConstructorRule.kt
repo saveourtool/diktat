@@ -138,27 +138,27 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun List<KtBinaryExpression>.associateWithAssignedReference(localProperties: List<KtProperty>, classProperties: List<KtProperty>) =
-            associateWith {
-                // non-null assert is safe because of predicate in partitioning
-                it.asAssignment()!!.left!!
-            }
-                .filterValues { left ->
-                    // we keep only statements where property is referenced via this (like `this.foo = ...`)
-                    left is KtDotQualifiedExpression && left.receiverExpression is KtThisExpression && left.selectorExpression is KtNameReferenceExpression ||
-                            // or directly (like `foo = ...`)
-                            left is KtNameReferenceExpression && localProperties.none {
-                                // check for shadowing
-                                left.node.isGoingAfter(it.node) && it.name == left.name
-                            }
-                }
-                .mapValues { (_, left) ->
-                    when (left) {
-                        is KtDotQualifiedExpression -> left.selectorExpression as KtNameReferenceExpression
-                        is KtNameReferenceExpression -> left
-                        else -> error("Unexpected psi class ${left::class} with text ${left.text}")
+        associateWith {
+            // non-null assert is safe because of predicate in partitioning
+            it.asAssignment()!!.left!!
+        }
+            .filterValues { left ->
+                // we keep only statements where property is referenced via this (like `this.foo = ...`)
+                left is KtDotQualifiedExpression && left.receiverExpression is KtThisExpression && left.selectorExpression is KtNameReferenceExpression ||
+                    // or directly (like `foo = ...`)
+                    left is KtNameReferenceExpression && localProperties.none {
+                        // check for shadowing
+                        left.node.isGoingAfter(it.node) && it.name == left.name
                     }
+            }
+            .mapValues { (_, left) ->
+                when (left) {
+                    is KtDotQualifiedExpression -> left.selectorExpression as KtNameReferenceExpression
+                    is KtNameReferenceExpression -> left
+                    else -> error("Unexpected psi class ${left::class} with text ${left.text}")
                 }
-                .filterValues { left -> left.getReferencedName() in classProperties.mapNotNull { it.name } }
+            }
+            .filterValues { left -> left.getReferencedName() in classProperties.mapNotNull { it.name } }
 
     @Suppress(
         "NestedBlockDepth",
@@ -254,19 +254,19 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.text
             ?.plus(" constructor ")
             ?: "") +
-                "(" +
-                declarationsAssignedInCtor.run {
-                    joinToString(
-                        ", ",
-                        postfix = if (isNotEmpty() && valueParameters.isNotEmpty()) ", " else ""
-                    ) { it.text }
-                } +
-                valueParameters.joinToString(", ") { it.text } +
-                ")"
+            "(" +
+            declarationsAssignedInCtor.run {
+                joinToString(
+                    ", ",
+                    postfix = if (isNotEmpty() && valueParameters.isNotEmpty()) ", " else ""
+                ) { it.text }
+            } +
+            valueParameters.joinToString(", ") { it.text } +
+            ")"
     )
         .node
 
     companion object {
-        const val NAME_ID = "aab-single-constructor"
+        const val NAME_ID = "single-constructor"
     }
 }

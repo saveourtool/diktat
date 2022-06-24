@@ -5,17 +5,20 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_BOOLEAN_EXPRESSION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
-import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
-
+import com.bpodgursky.jbool_expressions.And
 import com.bpodgursky.jbool_expressions.Expression
+import com.bpodgursky.jbool_expressions.NExpression
+import com.bpodgursky.jbool_expressions.Or
 import com.bpodgursky.jbool_expressions.options.ExprOptions
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
 import com.bpodgursky.jbool_expressions.parsers.TokenMapper
+import com.bpodgursky.jbool_expressions.rules.DeMorgan
+import com.bpodgursky.jbool_expressions.rules.Rule
+import com.bpodgursky.jbool_expressions.rules.RuleList
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
@@ -26,7 +29,7 @@ import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
-import java.lang.RuntimeException
+typealias ExpressionCreator<K> = (List<Expression<K>?>) -> Expression<K>
 
 /**
  * Rule that checks if the boolean expression can be simplified.
@@ -63,11 +66,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                 throw exc
             }
         }
-        val distributiveLawString = checkDistributiveLaw(expr, expressionsReplacement, node)
-        val simplifiedExpression = distributiveLawString?.let {
-            ExprParser.parse(distributiveLawString)
-        }
-            ?: RulesHelper.applySet(expr, RulesHelper.demorganRules(), ExprOptions.noCaching())
+        val simplifiedExpression = RulesHelper.applySet(expr, allRules(), ExprOptions.noCaching())
         if (expr != simplifiedExpression) {
             COMPLEX_BOOLEAN_EXPRESSION.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 fixBooleanExpression(node, simplifiedExpression, expressionsReplacement)
@@ -95,10 +94,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         val logicalExpressions = otherBinaryExpressions.filter { otherBinaryExpression ->
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
             (otherBinaryExpression.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
-                    // todo: support xor; for now skip all expressions that are nested in xor
-                    otherBinaryExpression.parents()
-                        .takeWhile { it != node }
-                        .none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
+                // todo: support xor; for now skip all expressions that are nested in xor
+                otherBinaryExpression.parents()
+                    .takeWhile { it != node }
+                    .none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
         }
         // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
         val elementaryBooleanExpressions = booleanBinaryExpressions
@@ -111,13 +110,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .filterNot {
                 // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
                 it.elementType == BINARY_EXPRESSION ||
-                        // !(a || b) should be skipped too, `a` and `b` should be present later
-                        (it.psi as? KtPrefixExpression)?.lastChild
-                            ?.node
-                            ?.removeAllParentheses()
-                            ?.elementType == BINARY_EXPRESSION ||
-                        // `true` and `false` are valid tokens for jBool, so we keep them.
-                        it.text == "true" || it.text == "false"
+                    // !(a || b) should be skipped too, `a` and `b` should be present later
+                    (it.psi as? KtPrefixExpression)?.lastChild
+                        ?.node
+                        ?.removeAllParentheses()
+                        ?.elementType == BINARY_EXPRESSION ||
+                    // `true` and `false` are valid tokens for jBool, so we keep them.
+                    it.text == "true" || it.text == "false"
             }
         (logicalExpressions + elementaryBooleanExpressions).forEach { expression ->
             expressionsReplacement.addExpression(expression)
@@ -137,9 +136,9 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.collectElementaryExpressions() = this
         .findAllNodesWithCondition { astNode ->
             astNode.elementType == BINARY_EXPRESSION &&
-                    // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
-                    (astNode == this || astNode.parents().takeWhile { it != this }
-                        .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
+                // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
+                (astNode == this || astNode.parents().takeWhile { it != this }
+                    .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
         }
         .partition {
             val operationReferenceText = (it.psi as KtBinaryExpression).operationReference.text
@@ -172,103 +171,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
 
         node.replaceChild(node.firstChildNode,
             KotlinParser().createNode(expressionsReplacement.restoreFullExpression(correctKotlinBooleanExpression)))
-    }
-
-    /**
-     * Checks if boolean expression can be simplified with distributive law.
-     *
-     * @return String? null if it cannot be simplified. Simplified string otherwise.
-     */
-    private fun checkDistributiveLaw(
-        expr: Expression<String>,
-        expressionsReplacement: ExpressionsReplacement,
-        node: ASTNode
-    ): String? {
-        // checking that expression can be considered as distributive law
-        val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), expressionsReplacement)?.toString() ?: return null
-        val correctSymbolsSequence = expressionsReplacement.getTokens().toMutableList()
-        correctSymbolsSequence.remove(commonDistributiveOperand)
-        correctSymbolsSequence.add(0, commonDistributiveOperand)
-        val expressionsLogicalOperator = expr.toString().first { it == '&' || it == '|' }
-        // we return expression depending on second operator
-        return returnNeededDistributiveExpression(expressionsLogicalOperator, correctSymbolsSequence)
-    }
-
-    /**
-     * Returns correct result string in distributive law
-     */
-    private fun returnNeededDistributiveExpression(firstLogicalOperator: Char, symbols: List<String>): String {
-        val secondSymbol = if (firstLogicalOperator == '&') '|' else '&'  // this is used to alter symbols
-        val resultString = StringBuilder()
-        symbols.forEachIndexed { index, symbol ->
-            if (index == 0) {
-                resultString.append("$symbol $firstLogicalOperator (")
-            } else {
-                resultString.append("$symbol $secondSymbol ")
-            }
-        }
-        // remove last space and last operate
-        return StringBuilder(resultString.dropLast(2)).append(")").toString()
-    }
-
-    /**
-     * Method that checks that the expression can be simplified by distributive law.
-     * Distributive law - A && B || A && C -> A && (B || C) or (A || B) && (A || C) -> A || (B && C)
-     *
-     * @return common operand for distributed law
-     */
-    private fun getCommonDistributiveOperand(
-        node: ASTNode,
-        expression: String,
-        expressionsReplacement: ExpressionsReplacement
-    ): Char? {
-        val operationSequence = expression.filter { it == '&' || it == '|' }
-        val numberOfOperationReferences = operationSequence.length
-        // There should be three operands and three operation references in order to consider the expression
-        // Moreover the operation references between operands should alternate.
-        if (expressionsReplacement.size() < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
-                numberOfOperationReferences < DISTRIBUTIVE_LAW_MIN_OPERATIONS ||
-                !isSequenceAlternate(operationSequence)) {
-            return null
-        }
-        return if (operationSequence.first() == '&') {
-            getCommonOperand(expression, '|', '&')
-        } else {
-            // this is done for excluding A || B && A || C without parenthesis.
-            val parenthesizedExpressions = node.findAllNodesWithCondition { it.elementType == PARENTHESIZED }
-            parenthesizedExpressions.forEach {
-                it.findLeafWithSpecificType(OPERATION_REFERENCE) ?: run {
-                    return null
-                }
-            }
-            getCommonOperand(expression, '&', '|')
-        }
-    }
-
-    private fun isSequenceAlternate(seq: String) = seq.zipWithNext().all { it.first != it.second }
-
-    /**
-     * This method returns common operand in distributive law.
-     * We need common operand for special case, when the first expression is not common.
-     * For example: (some != null && a) || (a && c) || (a && d). When the expressions are mapped to `char`s, `some != null` points to `A` character
-     */
-    private fun getCommonOperand(
-        expression: String,
-        firstSplitDelimiter: Char,
-        secondSplitDelimiter: Char
-    ): Char? {
-        val expressions = expression.split(firstSplitDelimiter)
-        val listOfPairs: MutableList<List<String>> = mutableListOf()
-        expressions.forEach { expr ->
-            listOfPairs.add(expr.filterNot { it == ' ' || it == '(' || it == ')' }.split(secondSplitDelimiter))
-        }
-        val firstOperands = listOfPairs.first()
-        listOfPairs.removeFirst()
-        return when {
-            listOfPairs.all { it.contains(firstOperands.first()) } -> firstOperands.first().first()
-            listOfPairs.all { it.contains(firstOperands.last()) } -> firstOperands.last().first()
-            else -> null
-        }
     }
 
     private fun KtBinaryExpression.isXorExpression() = operationReference.text == "xor"
@@ -350,22 +252,91 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             return resultExpression
         }
 
-        /**
-         * Returns collection of token are used to construct full expression in jbool format.
-         *
-         * @return collection of token are used to construct full expression in jbool format
-         */
-        fun getTokens(): Collection<String> = expressionToToken.values
-
         private fun getLetter(letters: HashMap<String, String>, key: String) = letters
             .computeIfAbsent(key) {
                 ('A'.code + letters.size).toChar().toString()
             }
     }
 
+    /**
+     * Rule that checks that the expression can be simplified by distributive law.
+     * Distributive law - A && B || A && C -> A && (B || C) or (A || B) && (A || C) -> A || (B && C)
+     */
+    @Suppress("UnsafeCallOnNullableType")
+    private class DistributiveLaw<K> : Rule<NExpression<K>, K>() {
+        override fun applyInternal(input: NExpression<K>, options: ExprOptions<K>): Expression<K> {
+            val exprFactory = options.exprFactory!!
+            val orExpressionCreator: ExpressionCreator<K> = { expressions -> exprFactory.or(expressions.toTypedArray()) }
+            val andExpressionCreator: ExpressionCreator<K> = { expressions -> exprFactory.and(expressions.toTypedArray()) }
+            return when (input) {
+                is And -> applyInternal(input, orExpressionCreator, andExpressionCreator)
+                is Or -> applyInternal(input, andExpressionCreator, orExpressionCreator)
+                else -> throw UnsupportedOperationException("Not supported input expression: ${input.exprType}")
+            }
+        }
+
+        private fun applyInternal(
+            input: NExpression<K>,
+            upperExpressionCreator: ExpressionCreator<K>,
+            innerExpressionCreator: ExpressionCreator<K>
+        ): Expression<K> {
+            // we can be here only after `isApply` -- common exists
+            val commonExpression = findCommonExpression(input.children)!!
+            return upperExpressionCreator(
+                listOf(commonExpression,
+                    innerExpressionCreator(
+                        input.expressions.map { excludeChild(it, upperExpressionCreator, commonExpression) }
+                    )))
+        }
+
+        private fun excludeChild(
+            expression: Expression<K>,
+            expressionCreator: ExpressionCreator<K>,
+            childToExclude: Expression<K>
+        ): Expression<K> {
+            val leftChildren = expression.children.filterNot { it.equals(childToExclude) }
+            return if (leftChildren.size == 1) {
+                leftChildren.first()
+            } else {
+                expressionCreator(leftChildren)
+            }
+        }
+
+        /**
+         * Checks the input expression
+         */
+        override fun isApply(inputNullable: Expression<K>?): Boolean = inputNullable?.let { input ->
+            when (input) {
+                is And -> isApplicable<And<K>, Or<K>>(input)
+                is Or -> isApplicable<Or<K>, And<K>>(input)
+                else -> false
+            }
+        } ?: false
+
+        private inline fun <E : NExpression<K>, reified C : NExpression<K>> isApplicable(input: E): Boolean {
+            val children = input.children ?: return false
+            if (children.size < 2 || children.any { it !is C }) {
+                return false
+            }
+            return findCommonExpression(children) != null
+        }
+
+        private fun findCommonExpression(children: List<Expression<K>>): Expression<K>? = children.drop(1)
+            .fold(children[0].children) { commons, child ->
+                commons.filter { childResult ->
+                    child.children.any { it.equals(childResult) }
+                }
+            }.firstOrNull()
+    }
+
     companion object {
-        const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3
-        const val DISTRIBUTIVE_LAW_MIN_OPERATIONS = 3
-        const val NAME_ID = "acm-boolean-expressions-rule"
+        const val NAME_ID = "boolean-expressions-rule"
+
+        private fun <K> allRules(): RuleList<K> {
+            val rules: MutableList<Rule<*, K>> = ArrayList(RulesHelper.simplifyRules<K>().rules)
+            rules.add(DeMorgan())
+            rules.add(DistributiveLaw())
+            return RuleList(rules)
+        }
     }
 }

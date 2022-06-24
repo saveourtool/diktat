@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -19,11 +19,11 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
     fun `long string template good example`() {
         lintMethod(
             """
-                    |class Some { 
+                    |class Some {
                     |   val template = "${'$'}{::String} ${'$'}{asd.moo()}"
                     |   val some = "${'$'}{foo as Foo}"
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -32,14 +32,14 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
     fun `long string template bad example`() {
         lintMethod(
             """
-                    |class Some { 
+                    |class Some {
                     |   val template = "${'$'}{a} ${'$'}{asd.moo()}"
                     |   val some = "${'$'}{1.0}"
                     |   val another = "${'$'}{1}"
                     |   val singleLetterCase = "${'$'}{ref}"
                     |   val digitsWithLetters = "${'$'}{1.0}asd"
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{a}", true),
             LintError(3, 16, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true),
             LintError(4, 19, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1}", true),
@@ -53,11 +53,11 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
     fun `short string template bad example`() {
         lintMethod(
             """
-                    |class Some { 
+                    |class Some {
                     |   val template = "${'$'}a"
                     |   val z = a
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_QUOTES.warnText()} ${'$'}a", true)
         )
     }
@@ -73,7 +73,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       println("${'$'}{s}.length is ${'$'}{s.length}")
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 17, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{s}", true)
         )
     }
@@ -91,7 +91,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       val some = "${'$'}{index + 1}"
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -105,7 +105,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       val copyTestFile = File("${'$'}{testFile()} copy ${'$'}{testFile}_copy")
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -119,7 +119,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       val copyTestFile = "${'$'}{arr[0]}"
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

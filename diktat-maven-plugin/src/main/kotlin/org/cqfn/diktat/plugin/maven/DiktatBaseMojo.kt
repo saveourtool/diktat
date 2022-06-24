@@ -1,3 +1,7 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
@@ -7,8 +11,8 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import com.pinterest.ktlint.core.internal.CurrentBaseline
+import com.pinterest.ktlint.core.internal.containsLintError
 import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
@@ -94,7 +98,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     /**
      * @param params instance of [KtLint.ExperimentalParams] used in analysis
      */
-    @OptIn(FeatureInAlphaState::class)
     abstract fun runAction(params: KtLint.ExperimentalParams)
 
     /**
@@ -109,7 +112,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
-                if (excludes.isNotEmpty()) " and excluding $excludes" else ""
+            if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
         val ruleSets by lazy {
@@ -210,7 +213,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .forEach { file ->
                 log.debug("Checking file $file")
                 try {
-                    reporterImpl.before(file.path)
+                    reporterImpl.before(file.absolutePath)
                     checkFile(
                         file,
                         lintErrors,
@@ -220,7 +223,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                         ),
                         ruleSets
                     )
-                    reporterImpl.after(file.path)
+                    reporterImpl.after(file.absolutePath)
                 } catch (e: RuleExecutionException) {
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
@@ -228,7 +231,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
     }
 
-    @OptIn(FeatureInAlphaState::class)
     private fun checkFile(file: File,
                           lintErrors: MutableList<LintError>,
                           baselineErrors: List<LintError>,
@@ -236,24 +238,19 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     ) {
         val text = file.readText()
         val params =
-                KtLint.ExperimentalParams(
-                    fileName = file.relativeTo(mavenProject.basedir).path,
-                    text = text,
-                    ruleSets = ruleSets,
-                    userData = mapOf("file_path" to file.path),
-                    script = file.extension.equals("kts", ignoreCase = true),
-                    cb = { lintError, isCorrected ->
-                        if (baselineErrors.none {
-                            // ktlint's BaselineReporter stores only these fields
-                            it.line == lintError.line && it.col == lintError.col &&
-                                    it.ruleId == lintError.ruleId
-                        }) {
-                            reporterImpl.onLintError(file.path, lintError, isCorrected)
-                            lintErrors.add(lintError)
-                        }
-                    },
-                    debug = debug
-                )
+            KtLint.ExperimentalParams(
+                fileName = file.absolutePath,
+                text = text,
+                ruleSets = ruleSets,
+                script = file.extension.equals("kts", ignoreCase = true),
+                cb = { lintError, isCorrected ->
+                    if (!baselineErrors.containsLintError(lintError)) {
+                        reporterImpl.onLintError(file.absolutePath, lintError, isCorrected)
+                        lintErrors.add(lintError)
+                    }
+                },
+                debug = debug
+            )
         runAction(params)
     }
 }

@@ -75,7 +75,7 @@ class DiktatMavenPluginIntegrationTest {
 
         with(SoftAssertions()) {
             try {
-                assertThat(mavenLog).containsPattern("""Original and formatted content differ, writing to [:\w/\\]+Test\.kt\.\.\.""")
+                assertThat(mavenLog).containsPattern("""Original and formatted content differ, writing to [:\w/\\-]+Test\.kt\.\.\.""")
                 assertThat(mavenLog).containsPattern("There are \\d+ lint errors")
                 assertThat(mavenLog).contains("[MISSING_KDOC_TOP_LEVEL]")
             } finally {

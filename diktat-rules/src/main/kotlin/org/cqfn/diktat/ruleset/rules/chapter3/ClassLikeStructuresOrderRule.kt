@@ -72,9 +72,9 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
             .allBlockFlattened()
             .map { astNode ->
                 listOf(astNode) +
-                        astNode.siblings(false)
-                            .takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }
-                            .toList()
+                    astNode.siblings(false)
+                        .takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }
+                        .toList()
             }
 
         node.checkAndReorderBlocks(blocks)
@@ -97,7 +97,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
             .annotationEntries
             .any { it.node.isFollowedByNewline() }
         val hasCustomAccessors = (node.psi as KtProperty).accessors.isNotEmpty() ||
-                (previousProperty.psi as KtProperty).accessors.isNotEmpty()
+            (previousProperty.psi as KtProperty).accessors.isNotEmpty()
 
         val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
         val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
@@ -105,7 +105,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
         // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
         if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
-                hasCustomAccessors && actualNewLines > numRequiredNewLines) {
+            hasCustomAccessors && actualNewLines > numRequiredNewLines) {
             BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()?.text ?: node.text, node.startOffset, node) {
                 whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
             }
@@ -229,7 +229,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aak-class-like-structures"
+        const val NAME_ID = "class-like-structures"
         private val childrenTypes = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION, ENUM_ENTRY)
     }
 }

@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_BLOCKING_INSIDE_ASYNC
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.AsyncAndSyncRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -22,14 +22,14 @@ class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
                     |   GlobalScope.launch {
                     |       c.addAndGet(i)
                     |   }
-                    |   
+                    |
                     |   GlobalScope.async {
                     |       n
                     |   }
-                    |   
+                    |
                     |   GlobalScope.async {
                     |       runBlocking {
-                    |           
+                    |
                     |       }
                     |   }
                     |}

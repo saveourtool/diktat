@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 
 /**
  * [RuleConfiguration] for indentation logic
@@ -26,16 +25,24 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     /**
      * If true, if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
      */
-    val extendedIndentAfterOperators = config["extendedIndentAfterOperators"]?.toBoolean() ?: true
+    val extendedIndentAfterOperators = config["extendedIndentAfterOperators"]?.toBoolean() ?: false
 
     /**
      * If true, when dot qualified expression starts on a new line, this line will be indented with
      * two indentations instead of one
      */
-    val extendedIndentBeforeDot = config["extendedIndentBeforeDot"]?.toBoolean() ?: true
+    val extendedIndentBeforeDot = config["extendedIndentBeforeDot"]?.toBoolean() ?: false
 
     /**
      * The indentation size for each file
      */
-    val indentationSize = config["indentationSize"]?.toInt() ?: IndentationRule.INDENT_SIZE
+    val indentationSize = config["indentationSize"]?.toInt() ?: DEFAULT_INDENT_SIZE
+
+    private companion object {
+        /**
+         * The default indent size (space characters), configurable via
+         * `indentationSize`.
+         */
+        private const val DEFAULT_INDENT_SIZE = 4
+    }
 }

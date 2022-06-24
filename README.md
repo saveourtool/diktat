@@ -20,7 +20,7 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.1.0). Thanks to the community for this support! 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.0). Thanks to the community for this support! 
 
 ## See first
 
@@ -56,11 +56,11 @@ Main features of diktat are the following:
 curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
 ```
    
-2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar)
+2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.0/diktat-1.2.0.jar)
 
 **OR** use curl:
 ```bash
-$ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.1.0/diktat-1.1.0.jar
+$ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.0/diktat-1.2.0.jar
 ```
 </details>
 
@@ -187,7 +187,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.1.0"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.0"
 }
 ```
 
@@ -198,7 +198,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.1.0")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.0")
     }
 }
 
@@ -219,9 +219,9 @@ diktat {
 Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter (it should be added as a dependency into `diktat` configuration):
 ```kotlin
 diktat {
-    // since 1.1.0 to keep in line with maven properties
+    // since 1.2.0 to keep in line with maven properties
     reporter = "json" // "html", "json", "plain" (default), "sarif"
-    // before 1.1.0
+    // before 1.2.0
     // reporterType = "json" // "html", "json", "plain" (default), "sarif"
 }
 ```
@@ -229,7 +229,7 @@ diktat {
 You can also specify an output.
 ```kotlin
 diktat {
-    // since 1.1.0 (reporterType for old versions)
+    // since 1.2.0 (reporterType for old versions)
     reporter = "json"
     output = "someFile.json"
 }
@@ -270,7 +270,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.1.0").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.2.0").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -301,7 +301,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.1.0</version> <!-- optional -->
+  <version>1.2.0</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
@@ -374,7 +374,8 @@ Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 <details>
 <summary>Suppress warnings on individual code blocks</summary>
-In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings by adding `@Suppress` annotation on individual code blocks
+In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings
+by adding `@Suppress` annotation on individual code blocks or `@file:Suppress()` annotation on a file-level.
 
 For example:
 
@@ -389,7 +390,35 @@ class SomeClass {
 </details>
 
 <details>
-<summary>Suppress groups of inspections</summary>
+<summary>Disable all inspections on selected code blocks</summary>
+Also you can suppress **all** warnings by adding `@Suppress("diktat")` annotation on individual code blocks.
+
+For example:
+
+``` kotlin
+@Suppress("diktat")
+class SomeClass {
+    fun methODTREE(): String {
+
+    }
+}
+```
+</details>
+
+<details>
+<summary>ignoreAnnotated: disable inspections on blocks with predefined annotation</summary>
+In the `diktat-analysis.yml` file for each inspection it is possible to define a list of annotations that will cause
+disabling of the inspection on that particular code block:
+
+```yaml
+- name: HEADER_NOT_BEFORE_PACKAGE
+  enabled: true
+  ignoreAnnotated: [MyAnnotation, Compose, Controller]
+```
+</details>
+
+<details>
+<summary>Suppress groups of inspections by chapters</summary>
 It is easy to suppress even groups of inspections in diKTat.
 
 These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 

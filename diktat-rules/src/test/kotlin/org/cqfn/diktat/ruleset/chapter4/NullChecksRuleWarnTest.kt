@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter4.NullChecksRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -25,7 +25,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |         return
                 |     }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 10, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} use '.let/.also/?:/e.t.c' instead of myVar == null", true),
         )
     }
@@ -41,13 +41,13 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |         println("null")
                 |         return
                 |     }
-                |     myVar ?: kotlin.run { 
+                |     myVar ?: kotlin.run {
                 |       println("null")
                 |     }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 11, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar == null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar == null", true),
         )
     }
 
@@ -62,9 +62,9 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |         return
                 |     }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
         )
     }
 
@@ -81,9 +81,9 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |                           2
                 |                      }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 27, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar != null", true),
         )
     }
 
@@ -99,9 +99,9 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |            println("null")
                 |     }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use '.let/.also/?:/e.t.c' instead of myVar !== null", true),
+                " use '.let/.also/?:/e.t.c' instead of myVar !== null", true),
         )
     }
 
@@ -120,7 +120,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |         }
                 |      }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
         )
     }
 
@@ -136,7 +136,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |        println()
                 |      }
                 | }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -152,7 +152,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |        println()
                 |      }
                 | }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -170,9 +170,9 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |           }
                 |      }
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 10, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} use '.let/.also/?:/e.t.c'" +
-                    " instead of myVar != null", true),
+                " instead of myVar != null", true),
         )
     }
 
@@ -184,9 +184,9 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | fun foo0(myVar: String?) {
                 |     require(myVar != null)
                 | }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 14, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                    " use 'requireNotNull' instead of require(myVar != null)", true),
+                " use 'requireNotNull' instead of require(myVar != null)", true),
         )
     }
 
@@ -195,11 +195,11 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
     fun `null check in lambda which is in if-statement is ok`() {
         lintMethod(
             """
-            |fun foo() {
-            |    if (leftSide?.any { it == null } == true) {
-            |        return
-            |    }
-            |}
+                |fun foo() {
+                |    if (leftSide?.any { it == null } == true) {
+                |        return
+                |    }
+                |}
             """.trimMargin()
         )
     }
@@ -209,9 +209,9 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
     fun `null check in lambda which is in require is ok`() {
         lintMethod(
             """
-            |fun foo() {
-            |    require(leftSide?.any { it == null })
-            |}
+                |fun foo() {
+                |    require(leftSide?.any { it == null })
+                |}
             """.trimMargin()
         )
     }

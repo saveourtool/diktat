@@ -195,7 +195,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
         val exprToChange = asExpr.filter {
             blocks.any { isExpr ->
                 isExpr.identifier == it.identifier &&
-                        isExpr.type == it.type
+                    isExpr.type == it.type
             }
         }
 
@@ -223,9 +223,9 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
                 .mapNotNull { it as? KtProperty }
                 .find {
                     it.isLocal &&
-                            it.hasInitializer() &&
-                            it.name?.equals(getReferencedName())
-                                ?: false
+                        it.hasInitializer() &&
+                        it.name?.equals(getReferencedName())
+                            ?: false
                 }
         }
 
@@ -241,11 +241,11 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("TYPE_ALIAS")
     private fun collectReferenceList(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>): Map<KtProperty, List<KtNameReferenceExpression>> =
-            propertiesToUsages.mapValues { (_, value) ->
-                value.filter { entry ->
-                    entry.parent.node.elementType == IS_EXPRESSION || entry.parent.node.elementType == BINARY_WITH_TYPE
-                }
+        propertiesToUsages.mapValues { (_, value) ->
+            value.filter { entry ->
+                entry.parent.node.elementType == IS_EXPRESSION || entry.parent.node.elementType == BINARY_WITH_TYPE
             }
+        }
 
     /**
      * @property identifier a reference that is cast
@@ -265,6 +265,6 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     class IsExpressions(val identifier: String, val type: String)
 
     companion object {
-        const val NAME_ID = "abd-smart-cast-rule"
+        const val NAME_ID = "smart-cast-rule"
     }
 }

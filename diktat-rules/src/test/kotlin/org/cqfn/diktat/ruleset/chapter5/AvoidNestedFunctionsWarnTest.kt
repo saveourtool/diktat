@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.AvoidNestedFunctionsRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -30,9 +30,23 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |   }
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", false)
         )
+    }
+
+    @Test
+    @Tag(AVOID_NESTED_FUNCTIONS)
+    fun `anonymous function`() {
+        val code = """
+            package org.cqfn.diktat.test
+
+            fun foo() {
+                val sum: (Int) -> Int = fun(x): Int = x + x
+            }
+
+        """.trimIndent()
+        lintMethod(code)
     }
 
     @Test
@@ -48,7 +62,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |   }
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", true),
             LintError(4, 8, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun baz", true)
         )
@@ -61,12 +75,12 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
             """
                     |class SomeClass {
                     |   fun someFunc() {}
-                    |   
+                    |
                     |   fun anotherFunc() {}
-                    |   
+                    |
                     |   fun moreFunction() {}
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -87,7 +101,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |           }))
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

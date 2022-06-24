@@ -1,11 +1,13 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.dummy.DummyWarning
+import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.ordered
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
@@ -22,6 +24,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
+import org.cqfn.diktat.ruleset.rules.chapter3.DebugPrintRule
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
 import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
@@ -80,21 +83,12 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
 import java.io.File
-
-/**
- * this constant will be used everywhere in the code to mark usage of Diktat ruleset
- */
-const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
-const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
-const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
 
 /**
  * [RuleSetProvider] that provides diKTat ruleset.
@@ -117,7 +111,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     )
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
-                " (it can be placed to the run directory or the default file from resources will be used)")
+            " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
             .firstOrNull { it != null && File(it).exists() }
         diktatConfigFile = configPath
@@ -125,12 +119,12 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 val possibleConfigsList = possibleConfigs.toList()
                 log.warn(
                     "Configuration file not found in directory where diktat is run (${possibleConfigsList[0]}) " +
-                            "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
-                            "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
-                            "the default file included in jar will be used. " +
-                            "Some configuration options will be disabled or substituted with defaults. " +
-                            "Custom configuration file should be placed in diktat working directory if run from CLI " +
-                            "or provided as configuration options in plugins."
+                        "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
+                        "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
+                        "the default file included in jar will be used. " +
+                        "Some configuration options will be disabled or substituted with defaults. " +
+                        "Custom configuration file should be placed in diktat working directory if run from CLI " +
+                        "or provided as configuration options in plugins."
                 )
                 diktatConfigFile
             }
@@ -143,9 +137,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
         val rules = listOf(
-            // test warning that can be used for manual testing of diktat
-            ::DummyWarning,
-
             // comments & documentation
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
@@ -186,6 +177,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::TrailingCommaRule,
             ::SingleInitRule,
             ::RangeConventionalRule,
+            ::DebugPrintRule,
             ::CustomLabel,
             ::VariableGenericTypeDeclarationRule,
             ::LongNumericalValuesSeparatedRule,
@@ -229,20 +221,17 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             .map {
                 it.invoke(configRules)
             }
-        val orderedRules = rules.mapIndexed { index, rule ->
-            if (index != 0) OrderedRule(rule, rules[index - 1]) else rule
-        }
         return RuleSet(
             DIKTAT_RULE_SET_ID,
-            rules = orderedRules.toTypedArray()
-        )
+            rules = rules.toTypedArray()
+        ).ordered()
     }
 
     private fun validate(config: RulesConfig) =
-            require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
-                val closestMatch = Warnings.names.minByOrNull { Levenshtein.distance(it, config.name) }
-                "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
-            }
+        require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
+            val closestMatch = Warnings.names.minByOrNull { Levenshtein.distance(it, config.name) }
+            "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
+        }
 
     private fun resolveDefaultConfig() = diktatConfigFile
 
@@ -250,12 +239,12 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         // for some aggregators of static analyzers we need to provide configuration for cli
         // in this case diktat would take the configuration from the directory where jar file is stored
         val ruleSetProviderPath =
-                DiktatRuleSetProvider::class
-                    .java
-                    .protectionDomain
-                    .codeSource
-                    .location
-                    .toURI()
+            DiktatRuleSetProvider::class
+                .java
+                .protectionDomain
+                .codeSource
+                .location
+                .toURI()
 
         val configPathWithFileName = File(ruleSetProviderPath).absolutePath
 
@@ -267,43 +256,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
-    /**
-     * This is a wrapper around Ktlint Rule which adjusts visitorModifiers to keep order with prevRule
-     * Added as a workaround after introducing a new logic for sorting KtLint Rules: https://github.com/pinterest/ktlint/issues/1478
-     *
-     * @property rule KtLink Rule which this class wraps
-     *
-     * @param prevRule previous KtLink Rule, the wrapped rule is called after prevRule
-     */
-    internal class OrderedRule(val rule: Rule, prevRule: Rule) : Rule(rule.id, adjustVisitorModifiers(rule, prevRule)) {
-        /**
-         * Delegating a call of this method
-         */
-        override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
-        ) {
-            rule.visit(node, autoCorrect, emit)
-        }
-    }
-
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
-
-        private fun adjustVisitorModifiers(rule: Rule, prevRule: Rule): Set<Rule.VisitorModifier> {
-            val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
-            require(visitorModifiers.none { it is Rule.VisitorModifier.RunAfterRule }) {
-                "Rule ${rule.id} already contains VisitorModifier.RunAfterRule"
-            }
-            require(rule.id != prevRule.id) {
-                "PrevRule has same ID as rule: ${rule.id}"
-            }
-            return visitorModifiers + Rule.VisitorModifier.RunAfterRule(
-                ruleId = prevRule.id,
-                loadOnlyWhenOtherRuleIsLoaded = false,
-                runOnlyWhenOtherRuleIsEnabled = false
-            )
-        }
     }
 }

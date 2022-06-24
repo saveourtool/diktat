@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -12,7 +13,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
@@ -37,10 +38,8 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
 
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.encodeToString
 
 typealias RuleToConfig = Map<String, Map<String, String>>
 
@@ -49,7 +48,6 @@ typealias RuleToConfig = Map<String, Map<String, String>>
  * Note: ktlint uses initial text from a file to calculate line and column from offset. Because of that line/col of unfixed errors
  * may change after some changes to text or other rules.
  */
-@OptIn(ExperimentalPathApi::class)
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     { DiktatRuleSetProvider(configFilePath) },
     { lintError, _ -> unfixedLintErrors.add(lintError) },
@@ -110,6 +108,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    fun `smoke test #8 - anonymous function`() {
+        fixAndCompareSmokeTest("Example8Expected.kt", "Example8Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
     fun `smoke test #7`() {
         fixAndCompareSmokeTest("Example7Expected.kt", "Example7Test.kt")
     }
@@ -117,6 +121,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #6`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "true",
+                )
+            )
+        )
         fixAndCompareSmokeTest("Example6Expected.kt", "Example6Test.kt")
     }
 
@@ -155,6 +168,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #4`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "false",
+                )
+            )
+        )
         fixAndCompareSmokeTest("Example4Expected.kt", "Example4Test.kt")
     }
 
@@ -173,6 +195,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #2`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "true",
+                )
+            )
+        )
         fixAndCompareSmokeTest("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
@@ -187,6 +218,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #1`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "false",
+                )
+            )
+        )
         fixAndCompareSmokeTest("Example1Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
@@ -197,7 +237,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
             LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
             LintError(9, 3, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
-                    " empty blocks are forbidden unless it is function with override keyword", false),
+                " empty blocks are forbidden unless it is function with override keyword", false),
             LintError(12, 10, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(14, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(19, 20, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
@@ -210,18 +250,21 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         overrideRulesConfig(
             emptyList(),
             mapOf(
-                Warnings.WRONG_INDENTATION.name to mapOf(
+                WRONG_INDENTATION.name to mapOf(
                     "newlineAtEnd" to "false",
                     "extendedIndentOfParameters" to "false",
                 )
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
-        val tmpTestFile = javaClass.classLoader.getResource("$resourceFilePath/../../../build.gradle_.kts")!!.toURI().let {
-            val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
-            File(it).copyTo(tmpTestFile)
-            tmpTestFile
-        }
+        val tmpTestFile = javaClass.classLoader
+            .getResource("$resourceFilePath/../../../build.gradle_.kts")!!
+            .toURI()
+            .let {
+                val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
+                File(it).copyTo(tmpTestFile)
+                tmpTestFile
+            }
         val tmpFilePath = "../../../build.gradle.kts"
         fixAndCompare(tmpFilePath, tmpFilePath)
         Assertions.assertTrue(unfixedLintErrors.isEmpty())
@@ -234,7 +277,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompareSmokeTest("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         Assertions.assertEquals(
             LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
-                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
+                "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
             unfixedLintErrors.single()
         )
     }
@@ -243,14 +286,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files #2`() {
         fixAndCompareSmokeTest("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
-        Assertions.assertEquals(3, unfixedLintErrors.size)
+        Assertions.assertEquals(7, unfixedLintErrors.size)
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files with package name`() {
         fixAndCompareSmokeTest("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
-        Assertions.assertEquals(3, unfixedLintErrors.size)
+        Assertions.assertEquals(7, unfixedLintErrors.size)
     }
 
     @Test
@@ -289,9 +332,20 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `regression - FP of local variables rule`() {
         fixAndCompareSmokeTest("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
-        org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).noneMatch {
-            it.ruleId == "diktat-ruleset:local-variables"
-        }
+        org.assertj
+            .core
+            .api
+            .Assertions
+            .assertThat(unfixedLintErrors)
+            .noneMatch {
+                it.ruleId == "diktat-ruleset:local-variables"
+            }
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `fix can cause long line`() {
+        fixAndCompareSmokeTest("ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 
     companion object {

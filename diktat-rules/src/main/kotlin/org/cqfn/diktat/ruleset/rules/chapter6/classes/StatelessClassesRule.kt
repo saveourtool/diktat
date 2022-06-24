@@ -67,16 +67,16 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         val properties = (node.psi as KtClass).getProperties()
         val functions = node.findAllDescendantsWithSpecificType(FUN)
         return properties.isEmpty() &&
-                functions.isNotEmpty() &&
-                !(node.psi as KtClass).hasExplicitPrimaryConstructor()
+            functions.isNotEmpty() &&
+            !(node.psi as KtClass).hasExplicitPrimaryConstructor()
     }
 
     private fun isClassExtendsValidInterface(node: ASTNode, interfaces: List<ASTNode>): Boolean =
-            node.findChildByType(SUPER_TYPE_LIST)
-                ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
-                ?.isNotEmpty()
-                ?.and(isClassInheritsStatelessInterface(node, interfaces))
-                ?: false
+        node.findChildByType(SUPER_TYPE_LIST)
+            ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
+            ?.isNotEmpty()
+            ?.and(isClassInheritsStatelessInterface(node, interfaces))
+            ?: false
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isClassInheritsStatelessInterface(node: ASTNode, interfaces: List<ASTNode>): Boolean {
@@ -92,6 +92,6 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aaz-stateless-class"
+        const val NAME_ID = "stateless-class"
     }
 }

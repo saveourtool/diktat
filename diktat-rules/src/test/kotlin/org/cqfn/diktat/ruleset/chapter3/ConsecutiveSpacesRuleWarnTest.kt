@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -26,7 +26,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |enum       class IntArithmetics : BinaryOperator<Int> {
                     |    PLUS, ASD
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 5, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 7. need to be: 1", true)
         )
     }
@@ -39,7 +39,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |enum class SomeEnum {
                     |    PLUS
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -52,7 +52,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   fun testFunction(val a = 5) {
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -65,7 +65,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   fun      testFunction(val a =     6) {
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 7, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 6. need to be: 1", true),
             LintError(2, 33, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
         )
@@ -80,7 +80,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   inner     class InnerClass{
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 6, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true),
             LintError(2, 9, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
         )
@@ -95,7 +95,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   inner class InnerClass{
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -111,7 +111,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |       val c: Int
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -127,7 +127,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |       val c:     Int
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 15, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 4. need to be: 1", true),
             LintError(4, 18, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true),
             LintError(5, 14, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
@@ -143,7 +143,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |class Box<T>(t: T){
                     |   var value = t
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -155,7 +155,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |class Box<   T>(t:    T){
                     |   var value = t
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 11, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 3. need to be: 1", true),
             LintError(1, 19, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 4. need to be: 1", true)
         )
@@ -170,7 +170,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   fun foo()
                     |   fun bar()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -183,7 +183,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   fun foo()
                     |   fun bar()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 10, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 7. need to be: 1", true)
         )
     }
@@ -198,7 +198,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |       print("SomeThing")
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 8, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
@@ -213,7 +213,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |       print("SomeThing")
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -227,7 +227,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |       print("SomeThing")
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigListNoSpaces
         )
     }
@@ -240,7 +240,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |class SomeClass{              // this is a comment
                     |   val a = 5 // this is another comment
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

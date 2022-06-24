@@ -55,7 +55,7 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun squeezeSpacesToOne(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
         val spaces = node.textLength
         if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline() &&
-                !node.hasEolComment()) {
+            !node.hasEolComment()) {
             TOO_MANY_CONSECUTIVE_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
                 "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset, node) {
                 node.squeezeSpaces()
@@ -84,6 +84,6 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_SPACES = 1
-        const val NAME_ID = "zco-too-many-spaces"
+        const val NAME_ID = "too-many-spaces"
     }
 }

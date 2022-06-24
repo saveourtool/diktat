@@ -44,7 +44,7 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun ASTNode.hasAbstractModifier(): Boolean =
-            getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
+        getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
 
     private fun ASTNode.isNotSubclass(): Boolean = findChildByType(SUPER_TYPE_LIST)?.children()?.filter {
         it.elementType == SUPER_TYPE_CALL_ENTRY || it.elementType == SUPER_TYPE_ENTRY
@@ -69,6 +69,6 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abg-abstract-classes"
+        const val NAME_ID = "abstract-classes"
     }
 }

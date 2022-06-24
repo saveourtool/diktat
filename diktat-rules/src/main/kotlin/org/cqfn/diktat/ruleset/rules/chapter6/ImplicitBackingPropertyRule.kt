@@ -110,6 +110,6 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aba-implicit-backing-property"
+        const val NAME_ID = "implicit-backing-property"
     }
 }

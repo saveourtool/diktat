@@ -120,7 +120,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
 
         // Checks if `when` is the last statement in lambda body
         if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL &&
-                node.treeParent.lastChildNode == node) {
+            node.treeParent.lastChildNode == node) {
             return false
         }
 
@@ -164,6 +164,6 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aal-no-else-in-when"
+        const val NAME_ID = "no-else-in-when"
     }
 }

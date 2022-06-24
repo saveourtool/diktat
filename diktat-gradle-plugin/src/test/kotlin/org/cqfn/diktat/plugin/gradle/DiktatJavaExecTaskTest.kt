@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle
 
-import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
+
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.AfterEach
@@ -207,7 +208,7 @@ class DiktatJavaExecTaskTest {
     }
 
     private fun combinePathParts(vararg parts: String) = parts.joinToString(File.separator)
-    
+
     companion object {
         private const val DIKTAT_CHECK_TASK = "diktatCheck"
     }

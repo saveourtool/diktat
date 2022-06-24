@@ -94,11 +94,11 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             .forEach { (offset, parsedNode) ->
                 val invalidNode = errorNodesWithText.find {
                     it.second.trim().contains(parsedNode.text, false) ||
-                            parsedNode.text.contains(it.second.trim(), false)
+                        parsedNode.text.contains(it.second.trim(), false)
                 }?.first
                 if (invalidNode == null) {
                     logger.warn("Text [${parsedNode.text}] is a piece of code, created from comment; " +
-                            "but no matching text in comments has been found in the file ${node.getFilePath()}")
+                        "but no matching text in comments has been found in the file ${node.getFilePath()}")
                 } else {
                     COMMENTED_OUT_CODE.warn(
                         configRules,
@@ -159,7 +159,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isContainingRequiredPartOfCode(text: String): Boolean =
-            text.contains("val ", true) || text.contains("var ", true) || text.contains("=", true) || (text.contains("{", true) && text.substringAfter("{").contains("}", true))
+        text.contains("val ", true) || text.contains("var ", true) || text.contains("=", true) || (text.contains("{", true) && text.substringAfter("{").contains("}", true))
 
     /**
      * Some weak checks to see if this string can be used as a part of import statement.
@@ -167,19 +167,19 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
      * are considered for this case.
      */
     private fun String.isPossibleImport(): Boolean = trimStart().startsWith(importKeywordWithSpace) &&
-            substringAfter(importKeywordWithSpace, "").run {
-                startsWith('`') && endsWith('`') || !contains(' ')
-            }
+        substringAfter(importKeywordWithSpace, "").run {
+            startsWith('`') && endsWith('`') || !contains(' ')
+        }
 
     @Suppress("MaxLineLength")
     companion object {
         private val logger = LoggerFactory.getLogger(CommentsRule::class.java)
-        const val NAME_ID = "aaa-comments"
+        const val NAME_ID = "comments"
         private val importKeywordWithSpace = "${KtTokens.IMPORT_KEYWORD.value} "
         private val packageKeywordWithSpace = "${KtTokens.PACKAGE_KEYWORD.value} "
         private val importOrPackage = """($importKeywordWithSpace|$packageKeywordWithSpace)""".toRegex()
         private val classRegex =
-                """^\s*(public|private|protected)*\s*(internal)*\s*(open|data|sealed)*\s*(internal)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
+            """^\s*(public|private|protected)*\s*(internal)*\s*(open|data|sealed)*\s*(internal)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
         private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()

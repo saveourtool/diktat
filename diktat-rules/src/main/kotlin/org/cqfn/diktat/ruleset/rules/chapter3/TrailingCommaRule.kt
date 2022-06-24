@@ -62,7 +62,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     private val configuration by lazy {
         if (trailingConfig.isEmpty()) {
             log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
-                    " configuration options. See [available-rules.md] for possible configuration options.")
+                " configuration options. See [available-rules.md] for possible configuration options.")
         }
         TrailingCommaConfiguration(trailingConfig)
     }
@@ -134,7 +134,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(TrailingCommaRule::class.java)
-        const val NAME_ID = "abh-trailing-comma"
+        const val NAME_ID = "trailing-comma"
         val ktVersion = KotlinVersion(1, 4)
         val whenChildrenTypes = listOf(WHEN_CONDITION_WITH_EXPRESSION, WHEN_CONDITION_IS_PATTERN, WHEN_CONDITION_IN_RANGE)
     }

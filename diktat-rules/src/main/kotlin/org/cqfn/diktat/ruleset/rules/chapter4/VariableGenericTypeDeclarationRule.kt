@@ -61,8 +61,8 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
         }
 
         if (rightSide != null && leftSide != null &&
-                rightSide.size == leftSide.size &&
-                rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {
+            rightSide.size == leftSide.size &&
+            rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {
             GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,
                 "type arguments are unnecessary in ${callExpr.text}", node.startOffset, node) {
                 callExpr.removeChild(callExpr.findChildByType(TYPE_ARGUMENT_LIST)!!)
@@ -75,6 +75,6 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
     }
 
     companion object {
-        const val NAME_ID = "abl-variable-generic-type"
+        const val NAME_ID = "variable-generic-type"
     }
 }

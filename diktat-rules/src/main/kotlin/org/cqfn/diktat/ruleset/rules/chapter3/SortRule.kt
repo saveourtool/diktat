@@ -46,7 +46,7 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
             sortEnum(classBody)
         }
         if ((node.psi as? KtObjectDeclaration)?.isCompanion() == true && classBody != null &&
-                configuration.sortProperty) {
+            configuration.sortProperty) {
             sortProperty(classBody)
         }
     }
@@ -186,6 +186,6 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abp-sort-rule"
+        const val NAME_ID = "sort-rule"
     }
 }

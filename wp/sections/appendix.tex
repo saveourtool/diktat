@@ -33,6 +33,7 @@ INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & \hyperref[sec:1.2.1]{1.2.1
 CLASS\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   no  \\
 OBJECT\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   no  \\
 ENUM\underline{ }VALUE & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   enumStyle: snakeCase, pascalCase  \\
+TYPEALIAS\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   no  \\
 FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.4.1]{1.4.1} &  yes  &   no  \\
 CONSTANT\underline{ }UPPERCASE & \hyperref[sec:1.5.1]{1.5.1} &  yes  &   no  \\
 VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & \hyperref[sec:1.6.1]{1.6.1} &  yes  &   no  \\
@@ -40,9 +41,10 @@ FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & \hyperref[sec:1.6.2]{1.6.2} & 
 MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & \hyperref[sec:2.1.1]{2.1.1} &  no  &   no  \\
 MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & \hyperref[sec:2.1.1]{2.1.1} &  no  &   no  \\
 MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.1.1]{2.1.1} &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & \hyperref[sec:2.1.1]{2.1.1} &  yes  &   no \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & \hyperref[sec:2.1.1]{2.1.1} &  yes  &  no                                                                                                                                                                                                                         \\
+KDOC\underline{ }NO\underline{ }CLASS\underline{ }BODY\underline{ }PROPERTIES\underline{ }IN\underline{ }HEADER & \hyperref[sec:2.1.1]{2.1.1} &  yes  &  no                                                                                                                                                                                                                         \\
 KDOC\underline{ }EXTRA\underline{ }PROPERTY & \hyperref[sec:2.1.1]{2.1.1} &  no  &  no   \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & \hyperref[sec:2.1.1]{2.1.1} &  yes  &   no \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & \hyperref[sec:2.1.1]{2.1.1} &  yes  &  no                                                                                                                                                                                                                         \\
 KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & \hyperref[sec:2.1.2]{2.1.2} &  yes  &   no  \\
 KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & \hyperref[sec:2.1.2]{2.1.2} &  yes  &   no  \\
 KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & \hyperref[sec:2.1.2]{2.1.2} &  yes  &   no  \\
@@ -56,26 +58,28 @@ KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & \hyperref[sec:2.1.3
 KDOC\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.1.3]{2.1.3} &  no  &   no  \\
 KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }WRONG\underline{ }FORMAT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
-HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &  mandatoryCopyright \\
+HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &  isCopyrightMandatory, copyrightText (sets the copyright pattern for your project, you also can use `;@currYear;` key word in your text in aim to indicate current year, instead of explicit specifying) \\
 WRONG\underline{ }COPYRIGHT\underline{ }YEAR & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
 HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
 KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.3.1]{2.3.1} &  no  &   no  \\
 WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
-FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
+FIRST\underline{ }COMMENT\underline{ }NO\underline{ }BLANK\underline{ }LINE & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
 COMMENT\underline{ }WHITE\underline{ }SPACE & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   maxSpaces  \\
 IF\underline{ }ELSE\underline{ }COMMENTS & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
 COMMENTED\underline{ }OUT\underline{ }CODE & \hyperref[sec:2.4.2]{2.4.2} &  no  &   no  \\
-FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & \hyperref[sec:3.1.1]{3.1.1} &  no  &   maxSize  ignoreFolders  \\
+FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & \hyperref[sec:3.1.1]{3.1.1} &  no  &   maxSize  \\
 FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & \hyperref[sec:3.1.2]{3.1.2} &  no  &   no  \\
 FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
 FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
 FILE\underline{ }UNORDERED\underline{ }IMPORTS & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
 FILE\underline{ }WILDCARD\underline{ }IMPORTS & \hyperref[sec:3.1.2]{3.1.2} &  no  &   allowedWildcards           \\
+UNUSED\underline{ }IMPORT & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   deleteUnusedImport           \\
 FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
 WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & \hyperref[sec:3.1.4]{3.1.4} &  yes  &   no  \\
 BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & \hyperref[sec:3.1.4]{3.1.4} &  yes  &   no  \\
 WRONG\underline{ }DECLARATIONS\underline{ }ORDER & \hyperref[sec:3.1.4]{3.1.4} &  yes  &   no  \\
+TOP\underline{ }LEVEL\underline{ }ORDER & \hyperref[sec:3.1.5]{3.1.5} &  yes  &   no  \\
 NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & \hyperref[sec:3.2.1]{3.2.1} &  yes  &   no  \\
 BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.2.2]{3.2.2} &  yes  &   openBraceNewline closeBraceNewline  \\
 WRONG\underline{ }INDENTATION & \hyperref[sec:3.3.1]{3.3.1} &  yes  &  extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize   \\
@@ -84,7 +88,9 @@ LONG\underline{ }LINE & \hyperref[sec:3.5.1]{3.5.1} &  yes  &   lineLength      
 MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & \hyperref[sec:3.6.1]{3.6.1} &  yes  &   no  \\
 REDUNDANT\underline{ }SEMICOLON & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   no  \\
 WRONG\underline{ }NEWLINES & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   no  \\
+TRAILING\underline{ }COMMA & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   valueArgument valueParameter indices whenConditions collectionLiteral typeArgument typeParameter destructuringDeclaration  \\
 COMPLEX\underline{ }EXPRESSION & \hyperref[sec:3.6.3]{3.6.3} &  no  &   no  \\
+COMPLEX\underline{ }BOOLEAN\underline{ }EXPRESSION & \hyperref[sec:3.6.4]{3.6.4} &  yes  &   no    \\
 TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & \hyperref[sec:3.7.1]{3.7.1} &  yes  &   no  \\
 WRONG\underline{ }WHITESPACE & \hyperref[sec:3.8.1]{3.8.1} &  yes  &   no  \\
 TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & \hyperref[sec:3.8.1]{3.8.1} &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
@@ -94,9 +100,13 @@ WHEN\underline{ }WITHOUT\underline{ }ELSE & \hyperref[sec:3.11.1]{3.11.1} &  yes
 ANNOTATION\underline{ }NEW\underline{ }LINE & \hyperref[sec:3.12.1]{3.12.1} &  yes  &   no  \\
 WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & \hyperref[sec:3.14.1]{3.14.1} &  yes  &   no  \\
 LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & \hyperref[sec:3.14.2]{3.14.2} &  yes  &   maxNumberLength maxBlockLength \\
-STRING\underline{ }CONCATENATION & \hyperref[sec:3.15.1]{3.15.1} &  no  &   no  \\
+MAGIC\underline{ }NUMBER & \hyperref[sec:3.14.3]{3.14.3} &  no  &  ignoreNumbers, ignoreHashCodeFunction, ignorePropertyDeclaration, ignoreLocalVariableDeclaration, ignoreConstantDeclaration, ignoreCompanionObjectPropertyDeclaration, ignoreEnums, ignoreRanges, ignoreExtensionFunctions \\
+STRING\underline{ }CONCATENATION & \hyperref[sec:3.15.1]{3.15.1} &  yes  &   no  \\
 STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & \hyperref[sec:3.15.2]{3.15.2} &  yes  &   no  \\
 STRING\underline{ }TEMPLATE\underline{ }QUOTES & \hyperref[sec:3.15.2]{3.15.2} &  yes  &   no  \\
+COLLAPSE\underline{ }IF\underline{ }STATEMENTS & \hyperref[sec:3.16.1]{3.16.1} &  yes  &   no    \\
+CONVENTIONAL\underline{ }RANGE & \hyperref[sec:3.17.1]{3.17.1} &  yes  &   no    \\
+DEBUG\underline{ }PRINT & \hyperref[sec:3.18.1]{3.18.1} &  no  &  no \\
 FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & \hyperref[sec:4.1.1]{4.1.1} &  no  &   no  \\
 SAY\underline{ }NO\underline{ }TO\underline{ }VAR & \hyperref[sec:4.1.3]{4.1.3} &  no  &   no  \\
 SMART\underline{ }CAST\underline{ }NEEDED & \hyperref[sec:4.2.1]{4.2.1} &  yes  &   no  \\
@@ -104,15 +114,17 @@ TYPE\underline{ }ALIAS & \hyperref[sec:4.2.2]{4.2.2} &  no  &   typeReferenceLen
 NULLABLE\underline{ }PROPERTY\underline{ }TYPE & \hyperref[sec:4.3.1]{4.3.1} &  yes  &   no  \\
 GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & \hyperref[sec:4.3.2]{4.3.2} &  yes  &   no  \\
 AVOID\underline{ }NULL\underline{ }CHECKS & \hyperref[sec:4.3.3]{4.3.3} &  no  &   no  \\
-TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{5.1.1} &  no  &   maxFunctionLength isIncludeHeader \\
-NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{5.1.2} &  no  &   maxNestedBlockQuantit\\
+TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{5.1.1} &  no  &  maxFunctionLength isIncludeHeader                                                                                                                                                                                          \\
+NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{5.1.2} &  no  &  maxNestedBlockQuantit                                                                                                                                                                                                      \\
 AVOID\underline{ }NESTED\underline{ }FUNCTIONS & \hyperref[sec:5.1.3]{5.1.3} &  yes  &   no  \\
 INVERSE\underline{ }FUNCTION\underline{ }PREFERRED & \hyperref[sec:5.1.4]{5.1.4} &  yes  &  - \\
-LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{5.2.1} &  no  &   no \\
-TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{5.2.2} &  no  &   maxParameterListSize \\
-WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{5.2.3} &  no  &   no \\
+LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{5.2.1} &  no  &  no                                                                                                                                                                                                                         \\
+TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{5.2.2} &  no  &  maxParameterListSize                                                                                                                                                                                                       \\
+WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{5.2.3} &  no  &  no                                                                                                                                                                                                                         \\
 RUN\underline{ }BLOCKING\underline{ }INSIDE\underline{ }ASYNC & \hyperref[sec:5.2.4]{5.2.4} &  no  &   no \\
-TOO\underline{ }MANY\underline{ }LINES\underline{ }IN\underline{ }LAMBDA & \hyperref[sec:5.2.5]{5.2.5} &  no  &   maxLambdaLength \\
+TOO\underline{ }MANY\underline{ }LINES\underline{ }IN\underline{ }LAMBDA & \hyperref[sec:5.2.5]{5.2.5} &  no  &  maxLambdaLength                                                                                                                                                                                                            \\
+CUSTOM\underline{ }LABEL & \hyperref[sec:5.2.6]{5.2.6} &  no  &  no\\
+PARAMETER\underline{ }NAME\underline{ }IN\underline{ }OUTER\underline{ }LAMBDA & \hyperref[sec:5.2.7]{5.2.7} &  no  &  no\\
 SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & \hyperref[sec:6.1.1]{6.1.1} &  yes  &   no  \\
 USE\underline{ }DATA\underline{ }CLASS & \hyperref[sec:6.1.2]{6.1.2} &  no  &   no  \\
 EMPTY\underline{ }PRIMARY\underline{ }CONSTRUCTOR & \hyperref[sec:6.1.3]{6.1.3} &  yes  &   no  \\
@@ -121,696 +133,312 @@ USELESS\underline{ }SUPERTYPE & \hyperref[sec:6.1.5]{6.1.5} &  yes  &   no  \\
 CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & \hyperref[sec:6.1.6]{6.1.6} &  yes  &   no  \\
 NO\underline{ }CORRESPONDING\underline{ }PROPERTY & \hyperref[sec:6.1.7]{6.1.7} &  no  &   no  \\
 CUSTOM\underline{ }GETTERS\underline{ }SETTERS & \hyperref[sec:6.1.8]{6.1.8} &  no  &   no  \\
-WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & \hyperref[sec:6.1.9]{6.1.9} &  no  &   no \\
+WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & \hyperref[sec:6.1.9]{6.1.9} &  no  &  no                                                                                                                                                                                                                         \\
 TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & \hyperref[sec:6.1.10]{6.1.10} &  yes  &   no  \\
 COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & \hyperref[sec:6.1.11]{6.1.11} &  yes  &   no  \\
+INLINE\underline{ }CLASS\underline{ }CAN\underline{ }BE\underline{ }USED & \hyperref[sec:6.1.12]{6.1.12} &  yes  &  no \\
 EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & \hyperref[sec:6.2.2]{6.2.2} &  no  &   no  \\
+EXTENSION\underline{ }FUNCTION\underline{ }WITH\underline{ }CLASS & \hyperref[sec:6.2.3]{6.2.3} &  no  &  no \\
+USE\underline{ }LAST\underline{ }INDEX & \hyperref[sec:6.2.4]{6.2.4} &  yes  &  no                                                                                                                                                                                                                         \\
 AVOID\underline{ }USING\underline{ }UTILITY\underline{ }CLASS & \hyperref[sec:6.4.1]{6.4.1} &  no  &  no \\
 OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes  &  no \\
+RUN\underline{ }IN\underline{ }SCRIPT & \hyperref[sec:6.5.1]{6.5.1} &  yes  &  no \\
 \hline
 \end{longtable}
 %CodeStyle
 
 \hspace{0.0cm}\hyperref[sec:]{}
-
 \section*{Diktat Coding Style Guide, v.0.0.1}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \section*{Table of contents}
-
 \hspace{0.0cm}\hyperref[sec:]{I Preface}
-
 \hspace{0.5cm}\hyperref[sec:]{ I.I Purpose of this document}
-
 \hspace{0.5cm}\hyperref[sec:]{ I.II General principles}
-
 \hspace{0.5cm}\hyperref[sec:]{ I.III Terminology}
-
 \hspace{0.5cm}\hyperref[sec:]{ I.IV Exceptions}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:1.]{1. Naming}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.5cm}\hyperref[sec:1.1]{ 1.1 Identifiers}
-
 \hspace{0.5cm}\hyperref[sec:1.2]{ 1.2 Packages}
-
 \hspace{0.5cm}\hyperref[sec:1.3]{ 1.3 Classes, enumerations, interfaces}
-
 \hspace{0.5cm}\hyperref[sec:1.4]{ 1.4 Functions}
-
 \hspace{0.5cm}\hyperref[sec:1.5]{ 1.5 Constants}
-
 \hspace{0.5cm}\hyperref[sec:1.6]{ 1.6 Non-constant fields (variables)}
-
 \hspace{1.0cm}\hyperref[sec:1.6.1]{ 1.6.1 Non-constant field name}
-
 \hspace{1.0cm}\hyperref[sec:1.6.2]{ 1.6.2 Boolean variable names with negative meaning}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:2.]{2. Comments}
-
 \hspace{0.5cm}\hyperref[sec:2.1]{ 2.1 General form of Kdoc}
-
 \hspace{1.0cm}\hyperref[sec:2.1.1]{ 2.1.1 Using KDoc for the public, protected, or internal code elements}
-
 \hspace{1.0cm}\hyperref[sec:2.1.2]{ 2.1.2 Describing methods that have arguments, a return value, or can throw an exception in the KDoc block}
-
 \hspace{1.0cm}\hyperref[sec:2.1.3]{ 2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.}
-
 \hspace{0.5cm}\hyperref[sec:2.2]{ 2.2 Adding comments on the file header}
-
 \hspace{0.5cm}\hyperref[sec:2.3]{ 2.3 Comments on the function header}
-
 \hspace{0.5cm}\hyperref[sec:2.4]{ 2.4 Code comments}
-
 \hspace{1.0cm}\hyperref[sec:2.4.1]{ 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks}
-
 \hspace{1.0cm}\hyperref[sec:2.4.2]{ 2.4.2 Do not comment on unused code blocks}
-
 \hspace{1.0cm}\hyperref[sec:2.4.3]{ 2.4.3 Code delivered to the client should not contain TODO/FIXME comments}
-
 \hspace{1.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:3.]{3. General formatting (typesetting)}
-
 \hspace{0.5cm}\hyperref[sec:3.1]{ 3.1 File-related rules}
-
 \hspace{1.0cm}\hyperref[sec:3.1.1]{ 3.1.1 Avoid files that are too long}
-
 \hspace{1.0cm}\hyperref[sec:3.1.2]{ 3.1.2 Code blocks in the source file should be separated by one blank line}
-
 \hspace{1.0cm}\hyperref[sec:3.1.3]{ 3.1.3 Import statements order}
-
 \hspace{1.0cm}\hyperref[sec:3.1.4]{ 3.1.4 Order of declaration parts of class-like code structures}
-
 \hspace{1.0cm}\hyperref[sec:3.1.5]{ 3.1.5 Order of declaration of top-level code structures}
-
 \hspace{0.5cm}\hyperref[sec:3.2]{ 3.2 Braces}
-
 \hspace{1.0cm}\hyperref[sec:3.2.1]{ 3.2.1 Using braces in conditional statements and loop blocks}
-
 \hspace{1.0cm}\hyperref[sec:3.2.2]{ 3.2.2 Opening braces are placed at the end of the line in non-empty blocks and block structures}
-
 \hspace{0.5cm}\hyperref[sec:3.3]{ 3.3 Indentation}
-
 \hspace{0.5cm}\hyperref[sec:3.4]{ 3.4 Empty blocks}
-
 \hspace{0.5cm}\hyperref[sec:3.5]{ 3.5 Line length}
-
 \hspace{0.5cm}\hyperref[sec:3.6]{ 3.6 Line breaks (newlines)}
-
 \hspace{1.0cm}\hyperref[sec:3.6.1]{ 3.6.1 Each line can have a maximum of one statement}
-
 \hspace{1.0cm}\hyperref[sec:3.6.2]{ 3.6.2 Rules for line-breaking}
-
 \hspace{0.5cm}\hyperref[sec:3.7]{ 3.7 Using blank lines}
-
 \hspace{0.5cm}\hyperref[sec:3.8]{ 3.8 Horizontal space}
-
 \hspace{1.0cm}\hyperref[sec:3.8.1]{ 3.8.1 Usage of whitespace for code separation}
-
 \hspace{1.0cm}\hyperref[sec:3.8.2]{ 3.8.2 No spaces for horizontal alignment}
-
 \hspace{0.5cm}\hyperref[sec:3.9]{ 3.9 Enumerations}
-
 \hspace{0.5cm}\hyperref[sec:3.10]{ 3.10 Variable declaration}
-
 \hspace{1.0cm}\hyperref[sec:3.10.1]{ 3.10.1 Declare one variable per line}
-
 \hspace{1.0cm}\hyperref[sec:3.10.2]{ 3.10.2 Variables should be declared near the line where they are first used}
-
 \hspace{0.5cm}\hyperref[sec:3.11]{ 3.11 'When' expression}
-
 \hspace{0.5cm}\hyperref[sec:3.12]{ 3.12 Annotations}
-
 \hspace{0.5cm}\hyperref[sec:3.13]{ 3.13 Block comments}
-
 \hspace{0.5cm}\hyperref[sec:3.14]{ 3.14 Modifiers and constant values}
-
 \hspace{1.0cm}\hyperref[sec:3.14.1]{ 3.14.1 Declaration with multiple modifiers}
-
 \hspace{1.0cm}\hyperref[sec:3.14.2]{ 3.14.2 Separate long numerical values with an underscore}
-
 \hspace{1.0cm}\hyperref[sec:3.15]{ 3.15 Strings}
-
 \hspace{1.0cm}\hyperref[sec:3.15.1]{ 3.15.1 Concatenation of Strings}
-
 \hspace{1.0cm}\hyperref[sec:3.15.2]{ 3.15.2 String template format}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:4.]{4. Variables and types}
-
 \hspace{0.5cm}\hyperref[sec:4.1]{ 4.1 Variables}
-
 \hspace{1.0cm}\hyperref[sec:4.1.1]{ 4.1.1 Do not use Float and Double types when accurate calculations are needed}
-
 \hspace{1.0cm}\hyperref[sec:4.1.2]{ 4.1.2 Comparing numeric float type values}
-
 \hspace{1.0cm}\hyperref[sec:4.1.3]{ 4.1.3 Try to use 'val' instead of 'var' for variable declaration SAY_NO_TO_VAR}
-
 \hspace{0.5cm}\hyperref[sec:4.2]{ 4.2 Types}
-
 \hspace{1.0cm}\hyperref[sec:4.2.1]{ 4.2.1 Use Contracts and smart cast as much as possible}
-
 \hspace{1.0cm}\hyperref[sec:4.2.2]{ 4.2.2 Try to use type alias to represent types making code more readable}
-
 \hspace{0.5cm}\hyperref[sec:4.3]{ 4.3 Null safety and variable declarations}
-
 \hspace{1.0cm}\hyperref[sec:4.3.1]{ 4.3.1 Avoid declaring variables with nullable types, especially from Kotlin stdlib}
-
 \hspace{1.0cm}\hyperref[sec:4.3.2]{ 4.3.2 Variables of generic types should have an explicit type declaration}
-
 \hspace{1.0cm}\hyperref[sec:4.3.3]{ 4.3.3 Null-safety}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:5.]{5. Functions}
-
 \hspace{0.5cm}\hyperref[sec:5.1]{ 5.1 Function design}
-
 \hspace{1.0cm}\hyperref[sec:5.1.1]{ 5.1.1 Avoid functions that are too long }
-
 \hspace{1.0cm}\hyperref[sec:5.1.2]{ 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels}
-
 \hspace{1.0cm}\hyperref[sec:5.1.3]{ 5.1.3 Avoid using nested functions}
-
 \hspace{1.0cm}\hyperref[sec:5.1.4]{ 5.1.4 Negated function calls}
-
 \hspace{0.5cm}\hyperref[sec:5.2]{ 5.2 Function arguments}
-
 \hspace{1.0cm}\hyperref[sec:5.2.1]{ 5.2.1 The lambda parameter of the function should be placed at the end of the argument list}
-
 \hspace{1.0cm}\hyperref[sec:5.2.2]{ 5.2.2 Number of function parameters should be limited to five}
-
 \hspace{1.0cm}\hyperref[sec:5.2.3]{ 5.2.3 Use default values for function arguments instead of overloading them}
-
 \hspace{1.0cm}\hyperref[sec:5.2.4]{ 5.2.4 Synchronizing code inside asynchronous code}
-
 \hspace{1.0cm}\hyperref[sec:5.2.5]{ 5.2.5 Long lambdas should have explicit parameters}
-
 \hspace{1.0cm}\hyperref[sec:5.2.6]{ 5.2.6 Avoid using unnecessary, custom label}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:6.]{6. Classes, interfaces, and extension functions}
-
 \hspace{0.5cm}\hyperref[sec:6.1]{ 6.1 Classes}
-
 \hspace{1.0cm}\hyperref[sec:6.1.1]{ 6.1.1 Denoting a class with a single constructor}
-
 \hspace{1.0cm}\hyperref[sec:6.1.2]{ 6.1.2 Prefer data classes instead of classes without any functional logic}
-
 \hspace{1.0cm}\hyperref[sec:6.1.3]{ 6.1.3 Do not use the primary constructor if it is empty or useless}
-
 \hspace{1.0cm}\hyperref[sec:6.1.4]{ 6.1.4 Do not use redundant init blocks in your class}
-
 \hspace{1.0cm}\hyperref[sec:6.1.5]{ 6.1.5 Explicit supertype qualification}
-
 \hspace{1.0cm}\hyperref[sec:6.1.6]{ 6.1.6 Abstract class should have at least one abstract method}
-
 \hspace{1.0cm}\hyperref[sec:6.1.7]{ 6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same}
-
 \hspace{1.0cm}\hyperref[sec:6.1.8]{ 6.1.8 Avoid using custom getters and setters}
-
 \hspace{1.0cm}\hyperref[sec:6.1.9]{ 6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)}
-
 \hspace{1.0cm}\hyperref[sec:6.1.10]{ 6.1.10 No trivial getters and setters are allowed in the code}
-
 \hspace{1.0cm}\hyperref[sec:6.1.11]{ 6.1.11 Use 'apply' for grouping object initialization}
-
 \hspace{1.0cm}\hyperref[sec:6.1.12]{ 6.1.12 Prefer Inline classes when a class has a single property}
-
 \hspace{0.5cm}\hyperref[sec:6.2]{ 6.2 Extension functions}
-
 \hspace{1.0cm}\hyperref[sec:6.2.1]{ 6.2.1 Use extension functions for making logic of classes less coupled}
-
 \hspace{1.0cm}\hyperref[sec:6.2.2]{ 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)}
-
 \hspace{1.0cm}\hyperref[sec:6.2.3]{ 6.2.3 Don't use extension functions for the class in the same file}
-
 \hspace{0.5cm}\hyperref[sec:6.3]{ 6.3 Interfaces}
-
 \hspace{0.5cm}\hyperref[sec:6.4]{ 6.4 Objects}
-
 \hspace{1.0cm}\hyperref[sec:6.4.1]{ 6.4.1 Instead of using utility classes/objects, use extensions}
-
 \hspace{1.0cm}\hyperref[sec:6.4.2]{ 6.4.2 Objects should be used for Stateless Interfaces}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \section*{Diktat Coding Style Guide}
-
 \section*{International version, v.0.0.1}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \hspace{0.0cm}\hyperref[sec:]{<img src="logo.svg" width="64px"/>}
-
-\hspace{0.0cm}\hyperref[sec:]{}
-
 \subsection*{\textbf{Purpose of this document}}
-
 \label{sec:}
-
-
-
 The purpose of this document is to provide a specification that software developers could reference to enhance their ability to write consistent, easy-to-read, and high-quality code.
-
 Such a specification will ultimately improve software development efficiency and product competitiveness.
-
 For the code to be considered high-quality, it must entail the following characteristics:
-
 1.	Simplicity
-
 2.	Maintainability
-
 3.	Reliability
-
 4.	Testability
-
 5.	Efficiency
-
 6.	Portability
-
 7.	Reusability
-
-
-
-
-
 \subsection*{\textbf{General principles}}
-
-\label{sec:}
-
-
-
 Like other modern programming languages, Kotlin is an advanced programming language that complies with the following general principles:
-
 1.	Clarity — a necessary feature of programs that are easy to maintain and refactor.
-
 2.	Simplicity — a code is easy to understand and implement.
-
 3.	Consistency — enables a code to be easily modified, reviewed, and understood by the team members. Unification is particularly important when the same team works on the same project, utilizing similar styles enabling a code to be easily modified, reviewed, and understood by the team members.
-
-
-
 Also, we need to consider the following factors when programming on Kotlin:
-
-
-
 1. Writing clean and simple Kotlin code
-
-
-
     Kotlin combines two of the main programming paradigms: functional and object-oriented.
-
     Both of these paradigms are trusted and well-known software engineering practices.
-
     As a young programming language, Kotlin is built on top of well-established languages such as Java, C++, C\#, and Scala.
-
     This enables Kotlin to introduce many features that help a developer write cleaner, more readable code while also reducing the number of complex code structures. For example, type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, "when" statements, much easier work with collections, type auto conversion, and other syntactic sugar.
-
-
-
 2. Following Kotlin idioms
-
-
-
     The author of Kotlin, Andrey Breslav, mentioned that Kotlin is both pragmatic and practical, but not academic. 
-
     Its pragmatic features enable ideas to be transformed into real working software easily. Kotlin is closer to natural languages than its predecessors, and it implements the following design principles: readability, reusability, interoperability, security, and tool-friendliness (https://blog.jetbrains.com/kotlin/2018/10/kotlinconf-2018-announcements/).
-
-
-
 3. Using Kotlin efficiently
-
-
-
     Some Kotlin features can help you to write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
-
-
-
 \subsection*{\textbf{Terminology}}
-
-\label{sec:}
-
-
-
 \textbf{Rules} — conventions that should be followed when programming.
-
-
-
 \textbf{Recommendations} — conventions that should be considered when programming.
-
-
-
 \textbf{Explanation} — necessary explanations of rules and recommendations.
-
-
-
 \textbf{Valid Example} — recommended examples of rules and recommendations.
-
-
-
 \textbf{Invalid Example} — not recommended examples of rules and recommendations.
-
-
-
 Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
-
-
-
 \subsection*{\textbf{Exceptions}}
-
-\label{sec:}
-
-
-
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
-
 Depending on a project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
-
 When modifying open-source code or third-party code, you can choose to use the code style from this open-source project (instead of using the existing specifications) to maintain consistency.
-
 Software that is directly based on the Android native operating system interface, such as the Android Framework, remains consistent with the Android style.
-
 \section*{\textbf{1. Naming}}
-
 \label{sec:1.}
-
 In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps to clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
-
-
-
 Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
-
-
-
 \subsection*{\textbf{1.1 Identifiers}}
-
 \label{sec:1.1}
-
 This section describes the general rules for naming identifiers.
-
 \subsubsection*{\textbf{1.1.1 Identifiers naming conventions}}
 \leavevmode\newline
-
 \label{sec:1.1.1}
-
-
-
 For identifiers, use the following naming conventions:
-
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions \textbf{\textbackslash w\{2,64\}}.
-
 Explanation: Each valid identifier name should match the regular expression \textbf{\textbackslash w\{2,64\}}.
-
 \textbf{\{2,64\}} means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
-
 Name lengths of less than 31 characters are generally recommended. However, this depends on the project. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking.
-
 No special prefix or suffix should be used in names. The following examples are inappropriate names: name\_, mName, s\_name, and kName.
-
-
-
 2.	Choose file names that would describe the content. Use camel case (PascalCase) and \textbf{.kt} extension.
-
-
-
 3.	Typical examples of naming:
-
-
-
 \begin{center}
-
 \begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
-
 \hline
-
 Meaning&Correct&Incorrect\\
-
 \hline
-
  "XML Http Request" & XmlHttpRequest & XMLHTTPRequest \\
-
  "new customer ID" & newCustomerId & newCustomerID \\
-
  "inner stopwatch" & innerStopwatch & innerStopWatch \\
-
  "supports IPv6 on iOS" & supportsIpv6OnIos & supportsIPv6OnIOS \\
-
  "YouTube importer" & YouTubeImporter & YoutubeImporter \\
-
 \hline
-
 \end{tabular}
-
 \end{center}
-
 4.	The usage of (\textbf{}) and free naming for functions and identifiers are prohibited. For example, the following code is not recommended:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val `my dummy name-with-minus` = "value" 
 \end{lstlisting}
-
-
 The only exception is function names in \textbf{Unit tests.}
-
-
-
 5.	Backticks (\textbf{}) should not be used for identifiers, except the names of test methods (marked with @Test annotation):
-
 \begin{lstlisting}[language=Kotlin]
  @Test fun `my test`() { /*...*/ }
 \end{lstlisting}
 6.  The following table contains some characters that may cause confusion. Be careful when using them as identifiers. To avoid issues, use other names instead.
-
 \begin{center}
-
 \begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
-
 \hline
-
 Expected&Confusing name&Suggested name\\
-
 \hline
-
  0 (zero)      & O, D                     & obj, dgt         \\
-
  1 (one)       & I, l                     & it, ln, line     \\
-
  2 (two)       & Z                        & n1, n2           \\
-
  5 (five)      & S                        & xs, str          \\
-
  6 (six)       & e                        & ex, elm          \\
-
  8 (eight)     & B                        & bt, nxt          \\
-
  n,h           & h,n                      & nr, head, height \\
-
  rn, m         & m,rn                     & mbr, item        \\
-
 \hline
-
 \end{tabular}
-
 \end{center}
-
 \textbf{Exceptions:}
-
 - The i,j,k variables used in loops are part of the industry standard. One symbol can be used for such variables.
-
 - The \textbf{e} variable can be used to catch exceptions in catch block: \textbf{catch (e: Exception) \{\}}
-
 - The Java community generally does not recommend the use of prefixes. However, when developing Android code, you can use the s and m prefixes for static and non-public non-static fields, respectively.
-
 Note that prefixing can also negatively affect the style and the auto-generation of getters and setters.
-
-
-
 \begin{center}
-
 \begin{tabular}{ |p{7.5cm}|p{7.5cm}| }
-
 \hline
-
 Type&Naming style\\
-
 \hline
-
  Interfaces, classes, annotations, enumerated types, and object type names & Camel case, starting with a capital letter. Test classes have a Test suffix. The filename is 'TopClassName'.kt.  \\
-
  Class fields, local variables, methods, and method parameters & Camel case starting with a low case letter. Test methods can be underlined with '\_'; the only exception is [backing properties]\\
-
  Static constants and enumerated values & Only uppercase underlined with '\_' \\
-
  Generic type variable & Single capital letter, which can be followed by a number, for example: `E, T, U, X, T2` \\
-
  Exceptions & Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`\\
-
 \hline
-
 \end{tabular}
-
 \end{center}
-
 \subsection*{\textbf{1.2 Packages}}
-
 \label{sec:1.2}
-
-
-
 \subsubsection*{\textbf{Rule 1.2.1 Package names dots}}
 \leavevmode\newline
-
-\label{sec:}
-
 Package names are in lower case and separated by dots. Code developed within your company should start with \textbf{your.company.domain.} Numbers are permitted in package names.
-
 Each file should have a \textbf{package} directive.
-
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: \textbf{org.apache.commons.lang3}, \textbf{xxx.yyy.v2}.
-
-
-
 \textbf{Exceptions:} 
-
-
-
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with \textbf{your.company.domain.}
-
 - If the package name starts with a number or other character that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: \textbf{com.example.\_123name}.
-
 - Underscores are sometimes permitted if the package name contains reserved Java/Kotlin keywords, such as \textbf{org.example.hyphenated\_name}, \textbf{int\_.example}.
-
-
-
 \textbf{Valid example}: 
-
 \begin{lstlisting}[language=Kotlin]
 package your.company.domain.mobilecontrol.views
 \end{lstlisting}
-
-
 \subsection*{\textbf{1.3 Classes}}
-
 \label{sec:1.3}
-
 This section describes the general rules for naming classes, enumerations, and interfaces.
-
 \subsubsection*{\textbf{1.3.1 Classes}}
 \leavevmode\newline
-
 \label{sec:1.3.1}
-
 Classes, enumerations, and interface names use \textbf{UpperCamelCase} nomenclature. Follow the naming rules described below:
-
 1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: \textbf{Character} or \textbf{ImmutableList}.
-
 An interface name can also be a noun or noun phrase (such as \textbf{List}) or an adjective or adjective phrase (such as \textbf{Readable}).
-
 Note that verbs are not used to name classes. However, nouns (such as \textbf{Customer}, \textbf{WikiPage}, and \textbf{Account}) can be used. Try to avoid using vague words such as \textbf{Manager} and \textbf{Process}.
-
-
-
 2.	Test classes start with the name of the class they are testing and end with 'Test'. For example, \textbf{HashTest} or \textbf{HashIntegrationTest}.
-
-
-
 \textbf{Invalid example}: 
-
 \begin{lstlisting}[language=Kotlin]
 class marcoPolo {} 
 class XMLService {} 
 interface TAPromotion {}
 class info {}
 \end{lstlisting}
-
-
 \textbf{Valid example}: 
-
 \begin{lstlisting}[language=Kotlin]
 class MarcoPolo {}
 class XmlService {}
 interface TaPromotion {}
 class Order {}
 \end{lstlisting}
-
-
 \subsection*{\textbf{1.4 Functions}}
-
 \label{sec:1.4}
-
 This section describes the general rules for naming functions.
-
 \subsubsection*{\textbf{1.4.1 Function names should be in camel case}}
 \leavevmode\newline
-
 \label{sec:1.4.1}
-
 Function names should use \textbf{lowerCamelCase} nomenclature. Follow the naming rules described below:
-
 1.	Function names are usually verbs or verb phrases denoted with the camel case nomenclature (\textbf{lowerCamelCase}).
-
 For example: \textbf{sendMessage}, \textbf{stopProcess}, or \textbf{calculateValue}.
-
 To name functions, use the following formatting rules:
-
-
-
 a) To get, modify, or calculate a certain value: get + non-boolean field(). Note that the Kotlin compiler automatically generates getters for some classes, applying the special syntax preferred for the 'get' fields: kotlin private val field: String get() \{ \}. kotlin private val field: String get() \{ \}.
-
 \begin{lstlisting}[language=Kotlin]
 private val field: String
 get() {
 }
 \end{lstlisting}
 Note: The calling property access syntax is preferred to call getter directly. In this case, the Kotlin compiler automatically calls the corresponding getter.
-
-
-
 b) \textbf{is} + boolean variable name()
-
-
-
 c) \textbf{set} + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point a.
-
-
-
 d) \textbf{has} + Noun / adjective ()
-
-
-
 e) verb()
-
 Note: Note: Verb are primarily used for the action objects, such as \textbf{document.print ()}
-
-
-
 f) verb + noun() 
-
-
-
 g) The Callback function allows the names that use the preposition + verb format, such as: \textbf{onCreate()}, \textbf{onDestroy()}, \textbf{toString()}.
-
-
-
 \textbf{Invalid example}: 
-
-
-
 \begin{lstlisting}[language=Kotlin]
 fun type(): String
 fun Finished(): Boolean
@@ -818,12 +446,7 @@ fun visible(boolean)
 fun DRAW()
 fun KeyListener(Listener)
 \end{lstlisting}
-
-
 \textbf{Valid example}: 
-
-
-
 \begin{lstlisting}[language=Kotlin]
 fun getType(): String
 fun isFinished(): Boolean
@@ -831,134 +454,70 @@ fun setVisible(boolean)
 fun draw()
 fun addKeyListener(Listener)
 \end{lstlisting}
-
-
 2.	An underscore (\textbf{\_}) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in \textbf{lowerCamelCase}, for example, a typical pattern of using underscore: \textbf{pop\_emptyStack}.
-
 \subsection*{\textbf{1.5 Constants}}
-
 \label{sec:1.5}
-
 This section describes the general rules for naming constraints.
-
 \subsubsection*{\textbf{1.5.1 Using UPPER case and underscore characters in a constraint name}}
 \leavevmode\newline
-
 \label{sec:1.5.1}
-
 Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
-
 1. Constants are attributes created with the \textbf{const} keyword or top-level/\textbf{val} local variables of an object that holds immutable data. In most cases, constants can be identified as a \textbf{const val} property from the \textbf{object}/\textbf{companion object}/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
-
 2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all \textbf{val} variables are constants.
-
 3. Objects with immutable content, such as \textbf{Logger} and \textbf{Lock}, can be in uppercase as constants or have camel case as regular variables.
-
 4. Use meaningful constants instead of \textbf{magic numbers}. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
-
 Magic constants, such as \textbf{NUM\_FIVE = 5} or \textbf{NUM\_5 = 5} should not be treated as constants. This is because mistakes will easily be made if they are changed to \textbf{NUM\_5 = 50} or 55.
-
 These constants typically represent business logic values, such as measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms.
-
 You can avoid using magic numbers with the following method:
-
 - Using library functions and APIs. For example, instead of checking that \textbf{size == 0}, use \textbf{isEmpty()} function. To work with \textbf{time}, use built-ins from \textbf{java.time API}.
-
 - Enumerations can be used to name patterns. Refer to [Recommended usage scenario for enumeration in 3.9].
-
-
-
 \textbf{Invalid example}: 
-
-
-
 \begin{lstlisting}[language=Kotlin]
 var int MAXUSERNUM = 200;
 val String sL = "Launcher";
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 const val int MAX_USER_NUM = 200;
 const val String APPLICATION_NAME = "Launcher";
 \end{lstlisting}
-
-
 \subsection*{\textbf{1.6 Non-constant fields}}
-
 \label{sec:1.6}
-
 This section describes the general rules for naming variables.
-
 \subsubsection*{\textbf{1.6.1 Non-constant field name}}
 \leavevmode\newline
-
 \label{sec:1.6.1}
-
 Non-constant field names should use camel case and start with a lowercase letter.
-
 A local variable cannot be treated as constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
-
 For example: \textbf{var namesList: List<String>}
-
-
-
 Names of non-constant variables should use \textbf{lowerCamelCase}. The name of the final immutable field used to store the singleton object can use the same camel case notation.
-
-
-
 \textbf{Invalid example}: 
-
 \begin{lstlisting}[language=Kotlin]
 customername: String
 user: List<String> = listof()
 \end{lstlisting}
-
-
 \textbf{Valid example}: 
-
 \begin{lstlisting}[language=Kotlin]
 var customerName: String
 val users: List<String> = listOf();
 val mutableCollection: MutableSet<String> = HashSet()
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{1.6.2 Boolean variable names with negative meaning}}
 \leavevmode\newline
-
 \label{sec:1.6.2}
-
-
-
 Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with a negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
-
 For instance, it is not easy to understand the meaning of !isNotError.
-
 The JavaBeans specification automatically generates isXxx() getters for attributes of Boolean classes.
-
 However, not all methods returning Boolean type have this notation.
-
 For Boolean local variables or methods, it is highly recommended that you add non-meaningful prefixes, including is (commonly used by JavaBeans), has, can, should, and must. Modern integrated development environments (IDEs) such as Intellij are already capable of doing this for you when you generate getters in Java. For Kotlin, this process is even more straightforward as everything is on the byte-code level under the hood.
-
-
-
 \textbf{Invalid example}: 
-
 \begin{lstlisting}[language=Kotlin]
 val isNoError: Boolean
 val isNotFound: Boolean
 fun empty()
 fun next();
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val isError: Boolean
 val isFound: Boolean
@@ -969,39 +528,18 @@ fun isEmpty()
 fun hasNext()
 \end{lstlisting}
 \section*{\textbf{2. Comments}}
-
 \label{sec:2.}
-
-
-
 The best practice is to begin your code with a summary, which can be one sentence.
-
 Try to balance between writing no comments at all and obvious commentary statements for each line of code.
-
 Comments should be accurately and clearly expressed, without repeating the name of the class, interface, or method.
-
 Comments are not a solution to the wrong code. Instead, you should fix the code as soon as you notice an issue or plan to fix it (by entering a TODO comment, including a Jira number).
-
 Comments should accurately reflect the code's design ideas and logic and further describe its business logic.
-
 As a result, other programmers will be able to save time when trying to understand the code.
-
 Imagine that you are writing the comments to help yourself to understand the original ideas behind the code in the future. 
-
-
-
 \subsection*{\textbf{2.1 General form of Kdoc}}
-
 \label{sec:2.1}
-
-
-
 KDoc is a combination of JavaDoc's block tags syntax (extended to support specific constructions of Kotlin) and Markdown's inline markup.
-
 The basic format of KDoc is shown in the following example:
-
-
-
 \begin{lstlisting}[language=Kotlin]
  /**
  * There are multiple lines of KDoc text,
@@ -1011,40 +549,19 @@ fun method(arg: String) {
     // ...
 }
 \end{lstlisting}
-
-
 It is also shown in the following single-line form:
-
-
-
 \begin{lstlisting}[language=Kotlin]
  /** Short form of KDoc. */
 \end{lstlisting}
 Use a single-line form when you store the entire KDoc block in one line (and there is no KDoc mark @XXX). For detailed instructions on how to use KDoc, refer to \href{https://docs.oracle.com/en/Kotlin/Kotlinse/11/tools/KDoc.html}{Official Document}.
-
-
-
 \subsubsection*{\textbf{2.1.1 Using KDoc for the public}}
 \leavevmode\newline
-
 \label{sec:2.1.1}
-
-
-
 At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
-
 Other code blocks can also have KDocs if needed.
-
 Instead of using comments or KDocs before properties in the primary constructor of a class - use \textbf{@property} tag in a KDoc of a class.
-
 All properties of the primary constructor should also be documented in a KDoc with a \textbf{@property} tag.
-
-
-
-
-
 \textbf{Incorrect example:}
-
 \begin{lstlisting}[language=Kotlin]
 /**
  * Class description
@@ -1058,10 +575,7 @@ class Example(
   val bar: Bar
 )
 \end{lstlisting}
-
-
 \textbf{Correct example:}
-
 \begin{lstlisting}[language=Kotlin]
 /**
  * Class description
@@ -1073,52 +587,24 @@ class Example(
   val bar: Bar
 )
 \end{lstlisting}
-
-
 \textbf{Exceptions:}
-
-
-
 * For setters/getters of properties, obvious comments (like \textbf{this getter returns field}) are optional. Note that Kotlin generates simple \textbf{get/set} methods under the hood.
-
    
-
 * It is optional to add comments for simple one-line methods, such as shown in the example below:
-
 \begin{lstlisting}[language=Kotlin]
 val isEmpty: Boolean
     get() = this.size == 0
 \end{lstlisting}
-
-
 or
-
-
-
 \begin{lstlisting}[language=Kotlin]
 fun isEmptyList(list: List<String>) = list.size == 0
 \end{lstlisting}
-
-
 \textbf{Note:} You can skip KDocs for a method's override if it is almost the same as the superclass method.
-
-
-
 \subsubsection*{\textbf{2.1.2 Describing methods that have arguments}}
 \leavevmode\newline
-
 \label{sec:2.1.2}
-
-
-
 When the method has such details as arguments, return value, or can throw exceptions, it must be described in the KDoc block (with @param, @return, @throws, etc.).
-
-
-
 \textbf{Valid examples:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 /** 
  * This is the short overview comment for the example interface.
@@ -1143,81 +629,39 @@ When the method has such details as arguments, return value, or can throw except
     protected fun bar() throws ProblemException {
         // Some comments / * No need to add a blank line here * /   
         var aVar = ...
-
         // Some comments  / * Add a blank line before the comment * /   
         fun doSome()
     }
  }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.}}
 \leavevmode\newline
-
 \label{sec:2.1.3}
-
-
-
 There should be only one space between the Kdoc tag and content. Tags are arranged in the following order: @param, @return, and @throws.
-
-
-
 Therefore, Kdoc should contain the following:
-
 - Functional and technical description, explaining the principles, intentions, contracts, API, etc.
-
 - The function description and @tags (\textbf{implSpec}, \textbf{apiNote}, and \textbf{implNote}) require an empty line after them.
-
 - \textbf{@implSpec}: A specification related to API implementation, and it should let the implementer decide whether to override it.
-
 - \textbf{@apiNote}: Explain the API precautions, including whether to allow null and whether the method is thread-safe, as well as the algorithm complexity, input, and output range, exceptions, etc.
-
 - \textbf{@implNote}: A note related to API implementation, which implementers should keep in mind.
-
 - One empty line, followed by regular \textbf{@param}, \textbf{@return}, \textbf{@throws}, and other comments.
-
 - The conventional standard "block labels" are arranged in the following order: \textbf{@param}, \textbf{@return}, \textbf{@throws}.
-
 Kdoc should not contain:
-
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
-
 - There should be no empty lines between the method/class declaration and the end of Kdoc (\textbf{*/} symbols).
-
 - \textbf{@author} tag. It doesn't matter who originally created a class when you can use \textbf{git blame} or VCS of your choice to look through the changes history.
-
 Important notes:
-
 - KDoc does not support the \textbf{@deprecated} tag. Instead, use the \textbf{@Deprecated} annotation.
-
 - The \textbf{@since} tag should be used for versions only. Do not use dates in \textbf{@since} tag, it's confusing and less accurate.
-
-
-
 If a tag block cannot be described in one line, indent the content of the new line by \textit{four spaces} from the \textbf{@} position to achieve alignment (\textbf{@} counts as one + three spaces).
-
  
-
 \textbf{Exception:}
-
  
-
 When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
-
 See [3.8 Horizontal space].
-
-
-
 In Kotlin, compared to Java, you can put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
-
 This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the \textbf{@since} tag.
-
-
-
 \textbf{Examples:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 /**
  * Description of functionality
@@ -1225,10 +669,7 @@ This comment should contain @since tag. The right style is to write the applicat
  * @since 1.6
  */
 \end{lstlisting}
-
-
 Other KDoc tags (such as @param type parameters and @see.) can be added as follows:
-
 \begin{lstlisting}[language=Kotlin]
 /**
  * Description of functionality
@@ -1238,157 +679,68 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
  * @since 1.6
  */
 \end{lstlisting}
-
-
 \subsection*{\textbf{2.2 Adding comments on the file header}}
-
 \label{sec:2.2}
-
-
-
 This section describes the general rules of adding comments on the file header.
-
-
-
 \subsubsection*{\textbf{2.2.1 Formatting of comments in the file header}}
 \leavevmode\newline
-
 \label{sec:2.2.1}
-
-
-
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
-
-
-
 Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management).
-
 Also, describe the content inside files that contain multiple or no classes.
-
-
-
 The following examples for Huawei describe the format of the \textit{copyright license}: \
-
 Chinese version: \textbf{版权所有 (c) 华为技术有限公司 2012-2020} \
-
 English version: \textbf{Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.}
-
 \textbf{2012} and \textbf{2020} are the years the file was first created and the current year, respectively.
-
-
-
 Do not place \textbf{release notes} in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using \textbf{@since} tag with version.
-
-
-
 Invalid example:
-
 \begin{lstlisting}[language=Kotlin]
 /**
  * Release notes:
  * 2019-10-11: added class Foo
  */
-
 class Foo
 \end{lstlisting}
-
-
 Valid example:
-
 \begin{lstlisting}[language=Kotlin]
 /**
  * @since 2.4.0
  */
 class Foo
 \end{lstlisting}
-
-
 - The \textbf{copyright statement} can use your company's subsidiaries, as shown in the below examples: \
-
 Chinese version: \textbf{版权所有 (c) 海思半导体 2012-2020} \
-
 English version: \textbf{Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.} 
-
-
-
 - The copyright information should not be written in KDoc style or use single-line comments. It must start from the beginning of the file.
-
 The following example is a copyright statement for Huawei, without other functional comments:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
  */
 \end{lstlisting}
-
-
 The following factors should be considered when writing the file header or comments for top-level classes:
-
 - File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc \textbf{*/} symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
-
 - Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
-
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
-
 - Do not include empty comment blocks. If there is no content after the option \textbf{@apiNote}, the entire tag block should be deleted.
-
 - The industry practice is not to include historical information in the comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
-
-
-
 \subsection*{\textbf{2.3 Comments on the function header}}
-
 \label{sec:2.3}
-
-
-
 Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding <<c2.1,KDoc>> style rules.
-
-
-
 As stated in Chapter 1, the function name should reflect its functionality as much as possible. Therefore, in the Kdoc, try to describe the functionality that is not mentioned in the function name.
-
 Avoid unnecessary comments on dummy coding.
-
-
-
 The function header comment's content is optional, but not limited to function description, return value, performance constraints, usage, memory conventions, algorithm implementation, reentrant requirements, etc.
-
-
-
 \subsection*{\textbf{2.4 Code comments}}
-
 \label{sec:2.4}
-
-
-
 This section describes the general rules of adding code comments.
-
-
-
 \subsubsection*{\textbf{2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.}}
 \leavevmode\newline
-
 \label{sec:2.4.1}
-
-
-
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
-
 - There must be one space between the comment character and the content of the comment.
-
 - There must be a newline between a Kdoc and the presiding code.
-
 - An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
-
-
-
 \textbf{Valid Examples:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 /** 
  * This is the short overview comment for the example interface.
@@ -1420,33 +772,19 @@ It is a good practice to add a blank line between the body of the comment and Kd
     fun bar() throws ProblemException {
         // Some comments  /* Since it is the first member definition in this range, there is no need to add a blank line here */
         var aVar = ...
-
         // Some comments  /* Add a blank line above the comment */            
         fun doSome()
     }
  }
 \end{lstlisting}
-
-
 - Leave one single space between the comment on the right side of the code and the code. 
-
 If you use conditional comments in the \textbf{if-else-if} scenario, put the comments inside the \textbf{else-if} branch or in the conditional block, but not before the \textbf{else-if}. This makes the code more understandable.
-
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
-
 Compared to Java, the \textbf{if} statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole \textbf{if-statement}.
-
-
-
 \textbf{Valid examples:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
-
 val foo = 100  // right-side comment
 val bar = 200  /* right-side comment */
-
 // general comment for the value and whole if-else condition
 val someVal = if (nr % 15 == 0) {
     // when nr is a multiple of both 3 and 5
@@ -1464,288 +802,131 @@ val someVal = if (nr % 15 == 0) {
     println(x)
 }
 \end{lstlisting}
-
-
 - Start all comments (including KDoc) with a space after the first symbol (\textbf{//}, \textbf{/*}, \textbf{/} and \textbf{*})
-
-
-
 \textbf{Valid example:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val x = 0  // this is a comment
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{2.4.2 Do not comment on unused code blocks}}
 \leavevmode\newline
-
 \label{sec:2.4.2}
-
-
-
 Do not comment on unused code blocks, including imports. Delete these code blocks immediately.
-
 A code is not used to store history. Git, svn, or other VCS tools should be used for this purpose.
-
 Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
-
 In an attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
-
 The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
-
 If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
-
-
-
 \subsubsection*{\textbf{2.4.3 Code delivered to the client should not contain TODO}}
 \leavevmode\newline
-
 \label{sec:2.4.3}
-
-
-
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
-
 \textbf{TODO} comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
-
 They should all have a unified style to facilitate unified text search processing.
-
-
-
 \textbf{Example:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 // TODO(<author-name>): Jira-XXX - support new json format
 // FIXME: Jira-XXX - fix NPE in this code block
 \end{lstlisting}
-
-
 At a version development stage, these annotations can be used to highlight the issues in the code, but all of them should be fixed before a new product version is released.
-
 \section*{\textbf{3. General formatting}}
-
 \label{sec:3.}
-
 \subsection*{\textbf{3.1 File-related rules}}
-
 \label{sec:3.1}
-
 This section describes the rules related to using files in your code.
-
 \subsubsection*{\textbf{3.1.1 Avoid files that are too long}}
 \leavevmode\newline
-
 \label{sec:3.1.1}
-
-
-
 If the file is too long and complicated, it should be split into smaller files, functions, or modules. Files should not exceed 2000 lines (non-empty and non-commented lines).
-
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
-
 The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
-
-
-
 \subsubsection*{\textbf{3.1.2 Code blocks in the source file should be separated by one blank line}}
 \leavevmode\newline
-
 \label{sec:3.1.2}
-
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
-
-
-
 a) Code blocks should be in the following order:
-
 1.	Kdoc for licensed or copyrighted files
-
 2.	\textbf{@file} annotation
-
 3.	Package name
-
 4.	Import statements
-
 5.	Top-class header and top-function header comments
-
 6.	Top-level classes or functions
-
-
-
 b) Each of the preceding code blocks should be separated by a blank line. 
-
-
-
 c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - \textbf{*}). 
-
-
-
 d) \textbf{Recommendation}: One \textbf{.kt} source file should contain only one class declaration, and its name should match the filename
-
-
-
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
-
-
-
 f) Unused imports should be removed
-
 \subsubsection*{\textbf{3.1.3 Import statements order}}
 \leavevmode\newline
-
 \label{sec:3.1.3}
-
-
-
 From top to bottom, the order is the following:
-
 1. Android
-
 2. Imports of packages used internally in your organization
-
 3. Imports from other non-core dependencies
-
 4. Java core packages
-
 5. kotlin stdlib
-
-
-
 Each category should be alphabetically arranged. Each group should be separated by a blank line. This style is compatible with  \href{https://source.android.com/setup/contribute/code-style#order-import-statements}{Android import order}.
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 import android.* // android
 import androidx.* // android
 import com.android.* // android
-
 import com.your.company.* // your company's libs
 import your.company.* // your company's libs
-
 import com.fasterxml.jackson.databind.ObjectMapper // other third-party dependencies
 import org.junit.jupiter.api.Assertions
-
 import java.io.IOException // java core packages
 import java.net.URL
-
 import kotlin.system.exitProcess  // kotlin standard library
 import kotlinx.coroutines.*  // official kotlin extension library
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{3.1.4 Order of declaration parts of class-like code structures}}
 \leavevmode\newline
-
 \label{sec:3.1.4}
-
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
-
 Notes:
-
 1.	There should be no blank lines between properties with the following \textbf{exceptions}: when there is a comment before a property on a separate line or annotations on a separate line.
-
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
-
 3.	Enum entries and constant properties (\textbf{const val}) in companion objects should be alphabetically arranged.
-
-
-
 The declaration part of a class or interface should be in the following order:
-
 - Compile-time constants (for objects)
-
 - Properties
-
 - Late-init class properties
-
 - Init-blocks
-
 - Constructors
-
 - Methods or nested classes. Put nested classes next to the code they are used by.
-
 If the classes are meant to be used externally, and are not referenced inside the class, put them after the companion object.
-
 - Companion object
-
-
-
 \textbf{Exception:}
-
 All variants of a \textbf{(private) val} logger should be placed at the beginning of the class (\textbf{(private) val log}, \textbf{LOG}, \textbf{logger}, etc.).
-
-
-
 \subsubsection*{\textbf{3.1.5 Order of declaration of top-level code structures}}
 \leavevmode\newline
-
 \label{sec:3.1.5}
-
 Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
-
 When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1], you should document the whole file in the header KDoc.
-
 When declaring top-level structures, keep the following order:
-
 1. Top-level constants and properties (following same order as properties inside a class: \textbf{const val},\textbf{val}, \textbf{lateinit var}, \textbf{var})
-
 2. Interfaces, classes and objects (grouped by their visibility modifiers)
-
 3. Extension functions
-
 4. Other functions
-
-
-
 \textbf{Note}:
-
 Extension functions shouldn't have receivers declared in the same file according to [rule 6.2.3]
-
-
-
 Valid example:
-
 \begin{lstlisting}[language=Kotlin]
 package org.cqfn.diktat.example
-
 const val CONSTANT = 42
-
 val topLevelProperty = "String constant"
-
 interface IExample
-
 class Example : IExample
-
 private class Internal
-
 fun Other.asExample(): Example { /* ... */ }
-
 private fun Other.asInternal(): Internal { /* ... */ }
-
 fun doStuff() { /* ... */ }
 \end{lstlisting}
-
-
 \textbf{Note}:
-
 kotlin scripts (.kts) allow arbitrary code to be placed on the top level. When writing kotlin scripts, you should first declare all properties, classes
-
 and functions. Only then you should execute functions on top level. It is still recommended wrapping logic inside functions and avoid using top-level statements
-
 for function calls or wrapping blocks of code in top-level scope functions like \textbf{run}.
-
-
-
 Example:
-
 \begin{lstlisting}[language=Kotlin]
 /* class declarations */
 /* function declarations */
@@ -1753,29 +934,14 @@ run {
     // call functions here
 }
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.2 Braces}}
-
 \label{sec:3.2}
-
 This section describes the general rules of using braces in your code.
-
 \subsubsection*{\textbf{3.2.1 Using braces in conditional statements and loop blocks}}
 \leavevmode\newline
-
 \label{sec:3.2.1}
-
-
-
 Braces should always be used in \textbf{if}, \textbf{else}, \textbf{for}, \textbf{do}, and \textbf{while} statements, even if the program body is empty or contains only one statement. In special Kotlin \textbf{when} statements, you do not need to use braces for single-line statements. 
-
-
-
 \textbf{Valid example:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 when (node.elementType) {
     FILE -> {
@@ -1786,30 +952,17 @@ when (node.elementType) {
 }
 \end{lstlisting}
 \textbf{Exception:} The only exception is ternary operator in Kotlin (a single line \textbf{if () <> else <>} ) 
-
-
-
 \textbf{Invalid example:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val value = if (string.isEmpty())  // WRONG!
                 0
             else
                 1
 \end{lstlisting}
-
-
 \textbf{Valid example}: 
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val value = if (string.isEmpty()) 0 else 1  // Okay
 \end{lstlisting}
-
-
 \begin{lstlisting}[language=Kotlin]
 if (condition) {
     println("test")
@@ -1817,44 +970,23 @@ if (condition) {
     println(0)
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{3.2.2  Opening braces are placed at the end of the line in}}
 \leavevmode\newline
-
 \label{sec:3.2.2}
-
 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line.
-
 Follow the K\&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
-
 - The opening brace and first line of the code block are on the same line.
-
 - The closing brace is on its own new line.
-
 - The closing brace can be followed by a newline character. The only exceptions are \textbf{else}, \textbf{finally}, and \textbf{while} (from \textbf{do-while} statement), or \textbf{catch} keywords.
-
 These keywords should not be split from the closing brace by a newline character.
-
-
-
 \textbf{Exception cases}: 
-
-
-
 1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (\textbf{->}) (see [point 5 of Rule 3.6.2]).
-
-
-
 \begin{lstlisting}[language=Kotlin]
 arg.map { value ->
     foo(value)
 }
 \end{lstlisting}
-
-
 2) for \textbf{else}/\textbf{catch}/\textbf{finally}/\textbf{while} (from \textbf{do-while} statement) keywords closing brace should stay on the same line:
-
 \begin{lstlisting}[language=Kotlin]
 do {
     if (true) {
@@ -1865,11 +997,7 @@ do {
 } while (x > 0) 
 \end{lstlisting}
  
-
 \textbf{Valid example:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
         return arg.map { value ->
             while (condition()) {
@@ -1877,7 +1005,6 @@ do {
             }
             value 
         }
-
         return MyClass() {
             @Override
               fun method() {
@@ -1895,86 +1022,44 @@ do {
             }
         }
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.3 Indentation}}
-
 \label{sec:3.3}
-
-
-
 Only spaces are permitted for indentation, and each indentation should equal \textbf{four spaces} (tabs are not permitted).
-
 If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
-
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
-
 -	The code block is placed immediately after an opening brace.
-
 -	The code block is placed after each operator, including the assignment operator (\textbf{+}/\textbf{-}/\textbf{\&\&}/\textbf{=}/etc.)
-
 -	The code block is a call chain of methods:
-
 \begin{lstlisting}[language=Kotlin]
 someObject
     .map()
     .filter()
 \end{lstlisting}
 -  The code block is placed immediately after the opening parenthesis.
-
 -  The code block is placed immediately after an arrow in lambda:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 arg.map { value ->
     foo(value)
 }
 \end{lstlisting}
     
-
 \textbf{Exceptions}:
-
 1.	Argument lists: \
-
 a) Eight spaces are used to indent argument lists (both in declarations and at call sites). \
-
 b) Arguments in argument lists can be aligned if they are on different lines. 
-
-
-
 2.	Eight spaces are used if there is a newline after any binary operator.
-
-
-
 3.	Eight spaces are used for functional-like styles when the newline is placed before the dot.
-
-
-
 4.	Supertype lists: \
-
 a) Four spaces are used if the colon before the supertype list is on a new line. \
-
 b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line. 
-
-
-
 \textbf{Note:} there should be an indentation after all statements such as \textbf{if}, \textbf{for}, etc. However, according to this code style, such statements require braces. 
-
-
-
 \begin{lstlisting}[language=Kotlin]
 if (condition)
     foo()
 \end{lstlisting}
-
-
 \textbf{Exceptions}: 
-
 - When breaking the parameter list of a method/class constructor, it can be aligned with \textbf{8 spaces}. A parameter that was moved to a new line can be on the same level as the previous argument:
-
     
-
 \begin{lstlisting}[language=Kotlin]
 fun visit(
         node: ASTNode,
@@ -1985,21 +1070,14 @@ fun visit(
 }
 \end{lstlisting}
     
-
 - Such operators as \textbf{+}/\textbf{-}/\textbf{*} can be indented with \textbf{8 spaces}:
-
     
-
 \begin{lstlisting}[language=Kotlin]
 val abcdef = "my splitted" +
                 " string"
 \end{lstlisting}
     
-
 - A list of supertypes should be indented with \textbf{4 spaces} if they are on different lines or with \textbf{8 spaces} if the leading colon is also on a separate line
-
-
-
 \begin{lstlisting}[language=Kotlin]
 class A :
     B()
@@ -2008,173 +1086,88 @@ class A
     :
         B()
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.4 Empty blocks}}
-
 \label{sec:3.4}
-
-
-
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces \textbf{\{\}} (see the examples below.)
-
-
-
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
-
 They are only appropriate for overridden functions when the base class's functionality is not needed in the class-inheritor.
-
 \begin{lstlisting}[language=Kotlin]
 override fun foo() {    
 }
 \end{lstlisting}
-
-
 \textbf{Valid examples} (note once again that generally empty blocks are prohibited):
-
-
-
 \begin{lstlisting}[language=Kotlin]
 fun doNothing() {} 
-
 fun doNothingElse() {
 }
 \end{lstlisting}
-
-
 \textbf{Invalid examples:}
-
 \begin{lstlisting}[language=Kotlin]
 try {
   doSomething()
 } catch (e: Some) {}
 \end{lstlisting}
-
-
 Use the following valid code instead:
-
 \begin{lstlisting}[language=Kotlin]
 try {
    doSomething()
 } catch (e: Some) {
 }
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.5 Line length}}
-
 \label{sec:3.5}
-
-
-
 Line length should be less than 120 symbols. The international code style prohibits \textbf{non-Latin} (\textbf{non-ASCII}) symbols.
-
 (See [Identifiers]) However, if you still intend on using them, follow the following convention:
-
-
-
 - One wide character occupies the width of two narrow characters.
-
 The "wide" and "narrow" parts of a character are defined by its \href{https://unicode.org/reports/tr11/}{east Asian width Unicode attribute}.
-
 Typically, narrow characters are also called "half-width" characters.
-
 All characters in the ASCII character set include letters (such as \textbf{a, A}), numbers (such as \textbf{0, 3}), and punctuation spaces (such as \textbf{,} , \textbf{\{}), all of which are narrow characters.
-
 Wide characters are also called "full-width" characters. Chinese characters (such as \textbf{中, 文}), Chinese punctuation (\textbf{，} , \textbf{；} ), full-width letters and numbers (such as \textbf{Ａ、３}) are "full-width" characters.
-
 Each one of these characters represents two narrow characters.
-
-
-
 - Any line that exceeds this limit (\textbf{120 narrow symbols}) should be wrapped, as described in the [Newline section]. 
-
-
-
 \textbf{Exceptions:}
-
-
-
 1.	The long URL or long JSON method reference in KDoc.
-
 2.	The \textbf{package} and \textbf{import} statements.
-
 3.	The command line in the comment, enabling it to be cut and pasted into the shell for use.
-
-
-
 \subsection*{\textbf{3.6 Line breaks}}
-
 \label{sec:3.6}
-
 This section contains the rules and recommendations on using line breaks.
-
 \subsubsection*{\textbf{3.6.1 Each line can have a maximum of one statement}}
 \leavevmode\newline
-
 \label{sec:3.6.1}
-
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with \textbf{;} because it decreases code visibility.
-
-
-
 \textbf{Invalid example:}
-
 \begin{lstlisting}[language=Kotlin]
 val a = ""; val b = ""
 \end{lstlisting}
-
-
 \textbf{Valid example:}
-
 \begin{lstlisting}[language=Kotlin]
 val a = ""
 val b = ""
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{3.6.2 Rules for line-breaking}}
 \leavevmode\newline
-
 \label{sec:3.6.2}
-
-
-
 1) Unlike Java, Kotlin allows you not to put a semicolon (\textbf{;}) after each statement separated by a newline character.
-
     There should be no redundant semicolon at the end of the lines.
-
  
-
 When a newline character is needed to split the line, it should be placed after such operators as \textbf{\&\&}/\textbf{||}/\textbf{+}/etc. and all infix functions (for example, \textbf{xor}).
-
 However, the newline character should be placed before operators such as \textbf{.}, \textbf{?.}, \textbf{?:}, and \textbf{::}.
-
-
-
 Note that all comparison operators, such as \textbf{==}, \textbf{>}, \textbf{<}, should not be split.
-
-
-
 \textbf{Invalid example}: 
-
 \begin{lstlisting}[language=Kotlin]
      if (node !=
              null && test != null) {}
 \end{lstlisting}
  
-
 \textbf{Valid example}: 
-
 \begin{lstlisting}[language=Kotlin]
          if (node != null && 
                  test != null) {
          }
 \end{lstlisting}
   
-
 \textbf{Note:} You need to follow the functional style, meaning each function call in a chain with \textbf{.} should start at a new line if the chain of functions contains more than one call:
-
 \begin{lstlisting}[language=Kotlin]
   val value = otherValue!!
           .map { x -> x }
@@ -2185,33 +1178,18 @@ Note that all comparison operators, such as \textbf{==}, \textbf{>}, \textbf{<},
           .size    
 \end{lstlisting}
 \textbf{Note:} The parser prohibits the separation of the \textbf{!!} operator from the value it is checking.
-
-
-
 \textbf{Exception}: If a functional chain is used inside the branches of a ternary operator, it does not need to be split with newlines.
-
-
-
 \textbf{Valid example}:  
-
 \begin{lstlisting}[language=Kotlin]
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 \end{lstlisting}
-
-
 \textbf{Note:} If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
-
-
-
 \textbf{Invalid example}: 
-
 \begin{lstlisting}[language=Kotlin]
  if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
 \end{lstlisting}
  
-
 \textbf{Valid example}: 
-
 \begin{lstlisting}[language=Kotlin]
         val grandIdentifier = node
             .treeParent
@@ -2220,289 +1198,144 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
         if (grandIdentifier != null) {}
 \end{lstlisting}
   
-
 2)	Newlines should be placed after the assignment operator (\textbf{=}).
-
 3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace \textbf{(}.
-
     A brace should be placed immediately after the name without any spaces in declarations or at call sites.
-
 4)	Newlines should be placed right after the comma (\textbf{,}).
-
 5)	If a lambda statement contains more than one line in its body, a newline should be placed after an arrow if the lambda statement has explicit parameters.
-
     If it uses an implicit parameter (\textbf{it}), the newline character should be placed after the opening brace (\textbf{\{}). 
-
     The following examples illustrate this rule:
-
-
-
-
-
 \textbf{Invalid example:}
-
 \begin{lstlisting}[language=Kotlin]
     value.map { name -> foo()
         bar()
     }
 \end{lstlisting}
-
-
 \textbf{Valid example:} 
-
 \begin{lstlisting}[language=Kotlin]
 value.map { name ->
     foo()
     bar()
 }
-
 val someValue = { node:String -> node }
 \end{lstlisting}
-
-
 6) When the function contains only a single expression, it can be written as \href{https://kotlinlang.org/docs/reference/functions.html#single-expression-functions}{expression function}. 
-
    The below example shows the style that should not be used.
-
    
-
 Instead of: 
-
 \begin{lstlisting}[language=Kotlin]
 override fun toString(): String { return "hi" }
 \end{lstlisting}
 use:
-
 \begin{lstlisting}[language=Kotlin]
 override fun toString() = "hi"
 \end{lstlisting}
-
-
 7)  If an argument list in a function declaration (including constructors) or function call contains more than two arguments, these arguments should be split by newlines in the following style.
-
-
-
 \textbf{Valid example:} 
-
 \begin{lstlisting}[language=Kotlin]
 class Foo(val a: String,
           b: String,
           val c: String) {
 }
-
 fun foo(
         a: String,
         b: String,
         c: String
 ) {
-
 }
 \end{lstlisting}
-
-
 If and only if the first parameter is on the same line as an opening parenthesis, all parameters can be horizontally aligned by the first parameter.
-
 Otherwise, there should be a line break after an opening parenthesis.
-
-
-
 Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generally recommended to place all parameters on a separate line
-
 and append \href{https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma}{trailing comma}.
-
 It makes the resolving of merge conflicts easier.
-
-
-
 \textbf{Valid example:} 
-
 \begin{lstlisting}[language=Kotlin]
 fun foo(
         a: String,
         b: String,
 ) {
-
 }
 \end{lstlisting}
-
-
 same should be done for function calls/constructor arguments/e.t.c
-
-
-
 Kotlin supports trailing commas in the following cases:
-
-
-
 Enumerations
-
 Value arguments
-
 Class properties and parameters
-
 Function value parameters
-
 Parameters with optional type (including setters)
-
 Indexing suffix
-
 Lambda parameters
-
 when entry
-
 Collection literals (in annotations)
-
 Type arguments
-
 Type parameters
-
 Destructuring declarations
-
-
-
 8) If the supertype list has more than two elements, they should be separated by newlines.
-
-
-
 \textbf{Valid example:} 
-
 \begin{lstlisting}[language=Kotlin]
 class MyFavouriteVeryLongClassHolder :
     MyLongHolder<MyFavouriteVeryLongClass>(),
     SomeOtherInterface,
     AndAnotherOne { }
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.7 Using blank lines}}
-
 \label{sec:3.7}
-
-
-
 Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
-
 - Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, \textbf{init} blocks, and objects (see [3.1.2]).
-
 - Do not use more than one line inside methods, type definitions, and initialization expressions.
-
 - Generally, do not use more than two consecutive blank lines in a row.
-
 - Do not put newlines in the beginning or end of code blocks with curly braces.
-
-
-
 \textbf{Valid example:}
-
 \begin{lstlisting}[language=Kotlin]
 fun baz() {
         
     doSomething()  // No need to add blank lines at the beginning and end of the code block
     // ...
-
 }
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.8 Horizontal space}}
-
 \label{sec:3.8}
-
 This section describes general rules and recommendations for using spaces in the code.
-
 \subsubsection*{\textbf{3.8.1: Usage of whitespace for code separation}}
 \leavevmode\newline
-
 \label{sec:3.8.1}
-
-
-
 Follow the recommendations below for using space to separate keywords:
-
-
-
 \textbf{Note:} These recommendations are for cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space.
-
-
-
 1.  Separate keywords (such as \textbf{if}, \textbf{when}, \textbf{for}) from the opening parenthesis with single whitespace.
-
     The only exception is the \textbf{constructor} keyword, which should not be separated from the opening parenthesis.
-
-
-
 2.  Separate keywords like \textbf{else} or \textbf{try} from the opening brace (\textbf{\{}) with single whitespace.
-
     If \textbf{else} is used in a ternary-style statement without braces, there should be a single space between \textbf{else} and the statement after: \textbf{if (condition) foo() else bar()}
-
-
-
 3.  Use a \textbf{single} whitespace before all opening braces (\textbf{\{}). The only exception is the passing of a lambda as a parameter inside parentheses:
-
 \begin{lstlisting}[language=Kotlin]
      private fun foo(a: (Int) -> Int, b: Int) {}
      foo({x: Int -> x}, 5) // no space before '{'
 \end{lstlisting}
-
-
 4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
-
     For example: 
-
     
-
  - A colon in generic structures with the \textbf{where} keyword:  \textbf{where T : Type}
-
  - Arrow in lambdas: \textbf{(str: String) -> str.length()}
-
-
-
 \textbf{Exceptions:}
-
-
-
 - Two colons (\textbf{::}) are written without spaces:\
-
   \textbf{Object::toString}
-
 - The dot separator (\textbf{.}) that stays on the same line with an object name:\
-
   \textbf{object.toString()}
-
 - Safe access modifiers \textbf{?.} and \textbf{!!} that stay on the same line with an object name:\
-
   \textbf{object?.toString()}
-
 - Operator \textbf{..} for creating ranges:\
-
   \textbf{1..100}
-
-
-
 5.  Use spaces after (\textbf{,}), (\textbf{:}), and (\textbf{;}), except when the symbol is at the end of the line.
-
     However, note that this code style prohibits the use of (\textbf{;}) in the middle of a line ([see 3.3.2]).
-
     There should be no whitespaces at the end of a line.
-
     The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, \textbf{@param:JsonProperty}).
-
     There should be no spaces before \textbf{,} , \textbf{:} and \textbf{;}. 
-
     
-
     \textbf{Exceptions} for spaces and colons:
-
     
-
     - When \textbf{:} is used to separate a type and a supertype, including an anonymous object (after object keyword)
-
     - When delegating to a superclass constructor or different constructor of the same class
-
-
-
 \textbf{Valid example:}
-
 \begin{lstlisting}[language=Kotlin]
   abstract class Foo<out T : Any> : IFoo { }
   
@@ -2512,61 +1345,28 @@ Follow the recommendations below for using space to separate keywords:
       val x = object : IFoo { /*...*/ } 
   }
 \end{lstlisting}
-
-
 6. There should be \textit{only one space} between the identifier and its type: \textbf{list: List<String>}
-
 If the type is nullable, there should be no space before \textbf{?}.
-
-
-
 7. When using \textbf{[]} operator (\textbf{get/set}) there should be \textbf{no} spaces between identifier and \textbf{[} : \textbf{someList[0]}.
-
-
-
 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis:
-
    \textbf{foo() \{\}}. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2].
-
     This rule does not prohibit, for example, the following code:
-
 \begin{lstlisting}[language=Kotlin]
 fun foo
 (
     a: String
 )
 \end{lstlisting}
-
-
 9. Never put a space after \textbf{(}, \textbf{[}, \textbf{<} (when used as a bracket in templates) or before \textbf{)}, \textbf{]}, \textbf{>} (when used as a bracket in templates).
-
-
-
 10. There should be no spaces between a prefix/postfix operator (like \textbf{!!} or \textbf{++}) and its operand.
-
-
-
 \subsubsection*{\textbf{3.8.2: No spaces for horizontal alignment}}
 \leavevmode\newline
-
 \label{sec:3.8.2}
-
-
-
 \textit{Horizontal alignment} refers to aligning code blocks by adding space to the code. Horizontal alignment should not be used because:
-
-
-
 - When modifying code, it takes much time for new developers to format, support, and fix alignment issues.
-
 - Long identifier names will break the alignment and lead to less presentable code.
-
 - There are more disadvantages than advantages in alignment. To reduce maintenance costs, misalignment (???) is the best choice.
-
-
-
 Recommendation: Alignment only looks suitable for \textbf{enum class}, where it can be used in table format to improve code readability:
-
 \begin{lstlisting}[language=Kotlin]
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
@@ -2575,34 +1375,20 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     ;
 }
 \end{lstlisting}
-
-
 \textbf{Valid example:}
-
 \begin{lstlisting}[language=Kotlin]
  private val nr: Int // no alignment, but looks fine
  private var color: Color // no alignment
 \end{lstlisting}
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
  private val    nr: Int    // aligned comment with extra spaces
  private val color: Color  // alignment for a comment and alignment for identifier name
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.9 Enumerations}}
-
 \label{sec:3.9}
-
 Enum values are separated by a comma and line break, with ';' placed on the new line.
-
-
-
 1) The comma and line break characters separate enum values. Put \textbf{;} on the new line:
-
 \begin{lstlisting}[language=Kotlin]
 enum class Warnings {
     A,
@@ -2611,46 +1397,23 @@ enum class Warnings {
     ;
 }
 \end{lstlisting}
-
-
 This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
-
 Also, use \href{https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma}{trailing comma}.
-
-
-
 2) If the enum is simple (no properties, methods, and comments inside), you can declare it in a single line:
-
 \begin{lstlisting}[language=Kotlin]
 enum class Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
 \end{lstlisting}
-
-
 3) Enum classes take preference (if it is possible to use it). For example, instead of two boolean properties:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val isCelsius = true
 val isFahrenheit = false
 \end{lstlisting}
-
-
 use enum class:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 enum class TemperatureScale { CELSIUS, FAHRENHEIT }
 \end{lstlisting}
-
-
 - The variable value only changes within a fixed range and is defined with the enum type. 
-
 - Avoid comparison with magic numbers of \textbf{-1, 0, and 1}; use enums instead.
-
-
-
 \begin{lstlisting}[language=Kotlin]
 enum class ComparisonResult {
     ORDERED_ASCENDING,
@@ -2659,120 +1422,53 @@ enum class ComparisonResult {
     ;
 }
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.10 Variable declaration}}
-
 \label{sec:3.10}
-
 This section describes rules for the declaration of variables.
-
 \subsubsection*{\textbf{3.10.1 Declare one variable per line}}
 \leavevmode\newline
-
 \label{sec:3.10.1}
-
-
-
 Each property or variable must be declared on a separate line. 
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val n1: Int; val n2: Int
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{3.10.2 Variables should be declared near the line where they are first used}}
 \leavevmode\newline
-
 \label{sec:3.10.2}
-
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
-
 Local variables are usually initialized during their declaration or immediately after.
-
 The member fields of the class should be declared collectively (see [Rule 3.1.2] for details on the class structure).
-
-
-
 \subsection*{\textbf{3.11 'When' expression}}
-
 \label{sec:3.11}
-
-
-
 The \textbf{when} statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
-
 Each \textbf{when} statement should contain an \textbf{else} statement group, even if it does not contain any code.
-
-
-
 \textbf{Exception:} If 'when' statement of the \textbf{enum or sealed} type contains all enum values, there is no need to have an "else" branch.
-
 The compiler can issue a warning when it is missing.
-
-
-
 \subsection*{\textbf{3.12 Annotations}}
-
 \label{sec:3.12}
-
-
-
 Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
-
 1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 @MustBeDocumented
 @CustomAnnotation
 fun getNameIfPresent() { /* ... */ }
 \end{lstlisting}
-
-
 2. A single annotation should be on the same line as the code it is annotating.
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 @CustomAnnotation class Foo {}
 \end{lstlisting}
-
-
 3. Multiple annotations applied to a field or property can appear on the same line as the corresponding field.
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 @MustBeDocumented @CustomAnnotation val loader: DataLoader
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.13 Block comments}}
-
 \label{sec:3.13}
-
-
-
 Block comments should be placed at the same indentation level as the surrounding code. See examples below.
-
-
-
 \textbf{Valid example}:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 class SomeClass {
      /*
@@ -2782,29 +1478,15 @@ class SomeClass {
       fun foo() {}
 }
 \end{lstlisting}
-
-
 \textbf{Note}: Use \textbf{/*...*/} block comments to enable automatic formatting by IDEs.
-
-
-
 \subsection*{\textbf{3.14 Modifiers and constant values}}
-
 \label{sec:3.14}
-
 This section contains recommendations regarding modifiers and constant values.
-
 \subsubsection*{\textbf{3.14.1 Declaration with multiple modifiers}}
 \leavevmode\newline
-
 \label{sec:3.14.1}
-
 If a declaration has multiple modifiers, always follow the proper sequence.
-
 \textbf{Valid sequence:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 public / internal / protected / private
 expect / actual
@@ -2826,17 +1508,11 @@ infix
 operator
 data
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{3.14.2: Separate long numerical values with an underscore}}
 \leavevmode\newline
-
 \label{sec:3.14.2}
-
 An underscore character should separate long numerical values.
-
 \textbf{Note:} Using underscores simplifies reading and helps to find errors in numeric constants.
-
 \begin{lstlisting}[language=Kotlin]
 val oneMillion = 1_000_000
 val creditCardNumber = 1234_5678_9012_3456L
@@ -2844,160 +1520,83 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 \end{lstlisting}
-
-
 \subsection*{\textbf{3.15 Strings}}
-
 \label{sec:3.15}
-
 This section describes the general rules of using strings.
-
-
-
 \subsubsection*{\textbf{3.15.1 Concatenation of Strings}}
 \leavevmode\newline
-
 \label{sec:3.15.1}
-
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
-
 \href{https://kotlinlang.org/docs/reference/basic-types.html#string-templates}{String templates}, \href{https://kotlinlang.org/docs/reference/basic-types.html#string-literals}{Raw strings}.
-
 Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val myStr = "Super string"
 val value = myStr + " concatenated"
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val myStr = "Super string"
 val value = "$myStr concatenated"
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{3.15.2 String template format}}
 \leavevmode\newline
-
 \label{sec:3.15.2}
-
 \textbf{Redundant curly braces in string templates}
-
-
-
 If there is only one variable in a string template, there is no need to use such a template. Use this variable directly.
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val someString = "${myArgument} ${myArgument.foo()}"
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val someString = "$myArgument ${myArgument.foo()}"
 \end{lstlisting}
-
-
 \textbf{Redundant string template}
-
-
-
 In case a string template contains only one variable - there is no need to use the string template. Use this variable directly.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val someString = "$myArgument"
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val someString = myArgument
 \end{lstlisting}
 \section*{\textbf{4. Variables and types}}
-
 \label{sec:4.}
-
 This section is dedicated to the rules and recommendations for using variables and types in your code.
-
 \subsection*{\textbf{4.1 Variables}}
-
 \label{sec:4.1}
-
 The rules of using variables are explained in the below topics.
-
 \subsubsection*{\textbf{4.1.1 Do not use Float and Double types when accurate calculations are needed}}
 \leavevmode\newline
-
 \label{sec:4.1.1}
-
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
-
 Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a \textbf{binary representation} with a finite length.
-
-
-
 The following code example seems to be obvious: 
-
 \begin{lstlisting}[language=Kotlin]
     val myValue = 2.0 - 1.1
     println(myValue)
 \end{lstlisting}
-
-
 However, it will print the following value: \textbf{0.8999999999999999}
-
-
-
 Therefore, for precise calculations (for example, in finance or exact sciences), using such types as \textbf{Int}, \textbf{Long}, \textbf{BigDecimal}are recommended.
-
 The \textbf{BigDecimal} type should serve as a good choice.
-
-
-
 \textbf{Invalid example}:
-
 Float values containing more than six or seven decimal numbers will be rounded.
-
 \begin{lstlisting}[language=Kotlin]
  val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
 \end{lstlisting}
-
-
 \textbf{Valid example}: (when precise calculations are needed): 
-
 \begin{lstlisting}[language=Kotlin]
     val income = BigDecimal("2.0")
     val expense = BigDecimal("1.1")
     println(income.subtract(expense)) // you will obtain 0.9 here
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{4.1.2: Comparing numeric float type values}}
 \leavevmode\newline
-
 \label{sec:4.1.2}
-
 Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as \textbf{compareTo()} and \textbf{equals()}. Since floating-point numbers involve precision problems in computer representation, it is better to use \textbf{BigDecimal} as recommended in [Rule 4.1.1] to make accurate computations and comparisons. The following code describes these problems.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val f1 = 1.0f - 0.9f
 val f2 = 0.9f - 0.8f
@@ -3006,7 +1605,6 @@ if (f1 == f2) {
 } else {
     println("But this block will be reached")
 }
-
 val flt1 = f1;
 val flt2 = f2;
 if (flt1.equals(flt2)) {
@@ -3015,12 +1613,7 @@ if (flt1.equals(flt2)) {
     println("But this block will be reached")
 } 
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val foo = 1.03f
 val bar = 0.42f
@@ -3030,68 +1623,35 @@ if (abs(foo - bar) > 1e-6f) {
     println("Not")
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{4.1.3 Try to use 'val' instead of 'var' for variable declaration}}
 \leavevmode\newline
-
 \label{sec:4.1.3}
-
-
-
 Variables with the \textbf{val} modifier are immutable (read-only).
-
 Using \textbf{val} variables instead of \textbf{var} variables increases code robustness and readability.
-
 This is because \textbf{var} variables can be reassigned several times in the business logic.
-
 However, in some scenarios with loops or accumulators, only \textbf{var}s are permitted.
-
-
-
 \subsection*{\textbf{4.2 Types}}
-
 \label{sec:4.2}
-
 This section provides recommendations for using types.
-
 \subsubsection*{\textbf{4.2.1: Use Contracts and smart cast as much as possible}}
 \leavevmode\newline
-
 \label{sec:4.2.1}
-
-
-
 The Kotlin compiler has introduced \href{https://kotlinlang.org/docs/reference/typecasts.html#smart-casts}{Smart Casts} that help reduce the size of code.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
     if (x is String) {
         print((x as String).length) // x was already automatically cast to String - no need to use 'as' keyword here
     }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
     if (x is String) {
         print(x.length) // x was already automatically cast to String - no need to use 'as' keyword here
     }
 \end{lstlisting}
-
-
 Also, Kotlin 1.3 introduced \href{https://kotlinlang.org/docs/reference/whatsnew13.html#contracts}{Contracts} that provide enhanced logic for smart-cast.
-
 Contracts are used and are very stable in \textbf{stdlib}, for example:
-
  
-
-
-
 \begin{lstlisting}[language=Kotlin]
 fun bar(x: String?) {
     if (!x.isNullOrEmpty()) {
@@ -3099,181 +1659,92 @@ fun bar(x: String?) {
     }
 } 
 \end{lstlisting}
-
-
 Smart cast and contracts are a better choice because they reduce boilerplate code and features forced type conversion.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 fun String?.isNotNull(): Boolean = this != null
-
 fun foo(s: String?) {
     if (s.isNotNull()) s!!.length // No smartcast here and !! operator is used
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 fun foo(s: String?) {
     if (s.isNotNull()) s.length // We have used a method with contract from stdlib that helped compiler to execute smart cast
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{4.2.2: Try to use type alias to represent types making code more readable}}
 \leavevmode\newline
-
 \label{sec:4.2.2}
-
-
-
 Type aliases provide alternative names for existing types.
-
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
-
 For example, code looks much more readable if you introduce a \textbf{typealias} instead of a long chain of nested generic types.
-
 We recommend using a \textbf{typealias} if the type contains \textbf{more than two} nested generic types and is longer than \textbf{25 chars}.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val b: MutableMap<String, MutableList<String>>
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 typealias FileTable = MutableMap<String, MutableList<String>>
 val b: FileTable
 \end{lstlisting}
-
-
 You can also provide additional aliases for function (lambda-like) types:
-
 \begin{lstlisting}[language=Kotlin]
 typealias MyHandler = (Int, String, Any) -> Unit
-
 typealias Predicate<T> = (T) -> Boolean
 \end{lstlisting}
-
-
 \subsection*{\textbf{4.3 Null safety and variable declarations}}
-
 \label{sec:4.3}
-
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
-
-
-
 \subsubsection*{\textbf{4.3.1: Avoid declaring variables with nullable types}}
 \leavevmode\newline
-
 \label{sec:4.3.1}
-
 To avoid \textbf{NullPointerException} and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with \textbf{?} symbol).
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val a: Int? = 0
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val a: Int = 0
 \end{lstlisting}
-
-
 Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with \textbf{!!} and \textbf{?} symbols.
-
 Avoid using nullable types for Kotlin stdlib (declared in \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/}{official documentation}). 
-
 Try to use initializers for empty collections. For example, if you want to initialize a list instead of \textbf{null}, use \textbf{emptyList()}.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val a: List<Int>? = null 
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val a: List<Int> = emptyList()
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{4.3.2: Variables of generic types should have an explicit type declaration}}
 \leavevmode\newline
-
 \label{sec:4.3.2}
-
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 val myVariable: Map<Int, String> = emptyMap<Int, String>() 
 \end{lstlisting}
-
-
 However, the compiler can inherit type parameters from the r-value (value assigned to a variable). Therefore, it will not force users to declare the type explicitly.
-
 These declarations are not recommended because programmers would need to find the return value and understand the variable type by looking at the method.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val myVariable = emptyMap<Int, String>() 
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 val myVariable: Map<Int, String> = emptyMap() 
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{4.3.3 Null-safety}}
 \leavevmode\newline
-
 \label{sec:4.3.3}
-
-
-
 Try to avoid explicit null checks (explicit comparison with \textbf{null}) 
-
 Kotlin is declared as \href{https://kotlinlang.org/docs/reference/null-safety.html}{Null-safe} language.
-
 However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the \textbf{null} keyword was also introduced in Kotlin. 
-
-
-
 There are several code-structures that can be used in Kotlin to avoid null-checks. For example: \textbf{?:},  \textbf{.let \{\}}, \textbf{.also \{\}}, e.t.c
-
-
-
 \textbf{Invalid example:}
-
 \begin{lstlisting}[language=Kotlin]
 // example 1
 var myVar: Int? = null
@@ -3281,13 +1752,11 @@ if (myVar == null) {
     println("null")
     return
 }
-
 // example 2
 if (myVar != null) {
     println("not null")
     return
 }
-
 // example 3
 val anotherVal = if (myVar != null) {
                      println("not null")
@@ -3302,10 +1771,7 @@ if (myVar == null) {
     println("not null")
 }
 \end{lstlisting}
-
-
 \textbf{Valid example:}
-
 \begin{lstlisting}[language=Kotlin]
 // example 1
 var myVar: Int? = null
@@ -3313,38 +1779,24 @@ myVar?: run {
     println("null")
     return
 }
-
 // example 2
 myVar?.let {
     println("not null")
     return
 }
-
 // example 3
 val anotherVal = myVar?.also {
                      println("not null")
                      1
                  } ?: 2
-
 // example 4
 myVar?.let {
     println("not null")
 } ?: run { println("null") }
 \end{lstlisting}
-
-
 \textbf{Exceptions:}
-
-
-
 In the case of complex expressions, such as multiple \textbf{else-if} structures or long conditional statements, there is common sense to use explicit comparison with \textbf{null}.
-
-
-
 \textbf{Valid examples:}
-
-
-
 \begin{lstlisting}[language=Kotlin]
 if (myVar != null) {
     println("not null")
@@ -3352,134 +1804,59 @@ if (myVar != null) {
     println("Other condition")
 }
 \end{lstlisting}
-
-
 \begin{lstlisting}[language=Kotlin]
 if (myVar == null || otherValue == 5 && isValid) {}
 \end{lstlisting}
-
-
 Please also note, that instead of using \textbf{require(a != null)} with a not null check - you should use a special Kotlin function called \textbf{requireNotNull(a)}.
-
-
-
 \section*{\textbf{5. Functions}}
-
 \label{sec:5.}
-
 This section describes the rules of using functions in your code.
-
 \subsection*{\textbf{5.1 Function design}}
-
 \label{sec:5.1}
-
 Developers can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
-
 You should utilize this approach, along with functional style, when writing Kotlin code. 
-
 The concepts behind functional style are as follows: 
-
 Functions are the smallest unit of combinable and reusable code.
-
 They should have clean logic, \textbf{high cohesion}, and \textbf{low coupling} to organize the code effectively.
-
 The code in functions should be simple and not conceal the author's original intentions.
-
-
-
 Additionally, it should have a clean abstraction, and control statements should be used straightforwardly.
-
 The side effects (code that does not affect a function's return value but affects global/object instance variables) should not be used for state changes of an object.
-
 The only exceptions to this are state machines.
-
-
-
 Kotlin is \href{https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java}{designed} to support and encourage functional programming, featuring the corresponding built-in mechanisms.
-
 Also, it supports standard collections and sequences feature methods that enable functional programming (for example, \textbf{apply}, \textbf{with}, \textbf{let}, and \textbf{run}), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
-
 As [previously discussed], Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input. 
-
 The pipeline data flow for the pure function comprises a functional paradigm. It is easy to implement concurrent programming when you have chains of function calls, where each step features the following characteristics:
-
-1.	Simplicity
-
 2.	Verifiability
-
 3.	Testability
-
 4.	Replaceability
-
 5.	Pluggability
-
 6.	Extensibility
-
 7.	Immutable results
-
-
-
 There can be only one side effect in this data stream, which can be placed only at the end of the execution queue.
-
-
-
 \subsubsection*{\textbf{5.1.1 Avoid functions that are too long}}
 \leavevmode\newline
-
 \label{sec:5.1.1}
-
-
-
 The function should be displayable on one screen and only implement one certain logic.
-
 If a function is too long, it often means complex and could be split or simplified. Functions should consist of 30 lines (non-empty and non-comment) in total.
-
-
-
 \textbf{Exception:} Some functions that implement complex algorithms may exceed 30 lines due to aggregation and comprehensiveness.
-
 Linter warnings for such functions \textbf{can be suppressed}. 
-
-
-
 Even if a long function works well, new problems or bugs may appear due to the function's complex logic once it is modified by someone else.
-
 Therefore, it is recommended to split such functions into several separate and shorter functions that are easier to manage.
-
 This approach will enable other programmers to read and modify the code properly.
-
 \subsubsection*{\textbf{5.1.2 Avoid deep nesting of function code blocks}}
 \leavevmode\newline
-
 \label{sec:5.1.2}
-
-
-
 The nesting depth of a function's code block is the depth of mutual inclusion between the code control blocks in the function (for example: if, for, while, and when).
-
 Each nesting level will increase the amount of effort needed to read the code because you need to remember the current "stack" (for example, entering conditional statements and loops). 
-
 \textbf{Exception:} The nesting levels of the lambda expressions, local classes, and anonymous classes in functions are calculated based on the innermost function. The nesting levels of enclosing methods are not accumulated.
-
 Functional decomposition should be implemented to avoid confusion for the developer who reads the code.
-
 This will help the reader switch between contexts.
-
-
-
 \subsubsection*{\textbf{5.1.3 Avoid using nested functions}}
 \leavevmode\newline
-
 \label{sec:5.1.3}
-
 Nested functions create a more complex function context, thereby confusing readers.
-
 With nested functions, the visibility context may not be evident to the code reader.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 fun foo() { 
     fun nested():String { 
@@ -3490,15 +1867,9 @@ fun foo() {
 \end{lstlisting}
 \subsubsection*{\textbf{5.1.4 Negated function calls}}
 \leavevmode\newline
-
 \label{sec:5.1.4}
-
 Don't use negated function calls if it can be replaced with negated version of this function
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 fun foo() { 
     val list = listOf(1, 2, 3)
@@ -3508,10 +1879,7 @@ fun foo() {
     }
 } 
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 fun foo() { 
     val list = listOf(1, 2, 3)
@@ -3521,83 +1889,46 @@ fun foo() {
     }
 } 
 \end{lstlisting}
-
-
 \subsection*{\textbf{5.2 Function arguments}}
-
 \label{sec:5.2}
-
 The rules for using function arguments are described in the below topics.
-
 \subsubsection*{\textbf{5.2.1 The lambda parameter of the function should be placed at the end of the argument list}}
 \leavevmode\newline
-
 \label{sec:5.2.1}
-
-
-
 With such notation, it is easier to use curly brackets, leading to better code readability.
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 // declaration
 fun myFoo(someArg: Int, myLambda: () -> Unit) {
 // ...
 }
-
 // usage
 myFoo(1) { 
 println("hey")
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{5.2.2 Number of function parameters should be limited to five}}
 \leavevmode\newline
-
 \label{sec:5.2.2}
-
-
-
 A long argument list is a \href{https://en.wikipedia.org/wiki/Code\_smell}{code smell} that leads to less reliable code.
-
 It is recommended to reduce the number of parameters. Having \textbf{more than five} parameters leads to difficulties in maintenance and conflicts merging.
-
 If parameter groups appear in different functions multiple times, these parameters are closely related and can be encapsulated into a single Data Class.
-
 It is recommended that you use Data Classes and Maps to unify these function arguments.
-
-
-
 \subsubsection*{\textbf{5.2.3 Use default values for function arguments instead of overloading them}}
 \leavevmode\newline
-
 \label{sec:5.2.3}
-
 In Java, default values for function arguments are prohibited. That is why the function should be overloaded when you need to create a function with fewer arguments.
-
 In Kotlin, you can use default arguments instead.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 private fun foo(arg: Int) {
     // ...
 }
-
 private fun foo() {
     // ...
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
  private fun foo(arg: Int = 0) {
      // ...
@@ -3605,15 +1936,9 @@ private fun foo() {
 \end{lstlisting}
 \subsubsection*{\textbf{5.2.4 Synchronizing code inside asynchronous code}}
 \leavevmode\newline
-
 \label{sec:5.2.4}
-
 Try to avoid using \textbf{runBlocking} in asynchronous code
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 GlobalScope.async {
     runBlocking {
@@ -3623,26 +1948,14 @@ GlobalScope.async {
 \end{lstlisting}
 \subsubsection*{\textbf{5.2.5 Long lambdas should have explicit parameters}}
 \leavevmode\newline
-
 \label{sec:5.2.5}
-
 The lambda without parameters shouldn't be too long.
-
 If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
-
-
-
 \subsubsection*{\textbf{5.2.6 Avoid using unnecessary}}
 \leavevmode\newline
-
 \label{sec:5.2.6}
-
 Expressions with unnecessary, custom labels generally increase complexity and worsen the maintainability of the code.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 run lab@ {
     list.forEach {
@@ -3650,15 +1963,11 @@ run lab@ {
     }
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 list.forEachIndexed { index, i ->
     return@forEachIndexed
 }
-
 lab@ for(i: Int in q) {
     for (j: Int in q) {
         println(i)
@@ -3667,26 +1976,15 @@ lab@ for(i: Int in q) {
 }
 \end{lstlisting}
 \section*{\textbf{6. Classes}}
-
 \label{sec:6.}
-
 \subsection*{\textbf{6.1 Classes}}
-
 \label{sec:6.1}
-
 This section describes the rules of denoting classes in your code.
-
 \subsubsection*{\textbf{6.1.1  Denoting a class with a single constructor}}
 \leavevmode\newline
-
 \label{sec:6.1.1}
-
 When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. If the class contains only one explicit constructor, it should be converted to a primary constructor.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class Test {
     var a: Int
@@ -3695,52 +1993,32 @@ class Test {
     }
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class Test(var a: Int) { 
     // ...
 }
-
 // in case of any annotations or modifiers used on a constructor:
 class Test private constructor(var a: Int) { 
     // ...
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.2 Prefer data classes instead of classes without any functional logic}}
 \leavevmode\newline
-
 \label{sec:6.1.2}
-
 Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin \textbf{data class}. The main purpose of this class is to hold data,
-
 but also \textbf{data class} will automatically generate several useful methods:
-
 - equals()/hashCode() pair;
-
 - toString()
-
 - componentN() functions corresponding to the properties in their order of declaration;
-
 - copy() function
-
-
-
 Therefore, instead of using \textbf{normal} classes:
-
-
-
 \begin{lstlisting}[language=Kotlin]
 class Test {
     var a: Int = 0
         get() = field
         set(value: Int) { field = value}
 }
-
 class Test {
     var a: Int = 0
     var b: Int = 0
@@ -3750,7 +2028,6 @@ class Test {
         this.b = b
     }
 }
-
 // or
 class Test(var a: Int = 0, var b: Int = 0)
  
@@ -3760,59 +2037,36 @@ class Test() {
     var b: Int = 0
 }
 \end{lstlisting}
-
-
 \textbf{prefer data classes:}
-
 \begin{lstlisting}[language=Kotlin]
 data class Test1(var a: Int = 0, var b: Int = 0)
 \end{lstlisting}
-
-
 \textbf{Exception 1}: Note that data classes cannot be abstract, open, sealed, or inner; that is why these types of classes cannot be changed to a data class.
-
-
-
 \textbf{Exception 2}: No need to convert a class to a data class if this class extends some other class or implements an interface.
-
-
-
 \subsubsection*{\textbf{6.1.3 Do not use the primary constructor if it is empty or useless}}
 \leavevmode\newline
-
 \label{sec:6.1.3}
-
 The primary constructor is a part of the class header; it is placed after the class name and type parameters (optional) but can be omitted if it is not used.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 // simple case that does not need a primary constructor
 class Test() {
     var a: Int = 0
     var b: Int = 0
 }
-
 // empty primary constructor is not needed here
 // it can be replaced with a primary contructor with one argument or removed
 class Test() {
     var a  = "Property"
-
     init {
         println("some init")
     }
-
     constructor(a: String): this() {
         this.a = a
     }
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 // the good example here is a data class; this example also shows that you should get rid of braces for the primary constructor
 class Test {
@@ -3820,29 +2074,16 @@ class Test {
     var b: Int = 0
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.4 Do not use redundant init blocks in your class}}
 \leavevmode\newline
-
 \label{sec:6.1.4}
-
 Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced \textbf{init} blocks.
-
 These blocks store the code to be run during the class initialization.
-
 Kotlin allows writing multiple initialization blocks executed in the same order as they appear in the class body.
-
 Even when you follow (rule 3.2)[\#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
-
 Therefore, you should try to use a single \textbf{init} block to reduce the code's complexity. If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your \textbf{init} blocks' order is accidentally changed and
-
 make the code logic more coupled. It is always enough to use one \textbf{init} block to implement your idea in Kotlin.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class YourClass(var name: String) {    
     init {
@@ -3856,34 +2097,22 @@ class YourClass(var name: String) {
     }
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class YourClass(var name: String) {
     init {
         println("First initializer block that prints ${name}")
     }
-
     val property = "Property: ${name.length}".also { prop ->
         println(prop)
         println("Second initializer block that prints ${name.length}")
     }
 }
 \end{lstlisting}
-
-
 The \textbf{init} block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
-
 Therefore if the \textbf{init} block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
-
 In some cases, this rule can be in clash with [6.1.1], but that should not stop you.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class A(baseUrl: String) {
     private val customUrl: String
@@ -3892,54 +2121,33 @@ class A(baseUrl: String) {
     }
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class A(baseUrl: String) {
     private val customUrl = "$baseUrl/myUrl"
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.5 Explicit supertype qualification}}
 \leavevmode\newline
-
 \label{sec:6.1.5}
-
 The explicit supertype qualification should not be used if there is no clash between called methods. This rule is applicable to both interfaces and classes.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 open class Rectangle {
     open fun draw() { /* ... */ }
 }
-
 class Square() : Rectangle() {
     override fun draw() {
         super<Rectangle>.draw() // no need in super<Rectangle> here
     }
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.6 Abstract class should have at least one abstract method}}
 \leavevmode\newline
-
 \label{sec:6.1.6}
-
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
-
 When the abstract class has no abstract methods, it was set \textbf{abstract} incorrectly and can be converted to a regular class.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 abstract class NotAbstract {
     fun foo() {}
@@ -3947,17 +2155,13 @@ abstract class NotAbstract {
     fun test() {}
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 abstract class NotAbstract {
     abstract fun foo()
     
     fun test() {}
 }
-
 // OR
 class NotAbstract {
     fun foo() {}
@@ -3965,19 +2169,11 @@ class NotAbstract {
     fun test() {}
 }
 \end{lstlisting}
-
-
-
-
 \subsubsection*{\textbf{6.1.7 When using the}}
 \leavevmode\newline
-
 \label{sec:6.1.7}
-
 Kotlin has a mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#backing-properties}{backing properties}.
-
 In some cases, implicit backing is not enough and it should be done explicitly:
-
 \begin{lstlisting}[language=Kotlin]
 private var _table: Map<String, Int>? = null
 val table: Map<String, Int>
@@ -3988,27 +2184,14 @@ val table: Map<String, Int>
         return _table ?: throw AssertionError("Set to null by another thread")
     }
 \end{lstlisting}
-
-
 In this case, the name of the backing property (\textbf{\_table}) should be the same as the name of the real property (\textbf{table}) but should have an underscore (\textbf{\_}) prefix.
-
 It is one of the exceptions from the [identifier names rule]
-
-
-
 \subsubsection*{\textbf{6.1.8 Avoid using custom getters and setters}}
 \leavevmode\newline
-
 \label{sec:6.1.8}
-
 Kotlin has a perfect mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#properties-and-fields}{properties}.
-
 Kotlin compiler automatically generates \textbf{get} and \textbf{set} methods for properties and can override them.
-
-
-
 \textbf{Invalid example:}
-
 \begin{lstlisting}[language=Kotlin]
 class A {
     var size: Int = 0
@@ -4020,26 +2203,11 @@ class A {
         get() = field * 2
 }
 \end{lstlisting}
-
-
 From the callee code, these methods look like access to this property: \textbf{A().isEmpty = true} for setter and \textbf{A().isEmpty} for getter.
-
-
-
 However, when \textbf{get} and \textbf{set} are overridden, it  isn't very clear for a developer who uses this particular class. 
-
 The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
-
 Use extra functions instead to avoid confusion.
-
-
-
-
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class A {
     var size: Int = 0
@@ -4051,25 +2219,13 @@ class A {
     fun goodNameThatDescribesThisGetter() = this.size * 2
 }
 \end{lstlisting}
-
-
 \textbf{Exception:} \textbf{Private setters} are only exceptions that are not prohibited by this rule.
-
-
-
 \subsubsection*{\textbf{6.1.9 Never use the name of a variable in the custom getter or setter}}
 \leavevmode\newline
-
 \label{sec:6.1.9}
-
 If you ignored [recommendation 6.1.8], be careful with using the name of the property in your custom getter/setter
-
 as it can accidentally cause a recursive call and a \textbf{StackOverflow Error}. Use the \textbf{field} keyword instead.
-
-
-
 \textbf{Invalid example (very bad)}:
-
 \begin{lstlisting}[language=Kotlin]
 var isEmpty: Boolean
     set(value) {
@@ -4078,62 +2234,38 @@ var isEmpty: Boolean
     }
     get() = isEmpty
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.10 No trivial getters and setters are allowed in the code}}
 \leavevmode\newline
-
 \label{sec:6.1.10}
-
 In Java, trivial getters - are the getters that are just returning the field value.
-
 Trivial setters - are merely setting the field with a value without any transformation.
-
 However, in Kotlin, trivial getters/setters are generated by default. There is no need to use it explicitly for all types of data structures in Kotlin.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class A {
     var a: Int = 0 
     get() = field
     set(value: Int) { field = value }
-
     //
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class A {
     var a: Int = 0 
     get() = field
     set(value: Int) { field = value }
-
     //
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.11 Use 'apply' for grouping object initialization}}
 \leavevmode\newline
-
 \label{sec:6.1.11}
-
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
-
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
-
 In Kotlin, to reduce the number of dummy code line and to group objects \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html}{apply extension} was added:  
-
  
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class HttpClient(var name: String) {
     var url: String = ""
@@ -4142,7 +2274,6 @@ class HttpClient(var name: String) {
     
     fun doRequest() {}
 }
-
 fun main() {
     val httpClient = HttpClient("myConnection")
     httpClient.url = "http://example.com"
@@ -4151,21 +2282,15 @@ fun main() {
     
     httpCLient.doRequest()
 }   
-
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class HttpClient(var name: String) {
     var url: String = ""
     var port: String = ""
     var timeout = 0
-
     fun doRequest() {}
 }
-
 fun main() {
     val httpClient = HttpClient("myConnection")
             .apply {
@@ -4176,150 +2301,77 @@ fun main() {
     httpClient.doRequest()
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.1.12 Prefer Inline classes when a class has a single property}}
 \leavevmode\newline
-
 \label{sec:6.1.12}
-
 If a class has only one immutable property, then it can be converted to the inline class.
-
-
-
 Sometimes it is necessary for business logic to create a wrapper around some type. However, it introduces runtime overhead due to additional heap allocations. Moreover, if the wrapped type is primitive, the performance hit is terrible, because primitive types are usually heavily optimized by the runtime, while their wrappers don't get any special treatment.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class Password {
     val value: String
 }
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 inline class Password(val value: String)
 \end{lstlisting}
-
-
 \subsection*{\textbf{6.2 Extension functions}}
-
 \label{sec:6.2}
-
 This section describes the rules of using extension functions in your code.
-
-
-
 \href{https://kotlinlang.org/docs/reference/extensions.html}{Extension functions} is a killer-feature in Kotlin. 
-
 It gives you a chance to extend classes that were already implemented in external libraries and helps you to make classes less heavy.
-
 Extension functions are resolved statically.
-
-
-
 \subsubsection*{\textbf{6.2.1 Use extension functions for making logic of classes less coupled}}
 \leavevmode\newline
-
 \label{sec:6.2.1}
-
 It is recommended that for classes, the non-tightly coupled functions, which are rarely used in the class, should be implemented as extension functions where possible.
-
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
-
-
-
 \subsubsection*{\textbf{6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes}}
 \leavevmode\newline
-
 \label{sec:6.2.2}
-
 You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible\_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
-
 This can lead to an issue when an incorrect method is used.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 open class A
 class B: A()
-
 // two extension functions with the same signature
 fun A.foo() = "A"
 fun B.foo() = "B"
-
 fun printClassName(s: A) { println(s.foo()) }
-
 // this call will run foo() method from the base class A, but
 // programmer can expect to run foo() from the class inheritor B
 fun main() { printClassName(B()) }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.2.3 Don't use extension functions for the class in the same file}}
 \leavevmode\newline
-
 \label{sec:6.2.3}
-
 You should not use extension functions for the class in the same file, where it is defined.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 class SomeClass {
     
 }
-
 fun SomeClass.deleteAllSpaces() {
     
 }
 \end{lstlisting}
-
-
 \subsection*{\textbf{6.3 Interfaces}}
-
 \label{sec:6.3}
-
 An \textbf{Interface} in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
-
 They can have properties, but these need to be abstract or to provide accessor implementations.
-
-
-
 Kotlin's interfaces can define attributes and functions.
-
 In Kotlin and Java, the interface is the main presentation means of application programming interface (API) design and should take precedence over the use of (abstract) classes.
-
-
-
 \subsection*{\textbf{6.4 Objects}}
-
 \label{sec:6.4}
-
 This section describes the rules of using objects in code.
-
 \subsubsection*{\textbf{6.4.1 Instead of using utility classes}}
 \leavevmode\newline
-
 \label{sec:6.4.1}
-
 Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions], using extension functions is a powerful method.
-
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
-
-
-
 \textbf{Invalid example}:
-
 \begin{lstlisting}[language=Kotlin]
 object StringUtil {
     fun stringInfo(myString: String): Int {
@@ -4328,62 +2380,37 @@ object StringUtil {
 }
 StringUtil.stringInfo("myStr")
 \end{lstlisting}
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 fun String.stringInfo(): Int {
     return this.count{ "something".contains(it) }
 }
-
 "myStr".stringInfo()
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.4.2 Objects should be used for Stateless Interfaces}}
 \leavevmode\newline
-
 \label{sec:6.4.2}
-
 Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
-
 There is no need to use classes for such structures.
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 interface I {
     fun foo()
 }
-
 object O: I {
     override fun foo() {}
 }
 \end{lstlisting}
-
-
 \subsubsection*{\textbf{6.5.1 kts files should wrap logic into top-level scope}}
 \leavevmode\newline
-
 \label{sec:6.5.1}
-
 It is still recommended wrapping logic inside functions and avoid using top-level statements for function calls or wrapping blocks of code
-
 in top-level scope functions like \textbf{run}.
-
-
-
 \textbf{Valid example}:
-
 \begin{lstlisting}[language=Kotlin]
 run {
     // some code
 }
-
 fun foo() {
-
 }
 \end{lstlisting}

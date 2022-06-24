@@ -81,7 +81,10 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             }
         } ?: if (visitorCounter.incrementAndGet() == 1) {
             log.error("Not able to find an external configuration for domain" +
-                    " name in the common configuration (is it missing in yml config?)")
+                " name in the common configuration (is it missing in yml config?)")
+        } else {
+            @Suppress("RedundantUnitExpression")
+            Unit
         }
     }
 
@@ -123,7 +126,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or \"$PACKAGE_PATH_ANCHOR\" directory cannot be found in it's path." +
-                    " Will not be able to determine correct package name. It can happen due to missing <$PACKAGE_PATH_ANCHOR> directory in the path")
+                " Will not be able to determine correct package name. It can happen due to missing <$PACKAGE_PATH_ANCHOR> directory in the path")
             emptyList()
         } else {
             // creating a real package name:
@@ -198,8 +201,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         val wordFromPackage = word.replace("_", "")
 
         return wordFromPackage[0].isDigit() ||
-                wordFromPackage.isKotlinKeyWord() ||
-                wordFromPackage.isJavaKeyWord()
+            wordFromPackage.isKotlinKeyWord() ||
+            wordFromPackage.isJavaKeyWord()
     }
 
     /**
@@ -279,7 +282,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
-        const val NAME_ID = "aah-package-naming"
+        const val NAME_ID = "package-naming"
 
         /**
          * Directory which is considered the start of sources file tree
@@ -301,7 +304,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          */
         private val kmmTargets = listOf("common", "jvm", "js", "android", "ios", "androidNativeArm32", "androidNativeArm64", "iosArm32", "iosArm64", "iosX64",
             "watchosArm32", "watchosArm64", "watchosX86", "tvosArm64", "tvosX64", "macosX64", "linuxArm64", "linuxArm32Hfp", "linuxMips32", "linuxMipsel32", "linuxX64",
-            "mingwX64", "mingwX86", "wasm32")
+            "mingwX64", "mingwX86", "wasm32", "macosArm64")
 
         /**
          * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
