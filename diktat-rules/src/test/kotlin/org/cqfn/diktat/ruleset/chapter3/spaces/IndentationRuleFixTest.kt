@@ -21,7 +21,8 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.nio.file.Path
 
 @TestMethodOrder(MethodOrderer.DisplayName::class)
-class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
+class IndentationRuleFixTest :
+    FixTestBase("test/paragraph3/indentation",
     ::IndentationRule,
     listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
@@ -34,7 +35,9 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
             )
         )
     )
-), IndentationRuleTestMixin {
+),
+    IndentationRuleTestMixin,
+    IndentationRuleTestResources {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters should be properly aligned`() {

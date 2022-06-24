@@ -26,7 +26,10 @@ import java.util.function.Consumer
 
 @Suppress("LargeClass")
 @TestMethodOrder(MethodOrderer.DisplayName::class)
-class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRuleTestMixin {
+class IndentationRuleWarnTest :
+    LintTestBase(::IndentationRule),
+    IndentationRuleTestMixin,
+    IndentationRuleTestResources {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
     private val rulesConfigList = listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
