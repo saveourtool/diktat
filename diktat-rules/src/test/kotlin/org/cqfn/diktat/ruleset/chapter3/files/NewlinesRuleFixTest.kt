@@ -86,10 +86,4 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
     fun `list argument in lambda`() {
         fixAndCompare("ListArgumentLambdaExpected.kt", "ListArgumentLambdaTest.kt")
     }
-
-    @Test
-    @Tag(WarningNames.WRONG_NEWLINES)
-    fun `long dot qualified expression`() {
-        fixAndCompare("LongDotQualifiedExpressionExpected.kt", "LongDotQualifiedExpressionTest.kt")
-    }
 }

@@ -263,7 +263,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }?.qux()
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
             LintError(3, 26, ruleId, "$functionalStyleWarn .", true),
             LintError(5, 10, ruleId, "$functionalStyleWarn ?.", true),
@@ -814,9 +813,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.map().gre().few().qwe()
                 |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(3, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
-            LintError(13, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(13, 23, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }
@@ -844,9 +841,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   .few()
                 |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(4, 22, ruleId, "$functionalStyleWarn .", true),
-            LintError(8, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(9, 22, ruleId, "$functionalStyleWarn .", true)
         )
     }
@@ -972,7 +967,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.gf().fge().qwe().fd()
                 |}
             """.trimMargin(),
-            LintError(6, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(6, 22, ruleId, "$functionalStyleWarn .", true), rulesConfigList = rulesConfigList
         )
     }
@@ -1000,7 +994,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |       .qwe()
                 |}
             """.trimMargin(),
-            LintError(9, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             LintError(9, 29, ruleId, "$functionalStyleWarn .", true)
         )
     }
@@ -1164,6 +1157,18 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |}
             """.trimMargin(),
             fileName = "build.gradle.kts"
+        )
+    }
+
+    @Test
+    fun `Long Dot Qualified Exoression should not be separated`() {
+        lintMethod(
+            """
+                | private val holder: java.util.concurrent.atomic.AtomicReference<T> = java.util.concurrent.atomic.AtomicReference(valueToStore)
+                |
+                | private val holder: kotlin.native.concurrent.AtomicReference<T> = kotlin.native.concurrent.AtomicReference(valueToStore)
+                |
+            """.trimMargin()
         )
     }
 }

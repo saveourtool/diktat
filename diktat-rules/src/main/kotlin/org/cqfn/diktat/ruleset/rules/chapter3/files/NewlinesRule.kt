@@ -131,7 +131,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         when (node.elementType) {
             SEMICOLON -> handleSemicolon(node)
             OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)
-            // this logic regulates indentation with elements - so that the symbol and the subsequent expression are on the same line
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
             COMMA -> handleComma(node)
@@ -139,68 +138,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
-            // this logic splits long expressions into multiple lines
-            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedAndSafeAccessExpression(node)
             else -> {
             }
         }
     }
-
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION", "MagicNumber")
-    private fun handDotQualifiedAndSafeAccessExpression(node: ASTNode) {
-        val listParentTypesNoFix = listOf(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
-            VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
-        if (isNotFindParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
-            val listDot = node.findAllNodesWithCondition(
-                withSelf = true,
-                excludeChildrenCondition = { !isDotQuaOrSafeAccessOrPostfixExpression(it) }
-            ) {
-                isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
-            }.reversed()
-            if (listDot.size > 3) {
-                val without = listDot.filterNot {
-                    val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
-                    whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
-                }
-                if (without.size > 1 || (without.size == 1 && without[0] != listDot[0])) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access", node.startOffset, node) {
-                        fixDotQualifiedExpression(listDot)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Return false, if you find parent with types in list else return true
-     */
-    private fun isNotFindParentNodeWithSpecificManyType(node: ASTNode, list: List<IElementType>): Boolean {
-        list.forEach { elem ->
-            node.findParentNodeWithSpecificType(elem)?.let {
-                return false
-            }
-        }
-        return true
-    }
-
-    /**
-     * Fix Dot Qualified Expression and Safe Access Expression -
-     * 1) Append new White Space node before second and subsequent node Dot or Safe Access
-     * in Dot Qualified Expression? Safe Access Expression and Postfix Expression
-     * 2) If before first Dot or Safe Access node stay White Space node with \n - remove this node
-     */
-    private fun fixDotQualifiedExpression(list: List<ASTNode>) {
-        list.forEachIndexed { index, astNode ->
-            val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
-            val nodeBeforeDot = dotNode?.treePrev
-            if (index > 0) {
-                astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
-            }
-        }
-    }
-
-    private fun isDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode) =
-        node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
 
     /**
      * Check that EOL semicolon is used only in enums
