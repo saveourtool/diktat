@@ -349,7 +349,13 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 Style.SNAKE_CASE -> String::toUpperSnakeCase
             }
             if (!validator(value.text)) {
-                ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset, value) {
+                ENUM_VALUE.warnAndFix(
+                    configRules,
+                    emitWarn,
+                    isFixMode,
+                    "${value.text} (should be in ${configuration.enumStyle.str})",
+                    value.startOffset, value
+                ) {
                     // FixMe: add tests for this
                     (value as LeafPsiElement).rawReplaceWithText(autofix(value.text))
                 }
