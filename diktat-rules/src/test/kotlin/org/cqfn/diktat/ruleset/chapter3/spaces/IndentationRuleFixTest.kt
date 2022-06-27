@@ -1,6 +1,18 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asRulesConfigList
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asSequenceWithConcatenation
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.extendedIndent
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.withCustomParameters
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctionsContinuationIndent
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctionsSingleIndent
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperatorContinuationIndent
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperatorSingleIndent
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.whitespaceInStringLiteralsContinuationIndent
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.whitespaceInStringLiteralsSingleIndent
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.util.FixTestBase
@@ -8,8 +20,7 @@ import org.cqfn.diktat.util.FixTestBase
 import generated.WarningNames
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.MethodOrderer.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -20,9 +31,8 @@ import org.junit.jupiter.params.provider.ValueSource
 
 import java.nio.file.Path
 
-@TestMethodOrder(MethodOrderer.DisplayName::class)
-class IndentationRuleFixTest :
-    FixTestBase("test/paragraph3/indentation",
+@TestMethodOrder(DisplayName::class)
+class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     ::IndentationRule,
     listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
@@ -35,9 +45,7 @@ class IndentationRuleFixTest :
             )
         )
     )
-),
-    IndentationRuleTestMixin,
-    IndentationRuleTestResources {
+) {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters should be properly aligned`() {
@@ -108,21 +116,14 @@ class IndentationRuleFixTest :
 
     /**
      * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
-     *
-     * @see IndentationRuleWarnTest.ExpressionBodyFunctions
      */
     @Nested
-    @DisplayName("Expression body functions")
-    @TestMethodOrder(MethodOrderer.DisplayName::class)
-    inner class ExpressionBodyFunctions {
-        /**
-         * @see IndentationRuleWarnTest.ExpressionBodyFunctions.shouldBeProperlyIndented
-         */
+    @TestMethodOrder(DisplayName::class)
+    inner class `Expression body functions` {
         @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
         @ValueSource(booleans = [false, true])
-        @DisplayName("should remain unchanged if properly indented")
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun shouldRemainUnchangedIfProperlyIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should remain unchanged if properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
             val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
 
@@ -137,14 +138,10 @@ class IndentationRuleFixTest :
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        /**
-         * @see IndentationRuleWarnTest.ExpressionBodyFunctions.shouldBeReportedIfMisIndented
-         */
         @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
         @ValueSource(booleans = [false, true])
-        @DisplayName("should be reformatted if mis-indented")
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun shouldBeReformattedIfMisIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
             val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
 
@@ -169,14 +166,12 @@ class IndentationRuleFixTest :
      * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
      */
     @Nested
-    @DisplayName("Multi-line string literals")
-    @TestMethodOrder(MethodOrderer.DisplayName::class)
-    inner class MultilineStringLiterals {
+    @TestMethodOrder(DisplayName::class)
+    inner class `Multi-line string literals` {
         @ParameterizedTest(name = "extendedIndent = {0}")
         @ValueSource(booleans = [false, true])
-        @DisplayName("no whitespace should be injected (code matches settings)")
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun noWhitespaceShouldBeInjectedCodeMatchesSettings(extendedIndent: Boolean, @TempDir tempDir: Path) {
+        fun `no whitespace should be injected (code matches settings)`(extendedIndent: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
             val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
 
@@ -193,9 +188,8 @@ class IndentationRuleFixTest :
 
         @ParameterizedTest(name = "extendedIndent = {0}")
         @ValueSource(booleans = [false, true])
-        @DisplayName("no whitespace should be injected (mis-indented code reformatted)")
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun noWhitespaceShouldBeInjectedMisIndentedCodeReformatted(extendedIndent: Boolean, @TempDir tempDir: Path) {
+        fun `no whitespace should be injected (mis-indented code reformatted)`(extendedIndent: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
             val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
 
@@ -218,21 +212,14 @@ class IndentationRuleFixTest :
 
     /**
      * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
-     *
-     * @see IndentationRuleWarnTest.ExpressionsWrappedAfterOperator
      */
     @Nested
-    @DisplayName("Expressions wrapped after operator")
-    @TestMethodOrder(MethodOrderer.DisplayName::class)
-    inner class ExpressionsWrappedAfterOperator {
-        /**
-         * @see IndentationRuleWarnTest.ExpressionsWrappedAfterOperator.shouldBeProperlyIndented
-         */
+    @TestMethodOrder(DisplayName::class)
+    inner class `Expressions wrapped after operator` {
         @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
         @ValueSource(booleans = [false, true])
-        @DisplayName("should be properly indented")
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun shouldRemainUnchangedIfProperlyIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should be properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
             val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
 
@@ -247,14 +234,10 @@ class IndentationRuleFixTest :
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        /**
-         * @see IndentationRuleWarnTest.ExpressionsWrappedAfterOperator.shouldBeReportedIfMisIndented
-         */
         @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
         @ValueSource(booleans = [false, true])
-        @DisplayName("should be reformatted if mis-indented")
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun shouldBeReformattedIfMisIndented(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
             val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
 

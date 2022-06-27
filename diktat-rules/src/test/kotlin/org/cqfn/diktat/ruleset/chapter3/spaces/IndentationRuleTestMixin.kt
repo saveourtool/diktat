@@ -10,7 +10,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
  * @see IndentationRuleWarnTest
  * @see IndentationRuleFixTest
  */
-internal interface IndentationRuleTestMixin {
+internal object IndentationRuleTestMixin {
     /**
      * Creates an `IndentationConfig` from zero or more
      * [config entries][configEntries]. Invoke without arguments to create a
