@@ -12,10 +12,8 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasParent
