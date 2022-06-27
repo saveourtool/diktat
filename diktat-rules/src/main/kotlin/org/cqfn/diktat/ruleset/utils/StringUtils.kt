@@ -6,6 +6,12 @@ package org.cqfn.diktat.ruleset.utils
 
 import org.jetbrains.kotlin.lexer.KtTokens
 
+internal const val NEWLINE = '\n'
+
+internal const val SPACE = ' '
+
+internal const val TAB = '\t'
+
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val JAVA = arrayOf("abstract", "assert", "boolean",
     "break", "byte", "case", "catch", "char", "class", "const",
@@ -18,7 +24,9 @@ val JAVA = arrayOf("abstract", "assert", "boolean",
     "try", "void", "volatile", "while")
 
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
-val KOTLIN = KtTokens.KEYWORDS.types.map { line -> line.toString() }
+val KOTLIN = KtTokens.KEYWORDS
+    .types
+    .map { line -> line.toString() }
     .plus(KtTokens.SOFT_KEYWORDS.types.map { line -> line.toString() })
 
 val loggerPropertyRegex = "(log|LOG|logger)".toRegex()
@@ -95,3 +103,15 @@ fun String.removePrefix(): String {
     }
     return this
 }
+
+/**
+ * @return the indentation of the last line of this string.
+ */
+internal fun String.lastIndent() = substringAfterLast(NEWLINE).count(::isSpaceCharacter)
+
+/**
+ * @param ch the character to examine.
+ * @return `true` if [ch] is a [SPACE], `false` otherwise.
+ */
+internal fun isSpaceCharacter(ch: Char): Boolean =
+    ch == SPACE

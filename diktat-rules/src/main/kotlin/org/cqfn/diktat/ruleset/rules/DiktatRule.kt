@@ -51,10 +51,10 @@ abstract class DiktatRule(
                 logic(node)
             } catch (internalError: Throwable) {
                 log.error(
-                    """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/. 
+                    """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/.
                        As a workaround you can disable these inspections in yml config: <$inspections>.
                        Root cause of the problem is in [${node.getFilePath()}] file.
-                       """.trimIndent(), internalError
+                    """.trimIndent(), internalError
                 )
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
                 // any existing Exception, as they will be caught in ktlint framework and the logging will be confusing:

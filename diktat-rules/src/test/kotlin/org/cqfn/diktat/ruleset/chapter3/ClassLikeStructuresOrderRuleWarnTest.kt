@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -56,7 +56,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private val FOO = 42
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
             LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
         )
@@ -73,24 +73,24 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    // logger property
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |    private val FOO = 42
-                    |    
+                    |
                     |    // another property
                     |    private val BAR = 43
-                    |    
+                    |
                     |    @Annotated
                     |    private val qux = 43
-                    |    
+                    |
                     |    // annotated property
                     |    @Annotated
                     |    private val quux = 43
-                    |    
+                    |
                     |    /**
                     |     * Yet another property.
                     |     */
                     |    private val BAZ = 44
                     |    @Annotated private lateinit var lateFoo: Int
                     |}
-                """.trimMargin())
+            """.trimMargin())
     }
 
     @Test
@@ -114,7 +114,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private val BAZ = 44
                     |    private lateinit var lateFoo: Int
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAR", true),
             LintError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} qux", true),
             LintError(8, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} quux", true),
@@ -129,16 +129,16 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
             """class Example {
                     |    fun foo() {
                     |        val bar = 0
-                    |        
+                    |
                     |        val baz = 1
                     |    }
-                    |    
+                    |
                     |    class Nested {
                     |        val bar = 0
                     |        val baz = 1
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -150,14 +150,14 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |class Example {
                     |    private val foo
                     |        get() = 0
-                    |        
+                    |
                     |    private var backing = 0
-                    |    
+                    |
                     |    var bar
                     |        get() = backing
                     |        set(value) { backing = value }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -174,7 +174,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |        get() = backing
                     |        set(value) { backing = value }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -186,9 +186,9 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     class Example {
                         companion object {
                             val b = "q"
-                            
+
                             // this
-                            private const val a = 3                                                   
+                            private const val a = 3
                         }
                     }
             """.trimMargin(),
@@ -206,7 +206,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     FOO,
                     BAR,
                     ;
-                    
+
                     fun f() {}
                     companion object
                 }

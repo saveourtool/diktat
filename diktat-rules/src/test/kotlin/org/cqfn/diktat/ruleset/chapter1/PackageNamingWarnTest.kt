@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter1
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
@@ -7,7 +8,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.TEST_FILE_NAME
@@ -277,7 +277,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
         lintMethod(
             """
                     package org.cqfn.diktat.ruleset.chapter1
-                """.trimIndent(),
+            """.trimIndent(),
             fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             rulesConfigList = rulesConfigList
         )
@@ -285,7 +285,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
         lintMethod(
             """
                     package org.cqfn.diktat.chapter1
-                """.trimIndent(),
+            """.trimIndent(),
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
             fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             rulesConfigList = rulesConfigList
@@ -298,7 +298,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
         lintMethod(
             """
                     |package org.cqfn.diktat.test.processing
-                """.trimMargin(),
+            """.trimMargin(),
             fileName = "/home/testu/project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt",
             rulesConfigList = rulesConfigList
         )
@@ -306,7 +306,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
         lintMethod(
             """
                     |package kotlin.collections
-                """.trimMargin(),
+            """.trimMargin(),
             fileName = "/home/testu/project/module/src/main/kotlin/kotlin/collections/Collections.kt",
             rulesConfigList = listOf(
                 RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "kotlin"))

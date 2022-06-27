@@ -549,15 +549,17 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
 }
 
 /**
- * If [whiteSpaceNode] is not null and has type [WHITE_SPACE], prepend a line break to it's text.
- * Otherwise, insert a new node with a line break before [beforeNode]
+ * If [whiteSpaceNode] is not null and has type [WHITE_SPACE] and this [WHITE_SPACE] contains 1 line, prepend a line break to it's text.
+ * If [whiteSpaceNode] is null or has`t type [WHITE_SPACE], insert a new node with a line break before [beforeNode]
  *
  * @param whiteSpaceNode a node that can possibly be modified
  * @param beforeNode a node before which a new WHITE_SPACE node will be inserted
  */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
-        (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
+        if (whiteSpaceNode.text.lines().size == 1) {
+            (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
+        }
     } else {
         addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
     }
@@ -781,7 +783,7 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = getRootNode().also {
-    require(it.elementType == FILE) { "Root node type is not FILE, but file_path is present in user_data only in FILE nodes" }
+    require(it.elementType == FILE) { "Root node type is not FILE, but ${KtLint.FILE_PATH_USER_DATA_KEY} is present in user_data only in FILE nodes" }
 }.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
 }
@@ -831,6 +833,15 @@ fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
     return node
 }
 
+private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
+    var shouldContinue = true
+    return takeWhile {
+        val result = shouldContinue
+        shouldContinue = pred(it)
+        result
+    }
+}
+
 private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
     this.any {
         it.shortName.toString() == (Suppress::class.simpleName) &&
@@ -845,9 +856,9 @@ private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<
     val currentOffset = this.startOffset
 
     var forwardDirection = true
+
     // We additionaly consider the offset and line for current node in aim to speed up the search
     // and not start any time from beginning of file, if possible
-    // 
     // If current line is closer to the requested line, start search from it
     // otherwise search from the beginning of file
     var lineOffset = if (line < currentLine) {

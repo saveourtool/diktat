@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_LONG_FUNCTION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.FunctionLength
 import org.cqfn.diktat.util.LintTestBase
 
@@ -34,11 +34,11 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |fun foo() {
                     |
                     |   //dkfgvdf
-                    |   
+                    |
                     |   /*
                     |    * jkgh
                     |    */
-                    |    
+                    |
                     |    /**
                     |     * dfkjvbhdfkjb
                     |     */
@@ -50,7 +50,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |   println(x)
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 5, but you have 7", false),
             rulesConfigList = rulesConfigList
         )
@@ -73,7 +73,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |   println(x)
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -88,9 +88,9 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |           println()
                     |}
                     |
-                    |fun goo() = 
+                    |fun goo() =
                     |   10
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 4", false),
             rulesConfigList = shortRulesConfigList
         )
@@ -104,7 +104,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |class A() {
                     |   val x = 10
                     |   val y  = 11
-                    |   
+                    |
                     |   fun foo() {
                     |       if(true) {
                     |           while(true) {
@@ -115,7 +115,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |   }
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 8", false),
             rulesConfigList = shortRulesConfigList
         )
@@ -130,8 +130,8 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |class A() {
                     |   val x = 10
                     |   val y  = 11
-                    |   
-                    |   
+                    |
+                    |
                     |   fun foo() {
                     |       if(true) {
                     |           while(true) {
@@ -142,7 +142,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |   }
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = shortRulesConfigList
         )
     }
@@ -153,12 +153,12 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
         lintMethod(
             """
                     |fun foo(list: List<ASTNode>) {
-                    |               
-                    |           
-                    |                           
-                    |       
+                    |
+                    |
+                    |
+                    |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = shortRulesConfigList
         )
     }
@@ -171,8 +171,8 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |class A() {
                     |   val x = 10
                     |   val y  = 11
-                    |   
-                    |   fun foo() 
+                    |
+                    |   fun foo()
                     |   {
                     |       println(123)
                     |   }
@@ -182,7 +182,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |abstract class B {
                     |   abstract fun foo()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = shortRulesWithoutHeaderConfigList
         )
     }

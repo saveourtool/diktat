@@ -218,7 +218,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     ) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
 
     companion object {
-        const val NAME_ID = "abc-local-variables"
+        const val NAME_ID = "local-variables"
         private val functionInitializers = listOf(
             "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
             "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",

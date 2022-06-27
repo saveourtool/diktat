@@ -62,7 +62,10 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isComplexIfStatement(parentIf: ASTNode): Boolean {
         val parentIfPsi = parentIf.psi
         require(parentIfPsi is KtIfExpression)
-        return (parentIfPsi.`else`?.node?.firstChildNode?.elementType == IF_KEYWORD)
+        return (parentIfPsi.`else`
+            ?.node
+            ?.firstChildNode
+            ?.elementType == IF_KEYWORD)
     }
 
     private fun conditionInIfStatement(node: ASTNode) {
@@ -218,7 +221,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         .treeParent
         .findChildByType(type)
         ?.let { it.findChildByType(BLOCK) ?: it }
-        ?.findAllNodesWithCondition { it.elementType == BREAK }?.isNotEmpty()
+        ?.findAllNodesWithCondition { it.elementType == BREAK }
+        ?.isNotEmpty()
         ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
@@ -283,6 +287,6 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
 
     companion object {
-        const val NAME_ID = "ach-null-checks"
+        const val NAME_ID = "null-checks"
     }
 }

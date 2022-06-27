@@ -36,6 +36,6 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         }
     }
     companion object {
-        const val NAME_ID = "acn-parameter-name-in-outer-lambda"
+        const val NAME_ID = "parameter-name-in-outer-lambda"
     }
 }

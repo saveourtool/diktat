@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.DataClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -21,7 +21,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |class Some(val a: Int = 5) {
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
         )
     }
@@ -36,7 +36,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |          get() = field
                     |          set(value: Int) { field = value}
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Test")
         )
     }
@@ -49,12 +49,12 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |class Test {
                     |   var a: Int = 0
                     |          get() = field
-                    |          set(value: Int) { 
+                    |          set(value: Int) {
                     |              field = value
                     |              someFun(value)
                     |          }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -80,7 +80,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |enum class Num {
                     |
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -93,7 +93,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |   val prop = 5
                     |   private fun someFunc() {}
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -108,7 +108,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |
                     |class A(val map: Map<Int, Int>) {}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} A")
         )
     }
@@ -122,7 +122,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |
                     |class Ab{}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -136,7 +136,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |}
                     |
                     |class Ab {
-                    |   val qw = 10 
+                    |   val qw = 10
                     |}
                     |
                     |class Ba {
@@ -157,10 +157,10 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |class Credentials(auth: String) {
                 |   val gitHubUserName: String
                 |   val gitHubAuthToken: String
-                |   
+                |
                 |   init {
                 |       auth.let {
-                |       
+                |
                 |       }
                 |   }
                 |}
@@ -176,7 +176,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |class Credentials(auth: String, second: Int?, third: Double) {
                 |   val gitHubUserName: String
                 |   val gitHubAuthToken: String
-                |   
+                |
                 |   init {
                 |       if (second != null) {
                 |       }
@@ -194,7 +194,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |class Credentials(auth: String, second: Int?, third: Double) {
                 |   val gitHubUserName: String
                 |   val gitHubAuthToken: String
-                |   
+                |
                 |   init {
                 |       foo(third)
                 |   }
@@ -211,15 +211,15 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |class Credentials(auth: String, second: Int?, third: Double) {
                 |   val gitHubUserName: String
                 |   val gitHubAuthToken: String
-                |   
+                |
                 |   init {
                 |       auth.let {
-                |       
+                |
                 |       }
-                |       
+                |
                 |       if (second != null) {
                 |       }
-                |       
+                |
                 |       foo(third)
                 |   }
                 |}
@@ -249,7 +249,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |class Credentials(auth: String) {
                 |   val gitHubUserName: String = auth.toUpperCase()
                 |   val gitHubAuthToken: String = auth.toLowerCase()
-                |   
+                |
                 |   init {
                 |       // some logic
                 |   }
@@ -267,7 +267,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |class Credentials(auth: String, some: Int?) {
                 |   val gitHubUserName: String = auth.toUpperCase()
                 |   val gitHubAuthToken: String = auth.toLowerCase()
-                |   
+                |
                 |   init {
                 |       val a = auth
                 |   }

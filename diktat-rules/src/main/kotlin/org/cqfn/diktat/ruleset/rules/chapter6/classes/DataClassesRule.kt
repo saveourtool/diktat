@@ -145,7 +145,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abb-data-classes"
+        const val NAME_ID = "data-classes"
         private val badModifiers = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD, ENUM_KEYWORD)
     }
 }

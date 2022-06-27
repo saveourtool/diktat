@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.util.LintTestBase
 
@@ -40,7 +40,7 @@ class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstruc
                     |class Some3 private constructor () {
                     |
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some", true),
             LintError(8, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some1", true)
         )
@@ -57,7 +57,7 @@ class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstruc
                     |
                     |class Some2 @Inject constructor() {
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

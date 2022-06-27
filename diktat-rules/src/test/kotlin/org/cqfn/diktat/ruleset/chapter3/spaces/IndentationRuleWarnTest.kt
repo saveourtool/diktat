@@ -1,18 +1,28 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.assertj.core.api.AbstractSoftAssertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions.assertSoftly
+import org.intellij.lang.annotations.Language
+import org.junit.jupiter.api.MethodOrderer.MethodName
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
+import org.opentest4j.MultipleFailuresError
+
+import java.util.function.Consumer
 
 @Suppress("LargeClass")
-class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
+@TestMethodOrder(MethodName::class)
+class IndentationRuleWarnTest : LintTestBase(::IndentationRule), IndentationRuleTestMixin {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
     private val rulesConfigList = listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
@@ -46,7 +56,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |${"\t"}val zero = 0
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} tabs are not allowed for indentation", true)
         )
     }
@@ -60,7 +70,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |   val zero = 0
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, warnText(4, 3), true)
         )
     }
@@ -73,7 +83,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |    val zero = 0
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
         )
     }
@@ -83,11 +93,11 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     fun `should warn if no new line at the end of file, last child whitespace`() {
         lintMethod(
             """
-                    |class Example {
-                    |    val zero = 0
-                    |} 
-                """.trimMargin(),
-            LintError(3, 2, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+                |class Example {
+                |    val zero = 0
+                |}
+            """.trimMargin(),
+            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
         )
     }
 
@@ -101,7 +111,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file TestFileName.kt", true)
         )
     }
@@ -126,7 +136,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -145,13 +155,13 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            t2,
                     |            t3
                     |    )
-                    |    
+                    |
                     |    val e2 = Example(t1, t2,
                     |            t3
                     |    )
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -166,7 +176,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |              val field3: Type3) {
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -182,7 +192,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |              val field3: Type3) {
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, warnText(8, 14), true),
             LintError(3, 1, ruleId, warnText(8, 14), true),
             LintError(4, 1, ruleId, warnText(8, 14), true),
@@ -200,7 +210,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            b
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -216,7 +226,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -231,12 +241,12 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |
                     |    val b =
-                    |        list.filter { 
+                    |        list.filter {
                     |            predicate(it)
                     |        }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -256,7 +266,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |        }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -271,7 +281,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 1, ruleId, warnText(1, 0), true),
             LintError(3, 1, ruleId, warnText(1, 0), true)
         )
@@ -298,7 +308,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |        as? Baz
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -310,18 +320,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |fun foo() {
                     |    for (i in 1..100)
                     |        println(i)
-                    |    
+                    |
                     |    do
                     |        println()
                     |    while (condition)
-                    |    
+                    |
                     |    if (condition)
                     |        bar()
                     |    else
                     |        baz()
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -333,18 +343,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |fun foo() {
                     |    for (i in 1..100)
                     |    println(i)
-                    |    
+                    |
                     |    do
                     |    println()
                     |    while (condition)
-                    |    
+                    |
                     |    if (condition)
                     |    bar()
                     |    else
                     |    baz()
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 1, ruleId, warnText(8, 4), true),
             LintError(6, 1, ruleId, warnText(8, 4), true),
             LintError(10, 1, ruleId, warnText(8, 4), true),
@@ -362,20 +372,20 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |        bar()
                     |    } else
                     |        baz()
-                    |        
+                    |
                     |    if (condition)
                     |        bar()
                     |    else {
                     |        baz()
                     |    }
-                    |        
+                    |
                     |    if (condition)
                     |        bar()
                     |    else if (condition2) {
                     |        baz()
                     |    } else
                     |        qux()
-                    |        
+                    |
                     |    if (condition)
                     |        bar()
                     |    else if (condition2)
@@ -385,7 +395,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -412,7 +422,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    )
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -429,7 +439,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    )
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = disabledOptionsRulesConfigList
         )
     }
@@ -442,15 +452,15 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |    private val foo
                     |        get() = 0
-                    |        
+                    |
                     |    private var backing = 0
-                    |    
+                    |
                     |    var bar
                     |        get() = backing
                     |        set(value) { backing = value }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -462,15 +472,15 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |    private val foo
                     |            get() = 0
-                    |        
+                    |
                     |    private var backing = 0
-                    |    
+                    |
                     |    var bar
                     |    get() = backing
                     |    set(value) { backing = value }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 1, ruleId, warnText(8, 12), true),
             LintError(8, 1, ruleId, warnText(8, 4), true),
             LintError(9, 1, ruleId, warnText(8, 4), true)
@@ -496,7 +506,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    )
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -521,7 +531,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = listOf(
                 RulesConfig(WRONG_INDENTATION.name, true,
                     mapOf(
@@ -551,7 +561,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -573,7 +583,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |}
                     |
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 1, ruleId, warnText(12, 8), true),
             LintError(7, 1, ruleId, warnText(12, 8), true),
             LintError(10, 1, ruleId, warnText(12, 8), true)
@@ -612,7 +622,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -644,7 +654,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |        )
                     |}
                     |
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -661,7 +671,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 |            .bar()
                 |        }"
                 |    }
-                |    
+                |
                 |    val b = "${'$'}{ foo().bar() }"
                 |}
                 |
@@ -697,5 +707,182 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be properly indented (extendedIndentAfterOperators = true)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
+
+        lintMultipleMethods(
+            expressionBodyFunctionsContinuationIndent,
+            lintErrors = emptyArray(),
+            customConfig.asRulesConfigList()
+        )
+    }
+
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be properly indented (extendedIndentAfterOperators = false)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
+
+        lintMultipleMethods(
+            expressionBodyFunctionsSingleIndent,
+            lintErrors = emptyArray(),
+            customConfig.asRulesConfigList()
+        )
+    }
+
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be reported if mis-indented (extendedIndentAfterOperators = true)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to true)
+
+        assertSoftly { softly ->
+            expressionBodyFunctionsSingleIndent.forEach { code ->
+                softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
+                    .describedAs("lint result for ${code.describe()}")
+                    .isNotEmpty
+                    .hasSizeBetween(1, 20).allSatisfy(Consumer { lintError ->
+                        assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
+                        assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
+                        assertThat(lintError.detail).matches(warnTextRegex)
+                    })
+            }
+        }
+    }
+
+    /**
+     * This test has a counterpart under [IndentationRuleFixTest].
+     *
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `expression body functions should be reported if mis-indented (extendedIndentAfterOperators = false)`() {
+        val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+        val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to false)
+
+        assertSoftly { softly ->
+            expressionBodyFunctionsContinuationIndent.forEach { code ->
+                softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
+                    .describedAs("lint result for ${code.describe()}")
+                    .isNotEmpty
+                    .hasSizeBetween(1, 20).allSatisfy(Consumer { lintError ->
+                        assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
+                        assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
+                        assertThat(lintError.detail).matches(warnTextRegex)
+                    })
+            }
+        }
+    }
+
+    /**
+     * @see warnTextRegex
+     */
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
+
+    /**
+     * When within a scope of an `AbstractSoftAssertions`, collects failures
+     * thrown by [block], correctly accumulating multiple failures from nested
+     * soft assertions (if any).
+     *
+     * @see org.assertj.core.api.AssertionErrorCollector.collectAssertionError
+     */
+    private fun AbstractSoftAssertions.collectAssertionErrors(block: () -> Unit) =
+        try {
+            block()
+        } catch (mfe: MultipleFailuresError) {
+            mfe.failures.forEach { failure ->
+                when (failure) {
+                    is AssertionError -> collectAssertionError(failure)
+                    else -> fail(failure.toString(), failure)
+                }
+            }
+        } catch (ae: AssertionError) {
+            collectAssertionError(ae)
+        } catch (th: Throwable) {
+            fail(th.toString(), th)
+        }
+
+    /**
+     * Similar to [lintMethod], but can be invoked from a scope of
+     * `AbstractSoftAssertions` in order to accumulate test results from linting
+     * _multiple_ code fragments.
+     *
+     * @param rulesConfigList the list of rules which can optionally override
+     *   the [default value][LintTestBase.rulesConfigList].
+     * @see lintMethod
+     */
+    private fun AbstractSoftAssertions.lintMethodSoftly(
+        @Language("kotlin") code: String,
+        vararg lintErrors: LintError,
+        rulesConfigList: List<RulesConfig>? = null,
+        fileName: String? = null
+    ) {
+        require(code.isNotBlank()) {
+            "code is blank"
+        }
+
+        collectAssertionErrors {
+            lintMethod(code, lintErrors = lintErrors, rulesConfigList, fileName)
+        }
+    }
+
+    /**
+     * Tests multiple code [fragments] using the same
+     * [rule configuration][rulesConfigList].
+     *
+     * All code fragments get concatenated together and the resulting, bigger
+     * fragment gets tested, too.
+     *
+     * @param rulesConfigList the list of rules which can optionally override
+     *   the [default value][LintTestBase.rulesConfigList].
+     * @see lintMethod
+     */
+    private fun lintMultipleMethods(
+        @Language("kotlin") fragments: Array<String>,
+        vararg lintErrors: LintError,
+        rulesConfigList: List<RulesConfig>? = null,
+        fileName: String? = null
+    ) {
+        require(fragments.isNotEmpty()) {
+            "code fragments is an empty array"
+        }
+
+        assertSoftly { softly ->
+            fragments.asSequenceWithConcatenation().forEach { fragment ->
+                softly.lintMethodSoftly(
+                    fragment,
+                    lintErrors = lintErrors,
+                    rulesConfigList,
+                    fileName
+                )
+            }
+        }
+    }
+
+    companion object {
+        /**
+         * @see warnText
+         */
+        @Language("RegExp")
+        private val warnTextRegex = "^\\Q${WRONG_INDENTATION.warnText()}\\E expected \\d+ but was \\d+$"
+    }
 }

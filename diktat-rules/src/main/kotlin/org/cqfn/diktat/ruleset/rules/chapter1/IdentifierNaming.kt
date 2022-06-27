@@ -349,7 +349,13 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 Style.SNAKE_CASE -> String::toUpperSnakeCase
             }
             if (!validator(value.text)) {
-                ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset, value) {
+                ENUM_VALUE.warnAndFix(
+                    configRules,
+                    emitWarn,
+                    isFixMode,
+                    "${value.text} (should be in ${configuration.enumStyle.str})",
+                    value.startOffset, value
+                ) {
                     // FixMe: add tests for this
                     (value as LeafPsiElement).rawReplaceWithText(autofix(value.text))
                 }
@@ -483,7 +489,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
-        const val NAME_ID = "aai-identifier-naming"
+        const val NAME_ID = "identifier-naming"
 
         // FixMe: this should be moved to properties
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")

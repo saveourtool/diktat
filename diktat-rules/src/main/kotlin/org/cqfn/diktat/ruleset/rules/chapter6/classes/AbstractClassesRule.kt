@@ -69,6 +69,6 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "abg-abstract-classes"
+        const val NAME_ID = "abstract-classes"
     }
 }

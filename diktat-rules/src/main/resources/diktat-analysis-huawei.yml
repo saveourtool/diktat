@@ -7,9 +7,9 @@
     # testDirs: test
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.6
+    kotlinVersion: 1.7
     srcDirectories: "main"
-# Checks that the Class/Enum/Interface name does not match Pascal case
+# Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
   # all code blocks with MyAnnotation will be ignored and not checked
@@ -17,12 +17,12 @@
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
-# Checks that enum value is in non UPPER_SNAKE_CASE or non PascalCase depending on the config, UPPER_SNAKE_CASE by default
+# Checks that enum value is in upper SNAKE_CASE or in PascalCase depending on the config. UPPER_SNAKE_CASE is the default, but can be changed by 'enumStyle' config
 - name: ENUM_VALUE
   enabled: true
   configuration:
-    # Two options: snakeCase(default), PascalCase
-    enumStyle: snakeCase
+    # Two options: SNAKE_CASE (default), PascalCase
+    enumStyle: SNAKE_CASE
 # Checks that class which extends any Exception class has Exception suffix
 - name: EXCEPTION_SUFFIX
   enabled: true
@@ -99,6 +99,9 @@
   enabled: true
 # Checks that underscore is correctly used to split package naming
 - name: INCORRECT_PACKAGE_SEPARATOR
+  enabled: true
+# Checks that code block doesn't contain kdoc comments
+- name: COMMENTED_BY_KDOC
   enabled: true
 # Checks that there is no @deprecated tag in kdoc
 - name: KDOC_NO_DEPRECATED_TAG
@@ -179,7 +182,7 @@
   enabled: true
   configuration:
     deleteUnusedImport: true
-# Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
+# Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line ternary operator statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
 # Checks that the declaration part of a class-like code structures (class/interface/etc.) is in the proper order

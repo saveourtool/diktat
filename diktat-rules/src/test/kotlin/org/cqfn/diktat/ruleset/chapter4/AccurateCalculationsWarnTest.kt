@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter4.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -28,7 +28,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        1.0.equals(x)
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, warnText("1.0", "x == 1.0"), false),
             LintError(4, 9, ruleId, warnText("1.0", "1.0 == x"), false),
             LintError(5, 9, ruleId, warnText("1.0", "x.equals(1.0)"), false),
@@ -49,7 +49,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        1.0.compareTo(x)
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, warnText("1.0", "x > 1.0"), false),
             LintError(4, 9, ruleId, warnText("1.0", "1.0 > x"), false),
             LintError(5, 9, ruleId, warnText("1.0", "x.compareTo(1.0)"), false),
@@ -68,7 +68,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        x == 1
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 9, ruleId, warnText("x", "x == 1"), false)
         )
     }
@@ -87,7 +87,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        }
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(6, 13, ruleId, warnText("x", "x == 1"), false)
         )
     }
@@ -108,7 +108,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        }
                     |    }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -135,7 +135,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        x %= 2
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 9, ruleId, warnText("x", "x == 1"), false),
             LintError(5, 9, ruleId, warnText("x", "x + 2"), false),
             // LintError(6, 9, ruleId, warnText("x", "x++"), false),
@@ -163,22 +163,22 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    if (abs(1.0 - 0.999) < 1e-6) {
                     |        println("Comparison with tolerance")
                     |    }
-                    |    
+                    |
                     |    1e-6 > abs(1.0 - 0.999)
                     |    abs(1.0 - 0.999).compareTo(1e-6) < 0
                     |    1e-6.compareTo(abs(1.0 - 0.999)) < 0
                     |    abs(1.0 - 0.999) == 1e-6
-                    |    
+                    |
                     |    abs(1.0 - 0.999) < eps
                     |    eps > abs(1.0 - 0.999)
-                    |    
+                    |
                     |    val x = 1.0
                     |    val y = 0.999
                     |    abs(x - y) < eps
                     |    eps > abs(x - y)
                     |    abs(1.0 - 0.999) == eps
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(11, 5, ruleId, warnText("1e-6", "abs(1.0 - 0.999) == 1e-6"), false),
             LintError(11, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false),
             LintError(20, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false)

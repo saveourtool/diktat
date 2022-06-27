@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter4.SmartCastRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -27,7 +27,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -44,7 +44,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
@@ -65,7 +65,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -85,7 +85,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
@@ -105,7 +105,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
@@ -122,7 +122,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |           print((x as String).length)
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
@@ -139,7 +139,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |           print(x.length)
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -158,7 +158,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |           print((x as String).length)
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
@@ -178,14 +178,14 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |           print((x as String).length)
                     |           val a = ""
                     |           if (a !is String) {
-                    |           
+                    |
                     |           } else {
                     |               print((a as String).length)
                     |           }
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
             LintError(13, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
         )
@@ -207,7 +207,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 29, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
@@ -226,7 +226,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -235,10 +235,10 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     fun `smart cast in when good 2`() {
         lintMethod(
             """
-            |fun SomeClass.foo() = when (mutableProperty) {
-            |    is Foo -> (mutableProperty as Foo).fooFoo()  // smart cast is required 'because 'mutableProperty' is a property that has open or custom getter'
-            |    else -> println("ok")
-            |}
+                |fun SomeClass.foo() = when (mutableProperty) {
+                |    is Foo -> (mutableProperty as Foo).fooFoo()  // smart cast is required 'because 'mutableProperty' is a property that has open or custom getter'
+                |    else -> println("ok")
+                |}
             """.trimMargin()
         )
     }
@@ -258,7 +258,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -277,7 +277,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
             LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} y as Int", true)
         )
@@ -298,7 +298,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -316,7 +316,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -337,7 +337,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
@@ -356,7 +356,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }

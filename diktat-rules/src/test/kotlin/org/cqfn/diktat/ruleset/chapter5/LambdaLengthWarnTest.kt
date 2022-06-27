@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.LambdaLengthRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -29,7 +29,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |   val list = listOf(1, 2, 3, 4, 5)
                     |       .map {element -> element + x}
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -46,7 +46,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |         ?.let { File(it.file) }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -63,7 +63,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |         .removeAt(1)
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -78,7 +78,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |   val list = listOf(1, 2, 3, 4, 5)
                     |       .map {it + x}
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -98,7 +98,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |       }
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             rulesConfigList = rulesConfigList
         )
     }
@@ -115,13 +115,13 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |           val y = x + 1
                     |           val z = y + 1
                     |           it + z
-                    |   
-                    |   
-                    |   
-                    |   
+                    |
+                    |
+                    |
+                    |
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 13, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
             rulesConfigList = rulesConfigList
         )
@@ -140,13 +140,13 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |           val y = x + 1
                     |           val z = y + 1
                     |           it + z
-                    |   
-                    |   
-                    |   
-                    |   
+                    |
+                    |
+                    |
+                    |
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 13, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
             rulesConfigList = rulesConfigList
         )
@@ -167,7 +167,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |           }
                     |       }
                     |   }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 25, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
             rulesConfigList = rulesConfigList
         )

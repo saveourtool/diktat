@@ -27,6 +27,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_LINK
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -73,9 +74,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         .mapValues { (_, value) ->
             value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
         }
-    private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
-    
+
     /**
      * There are groups of methods, which should be excluded from usage check without type resolution.
      * `componentN` is a method for N-th component in destructuring declarations.
@@ -226,9 +226,11 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkUnusedImport(
         node: ASTNode
     ) {
-        findAllReferences(node)
+        val refSet = findAllReferences(node)
         packageName = (node.findChildByType(PACKAGE_DIRECTIVE)?.psi as KtPackageDirective).qualifiedName
-        node.findChildByType(IMPORT_LIST)?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))?.toList()
+        node.findChildByType(IMPORT_LIST)
+            ?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))
+            ?.toList()
             ?.forEach { import ->
                 val ktImportDirective = import.psi as KtImportDirective
                 val importName = ktImportDirective.importPath?.importedName?.asString()
@@ -262,24 +264,36 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         ) { ktImportDirective.delete() }
     }
 
-    private fun findAllReferences(node: ASTNode) {
-        node.findAllDescendantsWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
-            if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
+    private fun findAllReferences(node: ASTNode): Set<String> {
+        val referencesFromOperations = node.findAllDescendantsWithSpecificType(OPERATION_REFERENCE)
+            .filterNot { it.isPartOf(IMPORT_DIRECTIVE) }
+            .flatMap { ref ->
                 val references = operatorMap.filterValues { ref.text in it }
                 if (references.isNotEmpty()) {
-                    references.keys.forEach { key -> refSet.add(key) }
+                    references.keys
                 } else {
                     // this is needed to check infix functions that relate to operation reference
-                    refSet.add(ref.text)
+                    setOf(ref.text)
                 }
             }
-        }
-        node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).forEach {
-            if (!it.isPartOf(IMPORT_DIRECTIVE)) {
+        val referencesFromExpressions = node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
+            .filterNot { it.isPartOf(IMPORT_DIRECTIVE) }
+            .map {
                 // the importedName method removes the quotes, but the node.text method does not
-                refSet.add(it.text.replace("`", ""))
+                it.text.replace("`", "")
             }
-        }
+        val referencesFromKdocs = node.findAllDescendantsWithSpecificType(KDOC)
+            .flatMap { it.findAllDescendantsWithSpecificType(KDOC_MARKDOWN_LINK) }
+            .map { it.text.removePrefix("[").removeSuffix("]") }
+            .flatMap {
+                if (it.contains(".")) {
+                    // support cases with reference to method
+                    listOf(it, it.substringBeforeLast("."))
+                } else {
+                    listOf(it)
+                }
+            }
+        return (referencesFromOperations + referencesFromExpressions + referencesFromKdocs).toSet()
     }
 
     private fun rearrangeImports(
@@ -395,6 +409,6 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "zcq-file-structure"
+        const val NAME_ID = "file-structure"
     }
 }

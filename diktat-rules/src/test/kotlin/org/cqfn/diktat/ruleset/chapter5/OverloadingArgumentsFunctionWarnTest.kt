@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_OVERLOADING_FUNCTION_ARGUMENTS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.util.LintTestBase
 
@@ -41,10 +41,10 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |
                     |abstract class B {
                     |   abstract fun foo(a: Int)
-                    |   
+                    |
                     |   fun foo(){}
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
             LintError(16, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} goo", false),
             LintError(25, 4, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
@@ -70,7 +70,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?.getReferencedName()
                             ?.equals("abs")
                             ?: false
-                            
+
                     private fun KtBinaryExpression.isComparisonWithAbs(a: Int) =
                             takeIf { it.operationToken in comparisonOperators }
                             ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
@@ -78,16 +78,16 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?.getReferencedName()
                             ?.equals("abs")
                             ?: false
-                            
+
                     private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Boolean {
                             return takeIf { it.operationToken in comparisonOperators }
                             ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
                             ?.run { calleeExpression as? KtNameReferenceExpression }
                             ?.getReferencedName()
                             ?.equals("abs")
-                            ?: false 
+                            ?: false
                     }
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(8, 21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
         )
     }
@@ -103,21 +103,21 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?.run { calleeExpression as? KtNameReferenceExpression }
                             ?.getReferencedName()
                             ?.equals("abs")
-                            ?: false 
+                            ?: false
                     }
-                    
+
                     private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Int {
                             val q = takeIf { it.operationToken in comparisonOperators }
                             ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
                             ?.run { calleeExpression as? KtNameReferenceExpression }
                             ?.getReferencedName()
                             ?.equals("abs")
-                            ?: false 
-                            
+                            ?: false
+
                             if (q) return 10
                             return 11
                     }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 }

@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.NullableTypeRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -23,7 +23,7 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |val b: Double? = null
                     |val c: String? = null
                     |val a: MutableList<Int>? = null
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 21, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
             LintError(2, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
             LintError(3, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
@@ -44,7 +44,7 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |       val c: Boolean? = true
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
             LintError(4, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
             LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
@@ -63,7 +63,7 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |       val c: Boolean? = false
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
             LintError(4, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
             LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
@@ -80,7 +80,7 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |   val q: Int? = foo()
                     |   val e: A.Q? = null
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", false)
         )
     }
@@ -92,9 +92,9 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
             """
                     | val q: List<Int>? = emptyList<Int>()
                     | val w: List<Map<Int, Int>> = emptyList<Map<Int, Int>>()
-                    | val c: Set<Int>? = setOf() 
+                    | val c: Set<Int>? = setOf()
                     | val d: List<Int?> = emptyList()
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
             LintError(3, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
@@ -109,8 +109,8 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |   .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
                     |   ?.findLeafWithSpecificType(TYPE_REFERENCE)
                     |   ?.text
-                    |   
+                    |
                     | private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
-                """.trimMargin())
+            """.trimMargin())
     }
 }

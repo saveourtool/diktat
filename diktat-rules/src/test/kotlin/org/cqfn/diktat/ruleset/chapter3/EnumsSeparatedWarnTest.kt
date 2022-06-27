@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
 import org.cqfn.diktat.util.LintTestBase
 
@@ -24,7 +24,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   C,
                     |   ;
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -39,7 +39,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   C,
                     |   ;
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -52,7 +52,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   A, B, C;
                     |   fun foo() {}
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
             LintError(2, 7, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
             LintError(2, 10, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
@@ -68,7 +68,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |enum class ENUM {
                     |   A, B, C
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -78,10 +78,10 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
         lintMethod(
             """
                     |enum class ENUM {
-                    |   A, B, 
+                    |   A, B,
                     |   C
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
             LintError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
             LintError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
@@ -94,10 +94,10 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
         lintMethod(
             """
                     |enum class ENUM {
-                    |   A, B, 
+                    |   A, B,
                     |   C, ;
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
             LintError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true)
         )
@@ -114,7 +114,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   BLUE(0x0000FF),
                     |   ;
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -129,7 +129,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   BLUE(0x0000FF)
                     |   ;
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
@@ -142,14 +142,14 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |enum class Warnings {
                     |   WAITING {
                     |      override fun signal() = TALKING
-                    |   }, 
+                    |   },
                     |   TALKING  {
                     |      override fun signal() = TALKING
                     |   },
                     |   ;
                     |   abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -161,13 +161,13 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |enum class Warnings {
                     |   WAITING {
                     |      override fun signal() = TALKING
-                    |   }, 
+                    |   },
                     |   TALKING  {
                     |      override fun signal() = TALKING
                     |   };
                     |   abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
             LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
@@ -186,7 +186,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |      override fun signal() = TALKING
                     |   }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
             LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
 

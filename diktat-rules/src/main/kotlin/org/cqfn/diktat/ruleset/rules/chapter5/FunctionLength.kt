@@ -63,6 +63,6 @@ class FunctionLength(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_FUNCTION_LENGTH = 30L
-        const val NAME_ID = "abz-function-length"
+        const val NAME_ID = "function-length"
     }
 }

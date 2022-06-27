@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.4.0"
@@ -34,7 +34,7 @@ val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
-    implementation("org.cqfn.diktat:diktat-rules:$diktatVersion") {
+    implementation("org.cqfn.diktat:diktat-common:$diktatVersion") {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")

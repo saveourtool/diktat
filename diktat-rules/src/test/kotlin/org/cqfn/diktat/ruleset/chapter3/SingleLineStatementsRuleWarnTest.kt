@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -26,7 +26,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    }
                     |    else {
                     |    }
-                    |    
+                    |
                     |    when(x) {
                     |       1 -> println(1)
                     |       else -> println("3;5")
@@ -34,7 +34,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    val a = 5; val b = 10
                     |    println(1); println(1)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 40, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", true),
             LintError(5, 13, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", true),
             LintError(14, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", true),
@@ -51,7 +51,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    val a = 5;val b = 10
                     |    println(1);println(1)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", true),
             LintError(3, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", true)
         )
@@ -67,7 +67,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |       goo()
                     |   }; else { print(123) }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(4, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; else { print(123) }", true)
         )
     }
@@ -85,7 +85,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    }
                     |    else {
                     |    }
-                    |    
+                    |
                     |    when(x) {
                     |       1 -> println(1)
                     |       else -> println("3;5")
@@ -93,7 +93,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    val a = 5
                     |    println(1)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -110,7 +110,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |       override fun signal() = WAITING
                     |   }; abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(7, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; abstract fun signal(): ProtocolState", true)
         )
     }
@@ -127,7 +127,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |       }; gt()
                     |   }; gr()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 9, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gt()", true),
             LintError(6, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gr()", true)
         )
@@ -141,7 +141,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |fun foo() {
                     |   ; grr()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 4, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} ; grr()", true)
         )
     }

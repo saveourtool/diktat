@@ -113,7 +113,7 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val NAME_ID = "aap-top-level-order"
+        const val NAME_ID = "top-level-order"
 
         /**
          * List of children that should be sort

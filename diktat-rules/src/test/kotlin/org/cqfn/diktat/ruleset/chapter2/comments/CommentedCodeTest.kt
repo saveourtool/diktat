@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2.comments
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
 import org.cqfn.diktat.util.LintTestBase
 
@@ -34,9 +34,9 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `Should warn if commented out imports are detected (block comments)`() {
         lintMethod(
             """
-           |/*import org.junit.Test
-           |import org.junit.Ignore*/
-        """.trimMargin(),
+               |/*import org.junit.Test
+               |import org.junit.Ignore*/
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Test", false),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
         )
@@ -47,16 +47,16 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `Should warn if commented out code is detected (block comments)`() {
         lintMethod(
             """
-           |import org.junit.Test
-           |
-           |fun foo(a: Int): Int {
-           |    /* println(a + 42)
-           |    println("This is a test string")
-           |    val b = a*10
-           |    */
-           |    return 0
-           |}
-        """.trimMargin(),
+               |import org.junit.Test
+               |
+               |fun foo(a: Int): Int {
+               |    /* println(a + 42)
+               |    println("This is a test string")
+               |    val b = a*10
+               |    */
+               |    return 0
+               |}
+            """.trimMargin(),
             LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
         )
     }
@@ -66,14 +66,14 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `Should warn if commented out code is detected (single line comments)`() {
         lintMethod(
             """
-           |import org.junit.Test
-           |
-           |fun foo(a: Int): Int {
-           |//    println(a + 42)
-           |//    println("This is a test string")
-           |    return 0
-           |}
-        """.trimMargin())
+               |import org.junit.Test
+               |
+               |fun foo(a: Int): Int {
+               |//    println(a + 42)
+               |//    println("This is a test string")
+               |    return 0
+               |}
+            """.trimMargin())
     }
 
     @Test
@@ -81,14 +81,14 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `Should warn if commented out function is detected single line comments`() {
         lintMethod(
             """
-           |import org.junit.Test
-           |
-           |//fun foo(a: Int): Int {
-           |//    println(a + 42)
-           |//    println("This is a test string")
-           |//    return 0
-           |//}
-        """.trimMargin(),
+               |import org.junit.Test
+               |
+               |//fun foo(a: Int): Int {
+               |//    println(a + 42)
+               |//    println("This is a test string")
+               |//    return 0
+               |//}
+            """.trimMargin(),
             LintError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
@@ -98,15 +98,15 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `Should warn if commented out function is detected - single line comments with surrounding text`() {
         lintMethod(
             """
-           |import org.junit.Test
-           |
-           |// this function is disabled for now
-           |//fun foo(a: Int): Int {
-           |//    println(a + 42)
-           |//    println("This is a test string")
-           |//    return 0
-           |//}
-        """.trimMargin(),
+               |import org.junit.Test
+               |
+               |// this function is disabled for now
+               |//fun foo(a: Int): Int {
+               |//    println(a + 42)
+               |//    println("This is a test string")
+               |//    return 0
+               |//}
+            """.trimMargin(),
             LintError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
@@ -116,14 +116,14 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `Should warn if commented out function is detected (block comment)`() {
         lintMethod(
             """
-           |import org.junit.Test
-           |
-           |/*fun foo(a: Int): Int {
-           |    println(a + 42)
-           |    println("This is a test string")
-           |    return 0
-           |}*/
-        """.trimMargin(),
+               |import org.junit.Test
+               |
+               |/*fun foo(a: Int): Int {
+               |    println(a + 42)
+               |    println("This is a test string")
+               |    return 0
+               |}*/
+            """.trimMargin(),
             LintError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
@@ -157,7 +157,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
         lintMethod(
             """
                 |class ScheduleTest {
-                |/* 
+                |/*
                 |   fun clickFilters_showFilters() {
                 |       checkAnimationsDisabled()
                 |
@@ -195,14 +195,14 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |   private fun applyFilter(filter: String) {
                 |       // Open the filters sheet
                 |       onView(withId(R.id.filter_fab)).perform(click())
-                |   
+                |
                 |       // Get the content description of the view we need to click on
                 |       val uncheckedFilterContentDesc =
                 |           resources.getString(R.string.a11y_filter_not_applied, filter)
-                |   
+                |
                 |      onView(allOf(withId(R.id.recyclerview_filter), withParent(withId(R.id.filter_sheet))))
                 |          .check(matches(isDisplayed()))
-                |   
+                |
                 |       // Scroll to the filter
                 |       onView(allOf(withId(R.id.recyclerview_filter), withParent(withId(R.id.filter_sheet))))
                 |         .perform(
@@ -245,7 +245,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on class with one space after comment start token`() {
         lintMethod(
             """
-            |// class Test: Exception()
+                |// class Test: Exception()
             """.trimMargin())
     }
 
@@ -254,7 +254,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on class with one space after comment start token and 2 modifiers #1`() {
         lintMethod(
             """
-            |// public data class Test(val some: Int): Exception()
+                |// public data class Test(val some: Int): Exception()
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
     }
@@ -264,7 +264,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on one-line comment with var or val`() {
         lintMethod(
             """
-            |// var foo: Int = 1
+                |// var foo: Int = 1
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} var foo: Int = 1", false))
     }
@@ -274,9 +274,9 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on one-line multi comment`() {
         lintMethod(
             """
-            | // fun foo() {
-            | //     varfoo adda foofoo
-            | // }
+                | // fun foo() {
+                | //     varfoo adda foofoo
+                | // }
             """.trimMargin(),
             LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo() {", false))
     }
@@ -286,7 +286,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on one-line comment`() {
         lintMethod(
             """
-            | // class A { val a = 2 } 
+                | // class A { val a = 2 }
             """.trimMargin(),
             LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
     }
@@ -296,7 +296,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on one-line block comment`() {
         lintMethod(
             """
-            | /* class A { val a = 2 } */
+                | /* class A { val a = 2 } */
             """.trimMargin(),
             LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
     }
@@ -306,7 +306,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on class with one space after comment start token and 2 modifiers #2`() {
         lintMethod(
             """
-            |// internal sealed class Test: Exception()
+                |// internal sealed class Test: Exception()
             """.trimMargin())
     }
 
@@ -315,7 +315,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on import with one space after comment start token`() {
         lintMethod(
             """
-            |// import some.org
+                |// import some.org
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import some.org", false))
     }
@@ -325,7 +325,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on package with one space after comment start token`() {
         lintMethod(
             """
-            |// package some.org
+                |// package some.org
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package some.org", false))
     }
@@ -335,9 +335,9 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on function with one space after comment start token - { sign`() {
         lintMethod(
             """
-            |// fun someFunc(name: String): Boolean {
-            |//     val a = 5
-            |// }
+                |// fun someFunc(name: String): Boolean {
+                |//     val a = 5
+                |// }
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
     }
@@ -347,8 +347,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on function with one space after comment start token - = sign`() {
         lintMethod(
             """
-            |// fun someFunc(name: String): Boolean =
-            |//     name.contains("a")
+                |// fun someFunc(name: String): Boolean =
+                |//     name.contains("a")
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean =", false))
     }
@@ -358,8 +358,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should trigger on function with one space after comment start token pulbic modifier`() {
         lintMethod(
             """
-            |// public fun someFunc(name: String): Boolean =
-            |//     name.contains("a")
+                |// public fun someFunc(name: String): Boolean =
+                |//     name.contains("a")
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
     }
@@ -369,23 +369,23 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should not trigger on multiline comments #1`() {
         lintMethod(
             """
-            |/*
-            |
-            |   Copyright 2018-2020 John Doe.
-            |   
-            |   Licensed under the Apache License, Version 2.0 (the "License");
-            |   you may not use this file except in compliance with the License.
-            |   You may obtain a copy of the License at
-            |   
-            |       http://www.apache.org/licenses/LICENSE-2.0
-            |       
-            |   Unless required by applicable law or agreed to in writing, software
-            |   distributed under the License is distributed on an "AS IS" BASIS,
-            |   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            |   See the License for the specific language governing permissions and
-            |   limitations under the License.
-            |   
-            |*/
+                |/*
+                |
+                |   Copyright 2018-2020 John Doe.
+                |
+                |   Licensed under the Apache License, Version 2.0 (the "License");
+                |   you may not use this file except in compliance with the License.
+                |   You may obtain a copy of the License at
+                |
+                |       http://www.apache.org/licenses/LICENSE-2.0
+                |
+                |   Unless required by applicable law or agreed to in writing, software
+                |   distributed under the License is distributed on an "AS IS" BASIS,
+                |   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                |   See the License for the specific language governing permissions and
+                |   limitations under the License.
+                |
+                |*/
             """.trimMargin())
     }
 
@@ -394,10 +394,10 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should not trigger on multiline comments #2`() {
         lintMethod(
             """
-            |   /*
-            |   * some text here
-            |   maybe even with another line
-            |   */
+                |   /*
+                |   * some text here
+                |   maybe even with another line
+                |   */
             """.trimMargin())
     }
 
@@ -409,23 +409,23 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             /*
                 Copyright (c) Your Company Name Here. 2010-2021
             */
-            
+
             package org.cqfn.diktat
-            
+
             /*
                 x = 2 + 4 + 1
             */
             // x = 2+4
-            
+
             // if true make this
-            
+
             /*
                 class A {
-                
-                fun foo()  
-                
+
+                fun foo()
+
                 }
-            
+
             */
             """.trimMargin(),
             LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2 + 4 + 1", false),
@@ -440,12 +440,12 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
             @Suppress("UnsafeCallOnNullableType", "COMMENTED_OUT_CODE")
             private fun handleProperty(property: KtProperty) {
-             
+
              /*
                 x = 1
              */
             }
-            
+
             @Suppress("COMMENTED_OUT_CODE")
             class A {
                 // val x = 10
@@ -461,10 +461,10 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
             /* Checks if specified imports can be found in classpath. */
             class Example
-            
+
             /* Checks if specified import can be found in classpath. */
             class Example2
-            
+
             /* import this and you died. */
             class Example3
             """.trimMargin()

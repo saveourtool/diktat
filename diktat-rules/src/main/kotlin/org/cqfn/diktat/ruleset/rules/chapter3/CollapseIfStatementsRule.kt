@@ -109,10 +109,11 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun takeCommentsBeforeNestedIf(node: ASTNode): List<ASTNode> {
         val thenNode = (node.psi as KtIfExpression).then?.node
-        return thenNode?.children()?.takeWhile { it.elementType != IF }?.filter {
-            it.elementType == EOL_COMMENT ||
-                it.elementType == BLOCK_COMMENT
-        }
+        return thenNode?.children()
+            ?.takeWhile { it.elementType != IF }
+            ?.filter {
+                it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT
+            }
             ?.toList() ?: emptyList()
     }
 
@@ -212,6 +213,6 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val DEFAULT_NESTED_LEVEL = 2
-        const val NAME_ID = "abu-collapse-if"
+        const val NAME_ID = "collapse-if"
     }
 }

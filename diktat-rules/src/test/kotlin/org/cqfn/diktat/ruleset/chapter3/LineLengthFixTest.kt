@@ -23,6 +23,10 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "20"))
     )
+    private val rulesConfigListErrorLineLength1: List<RulesConfig> = listOf(
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "151"))
+    )
 
     @Test
     fun `should fix long comment`() {
@@ -87,5 +91,20 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     @Test
     fun `fix expression in condition`() {
         fixAndCompare("LongExpressionInConditionExpected.kt", "LongExpressionInConditionTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `fix long Dot Qualified Expression`() {
+        fixAndCompare("LongDotQualifiedExpressionExpected.kt", "LongDotQualifiedExpressionTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `fix long value arguments list`() {
+        fixAndCompare("LongValueArgumentsListExpected.kt", "LongValueArgumentsListTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `fix bin expression first symbol last word`() {
+        fixAndCompare("LongBinaryExpressionLastWordExpected.kt", "LongBinaryExpressionLastWordTest.kt", rulesConfigListErrorLineLength1)
     }
 }

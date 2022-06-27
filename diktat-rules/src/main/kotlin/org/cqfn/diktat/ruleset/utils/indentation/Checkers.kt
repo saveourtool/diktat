@@ -5,8 +5,8 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
-import org.cqfn.diktat.ruleset.rules.chapter3.files.lastIndent
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.lastIndent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
@@ -83,7 +83,10 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
      * 3. there are no more arguments after this node
      */
     private fun isCheckNeeded(whiteSpace: PsiWhiteSpace) =
-        whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+        whiteSpace.parent
+            .node
+            .elementType
+            .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
             whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
             // no need to trigger when there are no more parameters in the list
             whiteSpace.siblings(forward = true, withItself = false).any {
@@ -162,7 +165,8 @@ internal class KdocIndentationChecker(config: IndentationConfig) : CustomIndenta
 internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.nextSibling.node.elementType == SUPER_TYPE_LIST) {
-            val hasNewlineBeforeColon = whiteSpace.node.prevSibling { it.elementType == COLON }!!
+            val hasNewlineBeforeColon = whiteSpace.node
+                .prevSibling { it.elementType == COLON }!!
                 .treePrev
                 .takeIf { it.elementType == WHITE_SPACE }
                 ?.textContains('\n') ?: false
@@ -200,7 +204,8 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
 
     @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        whiteSpace.nextSibling.node
+        whiteSpace.nextSibling
+            .node
             .takeIf { nextNode ->
                 (nextNode.isDotBeforeCallOrReference() ||
                     nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->

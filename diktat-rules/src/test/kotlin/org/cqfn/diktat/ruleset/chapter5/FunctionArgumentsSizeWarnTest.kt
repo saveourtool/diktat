@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_PARAMETERS
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter5.FunctionArgumentsSize
 import org.cqfn.diktat.util.LintTestBase
 
@@ -28,7 +28,7 @@ class FunctionArgumentsSizeWarnTest : LintTestBase(::FunctionArgumentsSize) {
                     |fun foo(a: Int, b: Int, c: Int, d: Int, myLambda: () -> Unit) {}
                     |fun foo(a: Int, b: Int, c: Int, d: Int, e: Int, myLambda: () -> Unit) = 10
                     |abstract fun foo(a: Int, b: Int, c: Int, d: Int, e: Int, f: Int)
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
             LintError(2, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
             LintError(4, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
@@ -42,7 +42,7 @@ class FunctionArgumentsSizeWarnTest : LintTestBase(::FunctionArgumentsSize) {
         lintMethod(
             """
                     |fun foo(a: Int, b: Int) {}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 2, but allowed 1", false),
             rulesConfigList = rulesConfigList
         )
