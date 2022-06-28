@@ -815,6 +815,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     /**
      * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
      */
+    @Suppress("BACKTICKS_PROHIBITED")
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Expression body functions` {
@@ -867,6 +868,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     /**
      * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
      */
+    @Suppress("BACKTICKS_PROHIBITED")
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Expressions wrapped after operator` {
