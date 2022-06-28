@@ -138,11 +138,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <args>
-                        <arg>-Xuse-k2</arg>
-                    </args>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
