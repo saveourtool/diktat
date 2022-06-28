@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
+import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 
 /**
@@ -28,8 +29,9 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null
     ) {
-        lintResult(code, rulesConfigList, fileName)
-            .assertEquals(*lintErrors)
+        assertThat(lintResult(code, rulesConfigList, fileName))
+            .describedAs("lint result for \"$code\"")
+            .containsExactly(*lintErrors)
     }
 
     /**

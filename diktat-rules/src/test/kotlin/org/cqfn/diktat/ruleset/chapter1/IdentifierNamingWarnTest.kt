@@ -231,10 +231,10 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
             """.trimIndent()
         lintMethod(code,
             LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE", true),
-            LintError(2, 5, ruleId, "${ENUM_VALUE.warnText()} first_value", true),
-            LintError(2, 18, ruleId, "${ENUM_VALUE.warnText()} secondValue", true),
-            LintError(2, 31, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE", true),
-            LintError(2, 43, ruleId, "${ENUM_VALUE.warnText()} FourthValue", true)
+            LintError(2, 5, ruleId, "${ENUM_VALUE.warnText()} first_value (should be in UPPER_SNAKE_CASE)", true),
+            LintError(2, 18, ruleId, "${ENUM_VALUE.warnText()} secondValue (should be in UPPER_SNAKE_CASE)", true),
+            LintError(2, 31, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE (should be in UPPER_SNAKE_CASE)", true),
+            LintError(2, 43, ruleId, "${ENUM_VALUE.warnText()} FourthValue (should be in UPPER_SNAKE_CASE)", true)
         )
     }
 
@@ -253,10 +253,10 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
             """.trimIndent()
         lintMethod(code,
             LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE", true),
-            LintError(2, 5, ruleId, "${ENUM_VALUE.warnText()} first_value", true),
-            LintError(2, 18, ruleId, "${ENUM_VALUE.warnText()} secondValue", true),
-            LintError(2, 31, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE", true),
-            LintError(2, 43, ruleId, "${ENUM_VALUE.warnText()} FOURTH_VALUE", true),
+            LintError(2, 5, ruleId, "${ENUM_VALUE.warnText()} first_value (should be in PascalCase)", true),
+            LintError(2, 18, ruleId, "${ENUM_VALUE.warnText()} secondValue (should be in PascalCase)", true),
+            LintError(2, 31, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE (should be in PascalCase)", true),
+            LintError(2, 43, ruleId, "${ENUM_VALUE.warnText()} FOURTH_VALUE (should be in PascalCase)", true),
             rulesConfigList = rulesConfigPascalCaseEnum
         )
     }

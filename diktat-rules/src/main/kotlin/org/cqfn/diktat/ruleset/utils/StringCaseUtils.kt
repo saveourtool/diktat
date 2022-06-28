@@ -11,10 +11,11 @@ private val log = LoggerFactory.getLogger("StringCaseUtils")
 
 /**
  * Available cases to name enum members
+ * @property str
  */
-enum class Style {
-    PASCAL_CASE,
-    SNAKE_CASE,
+enum class Style(val str: String) {
+    PASCAL_CASE("PascalCase"),
+    SNAKE_CASE("UPPER_SNAKE_CASE"),
     ;
 }
 
