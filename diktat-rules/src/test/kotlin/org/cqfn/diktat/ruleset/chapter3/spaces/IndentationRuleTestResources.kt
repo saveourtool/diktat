@@ -91,6 +91,17 @@ internal object IndentationRuleTestResources {
         |fun foo() =
         |    println()
         """.trimMargin(),
+
+        """
+        |fun f() = x + (y +
+        |    g(x)
+        |)
+        """.trimMargin(),
+
+        """
+        |fun f() = (1 +
+        |    2)
+        """.trimMargin(),
     )
 
     /**
@@ -172,6 +183,17 @@ internal object IndentationRuleTestResources {
         """
         |fun foo() =
         |        println()
+        """.trimMargin(),
+
+        """
+        |fun f() = x + (y +
+        |        g(x)
+        |)
+        """.trimMargin(),
+
+        """
+        |fun f() = (1 +
+        |        2)
         """.trimMargin(),
     )
 
@@ -423,6 +445,12 @@ internal object IndentationRuleTestResources {
         """.trimMargin(),
 
         """
+        |val value1a = (1 to
+        |    2 to
+        |    3)
+        """.trimMargin(),
+
+        """
         |val value2 =
         |    1 to
         |        2 to
@@ -651,6 +679,12 @@ internal object IndentationRuleTestResources {
         |val value1 = 1 to
         |        2 to
         |        3
+        """.trimMargin(),
+
+        """
+        |val value1a = (1 to
+        |        2 to
+        |        3)
         """.trimMargin(),
 
         """
