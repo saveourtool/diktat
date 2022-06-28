@@ -86,14 +86,12 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import org.jetbrains.kotlin.fir.builder.Context
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -164,10 +162,11 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     val firstElem = it.firstChildNode
                     (firstElem.textContains('(') || firstElem.textContains('{')) && (index > 0) && ((whiteSpaceBeforeDotOrSafeAccess?.elementType != WHITE_SPACE) ||
-                            (whiteSpaceBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !whiteSpaceBeforeDotOrSafeAccess.textContains('\n')))
+                        (whiteSpaceBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !whiteSpaceBeforeDotOrSafeAccess.textContains('\n')))
                 }
                 if (without.isNotEmpty()) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access after first call expression", node.startOffset, node) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access after first call expression",
+                        node.startOffset, node) {
                         fixDotQualifiedExpression(listDot)
                     }
                 }
