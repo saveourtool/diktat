@@ -1,0 +1,13 @@
+[general]
+execCmd="java -jar ktlint -R diktat.jar"
+tags = ["smokeTest"]
+description = "SmokeTest"
+suiteName = "SmokeTest"
+language = "Kotlin"
+expectedWarningsPattern = "// ;warn:?(.*):(\\d*): (.+)"
+
+["fix and warn"]
+    ["fix and warn".fix]
+        execFlags="--disabled_rules=standard -F"
+    ["fix and warn".warn]
+        actualWarningsPattern = "(\\w+\\..+):(\\d+):(\\d+): (\\[.*\\].*)$"

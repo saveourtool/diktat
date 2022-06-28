@@ -6,8 +6,10 @@ import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.apache.commons.io.FileUtils.copyFile
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
+import java.io.File
 
 import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
@@ -24,6 +26,7 @@ open class FixTestBase(protected val resourceFilePath: String,
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
         format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
     }
+    private val diktatVersion = "1.2.1-SNAPSHOT"
 
     constructor(resourceFilePath: String,
                 ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
@@ -55,6 +58,35 @@ open class FixTestBase(protected val resourceFilePath: String,
         Assertions.assertTrue(
             testComparatorUnit
                 .compareFilesFromResources(expectedPath, testPath, true)
+        )
+    }
+
+    /**
+     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     */
+    protected fun saveSmokeTest(expectedPath: String, testPath: String) {
+        val processBuilder = ProcessBuilder("src/test/resources/test/smoke/save.exe", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+        val file = File("tmpSave.txt")
+        val diktat = File("src/test/resources/test/smoke/diktat.jar")
+        val diktatFrom = File("../diktat-ruleset/target/diktat-$diktatVersion.jar")
+
+        file.createNewFile()
+        diktat.createNewFile()
+        copyFile(diktatFrom, diktat)
+        processBuilder.redirectOutput(file)
+
+        val process = processBuilder.start()
+        process.waitFor()
+
+        val output = file.readLines()
+        val saveOutput = output.joinToString("\n")
+
+        file.delete()
+        diktat.delete()
+
+        Assertions.assertTrue(
+            saveOutput.contains("SUCCESS")
         )
     }
 

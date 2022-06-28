@@ -1,0 +1,106 @@
+- name: DIKTAT_COMMON
+  enabled: true
+  configuration:
+    domainName: org.cqfn.diktat
+    kotlinVersion: 1.5
+- name: ENUM_VALUE
+  enabled: true
+  configuration:
+    enumStyle: snakeCase
+- name: KDOC_CONTAINS_DATE_OR_AUTHOR
+  enabled: true
+  configuration:
+    versionRegex: \d+\.\d+\.\d+[-.\w\d]*
+- name: HEADER_MISSING_OR_WRONG_COPYRIGHT
+  enabled: true
+  configuration:
+    isCopyrightMandatory: false
+    copyrightText: ''
+- name: FILE_IS_TOO_LONG
+  enabled: true
+  configuration:
+    maxSize: 2000
+    ignoreFolders: ''
+- name: FILE_UNORDERED_IMPORTS
+  enabled: true
+  configuration:
+    useRecommendedImportsOrder: true
+- name: FILE_WILDCARD_IMPORTS
+  enabled: true
+  configuration:
+    allowedWildcards: "kotlinx.serialization.*"
+- name: BRACES_BLOCK_STRUCTURE_ERROR
+  enabled: true
+  configuration:
+    openBraceNewline: true
+    closeBraceNewline: true
+- name: WRONG_INDENTATION
+  enabled: true
+  configuration:
+    # Is newline at the end of a file needed
+    newlineAtEnd: true
+    # If true: in parameter list when parameters are split by newline they are indented with two indentations instead of one
+    extendedIndentOfParameters: false
+    # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
+    alignedParameters: true
+    # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
+    extendedIndentAfterOperators: true
+    # If true: when dot qualified expression starts on a new line, this line will be indented with two indentations instead of one
+    extendedIndentBeforeDot: false
+    # The indentation size for each file
+    indentationSize: 4
+- name: EMPTY_BLOCK_STRUCTURE_ERROR
+  enabled: true
+  configuration:
+    styleEmptyBlockWithNewline: true
+    allowEmptyBlocks: false
+- name: LONG_LINE
+  enabled: true
+  configuration:
+    lineLength: 180000
+- name: WRONG_NEWLINES
+  enabled: true
+  configuration:
+    maxParametersInOneLine: 2
+- name: TOO_MANY_CONSECUTIVE_SPACES
+  enabled: true
+  configuration:
+    maxSpaces: 1
+    saveInitialFormattingForEnums: false
+- name: LONG_NUMERICAL_VALUES_SEPARATED
+  enabled: true
+  configuration:
+    maxNumberLength: 5
+    maxBlockLength: 3
+- name: WRONG_DECLARATIONS_ORDER
+  enabled: true
+  configuration:
+    sortEnum: true
+    sortProperty: true
+- name: COMMENT_WHITE_SPACE
+  enabled: true
+  configuration:
+    maxSpacesBeforeComment: 2
+    maxSpacesInComment: 1
+- name: TYPE_ALIAS
+  enabled: true
+  configuration:
+    typeReferenceLength: 25
+- name: TOO_LONG_FUNCTION
+  enabled: true
+  configuration:
+    maxFunctionLength: 35 # max length of function
+    isIncludeHeader: false # count function's header
+- name: TOO_MANY_PARAMETERS
+  enabled: true
+  configuration:
+    maxParameterListSize: 5
+- name: NESTED_BLOCK
+  enabled: true
+  configuration:
+    maxNestedBlockQuantity: 4
+- name: TRAILING_COMMA
+  enabled: false
+  configuration:
+    valueArgument: true
+    valueParameter: true
