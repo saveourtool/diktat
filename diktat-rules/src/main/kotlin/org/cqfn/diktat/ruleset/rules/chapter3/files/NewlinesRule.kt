@@ -86,12 +86,14 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.fir.builder.Context
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -158,12 +160,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
             }.reversed()
             if (listDot.size > 3) {
-                val without = listDot.filterNot {
+                val without = listDot.filterIndexed { index, it ->
                     val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
-                    whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
+                    val firstElem = it.firstChildNode
+                    (firstElem.textContains('(') || firstElem.textContains('{')) && (index > 0) && ((whiteSpaceBeforeDotOrSafeAccess?.elementType != WHITE_SPACE) ||
+                            (whiteSpaceBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !whiteSpaceBeforeDotOrSafeAccess.textContains('\n')))
                 }
-                if (without.size > 1 || (without.size == 1 && without[0] != listDot[0])) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access", node.startOffset, node) {
+                if (without.isNotEmpty()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access after first call expression", node.startOffset, node) {
                         fixDotQualifiedExpression(listDot)
                     }
                 }
@@ -193,7 +197,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         list.forEachIndexed { index, astNode ->
             val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
             val nodeBeforeDot = dotNode?.treePrev
-            if (index > 0) {
+            val firstElem = astNode.firstChildNode
+            if (index > 0 && (firstElem.textContains('(') || firstElem.textContains('{'))) {
                 astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
             }
         }
