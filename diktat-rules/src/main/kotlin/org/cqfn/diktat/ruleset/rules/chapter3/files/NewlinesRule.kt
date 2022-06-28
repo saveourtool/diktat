@@ -161,10 +161,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 val without = listDot.filterIndexed { index, it ->
                     val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     val firstElem = it.firstChildNode
-                    val isTextContainsParenthesized = isTextContainParentheses(firstElem)
-                    val isWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
+                    val isTextContainsParenthesized = isTextContainsFunctionCall(firstElem)
+                    val isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
                         (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
-                    isTextContainsParenthesized && (index > 0) && isWhiteSpaceBeforeDotOrSafeAccessContainNewLine
+                    isTextContainsParenthesized && (index > 0) && isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine
                 }
                 if (without.isNotEmpty()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "wrong split long `dot qualified expression` or `safe access expression`",
@@ -627,13 +627,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         return if (dropLeadingProperties) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            parentExpressionList?.dropWhile { !isTextContainParentheses(it.treeParent) }
+            parentExpressionList?.dropWhile { !isTextContainsFunctionCall(it.treeParent) }
         } else {
             parentExpressionList
         }
     }
 
-    private fun isTextContainParentheses(node: ASTNode): Boolean = node.textContains('(') || node.textContains('}')
+    private fun isTextContainsFunctionCall(node: ASTNode): Boolean = node.textContains('(') || node.textContains('}')
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
