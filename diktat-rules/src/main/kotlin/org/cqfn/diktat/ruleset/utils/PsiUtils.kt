@@ -47,7 +47,6 @@ fun KtExpression.containsOnlyConstants(): Boolean =
  * Here we assume that property can be declared only in block, since declaration is not an expression in kotlin
  * and compiler prohibits things like `if (condition) val x = 0`.
  */
-@Suppress("UnsafeCallOnNullableType")
 fun KtProperty.getDeclarationScope() =
     // FixMe: class body is missing here
     getParentOfType<KtBlockExpression>(true)
