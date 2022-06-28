@@ -161,9 +161,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 val without = listDot.filterIndexed { index, it ->
                     val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     val firstElem = it.firstChildNode
-                    val isTextContainsParenthesized = firstElem.textContains('(') || firstElem.textContains('{')
+                    val isTextContainsParenthesized = isTextContainParentheses(firstElem)
                     val isWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
-                            (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
+                        (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
                     isTextContainsParenthesized && (index > 0) && isWhiteSpaceBeforeDotOrSafeAccessContainNewLine
                 }
                 if (without.isNotEmpty()) {
@@ -627,11 +627,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         return if (dropLeadingProperties) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+            parentExpressionList?.dropWhile { !isTextContainParentheses(it.treeParent) }
         } else {
             parentExpressionList
         }
     }
+
+    private fun isTextContainParentheses(node: ASTNode): Boolean = node.textContains('(') || node.textContains('}')
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
