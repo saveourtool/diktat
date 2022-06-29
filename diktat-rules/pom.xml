@@ -135,12 +135,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <args>
-                        <arg>-Xinline-classes</arg>
-                        <arg>-Xuse-k2</arg>
-                    </args>
-                </configuration>
             </plugin>
 
             <plugin>
