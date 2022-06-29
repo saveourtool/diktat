@@ -633,7 +633,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isTextContainsFunctionCall(node: ASTNode): Boolean = node.textContains('(') || node.textContains('}')
+    private fun isTextContainsFunctionCall(node: ASTNode): Boolean = node.textContains('(') || node.textContains('{')
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
