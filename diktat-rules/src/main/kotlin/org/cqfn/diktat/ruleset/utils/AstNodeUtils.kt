@@ -6,7 +6,8 @@
 @file:Suppress(
     "FILE_NAME_MATCH_CLASS",
     "KDOC_WITHOUT_RETURN_TAG",
-    "KDOC_WITHOUT_PARAM_TAG"
+    "KDOC_WITHOUT_PARAM_TAG",
+    "MatchingDeclarationName",
 )
 
 package org.cqfn.diktat.ruleset.utils
