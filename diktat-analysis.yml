@@ -282,6 +282,9 @@
 # Checks that backticks (``) are not used in the identifier name, except the case when it is test method (marked with @Test annotation)
 - name: BACKTICKS_PROHIBITED
   enabled: true
+  # all code blocks annotated with  @Nested, @ParameterizedTest (JUnit 5) will
+  # be ignored and not checked.
+  ignoreAnnotated: [ Nested, ParameterizedTest ]
 # Checks that a single line concatenation of strings is not used
 - name: STRING_CONCATENATION
   enabled: true
