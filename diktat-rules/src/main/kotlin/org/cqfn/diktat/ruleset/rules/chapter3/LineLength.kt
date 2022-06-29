@@ -541,7 +541,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     private class BinaryExpression(node: ASTNode) : LongLineFixableCases(node) {
         override fun fix() {
-            val nodeOperationReference = node.findChildByType(OPERATION_REFERENCE)
+            val binNode = if (node.elementType == PARENTHESIZED) {
+                node.findChildByType(BINARY_EXPRESSION)
+            } else {
+                node
+            }
+            val nodeOperationReference = binNode?.findChildByType(OPERATION_REFERENCE)
             val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
                 nodeOperationReference?.treeNext
             } else {
@@ -551,7 +556,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     nodeOperationReference
                 }
             }
-            node.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+            binNode?.appendNewlineMergingWhiteSpace(nextNode, nextNode)
         }
     }
 
