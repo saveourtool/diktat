@@ -26,7 +26,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             mapOf("maxCallsInOneLine" to "1"))
     )
     private val ruleId = "$DIKTAT_RULE_SET_ID:${NewlinesRule.NAME_ID}"
-    private val dotQuaOrSafeAccessOrPostfixExpression = "${WRONG_NEWLINES.warnText()} should be split before second and other dot/safe access"
+    private val dotQuaOrSafeAccessOrPostfixExpression = "${WRONG_NEWLINES.warnText()} wrong split long `dot qualified expression` or `safe access expression`"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
