@@ -160,13 +160,18 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
             }.reversed()
             if (listDot.size > 3) {
-                val without = listDot.filterNot {
-                    val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
-                    whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
+                val without = listDot.filterIndexed { index, it ->
+                    val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
+                    val firstElem = it.firstChildNode
+                    val isTextContainsParenthesized = isTextContainsFunctionCall(firstElem)
+                    val isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
+                        (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
+                    isTextContainsParenthesized && (index > 0) && isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine
                 }
-                if (without.size > 1 || (without.size == 1 && without[0] != listDot[0])) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access", node.startOffset, node) {
-                        fixDotQualifiedExpression(listDot)
+                if (without.isNotEmpty()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "wrong split long `dot qualified expression` or `safe access expression`",
+                        node.startOffset, node) {
+                        fixDotQualifiedExpression(without)
                     }
                 }
             }
@@ -192,12 +197,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      * 2) If before first Dot or Safe Access node stay White Space node with \n - remove this node
      */
     private fun fixDotQualifiedExpression(list: List<ASTNode>) {
-        list.forEachIndexed { index, astNode ->
+        list.forEach { astNode ->
             val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
             val nodeBeforeDot = dotNode?.treePrev
-            if (index > 0) {
-                astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
-            }
+            astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
         }
     }
 
@@ -626,11 +629,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         return if (dropLeadingProperties) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+            parentExpressionList?.dropWhile { !isTextContainsFunctionCall(it.treeParent) }
         } else {
             parentExpressionList
         }
     }
+
+    private fun isTextContainsFunctionCall(node: ASTNode): Boolean = node.textContains('(') || node.textContains('{')
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {

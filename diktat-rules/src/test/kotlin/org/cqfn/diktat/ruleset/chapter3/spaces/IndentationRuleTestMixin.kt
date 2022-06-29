@@ -110,4 +110,18 @@ internal object IndentationRuleTestMixin {
             else -> "\"$first\u2026\" ($count line(s))"
         }
     }
+
+    /**
+     * Casts a nullable value to a non-`null` one, similarly to the `!!`
+     * operator.
+     *
+     * @return a non-`null` value.
+     */
+    fun <T> T?.assertNotNull(): T {
+        check(this != null) {
+            "Expecting actual not to be null"
+        }
+
+        return this
+    }
 }

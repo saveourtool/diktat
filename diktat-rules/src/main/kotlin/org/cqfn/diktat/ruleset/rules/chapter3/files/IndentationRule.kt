@@ -32,6 +32,7 @@ import org.cqfn.diktat.ruleset.utils.isSpaceCharacter
 import org.cqfn.diktat.ruleset.utils.lastIndent
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -45,6 +46,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_END
 import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_START
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
+import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -55,7 +57,10 @@ import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.visit
 import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
@@ -75,6 +80,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.slf4j.LoggerFactory
 
 import kotlin.math.abs
+import kotlin.reflect.KCallable
 
 /**
  * Rule that checks indentation. The following general rules are checked:
@@ -178,9 +184,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         val context = IndentContext(configuration)
         node.visit { astNode ->
             context.checkAndReset(astNode)
-            if (astNode.elementType in increasingTokens) {
+            if (astNode.isIndentIncrementing()) {
                 context.storeIncrementingToken(astNode.elementType)
-            } else if (astNode.elementType in decreasingTokens && !astNode.treePrev.let { it.elementType == WHITE_SPACE && it.textContains(NEWLINE) }) {
+            } else if (astNode.isIndentDecrementing() && !astNode.treePrev.let { it.elementType == WHITE_SPACE && it.textContains(NEWLINE) }) {
                 // if decreasing token is after WHITE_SPACE with \n, indents are corrected in visitWhiteSpace method
                 context.dec(astNode.elementType)
             } else if (astNode.elementType == WHITE_SPACE && astNode.textContains(NEWLINE) && astNode.treeNext != null) {
@@ -210,7 +216,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         context.maybeIncrement()
         positionByOffset = astNode.treeParent.calculateLineColByOffset()
         val whiteSpace = astNode.psi as PsiWhiteSpace
-        if (astNode.treeNext.elementType in decreasingTokens) {
+        if (astNode.treeNext.isIndentDecrementing()) {
             // if newline is followed by closing token, it should already be indented less
             context.dec(astNode.treeNext.elementType)
         }
@@ -495,7 +501,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 regularIndent -= config.indentationSize
             }
-            if (activeTokens.isNotEmpty() && activeTokens.peek() == matchingTokens.find { it.second == token }?.first) {
+            if (activeTokens.isNotEmpty() && activeTokens.peek() == token.braceMatchOrNull()) {
                 activeTokens.pop()
             }
         }
@@ -550,11 +556,20 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             LoggerFactory.getLogger(IndentationRule::class.java)
         ).initKtLintKLogger()
         const val NAME_ID = "indentation"
-        private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
-        private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
-        private val matchingTokens = increasingTokens.zip(decreasingTokens)
+        private val increasingTokens: Set<IElementType> = linkedSetOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
+        private val decreasingTokens: Set<IElementType> = linkedSetOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
+
+        /**
+         * This is essentially a bi-map, which allows to look up a closing brace
+         * type by an opening brace type, or vice versa.
+         */
+        private val matchingTokens = (increasingTokens.asSequence() zip decreasingTokens.asSequence()).flatMap { (opening, closing) ->
+            sequenceOf(opening to closing, closing to opening)
+        }.toMap()
         private val stringLiteralTokens = listOf(SHORT_STRING_TEMPLATE_ENTRY, LONG_STRING_TEMPLATE_ENTRY)
-        private val knownTrimFunctionPatterns = setOf("trimIndent", "trimMargin")
+        private val knownTrimFunctionPatterns = sequenceOf(String::trimIndent, String::trimMargin)
+            .map(KCallable<String>::name)
+            .toSet()
 
         /**
          * @return a string which consists of `N` [space][SPACE] characters.
@@ -563,6 +578,87 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private val Int.spaces: String
             get() =
                 SPACE.toString().repeat(n = this)
+
+        /**
+         * @return `true` if the indent should be incremented once this node is
+         *   encountered, `false` otherwise.
+         * @see isIndentDecrementing
+         */
+        private fun ASTNode.isIndentIncrementing(): Boolean =
+            when (elementType) {
+                /*
+                 * This is a special case of an opening parenthesis which *may* or
+                 * *may not* be indent-incrementing.
+                 */
+                LPAR -> isParenthesisAffectingIndent()
+
+                else -> elementType in increasingTokens
+            }
+
+        /**
+         * @return `true` if the indent should be decremented once this node is
+         *   encountered, `false` otherwise.
+         * @see isIndentIncrementing
+         */
+        private fun ASTNode.isIndentDecrementing(): Boolean =
+            when (elementType) {
+                /*
+                 * This is a special case of a closing parenthesis which *may* or
+                 * *may not* be indent-decrementing.
+                 */
+                RPAR -> isParenthesisAffectingIndent()
+
+                else -> elementType in decreasingTokens
+            }
+
+        /**
+         * Parentheses always affect indent when they're a part of a
+         * [VALUE_PARAMETER_LIST] (formal arguments) or a [VALUE_ARGUMENT_LIST]
+         * (effective function call arguments).
+         *
+         * When they're children of a [PARENTHESIZED] (often inside a
+         * [BINARY_EXPRESSION]), contribute to the indent depending on whether
+         * there's a newline after the opening parenthesis.
+         *
+         * @return whether this [LPAR] or [RPAR] node affects indent.
+         * @see BINARY_EXPRESSION
+         * @see PARENTHESIZED
+         * @see VALUE_ARGUMENT_LIST
+         * @see VALUE_PARAMETER_LIST
+         */
+        private fun ASTNode.isParenthesisAffectingIndent(): Boolean {
+            require(elementType in arrayOf(LPAR, RPAR)) {
+                elementType.toString()
+            }
+
+            return when (treeParent.elementType) {
+                PARENTHESIZED -> when (elementType) {
+                    /*
+                     * `LPAR` inside a binary expression only contributes to the
+                     * indent if it's immediately followed by a newline.
+                     */
+                    LPAR -> treeNext.isWhiteSpaceWithNewline()
+
+                    /*
+                     * `RPAR` inside a binary expression affects the indent only
+                     * if its matching `LPAR` node does so.
+                     */
+                    else -> {
+                        val openingParenthesis = elementType.braceMatchOrNull()?.let { braceMatch ->
+                            treeParent.findChildByType(braceMatch)
+                        }
+                        openingParenthesis?.isParenthesisAffectingIndent() ?: false
+                    }
+                }
+
+                /*
+                 * Either a control-flow statement (one of IF, WHEN, FOR or
+                 * DO_WHILE), a function declaration (VALUE_PARAMETER_LIST or
+                 * PROPERTY_ACCESSOR), or a function call (VALUE_ARGUMENT_LIST).
+                 */
+                else -> true
+            }
+        }
 
         /**
          * @return `true` if this is a [String.trimIndent] or [String.trimMargin]
@@ -587,6 +683,13 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
             return identifier.text in knownTrimFunctionPatterns
         }
+
+        /**
+         * @return the matching closing brace type for this opening brace type,
+         *   or vice versa.
+         */
+        private fun IElementType.braceMatchOrNull(): IElementType? =
+            matchingTokens[this]
 
         /**
          * Checks this [REGULAR_STRING_PART] child of a [LITERAL_STRING_TEMPLATE_ENTRY].
