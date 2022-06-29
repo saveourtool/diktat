@@ -17,7 +17,7 @@ internal object IndentationRuleTestResources {
      * @see expressionBodyFunctionsContinuationIndent
      */
     @Language("kotlin")
-    val expressionBodyFunctionsSingleIndent: Array<String> = arrayOf(
+    private val expressionBodyFunctionsSingleIndent = arrayOf(
         """
         |@Test
         |fun `checking that suppression with ignore everything works`() {
@@ -91,6 +91,17 @@ internal object IndentationRuleTestResources {
         |fun foo() =
         |    println()
         """.trimMargin(),
+
+        """
+        |fun f() = x + (y +
+        |    g(x)
+        |)
+        """.trimMargin(),
+
+        """
+        |fun f() = (1 +
+        |    2)
+        """.trimMargin(),
     )
 
     /**
@@ -99,7 +110,7 @@ internal object IndentationRuleTestResources {
      * @see expressionBodyFunctionsSingleIndent
      */
     @Language("kotlin")
-    val expressionBodyFunctionsContinuationIndent: Array<String> = arrayOf(
+    private val expressionBodyFunctionsContinuationIndent = arrayOf(
         """
         |@Test
         |fun `checking that suppression with ignore everything works`() {
@@ -173,7 +184,25 @@ internal object IndentationRuleTestResources {
         |fun foo() =
         |        println()
         """.trimMargin(),
+
+        """
+        |fun f() = x + (y +
+        |        g(x)
+        |)
+        """.trimMargin(),
+
+        """
+        |fun f() = (1 +
+        |        2)
+        """.trimMargin(),
     )
+
+    /**
+     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
+     */
+    val expressionBodyFunctions = mapOf(
+        false to expressionBodyFunctionsSingleIndent,
+        true to expressionBodyFunctionsContinuationIndent)
 
     /**
      * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
@@ -181,7 +210,7 @@ internal object IndentationRuleTestResources {
      * @see whitespaceInStringLiteralsContinuationIndent
      */
     @Language("kotlin")
-    val whitespaceInStringLiteralsSingleIndent: Array<String> = arrayOf(
+    private val whitespaceInStringLiteralsSingleIndent = arrayOf(
         """
         |@Test
         |fun `test method name`() {
@@ -256,7 +285,7 @@ internal object IndentationRuleTestResources {
      * @see whitespaceInStringLiteralsSingleIndent
      */
     @Language("kotlin")
-    val whitespaceInStringLiteralsContinuationIndent: Array<String> = arrayOf(
+    private val whitespaceInStringLiteralsContinuationIndent = arrayOf(
         """
         |@Test
         |fun `test method name`() {
@@ -326,6 +355,13 @@ internal object IndentationRuleTestResources {
     )
 
     /**
+     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
+     */
+    val whitespaceInStringLiterals = mapOf(
+        false to whitespaceInStringLiteralsSingleIndent,
+        true to whitespaceInStringLiteralsContinuationIndent)
+
+    /**
      * Expressions wrapped on an operator or an infix function, single indent
      * (`extendedIndentAfterOperators` is **off**).
      *
@@ -337,7 +373,7 @@ internal object IndentationRuleTestResources {
      * @see expressionsWrappedAfterOperatorContinuationIndent
      */
     @Language("kotlin")
-    val expressionsWrappedAfterOperatorSingleIndent: Array<String> = arrayOf(
+    private val expressionsWrappedAfterOperatorSingleIndent = arrayOf(
         """
         |fun f() {
         |    systemUiVisibility = View.SYSTEM_UI_FLAG_LOW_PROFILE or
@@ -420,6 +456,12 @@ internal object IndentationRuleTestResources {
         |val value1 = 1 to
         |    2 to
         |    3
+        """.trimMargin(),
+
+        """
+        |val value1a = (1 to
+        |    2 to
+        |    3)
         """.trimMargin(),
 
         """
@@ -568,7 +610,7 @@ internal object IndentationRuleTestResources {
      * @see expressionsWrappedAfterOperatorSingleIndent
      */
     @Language("kotlin")
-    val expressionsWrappedAfterOperatorContinuationIndent: Array<String> = arrayOf(
+    private val expressionsWrappedAfterOperatorContinuationIndent = arrayOf(
         """
         |fun f() {
         |    systemUiVisibility = View.SYSTEM_UI_FLAG_LOW_PROFILE or
@@ -651,6 +693,12 @@ internal object IndentationRuleTestResources {
         |val value1 = 1 to
         |        2 to
         |        3
+        """.trimMargin(),
+
+        """
+        |val value1a = (1 to
+        |        2 to
+        |        3)
         """.trimMargin(),
 
         """
@@ -786,4 +834,148 @@ internal object IndentationRuleTestResources {
         |                    3))
         """.trimMargin(),
     )
+
+    /**
+     * Expressions wrapped on an operator or an infix function.
+     *
+     * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
+     */
+    val expressionsWrappedAfterOperator = mapOf(
+        false to expressionsWrappedAfterOperatorSingleIndent,
+        true to expressionsWrappedAfterOperatorContinuationIndent)
+
+    /**
+     * Parenthesized expressions, single indent
+     * (`extendedIndentAfterOperators` is **off**).
+     *
+     * When adding new code fragments to this list, be sure to also add their
+     * counterparts (preserving order) to
+     * [parenthesesSurroundedInfixExpressionsContinuationIndent].
+     *
+     * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
+     *
+     * @see parenthesesSurroundedInfixExpressionsContinuationIndent
+     */
+    @Language("kotlin")
+    private val parenthesesSurroundedInfixExpressionsSingleIndent = arrayOf(
+        """
+        |fun f1() = (
+        |    1 + 2
+        |)
+        """.trimMargin(),
+
+        """
+        |fun f2() = (
+        |    1 + 2)
+        """.trimMargin(),
+
+        """
+        |fun f3() =
+        |    (
+        |        1 + 2
+        |    )
+        """.trimMargin(),
+
+        """
+        |fun f4() =
+        |    (
+        |        1 + 2)
+        """.trimMargin(),
+
+        """
+        |const val v1 = (
+        |    1 + 2
+        |)
+        """.trimMargin(),
+
+        """
+        |const val v2 = (
+        |    1 + 2)
+        """.trimMargin(),
+
+        """
+        |const val v3 =
+        |    (
+        |        1 + 2
+        |    )
+        """.trimMargin(),
+
+        """
+        |const val v4 =
+        |    (
+        |        1 + 2)
+        """.trimMargin(),
+    )
+
+    /**
+     * Parenthesized expressions, continuation indent
+     * (`extendedIndentAfterOperators` is **on**).
+     *
+     * When adding new code fragments to this list, be sure to also add their
+     * counterparts (preserving order) to
+     * [parenthesesSurroundedInfixExpressionsSingleIndent].
+     *
+     * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
+     *
+     * @see parenthesesSurroundedInfixExpressionsSingleIndent
+     */
+    @Language("kotlin")
+    private val parenthesesSurroundedInfixExpressionsContinuationIndent = arrayOf(
+        """
+        |fun f1() = (
+        |    1 + 2
+        |)
+        """.trimMargin(),
+
+        """
+        |fun f2() = (
+        |    1 + 2)
+        """.trimMargin(),
+
+        """
+        |fun f3() =
+        |        (
+        |            1 + 2
+        |        )
+        """.trimMargin(),
+
+        """
+        |fun f4() =
+        |        (
+        |            1 + 2)
+        """.trimMargin(),
+
+        """
+        |const val v1 = (
+        |    1 + 2
+        |)
+        """.trimMargin(),
+
+        """
+        |const val v2 = (
+        |    1 + 2)
+        """.trimMargin(),
+
+        """
+        |const val v3 =
+        |        (
+        |            1 + 2
+        |        )
+        """.trimMargin(),
+
+        """
+        |const val v4 =
+        |        (
+        |            1 + 2)
+        """.trimMargin(),
+    )
+
+    /**
+     * Parenthesized expressions.
+     *
+     * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
+     */
+    val parenthesesSurroundedInfixExpressions = mapOf(
+        false to parenthesesSurroundedInfixExpressionsSingleIndent,
+        true to parenthesesSurroundedInfixExpressionsContinuationIndent)
 }
