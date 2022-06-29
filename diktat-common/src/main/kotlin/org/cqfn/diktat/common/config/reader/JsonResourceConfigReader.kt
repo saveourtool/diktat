@@ -1,5 +1,7 @@
 package org.cqfn.diktat.common.config.reader
 
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -60,6 +62,8 @@ abstract class JsonResourceConfigReader<T> {
         /**
          * A [Logger] that can be used
          */
-        val log: Logger = LoggerFactory.getLogger(JsonResourceConfigReader::class.java)
+        val log: Logger = KotlinLogging.logger(
+            LoggerFactory.getLogger(JsonResourceConfigReader::class.java)
+        ).initKtLintKLogger()
     }
 }

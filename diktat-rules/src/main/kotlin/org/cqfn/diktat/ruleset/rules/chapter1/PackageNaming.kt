@@ -24,6 +24,8 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -281,7 +283,9 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(PackageNaming::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(PackageNaming::class.java)
+        ).initKtLintKLogger()
         const val NAME_ID = "package-naming"
 
         /**

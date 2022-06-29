@@ -1,5 +1,7 @@
 package org.cqfn.diktat.common.config.reader
 
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.slf4j.LoggerFactory
 
 import java.io.IOException
@@ -35,7 +37,9 @@ open class ApplicationProperties(propertiesFileName: String) {
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(ApplicationProperties::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(ApplicationProperties::class.java)
+        ).initKtLintKLogger()
         private const val EXIT_STATUS_MISSING_PROPERTIES = 4
     }
 }

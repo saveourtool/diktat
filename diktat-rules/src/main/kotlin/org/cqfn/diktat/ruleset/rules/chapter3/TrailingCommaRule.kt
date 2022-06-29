@@ -32,6 +32,8 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -133,7 +135,9 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(TrailingCommaRule::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(TrailingCommaRule::class.java)
+        ).initKtLintKLogger()
         const val NAME_ID = "trailing-comma"
         val ktVersion = KotlinVersion(1, 4)
         val whenChildrenTypes = listOf(WHEN_CONDITION_WITH_EXPRESSION, WHEN_CONDITION_IS_PATTERN, WHEN_CONDITION_IN_RANGE)

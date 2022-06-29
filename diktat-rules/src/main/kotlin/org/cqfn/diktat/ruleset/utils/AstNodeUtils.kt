@@ -61,15 +61,8 @@ import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.util.Locale
-
-/**
- * A [Logger] that can be used throughout diktat
- */
-private val log: Logger = LoggerFactory.getLogger("AstNodeUtils")
 
 /**
  * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]

@@ -19,6 +19,8 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THIS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -211,7 +213,9 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(CompactInitialization::class.java)
+        ).initKtLintKLogger()
         const val NAME_ID = "class-compact-initialization"
     }
 }

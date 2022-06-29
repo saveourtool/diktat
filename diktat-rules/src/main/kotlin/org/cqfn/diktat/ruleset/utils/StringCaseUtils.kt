@@ -3,11 +3,15 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.slf4j.LoggerFactory
 
 import java.util.Locale
 
-private val log = LoggerFactory.getLogger("StringCaseUtils")
+private val log = KotlinLogging.logger(
+    LoggerFactory.getLogger("StringCaseUtils")
+).initKtLintKLogger()
 
 /**
  * Available cases to name enum members

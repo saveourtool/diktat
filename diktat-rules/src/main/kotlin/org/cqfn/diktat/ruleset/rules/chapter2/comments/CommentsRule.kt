@@ -12,6 +12,8 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -173,7 +175,9 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("MaxLineLength")
     companion object {
-        private val logger = LoggerFactory.getLogger(CommentsRule::class.java)
+        private val logger = KotlinLogging.logger(
+            LoggerFactory.getLogger(CommentsRule::class.java)
+        ).initKtLintKLogger()
         const val NAME_ID = "comments"
         private val importKeywordWithSpace = "${KtTokens.IMPORT_KEYWORD.value} "
         private val packageKeywordWithSpace = "${KtTokens.PACKAGE_KEYWORD.value} "

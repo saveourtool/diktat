@@ -109,7 +109,7 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     class RangeConventionalConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
-         * Does ignore rangeTo function
+         * If true, don't suggest to replace `rangeTo` function with operator `..`
          */
         val isRangeToIgnore = config["isRangeToIgnore"]?.toBoolean() ?: false
     }

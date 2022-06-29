@@ -6,6 +6,8 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
@@ -75,6 +77,8 @@ abstract class DiktatRule(
     abstract fun logic(node: ASTNode)
 
     companion object {
-        private val log = LoggerFactory.getLogger(DiktatRule::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(DiktatRule::class.java)
+        ).initKtLintKLogger()
     }
 }

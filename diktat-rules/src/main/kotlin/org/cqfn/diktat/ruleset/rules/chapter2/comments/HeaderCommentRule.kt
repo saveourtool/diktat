@@ -26,6 +26,8 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -273,7 +275,9 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(HeaderCommentRule::class.java)
+        ).initKtLintKLogger()
         const val CURR_YEAR_PATTERN = ";@currYear;"
         const val NAME_ID = "header-comment"
         val hyphenRegex = Regex("""\d+-\d+""")

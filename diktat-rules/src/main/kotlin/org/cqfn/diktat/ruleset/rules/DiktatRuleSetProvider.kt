@@ -85,6 +85,8 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -92,7 +94,7 @@ import java.io.File
 
 /**
  * [RuleSetProvider] that provides diKTat ruleset.
- * By default it is expected to have diktat-analysis.yml configuration in the root folder where 'ktlint' is run
+ * By default, it is expected to have diktat-analysis.yml configuration in the root folder where 'ktlint' is run
  * otherwise it will use default configuration where some rules are disabled
  *
  * @param diktatConfigFile - configuration file where all configurations for inspections and rules are stored
@@ -107,7 +109,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     @Suppress(
         "LongMethod",
         "TOO_LONG_FUNCTION",
-        "SpreadOperator"
     )
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
@@ -257,6 +258,8 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
     companion object {
-        private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
+        private val log = KotlinLogging.logger(
+            LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
+        ).initKtLintKLogger()
     }
 }

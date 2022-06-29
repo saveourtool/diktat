@@ -13,6 +13,8 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.intellij.lang.annotations.Language
@@ -25,7 +27,9 @@ import java.util.function.Consumer
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
 @Suppress("WRONG_WHITESPACE")
-private val log = LoggerFactory.getLogger({}.javaClass)
+private val log = KotlinLogging.logger(
+    LoggerFactory.getLogger({}.javaClass)
+).initKtLintKLogger()
 
 @Suppress("TYPE_ALIAS")
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
