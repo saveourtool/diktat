@@ -121,7 +121,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
-        } else if (kdoc == null && !isReferenceExpressionWithSameName(node, kdocTags)) {
+        } else if (kdoc == null && !isReferenceExpressionWithSameName(node)) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         } else {
             if (paramCheckFailed) {
@@ -149,7 +149,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isReferenceExpressionWithSameName(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
+    private fun isReferenceExpressionWithSameName(node: ASTNode): Boolean {
         val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi
             ?.let { (it as KtDotQualifiedExpression).selectorExpression?.text?.substringBefore('(') }
         val funName = (node.psi as KtFunction).name
