@@ -923,50 +923,50 @@ internal object IndentationRuleTestResources {
     private val parenthesesSurroundedInfixExpressionsContinuationIndent = arrayOf(
         """
         |fun f1() = (
-        |        1 + 2
+        |    1 + 2
         |)
         """.trimMargin(),
 
         """
         |fun f2() = (
-        |        1 + 2)
+        |    1 + 2)
         """.trimMargin(),
 
         """
         |fun f3() =
         |        (
-        |                1 + 2
+        |            1 + 2
         |        )
         """.trimMargin(),
 
         """
         |fun f4() =
         |        (
-        |                1 + 2)
+        |            1 + 2)
         """.trimMargin(),
 
         """
         |const val v1 = (
-        |        1 + 2
+        |    1 + 2
         |)
         """.trimMargin(),
 
         """
         |const val v2 = (
-        |        1 + 2)
+        |    1 + 2)
         """.trimMargin(),
 
         """
         |const val v3 =
         |        (
-        |                1 + 2
+        |            1 + 2
         |        )
         """.trimMargin(),
 
         """
         |const val v4 =
         |        (
-        |                1 + 2)
+        |            1 + 2)
         """.trimMargin(),
     )
 

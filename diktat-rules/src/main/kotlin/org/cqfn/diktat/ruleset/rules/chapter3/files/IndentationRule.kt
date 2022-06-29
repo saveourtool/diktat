@@ -60,6 +60,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.visit
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -607,12 +608,13 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
 
         /**
-         * Parentheses only affect indent when they're a part of a
+         * Parentheses always affect indent when they're a part of a
          * [VALUE_PARAMETER_LIST] (formal arguments) or a [VALUE_ARGUMENT_LIST]
          * (effective function call arguments).
          *
          * When they're children of a [PARENTHESIZED] (often inside a
-         * [BINARY_EXPRESSION]), they don't contribute to the indent.
+         * [BINARY_EXPRESSION]), contribute to the indent depending on whether
+         * there's a newline after the opening parenthesis.
          *
          * @return whether this [LPAR] or [RPAR] node affects indent.
          * @see BINARY_EXPRESSION
@@ -625,7 +627,33 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 elementType.toString()
             }
 
-            return treeParent.elementType != PARENTHESIZED
+            return when (treeParent.elementType) {
+                PARENTHESIZED -> when (elementType) {
+                    /*
+                     * `LPAR` inside a binary expression only contributes to the
+                     * indent if it's immediately followed by a newline.
+                     */
+                    LPAR -> treeNext.isWhiteSpaceWithNewline()
+
+                    /*
+                     * `RPAR` inside a binary expression affects the indent only
+                     * if its matching `LPAR` node does so.
+                     */
+                    else -> {
+                        val openingParenthesis = elementType.braceMatchOrNull()?.let { braceMatch ->
+                            treeParent.findChildByType(braceMatch)
+                        }
+                        openingParenthesis?.isParenthesisAffectingIndent() ?: false
+                    }
+                }
+
+                /*
+                 * Either a control-flow statement (one of IF, WHEN, FOR or
+                 * DO_WHILE), a function declaration (VALUE_PARAMETER_LIST or
+                 * PROPERTY_ACCESSOR), or a function call (VALUE_ARGUMENT_LIST).
+                 */
+                else -> true
+            }
         }
 
         /**

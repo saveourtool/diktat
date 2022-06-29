@@ -927,8 +927,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 parenthesesSurroundedInfixExpressions[!extendedIndentAfterOperators].assertNotNull().forEach { code ->
                     softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
                         .describedAs("lint result for ${code.describe()}")
-                        .isNotEmpty
-                        .hasSizeBetween(1, 1).allSatisfy(Consumer { lintError ->
+                        .hasSizeBetween(0, 3).allSatisfy(Consumer { lintError ->
                             assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
                             assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
                             assertThat(lintError.detail).matches(warnTextRegex)
