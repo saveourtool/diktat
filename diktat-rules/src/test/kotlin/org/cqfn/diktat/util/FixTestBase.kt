@@ -21,7 +21,7 @@ import kotlin.io.path.div
 open class FixTestBase(protected val resourceFilePath: String,
                        private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                        private val cb: LintErrorCallback = defaultCallback,
-                       private val rulesConfigList: List<RulesConfig>? = null
+                       private val rulesConfigList: List<RulesConfig>? = null,
 ) {
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
         format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
@@ -61,19 +61,39 @@ open class FixTestBase(protected val resourceFilePath: String,
         )
     }
 
+    private fun getSaveForCurrentOs() = when {
+        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-linuxX64.kexe"
+        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-macosX64.kexe"
+        System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save.exe"
+        else -> ""
+    }
+
     /**
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * @param configFilePath path of diktat-analysis file
      */
-    protected fun saveSmokeTest(expectedPath: String, testPath: String) {
-        val processBuilder = ProcessBuilder("src/test/resources/test/smoke/save.exe", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+    protected fun saveSmokeTest(
+        configFilePath: String,
+        expectedPath: String,
+        testPath: String
+    ) {
+        val processBuilder = ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath,
+            "--log", "all")
+
         val file = File("tmpSave.txt")
         val diktat = File("src/test/resources/test/smoke/diktat.jar")
+        val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
         val diktatFrom = File("../diktat-ruleset/target/diktat-$diktatVersion.jar")
+        val configFileFrom = File(configFilePath)
 
         file.createNewFile()
         diktat.createNewFile()
+        configFile.createNewFile()
+
         copyFile(diktatFrom, diktat)
+        copyFile(configFileFrom, configFile)
+
         processBuilder.redirectOutput(file)
 
         val process = processBuilder.start()
@@ -84,6 +104,7 @@ open class FixTestBase(protected val resourceFilePath: String,
 
         file.delete()
         diktat.delete()
+        configFile.delete()
 
         Assertions.assertTrue(
             saveOutput.contains("SUCCESS")
