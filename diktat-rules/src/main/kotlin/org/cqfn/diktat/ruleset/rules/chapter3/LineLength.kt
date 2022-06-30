@@ -79,8 +79,9 @@ import java.net.URL
 
 /**
  * The rule checks for lines in the file that exceed the maximum length.
- * Rule ignores URL in KDoc. Rule also can fix some cases.
- * Rule can fix long binary expressions in condition inside `if` and in property declarations and one line functions
+ * Rule ignores URL in KDoc. This rule can also fix some particular corner cases.
+ * This inspection can fix long binary expressions in condition inside `if`,
+ * in property declarations and in single line functions.
  */
 @Suppress("ForbiddenComment")
 class LineLength(configRules: List<RulesConfig>) : DiktatRule(
