@@ -2,12 +2,14 @@
 
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import com.google.common.base.CaseFormat
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 
 import java.util.Locale
 
-private val log = LoggerFactory.getLogger("StringCaseUtils")
+@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 /**
  * Available cases to name enum members

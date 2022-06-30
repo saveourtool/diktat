@@ -670,4 +670,18 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should not trigger in braces on the beginning of the line`() {
+        lintMethod(
+            """
+                |val onClick: () -> Unit = remember {
+                |    {
+                |        /* do stuff */
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
 }
