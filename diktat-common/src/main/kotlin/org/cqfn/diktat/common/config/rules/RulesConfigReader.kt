@@ -6,13 +6,12 @@ package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
-import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.File
@@ -112,9 +111,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
         /**
          * A [Logger] that can be used
          */
-        val log: Logger = KotlinLogging.logger(
-            LoggerFactory.getLogger(RulesConfigReader::class.java)
-        ).initKtLintKLogger()
+        val log: Logger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
     }
 }
 

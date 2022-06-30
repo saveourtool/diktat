@@ -6,6 +6,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.NEWLINE
@@ -62,7 +63,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.visit
-import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -77,7 +77,6 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.slf4j.LoggerFactory
 
 import kotlin.math.abs
 import kotlin.reflect.KCallable
@@ -552,9 +551,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = KotlinLogging.logger(
-            LoggerFactory.getLogger(IndentationRule::class.java)
-        ).initKtLintKLogger()
+        private val log = KotlinLogging.loggerWithKtlintConfig(IndentationRule::class)
         const val NAME_ID = "indentation"
         private val increasingTokens: Set<IElementType> = linkedSetOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens: Set<IElementType> = linkedSetOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)

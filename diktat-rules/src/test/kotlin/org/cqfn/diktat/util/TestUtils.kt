@@ -5,6 +5,7 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 
 import com.pinterest.ktlint.core.KtLint
@@ -13,23 +14,19 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
-import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.slf4j.LoggerFactory
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
-@Suppress("WRONG_WHITESPACE")
-private val log = KotlinLogging.logger(
-    LoggerFactory.getLogger({}.javaClass)
-).initKtLintKLogger()
+@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 @Suppress("TYPE_ALIAS")
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->

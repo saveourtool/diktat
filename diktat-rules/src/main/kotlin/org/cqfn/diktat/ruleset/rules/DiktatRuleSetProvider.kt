@@ -6,6 +6,7 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.ordered
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
@@ -85,10 +86,8 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
-import org.slf4j.LoggerFactory
 
 import java.io.File
 
@@ -258,8 +257,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
     companion object {
-        private val log = KotlinLogging.logger(
-            LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
-        ).initKtLintKLogger()
+        private val log = KotlinLogging.loggerWithKtlintConfig(DiktatRuleSetProvider::class)
     }
 }
