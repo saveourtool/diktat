@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
@@ -86,6 +87,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -102,7 +104,6 @@ import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
-import org.slf4j.LoggerFactory
 
 /**
  * Rule that checks line break styles.
@@ -158,13 +159,18 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
             }.reversed()
             if (listDot.size > 3) {
-                val without = listDot.filterNot {
-                    val whiteSpaceBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
-                    whiteSpaceBeforeDotOrSafeAccess?.elementType == WHITE_SPACE && whiteSpaceBeforeDotOrSafeAccess.text.lines().size > 1
+                val without = listDot.filterIndexed { index, it ->
+                    val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
+                    val firstElem = it.firstChildNode
+                    val isTextContainsParenthesized = isTextContainsFunctionCall(firstElem)
+                    val isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
+                        (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
+                    isTextContainsParenthesized && (index > 0) && isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine
                 }
-                if (without.size > 1 || (without.size == 1 && without[0] != listDot[0])) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should be split before second and other dot/safe access", node.startOffset, node) {
-                        fixDotQualifiedExpression(listDot)
+                if (without.isNotEmpty()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "wrong split long `dot qualified expression` or `safe access expression`",
+                        node.startOffset, node) {
+                        fixDotQualifiedExpression(without)
                     }
                 }
             }
@@ -190,12 +196,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      * 2) If before first Dot or Safe Access node stay White Space node with \n - remove this node
      */
     private fun fixDotQualifiedExpression(list: List<ASTNode>) {
-        list.forEachIndexed { index, astNode ->
+        list.forEach { astNode ->
             val dotNode = astNode.getFirstChildWithType(DOT) ?: astNode.getFirstChildWithType(SAFE_ACCESS)
             val nodeBeforeDot = dotNode?.treePrev
-            if (index > 0) {
-                astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
-            }
+            astNode.appendNewlineMergingWhiteSpace(nodeBeforeDot, dotNode)
         }
     }
 
@@ -416,13 +420,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     val funNode = blockNode.treeParent
                     val returnType = (funNode.psi as? KtNamedFunction)?.typeReference?.node
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
-                    val blockNode = funNode.findChildByType(BLOCK)
+                    val childBlockNode = funNode.findChildByType(BLOCK)
                     funNode.apply {
                         if (returnType != null) {
                             removeRange(returnType.treeNext, null)
                             addChild(PsiWhiteSpaceImpl(" "), null)
-                        } else if (blockNode != null) {
-                            removeChild(blockNode)
+                        } else if (childBlockNode != null) {
+                            removeChild(childBlockNode)
                         }
                         addChild(LeafPsiElement(EQ, "="), null)
                         addChild(PsiWhiteSpaceImpl(" "), null)
@@ -624,11 +628,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         return if (dropLeadingProperties) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+            parentExpressionList?.dropWhile { !isTextContainsFunctionCall(it.treeParent) }
         } else {
             parentExpressionList
         }
     }
+
+    private fun isTextContainsFunctionCall(node: ASTNode): Boolean = node.textContains('(') || node.textContains('{')
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
@@ -705,7 +711,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(NewlinesRule::class.java)
+        private val log = KotlinLogging.loggerWithKtlintConfig(NewlinesRule::class)
         const val MAX_CALLS_IN_ONE_LINE = 3
         const val NAME_ID = "newlines"
 
