@@ -2,12 +2,13 @@ package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.Rule
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.slf4j.LoggerFactory
 
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
@@ -75,6 +76,6 @@ abstract class DiktatRule(
     abstract fun logic(node: ASTNode)
 
     companion object {
-        private val log = LoggerFactory.getLogger(DiktatRule::class.java)
+        private val log = KotlinLogging.loggerWithKtlintConfig(DiktatRule::class)
     }
 }

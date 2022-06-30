@@ -2,12 +2,12 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
-import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -76,6 +76,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextCodeLeaf
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -85,7 +86,6 @@ import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
-import org.slf4j.LoggerFactory
 
 /**
  * This rule checks usage of whitespaces for horizontal code separation
@@ -456,7 +456,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
     companion object {
-        private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+        private val log = KotlinLogging.loggerWithKtlintConfig(WhiteSpaceRule::class)
         const val NAME_ID = "horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list

@@ -30,6 +30,15 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging-jvm</artifactId>
+        </dependency>
+        <!-- ktlint-core is needed only for `initKtLintKLogger` method -->
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
