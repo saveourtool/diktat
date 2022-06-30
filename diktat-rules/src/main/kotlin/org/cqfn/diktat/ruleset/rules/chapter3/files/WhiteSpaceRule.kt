@@ -225,7 +225,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
                 .parent({ it.elementType == VALUE_ARGUMENT })
                 .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
-            // If it is lambda, then we don't force it to be on newline or same line
+            // Handling this case: `foo({ it.bar() }, 2, 3)`
             if (numWhiteSpace != 0 && isFirstArgument) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
                     " inside argument list", node.startOffset, node) {
@@ -233,8 +233,11 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         } else if (prevNode.elementType !in keywordsWithSpaceAfter && numWhiteSpace != 1) {
-            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
-                prevNode.leaveSingleWhiteSpace()
+            val hasOnlyWhiteSpaceBefore = whitespaceOrPrevNode.elementType == WHITE_SPACE && whitespaceOrPrevNode.textContains('\n')
+            if (!hasOnlyWhiteSpaceBefore) {
+                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
+                    prevNode.leaveSingleWhiteSpace()
+                }
             }
         }
     }
