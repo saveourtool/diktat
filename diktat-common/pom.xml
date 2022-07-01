@@ -94,6 +94,8 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <apiVersion>1.6</apiVersion>
+                    <languageVersion>1.6</languageVersion>
                     <compilerPlugins>
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>

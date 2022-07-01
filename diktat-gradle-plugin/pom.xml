@@ -26,11 +26,11 @@
     <dependencies>
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
-            <artifactId>diktat-rules</artifactId>
+            <artifactId>diktat-common</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- Since we need diktat-rules only for property name, we can exclude everything else -->
+                    <!-- Since we need diktat-common only for property name, we can exclude everything else -->
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
