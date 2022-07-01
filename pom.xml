@@ -5,7 +5,7 @@
 
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>diktat</name>
@@ -52,7 +52,7 @@
         <guava.version>31.1-jre</guava.version>
         <slf4j.version>1.7.36</slf4j.version>
         <commons-cli.version>1.5.0</commons-cli.version>
-        <diktat-check.version>1.2.0</diktat-check.version>
+        <diktat-check.version>1.2.1</diktat-check.version>
         <kotlinpoet.version>1.12.0</kotlinpoet.version>
         <detekt.version>1.20.0</detekt.version>
         <dokka.version>1.7.0</dokka.version>

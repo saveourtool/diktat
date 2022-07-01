@@ -5,10 +5,10 @@
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-examples-maven</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
 
     <properties>
-        <diktat.version>1.2.0</diktat.version>
+        <diktat.version>1.2.1</diktat.version>
     </properties>
 
     <!-- This is an example of how DiKTat performs static code analysis.
