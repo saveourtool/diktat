@@ -3,14 +3,16 @@ package org.cqfn.diktat.util
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.apache.commons.io.FileUtils.copyFile
+import org.apache.http.client.methods.CloseableHttpResponse
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClients
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.io.File
-
+import java.io.FileOutputStream
 import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
@@ -18,10 +20,11 @@ import kotlin.io.path.div
 /**
  * @property resourceFilePath path to files which will be compared in tests
  */
-open class FixTestBase(protected val resourceFilePath: String,
-                       private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-                       private val cb: LintErrorCallback = defaultCallback,
-                       private val rulesConfigList: List<RulesConfig>? = null,
+open class FixTestBase(
+    protected val resourceFilePath: String,
+    private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
+    private val cb: LintErrorCallback = defaultCallback,
+    private val rulesConfigList: List<RulesConfig>? = null,
 ) {
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
         format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
@@ -62,10 +65,20 @@ open class FixTestBase(protected val resourceFilePath: String,
     }
 
     private fun getSaveForCurrentOs() = when {
-        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-linuxX64.kexe"
-        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-macosX64.kexe"
-        System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save.exe"
+        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-0.3.1-linuxX64.kexe"
+        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-0.3.1-macosX64.kexe"
+        System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save-0.3.1-mingwX64.exe"
         else -> ""
+    }
+
+    private fun downloadFile(url: String, file: File) {
+        val httpClient = HttpClients.createDefault()
+        val request = HttpGet(url)
+        val response: CloseableHttpResponse = httpClient.execute(request)
+        val fileSave = response.entity
+        fileSave?.let {
+            FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
+        }
     }
 
     /**
@@ -78,15 +91,19 @@ open class FixTestBase(protected val resourceFilePath: String,
         expectedPath: String,
         testPath: String
     ) {
-        val processBuilder = ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath,
-            "--log", "all")
+        val processBuilder = ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
 
         val file = File("tmpSave.txt")
         val diktat = File("src/test/resources/test/smoke/diktat.jar")
         val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
         val diktatFrom = File("../diktat-ruleset/target/diktat-$diktatVersion.jar")
+        val save = File("src/test/resources/test/smoke/${getSaveForCurrentOs()}")
+        val ktlint = File("src/test/resources/test/smoke/ktlint")
+
         val configFileFrom = File(configFilePath)
 
+        ktlint.createNewFile()
+        save.createNewFile()
         file.createNewFile()
         diktat.createNewFile()
         configFile.createNewFile()
@@ -95,6 +112,9 @@ open class FixTestBase(protected val resourceFilePath: String,
         copyFile(configFileFrom, configFile)
 
         processBuilder.redirectOutput(file)
+
+        downloadFile("https://github.com/saveourtool/save-cli/releases/download/v0.3.1/${getSaveForCurrentOs()}", save)
+        downloadFile("https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint", ktlint)
 
         val process = processBuilder.start()
         process.waitFor()
@@ -105,6 +125,8 @@ open class FixTestBase(protected val resourceFilePath: String,
         file.delete()
         diktat.delete()
         configFile.delete()
+        ktlint.delete()
+        save.delete()
 
         Assertions.assertTrue(
             saveOutput.contains("SUCCESS")
