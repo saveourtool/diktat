@@ -107,4 +107,9 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     fun `fix bin expression first symbol last word`() {
         fixAndCompare("LongBinaryExpressionLastWordExpected.kt", "LongBinaryExpressionLastWordTest.kt", rulesConfigListErrorLineLength1)
     }
+
+    @Test
+    fun `fix bin 1expression first symbol last word`() {
+        fixAndCompare("LongComplexExpressionExpected.kt", "LongComplexExpressionTest.kt", rulesConfigListErrorLineLength1)
+    }
 }

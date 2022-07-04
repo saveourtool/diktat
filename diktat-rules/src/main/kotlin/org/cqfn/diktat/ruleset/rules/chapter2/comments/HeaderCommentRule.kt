@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter2.comments
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
@@ -26,11 +27,11 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
+import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.slf4j.LoggerFactory
 
 import java.time.LocalDate
 
@@ -273,7 +274,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
+        private val log = KotlinLogging.loggerWithKtlintConfig(HeaderCommentRule::class)
         const val CURR_YEAR_PATTERN = ";@currYear;"
         const val NAME_ID = "header-comment"
         val hyphenRegex = Regex("""\d+-\d+""")
