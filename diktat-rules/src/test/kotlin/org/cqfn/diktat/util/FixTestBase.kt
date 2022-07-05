@@ -69,9 +69,9 @@ open class FixTestBase(
     }
 
     private fun getSaveForCurrentOs() = when {
-        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-$saveVersion-linuxX64.kexe"
-        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-$saveVersion-macosX64.kexe"
-        System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save-$saveVersion-mingwX64.exe"
+        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-$SAVE_VERSION-linuxX64.kexe"
+        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-$SAVE_VERSION-macosX64.kexe"
+        System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save-$SAVE_VERSION-mingwX64.exe"
         else -> ""
     }
 
@@ -127,8 +127,8 @@ open class FixTestBase(
 
         processBuilder.redirectOutput(file)
 
-        downloadFile("https://github.com/saveourtool/save-cli/releases/download/v$saveVersion/${getSaveForCurrentOs()}", save)
-        downloadFile("https://github.com/pinterest/ktlint/releases/download/$ktlintVersion/ktlint", ktlint)
+        downloadFile("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}", save)
+        downloadFile("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint", ktlint)
 
         val process = processBuilder.start()
         process.waitFor()
@@ -204,7 +204,7 @@ open class FixTestBase(
     }
 
     companion object {
-        private const val saveVersion = "0.3.1"
-        private const val ktlintVersion = "0.46.1"
+        private const val KTLINT_VERSION = "0.46.1"
+        private const val SAVE_VERSION = "0.3.1"
     }
 }
