@@ -128,7 +128,7 @@ open class FixTestBase(
         processBuilder.redirectOutput(file)
 
         downloadFile("https://github.com/saveourtool/save-cli/releases/download/v$saveVersion/${getSaveForCurrentOs()}", save)
-        downloadFile("https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint", ktlint)
+        downloadFile("https://github.com/pinterest/ktlint/releases/download/$ktlintVersion/ktlint", ktlint)
 
         val process = processBuilder.start()
         process.waitFor()
@@ -205,5 +205,6 @@ open class FixTestBase(
 
     companion object {
         private val saveVersion = "0.3.1"
+        private val ktlintVersion = "0.46.1"
     }
 }
