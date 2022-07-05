@@ -14,8 +14,13 @@ import org.junit.jupiter.api.Assertions
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
+import kotlin.io.path.exists
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
+import kotlin.io.path.pathString
 
 /**
  * @property resourceFilePath path to files which will be compared in tests
@@ -29,7 +34,6 @@ open class FixTestBase(
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
         format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
     }
-    private val diktatVersion = "1.2.1-SNAPSHOT"
 
     constructor(resourceFilePath: String,
                 ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
@@ -86,6 +90,7 @@ open class FixTestBase(
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
      * @param configFilePath path of diktat-analysis file
      */
+    @Suppress("TOO_LONG_FUNCTION")
     protected fun saveSmokeTest(
         configFilePath: String,
         expectedPath: String,
@@ -93,10 +98,17 @@ open class FixTestBase(
     ) {
         val processBuilder = ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
 
+        val diktatDir: String =
+            Paths.get("../diktat-ruleset/target")
+                .takeIf { it.exists() }
+                ?.listDirectoryEntries()
+                ?.single { it.name.contains("diktat") }
+                ?.pathString ?: ""
+
         val file = File("tmpSave.txt")
         val diktat = File("src/test/resources/test/smoke/diktat.jar")
         val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
-        val diktatFrom = File("../diktat-ruleset/target/diktat-$diktatVersion.jar")
+        val diktatFrom = File(diktatDir)
         val save = File("src/test/resources/test/smoke/${getSaveForCurrentOs()}")
         val ktlint = File("src/test/resources/test/smoke/ktlint")
 
