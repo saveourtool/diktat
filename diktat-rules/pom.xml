@@ -15,7 +15,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <apache.api.version>4.5.13</apache.api.version>
+        <apache.httpclient.version>4.5.13</apache.httpclient.version>
     </properties>
 
     <dependencies>
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${apache.api.version}</version>
+            <version>${apache.httpclient.version}</version>
         </dependency>
     </dependencies>
 
