@@ -204,7 +204,7 @@ open class FixTestBase(
     }
 
     companion object {
-        private val saveVersion = "0.3.1"
-        private val ktlintVersion = "0.46.1"
+        private const val saveVersion = "0.3.1"
+        private const val ktlintVersion = "0.46.1"
     }
 }
