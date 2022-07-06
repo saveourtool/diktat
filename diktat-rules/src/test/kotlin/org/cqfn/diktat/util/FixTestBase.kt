@@ -78,13 +78,15 @@ open class FixTestBase(
     private fun downloadFile(url: String, file: File) {
         val httpClient = HttpClients.createDefault()
         val request = HttpGet(url)
-        val response: CloseableHttpResponse = httpClient.execute(request)
-        val fileSave = response.entity
-        fileSave?.let {
-            FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
+        httpClient.use {
+            val response: CloseableHttpResponse = httpClient.execute(request)
+            val fileSave = response.use {
+                response.entity
+            }
+            fileSave?.let {
+                FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
+            }
         }
-        response.close()
-        httpClient.close()
     }
 
     /**
