@@ -80,11 +80,11 @@ open class FixTestBase(
         val request = HttpGet(url)
         httpClient.use {
             val response: CloseableHttpResponse = httpClient.execute(request)
-            val fileSave = response.use {
-                response.entity
-            }
-            fileSave?.let {
-                FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
+            response.use {
+                val fileSave = response.entity
+                fileSave?.let {
+                    FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
+                }
             }
         }
     }

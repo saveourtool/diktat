@@ -2,8 +2,6 @@ package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
@@ -23,11 +21,8 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
-import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.util.assertEquals
 
-import com.charleskorn.kaml.Yaml
-import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -38,9 +33,6 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
 
-import kotlin.io.path.createTempFile
-import kotlinx.serialization.builtins.ListSerializer
-
 typealias RuleToConfig = Map<String, Map<String, String>>
 
 /**
@@ -48,39 +40,7 @@ typealias RuleToConfig = Map<String, Map<String, String>>
  * Note: ktlint uses initial text from a file to calculate line and column from offset. Because of that line/col of unfixed errors
  * may change after some changes to text or other rules.
  */
-class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
-    { DiktatRuleSetProvider(configFilePath) },
-    { lintError, _ -> unfixedLintErrors.add(lintError) },
-    null
-) {
-    /**
-     * Disable some of the rules.
-     */
-    @Suppress("UnsafeCallOnNullableType")
-    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: RuleToConfig = emptyMap()) {
-        val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
-            .toMutableList()
-            .also { rulesConfig ->
-                rulesToDisable.forEach { warning ->
-                    rulesConfig.removeIf { it.name == warning.name }
-                    rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
-                }
-                rulesToOverride.forEach { (warning, configuration) ->
-                    rulesConfig.removeIf { it.name == warning }
-                    rulesConfig.add(RulesConfig(warning, enabled = true, configuration = configuration))
-                }
-            }
-            .toList()
-        createTempFile().toFile()
-            .also {
-                configFilePath = it.absolutePath
-            }
-            .writeText(
-                Yaml(configuration = YamlConfiguration(strictMode = true))
-                    .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
-            )
-    }
-
+class DiktatSmokeTest : DiktatSmokeTestBase() {
     @BeforeEach
     fun setUp() {
         unfixedLintErrors.clear()
@@ -100,7 +60,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `regression - should not fail if package is not set`() {
+    override fun `regression - should not fail if package is not set`() {
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
         fixAndCompareSmokeTest("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
@@ -108,19 +68,19 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #8 - anonymous function`() {
+    override fun `smoke test #8 - anonymous function`() {
         fixAndCompareSmokeTest("Example8Expected.kt", "Example8Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #7`() {
+    override fun `smoke test #7`() {
         fixAndCompareSmokeTest("Example7Expected.kt", "Example7Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #6`() {
+    override fun `smoke test #6`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
@@ -135,7 +95,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #5`() {
+    override fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
             mapOf(
                 Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
@@ -167,7 +127,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #4`() {
+    override fun `smoke test #4`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
@@ -182,19 +142,19 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #3`() {
+    override fun `smoke test #3`() {
         fixAndCompareSmokeTest("Example3Expected.kt", "Example3Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `regression - shouldn't throw exception in cases similar to #371`() {
+    override fun `regression - shouldn't throw exception in cases similar to #371`() {
         fixAndCompareSmokeTest("Bug1Expected.kt", "Bug1Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #2`() {
+    override fun `smoke test #2`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
@@ -217,7 +177,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test #1`() {
+    override fun `smoke test #1`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
@@ -284,21 +244,21 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test with kts files #2`() {
+    override fun `smoke test with kts files #2`() {
         fixAndCompareSmokeTest("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
         Assertions.assertEquals(7, unfixedLintErrors.size)
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `smoke test with kts files with package name`() {
+    override fun `smoke test with kts files with package name`() {
         fixAndCompareSmokeTest("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
         Assertions.assertEquals(7, unfixedLintErrors.size)
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `disable charters`() {
+    override fun `disable charters`() {
         overrideRulesConfig(
             emptyList(),
             mapOf(
@@ -324,13 +284,13 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `regression - should correctly handle tags with empty lines`() {
+    override fun `regression - should correctly handle tags with empty lines`() {
         fixAndCompareSmokeTest("KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `regression - FP of local variables rule`() {
+    override fun `regression - FP of local variables rule`() {
         fixAndCompareSmokeTest("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
         org.assertj
             .core
@@ -344,15 +304,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `fix can cause long line`() {
+    override fun `fix can cause long line`() {
         fixAndCompareSmokeTest("ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
-    }
-
-    companion object {
-        private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
-        private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
-
-        // by default using same yml config as for diktat code style check, but allow to override
-        private var configFilePath = DEFAULT_CONFIG_PATH
     }
 }
