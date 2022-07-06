@@ -27,8 +27,9 @@ repositories {
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
-val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.43.0") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.1.0"
+// To debug gradle plugin, please set `diktatVersion` manually to the current maven project version.
+val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.46.1") as String
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.1"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
@@ -107,7 +108,7 @@ val functionalTest = sourceSets.create("functionalTest") {
     runtimeClasspath += output + compileClasspath
 }
 tasks.getByName<Test>("functionalTest") {
-    dependsOn("test")
+    shouldRunAfter("test")
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
@@ -131,7 +132,7 @@ jacocoTestKit {
     applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
 }
 tasks.jacocoTestReport {
-    dependsOn(tasks.withType<Test>())
+    shouldRunAfter(tasks.withType<Test>())
     executionData(
         fileTree("$buildDir/jacoco").apply {
             include("*.exec")
