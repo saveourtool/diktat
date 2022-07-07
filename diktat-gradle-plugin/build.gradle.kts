@@ -12,7 +12,7 @@ plugins {
 repositories {
     flatDir {
         // to use snapshot diktat without necessary installing
-        dirs("../diktat-rules/target")
+        dirs("../diktat-common/target")
         content {
             includeGroup("org.cqfn.diktat")
         }
