@@ -121,6 +121,11 @@ class DiktatJavaExecTaskTest {
             diktatConfigFile = project.file("../diktat-analysis.yml")
             githubActions = true
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
+        Assertions.assertEquals(
+            project.rootDir.toString(),
+            task.systemProperties["user.home"]
+        )
     }
 
     @Test
@@ -135,6 +140,22 @@ class DiktatJavaExecTaskTest {
             reporter = "json"
             output = "report.json"
         }
+    }
+
+    @Test
+    fun `should set system property with SARIF reporter`() {
+        assertCommandLineEquals(
+            listOf(null, "--reporter=sarif")
+        ) {
+            inputs { exclude("*") }
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporter = "sarif"
+        }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
+        Assertions.assertEquals(
+            project.rootDir.toString(),
+            task.systemProperties["user.home"]
+        )
     }
 
     @Test
