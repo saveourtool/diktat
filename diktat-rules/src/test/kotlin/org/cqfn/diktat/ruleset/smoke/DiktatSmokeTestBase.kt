@@ -93,9 +93,6 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
     abstract fun `smoke test with kts files with package name`()
 
     @Tag("DiktatRuleSetProvider")
-    abstract fun `disable charters`()
-
-    @Tag("DiktatRuleSetProvider")
     abstract fun `regression - should correctly handle tags with empty lines`()
 
     @Tag("DiktatRuleSetProvider")

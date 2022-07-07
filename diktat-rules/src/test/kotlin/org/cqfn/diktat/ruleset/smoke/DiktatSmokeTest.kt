@@ -258,7 +258,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    override fun `disable charters`() {
+    fun `disable charters`() {
         overrideRulesConfig(
             emptyList(),
             mapOf(

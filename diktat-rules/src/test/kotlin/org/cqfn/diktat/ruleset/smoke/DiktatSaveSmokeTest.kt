@@ -151,21 +151,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    override fun `disable charters`() {
-        overrideRulesConfig(
-            emptyList(),
-            mapOf(
-                DIKTAT_COMMON to mapOf(
-                    "domainName" to "org.cqfn.diktat",
-                    "disabledChapters" to "Naming,3,4,5,Classes"
-                )
-            )
-        )
-        saveSmokeTest(configFilePath, "Example1-2Expected.kt", "Example1Test.kt")
-    }
-
-    @Test
-    @Tag("DiktatRuleSetProvider")
     override fun `regression - should correctly handle tags with empty lines`() {
         saveSmokeTest(configFilePath, "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
