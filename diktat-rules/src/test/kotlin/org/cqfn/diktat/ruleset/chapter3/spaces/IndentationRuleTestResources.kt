@@ -980,6 +980,7 @@ internal object IndentationRuleTestResources {
         true to parenthesesSurroundedInfixExpressionsContinuationIndent)
 
     @Language("kotlin")
+    @Suppress("COMMENT_WHITE_SPACE")
     private val ifExpressionsSingleIndent = arrayOf(
         /*-
          * #1351, case 1.
@@ -1025,6 +1026,7 @@ internal object IndentationRuleTestResources {
     )
 
     @Language("kotlin")
+    @Suppress("COMMENT_WHITE_SPACE")
     private val ifExpressionsContinuationIndent = arrayOf(
         /*-
          * #1351, case 1.
