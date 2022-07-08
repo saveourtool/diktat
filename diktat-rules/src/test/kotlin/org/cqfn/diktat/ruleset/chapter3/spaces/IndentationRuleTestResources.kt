@@ -978,4 +978,98 @@ internal object IndentationRuleTestResources {
     val parenthesesSurroundedInfixExpressions = mapOf(
         false to parenthesesSurroundedInfixExpressionsSingleIndent,
         true to parenthesesSurroundedInfixExpressionsContinuationIndent)
+
+    @Language("kotlin")
+    private val ifExpressionsSingleIndent = arrayOf(
+        /*-
+         * #1351, case 1.
+         *
+         * Boolean operator priority (`&&` has higher priority than `||`).
+         *
+         * Currently, this is an incorrectly formatted code kept to detect the
+         * contract breakage. It will be re-formatted once the issue is fixed.
+         */
+        """
+        |fun f1() {
+        |    if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
+        |        !valueParameterNode.hasChildOfType(VAL_KEYWORD) && 
+        |            !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+        |    ) {
+        |        return
+        |    }
+        |}
+        """.trimMargin(),
+
+        /*-
+         * #1351, case 2.
+         *
+         * IDEA combines the values of `CONTINUATION_INDENT_IN_IF_CONDITIONS`
+         * and `CONTINUATION_INDENT_FOR_CHAINED_CALLS`, so the resulting indent
+         * can be anything between 8 (2x) and 16 (4x).
+         *
+         * Currently, this is an incorrectly formatted code kept to detect the
+         * contract breakage. It will be re-formatted once the issue is fixed.
+         */
+        """
+        |fun f2() {
+        |    val prevComment = if (valueParameterNode.siblings(forward = false)
+        |        .takeWhile { it.elementType != EOL_COMMENT && it.elementType != BLOCK_COMMENT }
+        |        .all { it.elementType == WHITE_SPACE }
+        |    ) {
+        |        0
+        |    } else {
+        |        1
+        |    }
+        |}
+        """.trimMargin(),
+    )
+
+    @Language("kotlin")
+    private val ifExpressionsContinuationIndent = arrayOf(
+        /*-
+         * #1351, case 1.
+         *
+         * Boolean operator priority (`&&` has higher priority than `||`).
+         *
+         * Currently, this is an incorrectly formatted code kept to detect the
+         * contract breakage. It will be re-formatted once the issue is fixed.
+         */
+        """
+        |fun f1() {
+        |    if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
+        |            !valueParameterNode.hasChildOfType(VAL_KEYWORD) && 
+        |                    !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+        |    ) {
+        |        return
+        |    }
+        |}
+        """.trimMargin(),
+
+        /*-
+         * #1351, case 2.
+         *
+         * IDEA combines the values of `CONTINUATION_INDENT_IN_IF_CONDITIONS`
+         * and `CONTINUATION_INDENT_FOR_CHAINED_CALLS`, so the resulting indent
+         * can be anything between 8 (2x) and 16 (4x).
+         *
+         * Currently, this is an incorrectly formatted code kept to detect the
+         * contract breakage. It will be re-formatted once the issue is fixed.
+         */
+        """
+        |fun f2() {
+        |    val prevComment = if (valueParameterNode.siblings(forward = false)
+        |        .takeWhile { it.elementType != EOL_COMMENT && it.elementType != BLOCK_COMMENT }
+        |        .all { it.elementType == WHITE_SPACE }
+        |    ) {
+        |        0
+        |    } else {
+        |        1
+        |    }
+        |}
+        """.trimMargin(),
+    )
+
+    val ifExpressions = mapOf(
+        false to ifExpressionsSingleIndent,
+        true to ifExpressionsContinuationIndent)
 }
