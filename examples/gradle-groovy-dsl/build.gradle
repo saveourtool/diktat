@@ -7,5 +7,6 @@ repositories {
 }
 
 diktat {
-    inputs { include ("src/**/*.kt") }
+    inputs { it.include ("src/**/*.kt") }
+    diktatConfigFile = file(rootDir.path + "/diktat-analysis.yml")
 }
