@@ -170,22 +170,32 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         return flag.toString()
     }
 
-    @Suppress("SAY_NO_TO_VAR")
     private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
         val name = diktatExtension.reporter.trim()
         val validReporters = listOf("sarif", "plain", "json", "html")
-        var reporterFlag = if (name.isEmpty() || !validReporters.contains(name)) {
-            project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
-            "--reporter=plain"
-        } else {
-            "--reporter=$name"
+        val reporterFlag = when {
+            diktatExtension.githubActions -> {
+                if (diktatExtension.reporter.isNotEmpty()) {
+                    // githubActions should have higher priority than custom input
+                    project.logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
+                }
+                "--reporter=sarif"
+            }
+            name.isEmpty() -> {
+                project.logger.info("Reporter name was not set. Using 'plain' reporter")
+                "--reporter=plain"
+            }
+            name !in validReporters -> {
+                project.logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
+                "--reporter=plain"
+            }
+            else -> "--reporter=$name"
         }
 
-        // githubActions should have higher priority than a custom input
-        if (diktatExtension.githubActions) {
+        val isSarifReporterActive = reporterFlag.contains("sarif")
+        if (isSarifReporterActive) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
             systemProperty("user.home", project.rootDir.toString())
-            reporterFlag = "--reporter=sarif"
         }
 
         flag.append(reporterFlag)

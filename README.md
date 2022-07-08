@@ -17,14 +17,14 @@
 
 
 DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) for Kotlin and a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
-as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
+as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process.
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.0). Thanks to the community for this support! 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.1). Thanks to the community for this support!
 
 ## See first
 
-|  |  |  |  |  |  |  
+|  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
 |[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
@@ -36,7 +36,7 @@ First of all - actually you can combine diktat with any other static analyzers. 
 Main features of diktat are the following:
 
 1) **More inspections.** It has 100+ inspections that are tightly coupled with it's [Codestyle](info/guide/diktat-coding-convention.md).
-   
+
 2) **Unique [Inspections](info/available-rules.md)** that are missing in other linters.
 
 3) **Highly configurable**. Each and every inspection can be [configured](#config) or [suppressed](#suppress).
@@ -44,39 +44,34 @@ Main features of diktat are the following:
 4) **Strict detailed [Codestyle](info/guide/diktat-coding-convention.md)** that you can adopt and use in your project.
 
 ## Run as CLI-application
-<details>
-<summary>Download and install binaries:</summary>
+
+### Download and install binaries
 
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
 
-**OR** use curl:
-```bash
-# another option is "brew install ktlint"
+   **OR** use `curl`:
+   ```shell
+   # another option is "brew install ktlint"
 
-curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
-```
-   
-2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.0/diktat-1.2.0.jar)
+   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint && chmod a+x ktlint
+   ```
 
-**OR** use curl:
-```bash
-$ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.0/diktat-1.2.0.jar
-```
-</details>
+1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.1/diktat-1.2.1.jar)
 
-<details>
-   
-<summary>Run diktat:</summary>
-   
-3. Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
-   
-```bash
+   **OR** use `curl`:
+   ```console
+   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.1/diktat-1.2.1.jar
+   ```
+
+### Run diKTat
+
+Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
+
+```console
 $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
 ```
 
-To **autofix** all code style violations use `-F` option.
-</details>
-
+To **autofix** all code style violations, use `-F` option.
 
 ## Run with Maven using diktat-maven-plugin
 :heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
@@ -91,7 +86,7 @@ If you use it and encounter any problems, feel free to open issues on [github](h
 
 <details>
 <summary>Add this plugin to your pom.xml:</summary>
-  
+
 ```xml
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
@@ -187,7 +182,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.0"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.1"
 }
 ```
 
@@ -198,7 +193,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.0")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.1")
     }
 }
 
@@ -219,9 +214,9 @@ diktat {
 Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter (it should be added as a dependency into `diktat` configuration):
 ```kotlin
 diktat {
-    // since 1.2.0 to keep in line with maven properties
+    // since 1.2.1 to keep in line with maven properties
     reporter = "json" // "html", "json", "plain" (default), "sarif"
-    // before 1.2.0
+    // before 1.2.1
     // reporterType = "json" // "html", "json", "plain" (default), "sarif"
 }
 ```
@@ -229,7 +224,7 @@ diktat {
 You can also specify an output.
 ```kotlin
 diktat {
-    // since 1.2.0 (reporterType for old versions)
+    // since 1.2.1 (reporterType for old versions)
     reporter = "json"
     output = "someFile.json"
 }
@@ -270,7 +265,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.2.0").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.2.1").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -301,7 +296,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.2.0</version> <!-- optional -->
+  <version>1.2.1</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
@@ -360,7 +355,7 @@ For example:
 ```yaml
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   # all rules are enabled by the default. To disable add 'enabled: false' to the config.
-  enabled: true 
+  enabled: true
   configuration:
     isCopyrightMandatory: true
     copyrightText: Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved.
@@ -421,12 +416,12 @@ disabling of the inspection on that particular code block:
 <summary>Suppress groups of inspections by chapters</summary>
 It is easy to suppress even groups of inspections in diKTat.
 
-These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 
+These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md).
 
 To disable chapters, you will need to add the following configuration to common configuration (`- name: DIKTAT_COMMON`):
 ```yaml
     disabledChapters: "1, 2, 3"
-```  
+```
 
 Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md).
 </details>
@@ -442,5 +437,5 @@ java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
 or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
 but it can be removed and re-generated later, if needed.
 
-## Contribution 
+## Contribution
 See our [Contributing Policy](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md)

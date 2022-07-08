@@ -27,14 +27,26 @@ class DiktatGradlePluginGroovyFunctionalTest {
     }
 
     @Test
-    fun `should execute diktatCheck on default values`() {
+    fun `should execute diktatCheck with default values`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false)
 
-        val diktatCheckBuildResult = result.task(":${DiktatGradlePlugin.DIKTAT_CHECK_TASK}")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
-            result.output.contains("[FILE_NAME_MATCH_CLASS]")
+        assertDiktatExecuted(result)
+    }
+
+    @Test
+    fun `should execute diktatCheck with explicit configuration`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs { it.include("src/**/*.kt") }
+                    reporter = "plain"
+                    diktatConfigFile = file(rootDir.path + "/diktat-analysis.yml")
+                }
+            """.trimIndent()
         )
+
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
+
+        assertDiktatExecuted(result)
     }
 }
