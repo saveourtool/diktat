@@ -29,7 +29,7 @@ Like other modern programming languages, Kotlin is an advanced programming langu
 
 Also, we need to consider the following factors when programming on Kotlin:
 
-1. Writing clean and simple Kotlin code
+1. Writing a clean and simple Kotlin code
 
     Kotlin combines two of the main programming paradigms: functional and object-oriented.
     Both of these paradigms are trusted and well-known software engineering practices.
@@ -43,7 +43,7 @@ Also, we need to consider the following factors when programming on Kotlin:
 
 3. Using Kotlin efficiently
 
-    Some Kotlin features can help you to write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
+    Some Kotlin features can help you write high-performance code. Such features include: rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
 
 <!-- =============================================================================== -->
 ### <a name="c0.3"></a> Terminology   
@@ -66,4 +66,4 @@ Unless otherwise stated, this specification applies to versions 1.3 and later of
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
 Depending on a project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
 When modifying open-source code or third-party code, you can choose to use the code style from this open-source project (instead of using the existing specifications) to maintain consistency.
-Software that is directly based on the Android native operating system interface, such as the Android Framework, remains consistent with the Android style.
+The software that is directly based on the Android native operating system interface, such as the Android Framework, remains consistent with the Android style.

@@ -2,7 +2,10 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.gradle.buildinit.plugins.internal.modifiers.BuildInitDsl
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+import org.junit.jupiter.api.Assertions
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -70,4 +73,13 @@ private fun GradleRunner.withJaCoCo(number: Int) = apply {
                 it.write(text.replace("functionalTest.exec", "functionalTest-$number.exec"))
             }
         }
+}
+
+fun assertDiktatExecuted(result: BuildResult) {
+    val diktatCheckBuildResult = result.task(":${DiktatGradlePlugin.DIKTAT_CHECK_TASK}")
+    requireNotNull(diktatCheckBuildResult)
+    Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+    Assertions.assertTrue(
+        result.output.contains("[FILE_NAME_MATCH_CLASS]")
+    )
 }
