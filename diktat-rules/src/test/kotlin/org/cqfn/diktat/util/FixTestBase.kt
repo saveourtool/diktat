@@ -81,7 +81,7 @@ open class FixTestBase(
         val systemName = System.getProperty("os.name")
         return when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("chmod", "-R", "777", filesDir, "&", saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+                ProcessBuilder("chmod", "-R", "777", filesDir, "&", saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath, "--log", "all")
             else -> ProcessBuilder(saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
         }
     }
@@ -154,6 +154,8 @@ open class FixTestBase(
         configFile.delete()
         ktlint.delete()
         save.delete()
+
+        println("saveOutput - saveOutput - saveOutput - $saveOutput")
 
         Assertions.assertTrue(
             saveOutput.contains("SUCCESS")
