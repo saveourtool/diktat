@@ -155,6 +155,7 @@ open class FixTestBase(
         ktlint.delete()
         save.delete()
 
+        println("diktatDir - diktatDir - diktatDir - $diktatDir")
         println("saveOutput - saveOutput - saveOutput - $saveOutput")
 
         Assertions.assertTrue(
