@@ -1,7 +1,7 @@
 # <a name="c1"></a> 1. Naming
 It is not always easy to meaningfully and appropriately name variables, functions, classes, and so on. Using meaningful names in programming helps to clearly express the main ideas and functionality of your code and avoid its misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
 
-Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
+Note: Source code files (incl. comments) must be UTF-8 encoded, no exceptions. The ASCII horizontal space (0x20, U+0020) is the only permitted whitespace character. Tab character (0x09, U+0009) should never be used for indentation.
 
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifiers
