@@ -75,14 +75,15 @@ open class FixTestBase(
         else -> ""
     }
 
-    private fun getProcessBuilder(expectedPath: String, testPath: String): ProcessBuilder {
-        val saveDir = "src/test/resources/test/smoke/${getSaveForCurrentOs()}"
+    private fun createProcessBuilderWithCmd(expectedPath: String, testPath: String): ProcessBuilder {
         val filesDir = "/src/test/resources/test/smoke"
+        val savePath = "$filesDir/${getSaveForCurrentOs()}"
+
         val systemName = System.getProperty("os.name")
         return when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("chmod", "-R", "777", filesDir, "&", saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath, "--log", "all")
-            else -> ProcessBuilder(saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+                ProcessBuilder("chmod", "-R", "777", filesDir, "&", "./$savePath", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath, "--log", "all")
+            else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
         }
     }
 
@@ -111,7 +112,7 @@ open class FixTestBase(
         expectedPath: String,
         testPath: String
     ) {
-        val processBuilder = getProcessBuilder(expectedPath, testPath)
+        val processBuilder = createProcessBuilderWithCmd(expectedPath, testPath)
 
         val diktatDir: String =
             Paths.get("../diktat-ruleset/target")
