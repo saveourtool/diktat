@@ -34,8 +34,7 @@ open class DiktatExtension(
     var reporter: String = "plain"
 
     /**
-     * Type of output
-     * Default: System.out
+     * Destination for reporter. If empty, will write to stdout.
      */
     var output: String = ""
 
