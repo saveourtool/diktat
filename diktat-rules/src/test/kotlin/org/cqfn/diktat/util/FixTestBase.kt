@@ -76,11 +76,12 @@ open class FixTestBase(
     }
 
     private fun getProcessBuilder(expectedPath: String, testPath: String): ProcessBuilder {
-        val saveDir = "src/test/resources/test/smoke"
+        val saveDir = "src/test/resources/test/smoke/${getSaveForCurrentOs()}"
+        val filesDir = "src/test/resources/test/smoke/${getSaveForCurrentOs()}"
         val systemName = System.getProperty("os.name")
         return when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("chmod", "-R", "777", saveDir, "&", saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+                ProcessBuilder("chmod", "-R", "777", filesDir, "&", saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
             else -> ProcessBuilder(saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
         }
     }
@@ -119,7 +120,7 @@ open class FixTestBase(
                 ?.single { it.name.contains("diktat") }
                 ?.pathString ?: ""
 
-        val file = File("tmpSave.txt")
+        val file = File("src/test/resources/test/smoke/tmpSave.txt")
         val diktat = File("src/test/resources/test/smoke/diktat.jar")
         val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
         val diktatFrom = File(diktatDir)

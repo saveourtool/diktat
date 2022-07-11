@@ -1,5 +1,5 @@
 [general]
-execCmd="chmod 777 ktlint & chmod 777 diktat.jar & java -jar ktlint -R diktat.jar"
+execCmd="java -jar ktlint -R diktat.jar"
 tags = ["smokeTest"]
 description = "SmokeTest"
 suiteName = "SmokeTest"
