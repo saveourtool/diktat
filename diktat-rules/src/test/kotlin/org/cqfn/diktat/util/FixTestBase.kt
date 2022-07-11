@@ -77,7 +77,7 @@ open class FixTestBase(
 
     private fun getProcessBuilder(expectedPath: String, testPath: String): ProcessBuilder {
         val saveDir = "src/test/resources/test/smoke/${getSaveForCurrentOs()}"
-        val filesDir = "src/test/resources/test/smoke"
+        val filesDir = "/src/test/resources/test/smoke"
         val systemName = System.getProperty("os.name")
         return when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
