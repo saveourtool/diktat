@@ -6,21 +6,12 @@ import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.apache.commons.io.FileUtils.copyFile
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.HttpClients
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.io.File
-import java.io.FileOutputStream
 import java.nio.file.Path
-import java.nio.file.Paths
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
-import kotlin.io.path.exists
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
-import kotlin.io.path.pathString
 
 /**
  * @property resourceFilePath path to files which will be compared in tests
@@ -85,23 +76,7 @@ open class FixTestBase(
                 ProcessBuilder("sh", "-c", "pwd ; chmod 777 $savePath ; ./$savePath src/test/resources/test/smoke/src/main/kotlin $testPath --log all")
             else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
         }
-
-        println(result.command())
         return result
-    }
-
-    private fun downloadFile(url: String, file: File) {
-        val httpClient = HttpClients.createDefault()
-        val request = HttpGet(url)
-        httpClient.use {
-            val response: CloseableHttpResponse = httpClient.execute(request)
-            response.use {
-                val fileSave = response.entity
-                fileSave?.let {
-                    FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
-                }
-            }
-        }
     }
 
     /**
@@ -115,40 +90,19 @@ open class FixTestBase(
         expectedPath: String,
         testPath: String
     ) {
-
         val processBuilder = createProcessBuilderWithCmd(expectedPath, testPath)
 
-        val diktatDir: String =
-            Paths.get("../diktat-ruleset/target")
-                .takeIf { it.exists() }
-                ?.listDirectoryEntries()
-                ?.single { it.name.contains("diktat") }
-                ?.pathString ?: ""
-
         val file = File("src/test/resources/test/smoke/tmpSave.txt")
-        val diktat = File("src/test/resources/test/smoke/diktat.jar")
         val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
-        val diktatFrom = File(diktatDir)
-        val save = File("src/test/resources/test/smoke/${getSaveForCurrentOs()}")
-        val ktlint = File("src/test/resources/test/smoke/ktlint")
-
         val configFileFrom = File(configFilePath)
 
-        ktlint.createNewFile()
-        save.createNewFile()
-        file.createNewFile()
-        diktat.createNewFile()
         configFile.createNewFile()
+        file.createNewFile()
 
-        copyFile(diktatFrom, diktat)
         copyFile(configFileFrom, configFile)
 
-        println(file.toString())
         processBuilder.redirectErrorStream(true)
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file))
-
-        downloadFile("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}", save)
-        downloadFile("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint", ktlint)
 
         val process = processBuilder.start()
         process.waitFor()
@@ -157,13 +111,6 @@ open class FixTestBase(
         val saveOutput = output.joinToString("\n")
 
         file.delete()
-        diktat.delete()
-        configFile.delete()
-        ktlint.delete()
-        save.delete()
-
-        println("diktatDir - diktatDir - diktatDir - $diktatDir")
-        println("saveOutput - saveOutput - saveOutput - $saveOutput")
 
         Assertions.assertTrue(
             saveOutput.contains("SUCCESS")
@@ -227,7 +174,6 @@ open class FixTestBase(
     }
 
     companion object {
-        private const val KTLINT_VERSION = "0.46.1"
         private const val SAVE_VERSION = "0.3.1"
     }
 }
