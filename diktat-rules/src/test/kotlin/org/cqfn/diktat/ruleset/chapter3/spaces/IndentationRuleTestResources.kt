@@ -1071,6 +1071,9 @@ internal object IndentationRuleTestResources {
         """.trimMargin(),
     )
 
+    /**
+     * `if`-expression examples.
+     */
     val ifExpressions = mapOf(
         false to ifExpressionsSingleIndent,
         true to ifExpressionsContinuationIndent)
