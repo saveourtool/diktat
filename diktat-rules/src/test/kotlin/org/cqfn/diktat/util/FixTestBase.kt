@@ -80,11 +80,14 @@ open class FixTestBase(
         val savePath = "$filesDir/${getSaveForCurrentOs()}"
 
         val systemName = System.getProperty("os.name")
-        return when {
+        val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("chmod", "-R", "777", "/${filesDir}", "&", "./$savePath", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath, "--log", "all")
+                ProcessBuilder("sh", "-c", "pwd ; chmod 777 $savePath ; ./$savePath src/test/resources/test/smoke/src/main/kotlin $testPath --log all")
             else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
         }
+
+        println(result.command())
+        return result
     }
 
     private fun downloadFile(url: String, file: File) {
@@ -112,6 +115,9 @@ open class FixTestBase(
         expectedPath: String,
         testPath: String
     ) {
+        val filesDir = "src/test/resources/test/smoke"
+        val savePath = "$filesDir/${getSaveForCurrentOs()}"
+
         val processBuilder = createProcessBuilderWithCmd(expectedPath, testPath)
 
         val diktatDir: String =
@@ -139,7 +145,9 @@ open class FixTestBase(
         copyFile(diktatFrom, diktat)
         copyFile(configFileFrom, configFile)
 
-        processBuilder.redirectOutput(file)
+        println(file.toString())
+        processBuilder.redirectErrorStream(true)
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file))
 
         downloadFile("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}", save)
         downloadFile("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint", ktlint)
