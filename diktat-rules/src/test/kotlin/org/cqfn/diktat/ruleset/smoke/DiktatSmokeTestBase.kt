@@ -6,6 +6,7 @@
 
 package org.cqfn.diktat.ruleset.smoke
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -14,8 +15,14 @@ import org.cqfn.diktat.util.FixTestBase
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+import java.time.LocalDate
 import kotlinx.serialization.builtins.ListSerializer
+
+typealias RuleToConfig = Map<String, Map<String, String>>
 
 /**
  * Base class for smoke test classes
@@ -56,50 +63,167 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
             )
     }
 
-    @Tag("DiktatRuleSetProvider")
-    abstract fun `regression - should not fail if package is not set`()
+    @BeforeEach
+    fun setUp() {
+        unfixedLintErrors.clear()
+    }
 
-    @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #8 - anonymous function`()
+    @AfterEach
+    fun tearDown() {
+        configFilePath = DEFAULT_CONFIG_PATH
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #7`()
+    fun `regression - should not fail if package is not set`() {
+        overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
+            Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
+        fixAndCompareBase(configFilePath, "DefaultPackageExpected.kt", "DefaultPackageTest.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #6`()
+    fun `smoke test #8 - anonymous function`() {
+        fixAndCompareBase(configFilePath, "Example8Expected.kt", "Example8Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #5`()
+    fun `smoke test #7`() {
+        fixAndCompareBase(configFilePath, "Example7Expected.kt", "Example7Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #4`()
+    fun `smoke test #6`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                Warnings.WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "true",
+                )
+            )
+        )
+        fixAndCompareBase(configFilePath, "Example6Expected.kt", "Example6Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #3`()
+    fun `smoke test #5`() {
+        overrideRulesConfig(emptyList(),
+            mapOf(
+                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
+                    "isCopyrightMandatory" to "true",
+                    "copyrightText" to """|Copyright 2018-${LocalDate.now().year} John Doe.
+                                    |    Licensed under the Apache License, Version 2.0 (the "License");
+                                    |    you may not use this file except in compliance with the License.
+                                    |    You may obtain a copy of the License at
+                                    |
+                                    |        http://www.apache.org/licenses/LICENSE-2.0
+                                """.trimMargin()
+                ),
+                DIKTAT_COMMON to mapOf(
+                    "domainName" to "org.cqfn.diktat",
+                    "kotlinVersion" to "1.3.7"
+                )
+            )
+        )
+        fixAndCompareBase(configFilePath, "Example5Expected.kt", "Example5Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `regression - shouldn't throw exception in cases similar to #371`()
+    fun `smoke test #4`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                Warnings.WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "false",
+                )
+            )
+        )
+        fixAndCompareBase(configFilePath, "Example4Expected.kt", "Example4Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #2`()
+    fun `smoke test #3`() {
+        fixAndCompareBase(configFilePath, "Example3Expected.kt", "Example3Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test #1`()
+    fun `regression - shouldn't throw exception in cases similar to #371`() {
+        fixAndCompareBase(configFilePath, "Bug1Expected.kt", "Bug1Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test with kts files #2`()
+    fun `smoke test #2`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                Warnings.WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "true",
+                )
+            )
+        )
+        fixAndCompareBase(configFilePath, "Example2Expected.kt", "Example2Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `smoke test with kts files with package name`()
+    fun `smoke test #1`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                Warnings.WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "true",
+                    "extendedIndentBeforeDot" to "false",
+                )
+            )
+        )
+        fixAndCompareBase(configFilePath, "Example1Expected.kt", "Example1Test.kt")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `regression - should correctly handle tags with empty lines`()
+    fun `smoke test with kts files #2`() {
+        fixAndCompareBase(configFilePath, "script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `regression - FP of local variables rule`()
+    fun `smoke test with kts files with package name`() {
+        fixAndCompareBase(configFilePath, "script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
+    }
 
+    @Test
     @Tag("DiktatRuleSetProvider")
-    abstract fun `fix can cause long line`()
+    fun `regression - should correctly handle tags with empty lines`() {
+        fixAndCompareBase(configFilePath, "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - FP of local variables rule`() {
+        fixAndCompareBase(configFilePath, "LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `fix can cause long line`() {
+        fixAndCompareBase(configFilePath, "ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
+    }
+
+    abstract fun fixAndCompareBase(
+        config: String,
+        test: String,
+        expected: String
+    )
 
     companion object {
         const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
