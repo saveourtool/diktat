@@ -23,7 +23,9 @@ jobs:
           restore-keys: |
             maven-build-
       - name: Maven Install
-        run: mvn -B clean install
+        run: mvn install -DskipTests
+      - name: Maven run test
+        run: mvn test
       - name: Code coverage report
         uses: codecov/codecov-action@v3
         with:
