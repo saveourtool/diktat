@@ -23,7 +23,7 @@ jobs:
           restore-keys: |
             maven-build-
       - name: Maven Install
-        run: mvn install -DskipTests
+        run: mvn -B clean install -DskipTests
       - name: Maven run test
         run: mvn test
       - name: Code coverage report
@@ -143,13 +143,25 @@ jobs:
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          mvn -B -T1C clean install
+          mvn -B -T1C clean install -DskipTests
+        shell: bash
+
+      - name: Maven run test
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        run: |
+          mvn test
         shell: bash
 
       - name: Maven Install on windows
         if: runner.os == 'Windows'
         run: |
-          mvn -B -T1C clean install
+          mvn -B -T1C clean install -DskipTests
+        shell: cmd
+
+      - name: Maven run test
+        if: runner.os == 'Windows'
+        run: |
+          mvn test
         shell: cmd
 
         # This step needs a Git repository, so it's impossible to extract it
