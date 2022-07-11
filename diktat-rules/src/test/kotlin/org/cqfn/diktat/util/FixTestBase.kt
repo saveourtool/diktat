@@ -75,10 +75,14 @@ open class FixTestBase(
         else -> ""
     }
 
-    private fun getProcessBuilder(expectedPath: String, testPath: String) =  when {
-        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> ProcessBuilder("chmod", "777", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "&", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
-        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> ProcessBuilder("chmod", "777", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "&", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
-        else -> ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+    private fun getProcessBuilder(expectedPath: String, testPath: String): ProcessBuilder {
+        val saveDir = "src/test/resources/test/smoke/${getSaveForCurrentOs()}"
+        val systemName = System.getProperty("os.name")
+        return when {
+            systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
+                ProcessBuilder("chmod", "777", saveDir, "&", saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+            else -> ProcessBuilder(saveDir, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+        }
     }
 
     private fun downloadFile(url: String, file: File) {
