@@ -75,6 +75,12 @@ open class FixTestBase(
         else -> ""
     }
 
+    private fun getProcessBuilder(expectedPath: String, testPath: String) =  when {
+        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> ProcessBuilder("chmod", "777", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "&", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> ProcessBuilder("chmod", "777", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "&", "src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+        else -> ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+    }
+
     private fun downloadFile(url: String, file: File) {
         val httpClient = HttpClients.createDefault()
         val request = HttpGet(url)
@@ -100,7 +106,7 @@ open class FixTestBase(
         expectedPath: String,
         testPath: String
     ) {
-        val processBuilder = ProcessBuilder("src/test/resources/test/smoke/${getSaveForCurrentOs()}", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+        val processBuilder = getProcessBuilder(expectedPath, testPath)
 
         val diktatDir: String =
             Paths.get("../diktat-ruleset/target")
