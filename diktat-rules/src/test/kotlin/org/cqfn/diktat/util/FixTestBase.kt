@@ -115,8 +115,6 @@ open class FixTestBase(
         expectedPath: String,
         testPath: String
     ) {
-        val filesDir = "src/test/resources/test/smoke"
-        val savePath = "$filesDir/${getSaveForCurrentOs()}"
 
         val processBuilder = createProcessBuilderWithCmd(expectedPath, testPath)
 
