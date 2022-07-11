@@ -76,13 +76,13 @@ open class FixTestBase(
     }
 
     private fun createProcessBuilderWithCmd(expectedPath: String, testPath: String): ProcessBuilder {
-        val filesDir = "/src/test/resources/test/smoke"
+        val filesDir = "src/test/resources/test/smoke"
         val savePath = "$filesDir/${getSaveForCurrentOs()}"
 
         val systemName = System.getProperty("os.name")
         return when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("chmod", "-R", "777", filesDir, "&", "./$savePath", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath, "--log", "all")
+                ProcessBuilder("chmod", "-R", "777", "/${filesDir}", "&", "./$savePath", "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath, "--log", "all")
             else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
         }
     }
