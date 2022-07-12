@@ -78,19 +78,19 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
     fun `regression - should not fail if package is not set`() {
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
-        fixAndCompareBase(configFilePath, "DefaultPackageExpected.kt", "DefaultPackageTest.kt")
+        fixAndCompare(configFilePath, "DefaultPackageExpected.kt", "DefaultPackageTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #8 - anonymous function`() {
-        fixAndCompareBase(configFilePath, "Example8Expected.kt", "Example8Test.kt")
+        fixAndCompare(configFilePath, "Example8Expected.kt", "Example8Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #7`() {
-        fixAndCompareBase(configFilePath, "Example7Expected.kt", "Example7Test.kt")
+        fixAndCompare(configFilePath, "Example7Expected.kt", "Example7Test.kt")
     }
 
     @Test
@@ -105,7 +105,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompareBase(configFilePath, "Example6Expected.kt", "Example6Test.kt")
+        fixAndCompare(configFilePath, "Example6Expected.kt", "Example6Test.kt")
     }
 
     @Test
@@ -129,7 +129,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompareBase(configFilePath, "Example5Expected.kt", "Example5Test.kt")
+        fixAndCompare(configFilePath, "Example5Expected.kt", "Example5Test.kt")
     }
 
     @Test
@@ -144,19 +144,19 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompareBase(configFilePath, "Example4Expected.kt", "Example4Test.kt")
+        fixAndCompare(configFilePath, "Example4Expected.kt", "Example4Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #3`() {
-        fixAndCompareBase(configFilePath, "Example3Expected.kt", "Example3Test.kt")
+        fixAndCompare(configFilePath, "Example3Expected.kt", "Example3Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `regression - shouldn't throw exception in cases similar to #371`() {
-        fixAndCompareBase(configFilePath, "Bug1Expected.kt", "Bug1Test.kt")
+        fixAndCompare(configFilePath, "Bug1Expected.kt", "Bug1Test.kt")
     }
 
     @Test
@@ -171,7 +171,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompareBase(configFilePath, "Example2Expected.kt", "Example2Test.kt")
+        fixAndCompare(configFilePath, "Example2Expected.kt", "Example2Test.kt")
     }
 
     @Test
@@ -186,40 +186,40 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompareBase(configFilePath, "Example1Expected.kt", "Example1Test.kt")
+        fixAndCompare(configFilePath, "Example1Expected.kt", "Example1Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files #2`() {
-        fixAndCompareBase(configFilePath, "script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
+        fixAndCompare(configFilePath, "script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files with package name`() {
-        fixAndCompareBase(configFilePath, "script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
+        fixAndCompare(configFilePath, "script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `regression - should correctly handle tags with empty lines`() {
-        fixAndCompareBase(configFilePath, "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
+        fixAndCompare(configFilePath, "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `regression - FP of local variables rule`() {
-        fixAndCompareBase(configFilePath, "LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
+        fixAndCompare(configFilePath, "LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `fix can cause long line`() {
-        fixAndCompareBase(configFilePath, "ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
+        fixAndCompare(configFilePath, "ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 
-    abstract fun fixAndCompareBase(
+    abstract fun fixAndCompare(
         config: String,
         test: String,
         expected: String

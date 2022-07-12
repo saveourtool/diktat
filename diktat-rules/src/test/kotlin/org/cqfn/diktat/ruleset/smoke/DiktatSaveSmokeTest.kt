@@ -5,6 +5,7 @@ import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import java.io.File
 import java.io.FileOutputStream
@@ -15,12 +16,48 @@ import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
-    override fun fixAndCompareBase(
+    override fun fixAndCompare(
         config: String,
         test: String,
         expected: String
     ) {
-        saveSmokeTest(config, test, expected)
+        saveSmokeTest(config, test)
+    }
+
+    /**
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * @param configFilePath path of diktat-analysis file
+     */
+    @Suppress("TOO_LONG_FUNCTION")
+    protected fun saveSmokeTest(
+        configFilePath: String,
+        testPath: String
+    ) {
+        val processBuilder = createProcessBuilderWithCmd(testPath)
+
+        val file = File("src/test/resources/test/smoke/tmpSave.txt")
+        val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
+        val configFileFrom = File(configFilePath)
+
+        configFile.createNewFile()
+        file.createNewFile()
+
+        FileUtils.copyFile(configFileFrom, configFile)
+
+        processBuilder.redirectErrorStream(true)
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file))
+
+        val process = processBuilder.start()
+        process.waitFor()
+
+        val output = file.readLines()
+        val saveOutput = output.joinToString("\n")
+
+        file.delete()
+
+        Assertions.assertTrue(
+            saveOutput.contains("SUCCESS")
+        )
     }
 
     companion object {

@@ -5,10 +5,8 @@ import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.apache.commons.io.FileUtils.copyFile
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
-import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
@@ -22,7 +20,10 @@ open class FixTestBase(
     private val cb: LintErrorCallback = defaultCallback,
     private val rulesConfigList: List<RulesConfig>? = null,
 ) {
-    private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
+    /**
+     * testComparatorUnit
+     */
+    protected val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
         format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
     }
 
@@ -48,17 +49,6 @@ open class FixTestBase(
         )
     }
 
-    /**
-     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
-     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     */
-    protected fun fixAndCompareSmokeTest(expectedPath: String, testPath: String) {
-        Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath, true)
-        )
-    }
-
     private fun getSaveForCurrentOs() = when {
         System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-$SAVE_VERSION-linuxX64.kexe"
         System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-$SAVE_VERSION-macosX64.kexe"
@@ -66,55 +56,21 @@ open class FixTestBase(
         else -> ""
     }
 
-    private fun createProcessBuilderWithCmd(expectedPath: String, testPath: String): ProcessBuilder {
+    /**
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * @return ProcessBuilder
+     */
+    protected fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
         val filesDir = "src/test/resources/test/smoke"
         val savePath = "$filesDir/${getSaveForCurrentOs()}"
 
         val systemName = System.getProperty("os.name")
         val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("sh", "-c", "pwd ; chmod 777 $savePath ; ./$savePath src/test/resources/test/smoke/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", expectedPath, testPath)
+                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath src/test/resources/test/smoke/src/main/kotlin $testPath --log all")
+            else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", testPath)
         }
         return result
-    }
-
-    /**
-     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
-     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     * @param configFilePath path of diktat-analysis file
-     */
-    @Suppress("TOO_LONG_FUNCTION")
-    protected fun saveSmokeTest(
-        configFilePath: String,
-        expectedPath: String,
-        testPath: String
-    ) {
-        val processBuilder = createProcessBuilderWithCmd(expectedPath, testPath)
-
-        val file = File("src/test/resources/test/smoke/tmpSave.txt")
-        val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
-        val configFileFrom = File(configFilePath)
-
-        configFile.createNewFile()
-        file.createNewFile()
-
-        copyFile(configFileFrom, configFile)
-
-        processBuilder.redirectErrorStream(true)
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file))
-
-        val process = processBuilder.start()
-        process.waitFor()
-
-        val output = file.readLines()
-        val saveOutput = output.joinToString("\n")
-
-        file.delete()
-
-        Assertions.assertTrue(
-            saveOutput.contains("SUCCESS")
-        )
     }
 
     /**

@@ -27,7 +27,7 @@ import java.io.File
  * may change after some changes to text or other rules.
  */
 class DiktatSmokeTest : DiktatSmokeTestBase() {
-    override fun fixAndCompareBase(
+    override fun fixAndCompare(
         config: String,
         test: String,
         expected: String
@@ -103,6 +103,17 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             LintError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+        )
+    }
+
+    /**
+     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     */
+    protected fun fixAndCompareSmokeTest(expectedPath: String, testPath: String) {
+        Assertions.assertTrue(
+            testComparatorUnit
+                .compareFilesFromResources(expectedPath, testPath, true)
         )
     }
 }
