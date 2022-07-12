@@ -1,7 +1,7 @@
 # <a name="c1"></a> 1. Naming
-In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps to clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
+It is not always easy to meaningfully and appropriately name variables, functions, classes, and so on. Using meaningful names in programming helps to clearly express the main ideas and functionality of your code and avoid its misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
 
-Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
+Note: Source code files (incl. comments) must be UTF-8 encoded, no exceptions. The ASCII horizontal space (`0x20`, `U+0020`) is the only permitted whitespace character. Tab character (`0x09`, `U+0009`) should never be used for indentation.
 
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifiers
@@ -10,10 +10,9 @@ This section describes the general rules for naming identifiers.
 
 For identifiers, use the following naming conventions:
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
-Explanation: Each valid identifier name should match the regular expression `\w{2,64}`.
-`{2,64}` means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
-Name lengths of less than 31 characters are generally recommended. However, this depends on the project. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking.
-No special prefix or suffix should be used in names. The following examples are inappropriate names: name_, mName, s_name, and kName.
+Explanation: Each valid identifier name should match the regular expression `\w{2,64}`, which means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range and describe its functionality and responsibility.
+Length of names depends on the project. Nevertheless, name lengths of less than 31 characters are generally recommended. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking.
+No special prefix or suffix should be used in names. The examples of inappropriate names are: name_, mName, s_name, and kName.
 
 2.	Choose file names that would describe the content. Use camel case (PascalCase) and `.kt` extension.
 
@@ -33,9 +32,9 @@ No special prefix or suffix should be used in names. The following examples are 
 val `my dummy name-with-minus` = "value" 
 ```
 
-The only exception is function names in `Unit tests.`
+The only exceptions are function names in `Unit tests.`
 
-5.	Backticks (``) should not be used for identifiers, except the names of test methods (marked with @Test annotation):
+5.	Backticks (``) must not be used for identifiers, except for the names of test methods (marked with @Test annotation):
 ```kotlin
  @Test fun `my test`() { /*...*/ }
 ``` 
@@ -53,16 +52,16 @@ The only exception is function names in `Unit tests.`
 | rn, m         | m,rn                     | mbr, item        |
 
 **Exceptions:**
-- The i,j,k variables used in loops are part of the industry standard. One symbol can be used for such variables.
-- The `e` variable can be used to catch exceptions in catch block: `catch (e: Exception) {}`
-- The Java community generally does not recommend the use of prefixes. However, when developing Android code, you can use the s and m prefixes for static and non-public non-static fields, respectively.
+- The `i`,`j`,`k` variables used in loops are part of the industry standard. A single character can be used for such variables.
+- The `e` variable can be used to catch exceptions in the catch block: `catch (e: Exception) {}`
+- The Java community normally does not recommend the use of prefixes. However, when developing the Android code, you can use the "s" and "m" prefixes for static and non-public non-static fields, respectively.
 Note that prefixing can also negatively affect the style and the auto-generation of getters and setters.
 
 | Type | Naming style |
 | ---- | ---- |
 | Interfaces, classes, annotations, enumerated types, and object type names | Camel case, starting with a capital letter. Test classes have a Test suffix. The filename is 'TopClassName'.kt.  |
-| Class fields, local variables, methods, and method parameters | Camel case starting with a low case letter. Test methods can be underlined with '_'; the only exception is [backing properties](#r6.1.7).
-| Static constants and enumerated values | Only uppercase underlined with '_' |
+| Class fields, local variables, methods, and method parameters | Camel case, starting with a low case letter. Test methods can be underlined with '_'; the only exception is [backing properties](#r6.1.7).
+| Static constants and enumerated values | Only the uppercase underlined with '_' |
 | Generic type variable | Single capital letter, which can be followed by a number, for example: `E, T, U, X, T2` |
 | Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|
 
@@ -70,9 +69,9 @@ Note that prefixing can also negatively affect the style and the auto-generation
 ### <a name="c1.2"></a> 1.2 Packages
 
 #### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
-Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
+Package names are in the lower case and separated by dots. The code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
 Each file should have a `package` directive.
-Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
+Package names are all written in lowercase, and consecutive words are concatenated (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
 **Exceptions:** 
 
@@ -90,7 +89,7 @@ package your.company.domain.mobilecontrol.views
 This section describes the general rules for naming classes, enumerations, and interfaces.
 ### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, typealias, interface names use Camel case
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
-1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
+1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as the UpperCamelCase. For example: `Character` or `ImmutableList`.
 An interface name can also be a noun or noun phrase (such as `List`) or an adjective or adjective phrase (such as `Readable`).
 Note that verbs are not used to name classes. However, nouns (such as `Customer`, `WikiPage`, and `Account`) can be used. Try to avoid using vague words such as `Manager` and `Process`.
 
@@ -136,11 +135,11 @@ c) `set` + field/attribute name(). However, note that the syntax and code genera
 d) `has` + Noun / adjective ()
 
 e) verb()
-Note: Note: Verb are primarily used for the action objects, such as `document.print ()`
+Note: Verb are primarily used for the action objects, such as `document.print ()`
 
 f) verb + noun() 
 
-g) The Callback function allows the names that use the preposition + verb format, such as: `onCreate()`, `onDestroy()`, `toString()`.
+g) The Callback function allows the names that use the preposition + verb format, such as `onCreate()`, `onDestroy()`, `toString()`.
 
 **Invalid example**: 
 
@@ -167,12 +166,12 @@ fun addKeyListener(Listener)
 ### <a name="c1.5"></a> 1.5 Constants
 This section describes the general rules for naming constraints.
 ### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
-Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
+Constant names should be in the UPPER case, words separated by an underscore. The general constant naming conventions are listed below:
 1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
-2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
-3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
+2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
+3. Objects with immutable content, such as `Logger` and `Lock`, they can be in the uppercase as constants or have the Camel case as regular variables.
 4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
-Magic constants, such as `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
+Magic constants, such as `NUM_FIVE = 5` or `NUM_5 = 5`, should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
 These constants typically represent business logic values, such as measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms.
 You can avoid using magic numbers with the following method:
 - Using library functions and APIs. For example, instead of checking that `size == 0`, use `isEmpty()` function. To work with `time`, use built-ins from `java.time API`.
@@ -196,8 +195,8 @@ const val String APPLICATION_NAME = "Launcher";
 ### <a name="c1.6"></a> 1.6 Non-constant fields (variables)
 This section describes the general rules for naming variables.
 ### <a name="r1.6.1"></a> 1.6.1 Non-constant field name
-Non-constant field names should use camel case and start with a lowercase letter.
-A local variable cannot be treated as constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
+Non-constant field names should use the Camel case and start with a lowercase letter.
+A local variable cannot be treated as constant, even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
 For example: `var namesList: List<String>`
 
 Names of non-constant variables should use `lowerCamelCase`. The name of the final immutable field used to store the singleton object can use the same camel case notation.
@@ -220,8 +219,8 @@ val mutableCollection: MutableSet<String> = HashSet()
 Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with a negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
 For instance, it is not easy to understand the meaning of !isNotError.
 The JavaBeans specification automatically generates isXxx() getters for attributes of Boolean classes.
-However, not all methods returning Boolean type have this notation.
-For Boolean local variables or methods, it is highly recommended that you add non-meaningful prefixes, including is (commonly used by JavaBeans), has, can, should, and must. Modern integrated development environments (IDEs) such as Intellij are already capable of doing this for you when you generate getters in Java. For Kotlin, this process is even more straightforward as everything is on the byte-code level under the hood.
+However, not all methods returning the Boolean type have this notation.
+For Boolean local variables or methods, it is highly recommended that you add non-meaningful prefixes, including is (commonly used by JavaBeans), has, can, should, and must. Modern integrated development environments (IDEs), such as Intellij, can doing this when you generate getters in Java. For Kotlin, this process is even more straightforward as everything is on the byte-code level under the hood.
 
 **Invalid example**: 
 ```kotlin
