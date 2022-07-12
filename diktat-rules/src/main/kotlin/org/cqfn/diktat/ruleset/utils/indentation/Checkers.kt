@@ -220,7 +220,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                 }
 
                 // we need to get indent before the first expression in calls chain
-                /*-
+                /* -
                  * If the parent indent (the one before a `DOT_QUALIFIED_EXPRESSION`
                  * or a `SAFE_ACCESS_EXPRESSION`) is `null`, then use 0 as the
                  * fallback value.
