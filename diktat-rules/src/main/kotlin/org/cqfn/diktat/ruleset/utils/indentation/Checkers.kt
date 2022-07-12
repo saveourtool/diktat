@@ -213,18 +213,33 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                     } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
             ?.let { node ->
+                val indentIncrement = (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize
                 if (node.isFromStringTemplate()) {
                     return CheckResult.from(indentError.actual, indentError.expected +
-                        (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                        indentIncrement, true)
                 }
 
                 // we need to get indent before the first expression in calls chain
-                return CheckResult.from(indentError.actual, (whiteSpace.run {
+                /*-
+                 * If the parent indent (the one before a `DOT_QUALIFIED_EXPRESSION`
+                 * or a `SAFE_ACCESS_EXPRESSION`) is `null`, then use 0 as the
+                 * fallback value.
+                 *
+                 * If `indentError.expected` is used as a fallback (pre-1.2.2
+                 * behaviour), this breaks chained dot-qualified or safe-access
+                 * expressions (see #1336), e.g.:
+                 *
+                 * ```kotlin
+                 * val a = first()
+                 *     .second()
+                 *     .third()
+                 * ```
+                 */
+                val parentIndent = whiteSpace.run {
                     parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this
-                }
-                    .parentIndent()
-                    ?: indentError.expected) +
-                    (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                }.parentIndent() ?: 0
+                val expectedIndent = parentIndent + indentIncrement
+                return CheckResult.from(indentError.actual, expectedIndent, true)
             }
         return null
     }
