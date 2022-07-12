@@ -8,6 +8,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -490,5 +491,36 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code)
+    }
+
+    /**
+     * `indent(1)` and `style(9)` style comments.
+     */
+    @Test
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
+    fun `indent-style header in a block comment should produce no warnings`() =
+        lintMethod(indentStyleComment)
+
+    internal companion object {
+        @Language("kotlin")
+        internal val indentStyleComment = """
+        |/*-
+        | * This is an indent-style comment, and it's different from regular
+        | * block comments in C-like languages.
+        | *
+        | * Code formatters should not wrap or reflow its content, so you can
+        | * safely insert code fragments:
+        | *
+        | * ```
+        | * int i = 42;
+        | * ```
+        | *
+        | * or ASCII diagrams:
+        | *
+        | * +-----+
+        | * | Box |
+        | * +-----+
+        | */
+        """.trimMargin()
     }
 }

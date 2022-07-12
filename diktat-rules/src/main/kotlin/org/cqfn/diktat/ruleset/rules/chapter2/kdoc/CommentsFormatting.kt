@@ -233,11 +233,12 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         if (node.elementType == BLOCK_COMMENT &&
-            (node
-                .text
-                .trim('/', '*')
-                .takeWhile { it == ' ' }
-                .length == configuration.maxSpacesInComment ||
+            (node.isIndentStyleComment() ||
+                node
+                    .text
+                    .trim('/', '*')
+                    .takeWhile { it == ' ' }
+                    .length == configuration.maxSpacesInComment ||
                 node
                     .text
                     .trim('/', '*')
@@ -344,6 +345,30 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.isChildOfBlockOrClassBody(): Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
 
     /**
+     * Returns whether this block comment is a `indent`-style comment.
+     *
+     * `indent(1)` is a source code formatting utility for C-like languages.
+     * Historically, source code formatters are permitted to reformat and reflow
+     * the content of block comments, except for those comments which start with
+     * "&#x2f;*-".
+     *
+     * See also:
+     * - [5.1.1 Block Comments](https://www.oracle.com/java/technologies/javase/codeconventions-comments.html)
+     * - [`indent(1)`](https://man.openbsd.org/indent.1)
+     * - [`style(9)`](https://www.freebsd.org/cgi/man.cgi?query=style&sektion=9)
+     *
+     * @return `true` if this block comment is a `indent`-style comment, `false`
+     *   otherwise.
+     */
+    private fun ASTNode.isIndentStyleComment(): Boolean {
+        require(elementType == BLOCK_COMMENT) {
+            "The elementType of this node is $elementType while $BLOCK_COMMENT expected"
+        }
+
+        return text.matches(indentCommentMarker)
+    }
+
+    /**
      * [RuleConfiguration] for [CommentsFormatting] rule
      */
     class CommentsFormattingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
@@ -361,5 +386,10 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
         const val NAME_ID = "kdoc-comments-codeblocks-formatting"
+
+        /**
+         * "&#x2f;*-" followed by anything but `*` or `-`.
+         */
+        private val indentCommentMarker = Regex("""(?s)^\Q/*-\E[^*-].*?""")
     }
 }

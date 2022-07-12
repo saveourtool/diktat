@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asSequen
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.assertNotNull
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.withCustomParameters
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.dotQualifiedExpressions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperator
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.ifExpressions
@@ -15,6 +16,7 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.pare
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.util.LintTestBase
+
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.assertj.core.api.AbstractSoftAssertions
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.opentest4j.MultipleFailuresError
+
 import java.util.function.Consumer
 
 @Suppress("LargeClass")
@@ -927,6 +930,48 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
                         .describedAs("lint result for ${code.describe()}")
                         .hasSizeBetween(0, 3).allSatisfy(Consumer { lintError ->
+                            assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
+                            assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
+                            assertThat(lintError.detail).matches(warnTextRegex)
+                        })
+                }
+            }
+        }
+    }
+
+    /**
+     * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
+     */
+    @Nested
+    @TestMethodOrder(DisplayName::class)
+    inner class `Dot- and safe-qualified expressions` {
+        @ParameterizedTest(name = "extendedIndentBeforeDot = {0}")
+        @ValueSource(booleans = [false, true])
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun `should be properly indented`(extendedIndentBeforeDot: Boolean) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentBeforeDot" to extendedIndentBeforeDot)
+
+            lintMultipleMethods(
+                dotQualifiedExpressions[extendedIndentBeforeDot].assertNotNull(),
+                lintErrors = emptyArray(),
+                customConfig.asRulesConfigList()
+            )
+        }
+
+        @ParameterizedTest(name = "extendedIndentBeforeDot = {0}")
+        @ValueSource(booleans = [false, true])
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun `should be reported if mis-indented`(extendedIndentBeforeDot: Boolean) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentBeforeDot" to extendedIndentBeforeDot)
+
+            assertSoftly { softly ->
+                dotQualifiedExpressions[!extendedIndentBeforeDot].assertNotNull().forEach { code ->
+                    softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
+                        .describedAs("lint result for ${code.describe()}")
+                        .isNotEmpty
+                        .hasSizeBetween(2, 3).allSatisfy(Consumer { lintError ->
                             assertThat(lintError.ruleId).describedAs("ruleId").isEqualTo(ruleId)
                             assertThat(lintError.canBeAutoCorrected).describedAs("canBeAutoCorrected").isTrue
                             assertThat(lintError.detail).matches(warnTextRegex)
