@@ -18,8 +18,8 @@ import kotlin.io.path.pathString
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     override fun fixAndCompare(
         config: String,
+        expected: String,
         test: String,
-        expected: String
     ) {
         saveSmokeTest(config, test)
     }

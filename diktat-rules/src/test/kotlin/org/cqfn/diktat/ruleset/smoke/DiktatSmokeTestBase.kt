@@ -221,8 +221,8 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     abstract fun fixAndCompare(
         config: String,
+        expected: String,
         test: String,
-        expected: String
     )
 
     companion object {

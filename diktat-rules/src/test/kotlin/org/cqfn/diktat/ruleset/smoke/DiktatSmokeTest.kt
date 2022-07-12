@@ -29,10 +29,10 @@ import java.io.File
 class DiktatSmokeTest : DiktatSmokeTestBase() {
     override fun fixAndCompare(
         config: String,
+        expected: String,
         test: String,
-        expected: String
     ) {
-        fixAndCompareSmokeTest(test, expected)
+        fixAndCompareSmokeTest(expected, test)
     }
 
     @Test
