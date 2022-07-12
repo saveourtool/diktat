@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.assertNo
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.extendedIndent
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.withCustomParameters
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.dotQualifiedExpressions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperator
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.parenthesesSurroundedInfixExpressions
@@ -244,6 +245,40 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
             lintMultipleMethods(
                 actualContent = parenthesesSurroundedInfixExpressions[!extendedIndentAfterOperators].assertNotNull(),
                 expectedContent = parenthesesSurroundedInfixExpressions[extendedIndentAfterOperators].assertNotNull(),
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+    }
+
+    /**
+     * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
+     */
+    @Nested
+    @TestMethodOrder(DisplayName::class)
+    inner class `Dot- and safe-qualified expressions` {
+        @ParameterizedTest(name = "extendedIndentBeforeDot = {0}")
+        @ValueSource(booleans = [false, true])
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun `should be properly indented`(extendedIndentBeforeDot: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentBeforeDot" to extendedIndentBeforeDot)
+
+            lintMultipleMethods(
+                dotQualifiedExpressions[extendedIndentBeforeDot].assertNotNull(),
+                tempDir = tempDir,
+                rulesConfigList = customConfig.asRulesConfigList())
+        }
+
+        @ParameterizedTest(name = "extendedIndentBeforeDot = {0}")
+        @ValueSource(booleans = [false, true])
+        @Tag(WarningNames.WRONG_INDENTATION)
+        fun `should be reformatted if mis-indented`(extendedIndentBeforeDot: Boolean, @TempDir tempDir: Path) {
+            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentBeforeDot" to extendedIndentBeforeDot)
+
+            lintMultipleMethods(
+                actualContent = dotQualifiedExpressions[!extendedIndentBeforeDot].assertNotNull(),
+                expectedContent = dotQualifiedExpressions[extendedIndentBeforeDot].assertNotNull(),
                 tempDir = tempDir,
                 rulesConfigList = customConfig.asRulesConfigList())
         }
