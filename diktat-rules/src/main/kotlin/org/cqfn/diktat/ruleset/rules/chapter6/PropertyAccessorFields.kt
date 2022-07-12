@@ -42,8 +42,8 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
             .mapNotNull { it.findChildByType(IDENTIFIER) }
             .firstOrNull {
                 it.text == leftValue.text &&
-                    (it.treeParent.treeParent.elementType != DOT_QUALIFIED_EXPRESSION ||
-                        it.treeParent.treeParent.firstChildNode.elementType == THIS_EXPRESSION)
+                        (it.treeParent.treeParent.elementType != DOT_QUALIFIED_EXPRESSION ||
+                                it.treeParent.treeParent.firstChildNode.elementType == THIS_EXPRESSION)
             }
         val isContainLocalVarSameName = node
             .findChildByType(BLOCK)

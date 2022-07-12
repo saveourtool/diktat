@@ -195,7 +195,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
         val exprToChange = asExpr.filter {
             blocks.any { isExpr ->
                 isExpr.identifier == it.identifier &&
-                    isExpr.type == it.type
+                        isExpr.type == it.type
             }
         }
 
@@ -223,9 +223,9 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
                 .mapNotNull { it as? KtProperty }
                 .find {
                     it.isLocal &&
-                        it.hasInitializer() &&
-                        it.name?.equals(getReferencedName())
-                            ?: false
+                            it.hasInitializer() &&
+                            it.name?.equals(getReferencedName())
+                                ?: false
                 }
         }
 

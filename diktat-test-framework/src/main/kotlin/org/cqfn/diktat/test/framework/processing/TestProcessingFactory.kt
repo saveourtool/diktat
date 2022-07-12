@@ -27,7 +27,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             ?.let { File(it.file) }
             ?: run {
                 log.error("Not able to get directory with test configuration files: " +
-                    argReader.properties.testConfigsRelativePath)
+                        argReader.properties.testConfigsRelativePath)
                 exitProcess(STATUS_FIVE)
             }
         try {

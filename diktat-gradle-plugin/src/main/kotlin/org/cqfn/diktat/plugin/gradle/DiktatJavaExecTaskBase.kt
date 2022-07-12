@@ -236,7 +236,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     }
 
     private fun getJavaExecJvmVersion(): JavaVersion = if (GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.7") &&
-        javaLauncher.isPresent
+            javaLauncher.isPresent
     ) {
         // Java Launchers are available since 6.7, but may not always be configured
         javaLauncher.map { it.metadata.jvmVersion }.map(JavaVersion::toVersion).get()

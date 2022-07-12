@@ -30,8 +30,8 @@ class VariablesWithUsagesSearch(fileNode: ASTNode,
         .filterNot { expression ->
             // to avoid false triggering on objects' fields with same name as property
             expression.isReferenceToFieldOfObject() ||
-                // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
-                isReferenceToOtherVariableWithSameName(expression, this, property)
+                    // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
+                    isReferenceToOtherVariableWithSameName(expression, this, property)
         }
 }
 

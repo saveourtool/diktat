@@ -99,7 +99,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
 
         assertSoftly { softly ->
             (actualContent.asSequenceWithConcatenation() zip
-                expectedContent.asSequenceWithConcatenation()).forEach { (actual, expected) ->
+                    expectedContent.asSequenceWithConcatenation()).forEach { (actual, expected) ->
                 val lintResult = fixAndCompareContent(
                     actual,
                     expected,

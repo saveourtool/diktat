@@ -145,11 +145,11 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             .filterValues { left ->
                 // we keep only statements where property is referenced via this (like `this.foo = ...`)
                 left is KtDotQualifiedExpression && left.receiverExpression is KtThisExpression && left.selectorExpression is KtNameReferenceExpression ||
-                    // or directly (like `foo = ...`)
-                    left is KtNameReferenceExpression && localProperties.none {
-                        // check for shadowing
-                        left.node.isGoingAfter(it.node) && it.name == left.name
-                    }
+                        // or directly (like `foo = ...`)
+                        left is KtNameReferenceExpression && localProperties.none {
+                            // check for shadowing
+                            left.node.isGoingAfter(it.node) && it.name == left.name
+                        }
             }
             .mapValues { (_, left) ->
                 when (left) {
@@ -254,15 +254,15 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.text
             ?.plus(" constructor ")
             ?: "") +
-            "(" +
-            declarationsAssignedInCtor.run {
-                joinToString(
-                    ", ",
-                    postfix = if (isNotEmpty() && valueParameters.isNotEmpty()) ", " else ""
-                ) { it.text }
-            } +
-            valueParameters.joinToString(", ") { it.text } +
-            ")"
+                "(" +
+                declarationsAssignedInCtor.run {
+                    joinToString(
+                        ", ",
+                        postfix = if (isNotEmpty() && valueParameters.isNotEmpty()) ", " else ""
+                    ) { it.text }
+                } +
+                valueParameters.joinToString(", ") { it.text } +
+                ")"
     )
         .node
 
