@@ -85,6 +85,12 @@ jobs:
             cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
           done
           next_snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          # Update the version in `examples/maven/pom.xml`
+          # (which is not a part of the multi-module project).
+          for file in examples/maven/pom.xml
+          do
+            sed -i "s|\(<version>\)[[:digit:]]\(\.[[:digit:]]\)\+-SNAPSHOT\(</version>\)|\1${next_snapshot_version}\3|g" "${file}" || echo "File ${file} hasn't been updated (2nd sed pass)"
+          done
           echo "version=$next_snapshot_version" > info/buildSrc/gradle.properties
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4

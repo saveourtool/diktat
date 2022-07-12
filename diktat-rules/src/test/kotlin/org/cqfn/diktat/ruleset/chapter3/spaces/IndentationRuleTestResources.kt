@@ -979,6 +979,161 @@ internal object IndentationRuleTestResources {
         false to parenthesesSurroundedInfixExpressionsSingleIndent,
         true to parenthesesSurroundedInfixExpressionsContinuationIndent)
 
+    /**
+     * Dot-qualified and safe-access expressions, single indent
+     * (`extendedIndentBeforeDot` is **off**).
+     *
+     * When adding new code fragments to this list, be sure to also add their
+     * counterparts (preserving order) to
+     * [dotQualifiedExpressionsContinuationIndent].
+     *
+     * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
+     *
+     * @see dotQualifiedExpressionsContinuationIndent
+     */
+    @Language("kotlin")
+    val dotQualifiedExpressionsSingleIndent = arrayOf(
+        """
+        |fun LocalDateTime.updateTime(
+        |    hour: Int? = null,
+        |    minute: Int? = null,
+        |    second: Int? = null,
+        |): LocalDateTime = withHour(hour ?: getHour())
+        |    .withMinute(minute ?: getMinute())
+        |    .withSecond(second ?: getSecond())
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    first()
+        |        .second()
+        |        .third()
+        |}
+        """.trimMargin(),
+
+        """
+        |val a = first()
+        |    .second()
+        |    .third()
+        """.trimMargin(),
+
+        """
+        |val b = first()
+        |    ?.second()
+        |    ?.third()
+        """.trimMargin(),
+
+        """
+        |fun f1() = first()
+        |    .second()
+        |    .third()
+        """.trimMargin(),
+
+        """
+        |fun f2() =
+        |    first()
+        |        .second()
+        |        .third()
+        """.trimMargin(),
+
+        """
+        |fun f3() = g(first()
+        |    .second()
+        |    .third()
+        |    .fourth())
+        """.trimMargin(),
+
+        """
+        |fun f4() = g(
+        |    first()
+        |        .second()
+        |        .third()
+        |        .fourth())
+        """.trimMargin(),
+    )
+
+    /**
+     * Dot-qualified and safe-access expressions, continuation indent
+     * (`extendedIndentBeforeDot` is **on**).
+     *
+     * When adding new code fragments to this list, be sure to also add their
+     * counterparts (preserving order) to
+     * [dotQualifiedExpressionsSingleIndent].
+     *
+     * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
+     *
+     * @see dotQualifiedExpressionsSingleIndent
+     */
+    @Language("kotlin")
+    val dotQualifiedExpressionsContinuationIndent = arrayOf(
+        """
+        |fun LocalDateTime.updateTime(
+        |    hour: Int? = null,
+        |    minute: Int? = null,
+        |    second: Int? = null,
+        |): LocalDateTime = withHour(hour ?: getHour())
+        |        .withMinute(minute ?: getMinute())
+        |        .withSecond(second ?: getSecond())
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    first()
+        |            .second()
+        |            .third()
+        |}
+        """.trimMargin(),
+
+        """
+        |val a = first()
+        |        .second()
+        |        .third()
+        """.trimMargin(),
+
+        """
+        |val b = first()
+        |        ?.second()
+        |        ?.third()
+        """.trimMargin(),
+
+        """
+        |fun f1() = first()
+        |        .second()
+        |        .third()
+        """.trimMargin(),
+
+        """
+        |fun f2() =
+        |    first()
+        |            .second()
+        |            .third()
+        """.trimMargin(),
+
+        """
+        |fun f3() = g(first()
+        |        .second()
+        |        .third()
+        |        .fourth())
+        """.trimMargin(),
+
+        """
+        |fun f4() = g(
+        |    first()
+        |            .second()
+        |            .third()
+        |            .fourth())
+        """.trimMargin(),
+    )
+
+    /**
+     * Dot-qualified and safe-access expressions.
+     *
+     * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
+     */
+    val dotQualifiedExpressions = mapOf(
+        false to dotQualifiedExpressionsSingleIndent,
+        true to dotQualifiedExpressionsContinuationIndent)
+
     @Language("kotlin")
     @Suppress("COMMENT_WHITE_SPACE")
     private val ifExpressionsSingleIndent = arrayOf(
