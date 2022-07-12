@@ -93,14 +93,16 @@ internal object IndentationRuleTestResources {
         """.trimMargin(),
 
         """
-        |fun f() = x + (y +
-        |    g(x)
-        |)
+        |fun f() =
+        |    x + (y +
+        |        g(x)
+        |    )
         """.trimMargin(),
 
         """
-        |fun f() = (1 +
-        |    2)
+        |fun f() =
+        |    (1 +
+        |        2)
         """.trimMargin(),
     )
 
@@ -160,11 +162,11 @@ internal object IndentationRuleTestResources {
         |            } else {
         |                @Suppress("DEPRECATION")
         |                systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE or
-        |                        View.SYSTEM_UI_FLAG_FULLSCREEN or
-        |                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-        |                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-        |                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-        |                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        |                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+        |                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        |                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+        |                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+        |                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         |            }
         |        }
         """.trimMargin(),
@@ -186,14 +188,16 @@ internal object IndentationRuleTestResources {
         """.trimMargin(),
 
         """
-        |fun f() = x + (y +
-        |        g(x)
-        |)
+        |fun f() =
+        |        x + (y +
+        |            g(x)
+        |        )
         """.trimMargin(),
 
         """
-        |fun f() = (1 +
-        |        2)
+        |fun f() =
+        |        (1 +
+        |            2)
         """.trimMargin(),
     )
 
@@ -703,16 +707,16 @@ internal object IndentationRuleTestResources {
 
         """
         |val value2 =
-        |        1 to
-        |                2 to
-        |                3
+        |    1 to
+        |            2 to
+        |            3
         """.trimMargin(),
 
         """
         |val value3 =
-        |        (1 to
-        |                2 to
-        |                3)
+        |    (1 to
+        |            2 to
+        |            3)
         """.trimMargin(),
 
         """
@@ -736,9 +740,9 @@ internal object IndentationRuleTestResources {
         |fun <T : Any> identity(t: T): T = t
         |
         |val value6 =
-        |        identity(1 to
-        |                2 to
-        |                3)
+        |    identity(1 to
+        |            2 to
+        |            3)
         """.trimMargin(),
 
         """
@@ -752,10 +756,10 @@ internal object IndentationRuleTestResources {
         | * 3. on each infix function call ([to]).
         | */
         |val value7 =
-        |        identity(
-        |            1 to
-        |                    2 to
-        |                    3)
+        |    identity(
+        |        1 to
+        |                2 to
+        |                3)
         """.trimMargin(),
 
         """
@@ -779,37 +783,37 @@ internal object IndentationRuleTestResources {
         |fun <T : Any> identity(t: T): T = t
         |
         |val value10 =
-        |        identity(identity(1 to
-        |                2 to
-        |                3))
+        |    identity(identity(1 to
+        |            2 to
+        |            3))
         """.trimMargin(),
 
         """
         |fun <T : Any> identity(t: T): T = t
         |
         |val value11 =
-        |        identity(identity(
-        |            1 to
-        |                    2 to
-        |                    3))
+        |    identity(identity(
+        |        1 to
+        |                2 to
+        |                3))
         """.trimMargin(),
 
         """
         |// Same as above, but using a custom getter instead of an explicit initializer.
         |val value12
         |    get() =
-        |            1 to
-        |                    2 to
-        |                    3
+        |        1 to
+        |                2 to
+        |                3
         """.trimMargin(),
 
         """
         |// Same as above, but using a custom getter instead of an explicit initializer.
         |val value13
         |    get() =
-        |            (1 to
-        |                    2 to
-        |                    3)
+        |        (1 to
+        |                2 to
+        |                3)
         """.trimMargin(),
 
         """
@@ -818,9 +822,9 @@ internal object IndentationRuleTestResources {
         |// Same as above, but using a custom getter instead of an explicit initializer.
         |val value14
         |    get() =
-        |            identity(1 to
-        |                    2 to
-        |                    3)
+        |        identity(1 to
+        |                2 to
+        |                3)
         """.trimMargin(),
 
         """
@@ -829,9 +833,9 @@ internal object IndentationRuleTestResources {
         |// Same as above, but using a custom getter instead of an explicit initializer.
         |val value15
         |    get() =
-        |            identity(identity(1 to
-        |                    2 to
-        |                    3))
+        |        identity(identity(1 to
+        |                2 to
+        |                3))
         """.trimMargin(),
     )
 
@@ -846,7 +850,7 @@ internal object IndentationRuleTestResources {
 
     /**
      * Parenthesized expressions, single indent
-     * (`extendedIndentAfterOperators` is **off**).
+     * (`extendedIndentForExpressionBodies` is **off**).
      *
      * When adding new code fragments to this list, be sure to also add their
      * counterparts (preserving order) to
@@ -909,7 +913,7 @@ internal object IndentationRuleTestResources {
 
     /**
      * Parenthesized expressions, continuation indent
-     * (`extendedIndentAfterOperators` is **on**).
+     * (`extendedIndentForExpressionBodies` is **on**).
      *
      * When adding new code fragments to this list, be sure to also add their
      * counterparts (preserving order) to

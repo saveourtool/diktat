@@ -40,6 +40,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 "newlineAtEnd" to "true",  // expected file should have two newlines at end in order to be read by BufferedReader correctly
                 "extendedIndentOfParameters" to "true",
                 "alignedParameters" to "true",
+                "extendedIndentForExpressionBodies" to "true",
                 "extendedIndentAfterOperators" to "true",
                 "extendedIndentBeforeDot" to "true",
             )
@@ -120,29 +121,29 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Expression body functions` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should remain unchanged if properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should remain unchanged if properly indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
-                expressionBodyFunctions[extendedIndentAfterOperators].assertNotNull(),
+                expressionBodyFunctions[extendedIndentForExpressionBodies].assertNotNull(),
                 tempDir = tempDir,
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should be reformatted if mis-indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
-                actualContent = expressionBodyFunctions[!extendedIndentAfterOperators].assertNotNull(),
-                expectedContent = expressionBodyFunctions[extendedIndentAfterOperators].assertNotNull(),
+                actualContent = expressionBodyFunctions[!extendedIndentForExpressionBodies].assertNotNull(),
+                expectedContent = expressionBodyFunctions[extendedIndentForExpressionBodies].assertNotNull(),
                 tempDir = tempDir,
                 rulesConfigList = customConfig.asRulesConfigList())
         }
@@ -222,29 +223,29 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Parentheses-surrounded infix expressions` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should be properly indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
-                parenthesesSurroundedInfixExpressions[extendedIndentAfterOperators].assertNotNull(),
+                parenthesesSurroundedInfixExpressions[extendedIndentForExpressionBodies].assertNotNull(),
                 tempDir = tempDir,
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
+        fun `should be reformatted if mis-indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
-                actualContent = parenthesesSurroundedInfixExpressions[!extendedIndentAfterOperators].assertNotNull(),
-                expectedContent = parenthesesSurroundedInfixExpressions[extendedIndentAfterOperators].assertNotNull(),
+                actualContent = parenthesesSurroundedInfixExpressions[!extendedIndentForExpressionBodies].assertNotNull(),
+                expectedContent = parenthesesSurroundedInfixExpressions[extendedIndentForExpressionBodies].assertNotNull(),
                 tempDir = tempDir,
                 rulesConfigList = customConfig.asRulesConfigList())
         }
