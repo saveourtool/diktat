@@ -128,7 +128,7 @@
     extendedIndentOfParameters: false
     alignedParameters: true
     extendedIndentForExpressionBodies: false
-    extendedIndentAfterOperators: false
+    extendedIndentAfterOperators: true
     indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true

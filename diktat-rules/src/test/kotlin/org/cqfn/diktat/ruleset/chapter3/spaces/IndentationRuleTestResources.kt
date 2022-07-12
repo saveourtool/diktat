@@ -67,11 +67,11 @@ internal object IndentationRuleTestResources {
         |        } else {
         |            @Suppress("DEPRECATION")
         |            systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE or
-        |                View.SYSTEM_UI_FLAG_FULLSCREEN or
-        |                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-        |                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-        |                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-        |                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        |                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+        |                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        |                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+        |                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+        |                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         |        }
         |    }
         """.trimMargin(),
@@ -95,14 +95,14 @@ internal object IndentationRuleTestResources {
         """
         |fun f() =
         |    x + (y +
-        |        g(x)
+        |            g(x)
         |    )
         """.trimMargin(),
 
         """
         |fun f() =
         |    (1 +
-        |        2)
+        |            2)
         """.trimMargin(),
     )
 
@@ -162,11 +162,11 @@ internal object IndentationRuleTestResources {
         |            } else {
         |                @Suppress("DEPRECATION")
         |                systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE or
-        |                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-        |                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-        |                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-        |                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-        |                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        |                        View.SYSTEM_UI_FLAG_FULLSCREEN or
+        |                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        |                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+        |                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+        |                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         |            }
         |        }
         """.trimMargin(),
@@ -190,14 +190,14 @@ internal object IndentationRuleTestResources {
         """
         |fun f() =
         |        x + (y +
-        |            g(x)
+        |                g(x)
         |        )
         """.trimMargin(),
 
         """
         |fun f() =
         |        (1 +
-        |            2)
+        |                2)
         """.trimMargin(),
     )
 

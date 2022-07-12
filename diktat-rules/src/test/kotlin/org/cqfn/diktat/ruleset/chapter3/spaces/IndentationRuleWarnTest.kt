@@ -621,20 +621,20 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |        ?.count()
                     |
                     |    list.any { predicate(it) } &&
-                    |        list.any {
-                    |            predicate(it)
-                    |        }
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
                     |
                     |    list.any { predicate(it) } &&
-                    |        // comment
-                    |        list.any {
-                    |            predicate(it)
-                    |        }
+                    |            // comment
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
                     |
                     |    list.filter {
                     |        predicate(it) &&
-                    |            // comment
-                    |            predicate(it)
+                    |                // comment
+                    |                predicate(it)
                     |    }
                     |}
                     |
@@ -665,9 +665,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    return x +
-                    |        (y +
-                    |            foo(x)
-                    |        )
+                    |            (y +
+                    |                    foo(x)
+                    |            )
                     |}
                     |
             """.trimMargin()

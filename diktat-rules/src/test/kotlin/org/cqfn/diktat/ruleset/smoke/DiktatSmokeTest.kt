@@ -126,7 +126,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
                     "extendedIndentForExpressionBodies" to "true",
-                    "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "true",
                 )
             )
@@ -169,16 +168,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #4`() {
-        overrideRulesConfig(
-            rulesToDisable = emptyList(),
-            rulesToOverride = mapOf(
-                WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentForExpressionBodies" to "true",
-                    "extendedIndentAfterOperators" to "true",
-                    "extendedIndentBeforeDot" to "false",
-                )
-            )
-        )
         fixAndCompareSmokeTest("Example4Expected.kt", "Example4Test.kt")
     }
 
@@ -201,8 +190,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentForExpressionBodies" to "true",
-                    "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "true",
                 )
             )
@@ -226,8 +213,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
                     "extendedIndentForExpressionBodies" to "true",
-                    "extendedIndentAfterOperators" to "true",
-                    "extendedIndentBeforeDot" to "false",
                 )
             )
         )
@@ -256,7 +241,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             mapOf(
                 WRONG_INDENTATION.name to mapOf(
                     "newlineAtEnd" to "false",
-                    "extendedIndentOfParameters" to "false",
                 )
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
@@ -349,6 +333,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `fix can cause long line`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "false",
+                )
+            )
+        )
         fixAndCompareSmokeTest("ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 
