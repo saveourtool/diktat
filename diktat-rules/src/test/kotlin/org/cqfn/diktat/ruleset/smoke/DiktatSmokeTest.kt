@@ -110,7 +110,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
      */
-    protected fun fixAndCompareSmokeTest(expectedPath: String, testPath: String) {
+    private fun fixAndCompareSmokeTest(expectedPath: String, testPath: String) {
         Assertions.assertTrue(
             testComparatorUnit
                 .compareFilesFromResources(expectedPath, testPath, true)

@@ -29,7 +29,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
      * @param configFilePath path of diktat-analysis file
      */
     @Suppress("TOO_LONG_FUNCTION")
-    protected fun saveSmokeTest(
+    private fun saveSmokeTest(
         configFilePath: String,
         testPath: String
     ) {
