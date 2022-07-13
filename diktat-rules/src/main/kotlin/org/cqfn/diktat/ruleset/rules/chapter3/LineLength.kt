@@ -628,7 +628,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val expression = rightBinList.firstOrNull { (it, offset) ->
                 val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)?.firstChildNode?.elementType
                 offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text?.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
+                        binOperationReference !in logicListOperationReference && binOperationReference !in compressionListOperationReference && binOperationReference != EXCL
             }
             returnList.add(expression)
             return returnList
@@ -660,7 +660,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val expression = rightBinList.firstOrNull { (it, offset) ->
                 val binOperationReference = it.getFirstChildWithType(OPERATION_REFERENCE)
                 offset + (it.getFirstChildWithType(OPERATION_REFERENCE)?.text?.length ?: 0) <= configuration.lineLength + 1 &&
-                    binOperationReference?.firstChildNode?.elementType in typesList
+                        binOperationReference?.firstChildNode?.elementType in typesList
             }
             returnList.add(expression)
         }

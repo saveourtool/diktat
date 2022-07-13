@@ -111,7 +111,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     )
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
-            " (it can be placed to the run directory or the default file from resources will be used)")
+                " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
             .firstOrNull { it != null && File(it).exists() }
         diktatConfigFile = configPath
@@ -119,12 +119,12 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 val possibleConfigsList = possibleConfigs.toList()
                 log.warn(
                     "Configuration file not found in directory where diktat is run (${possibleConfigsList[0]}) " +
-                        "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
-                        "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
-                        "the default file included in jar will be used. " +
-                        "Some configuration options will be disabled or substituted with defaults. " +
-                        "Custom configuration file should be placed in diktat working directory if run from CLI " +
-                        "or provided as configuration options in plugins."
+                            "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
+                            "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
+                            "the default file included in jar will be used. " +
+                            "Some configuration options will be disabled or substituted with defaults. " +
+                            "Custom configuration file should be placed in diktat working directory if run from CLI " +
+                            "or provided as configuration options in plugins."
                 )
                 diktatConfigFile
             }

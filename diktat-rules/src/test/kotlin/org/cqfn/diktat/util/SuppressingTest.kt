@@ -65,7 +65,7 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
                 9,
                 ruleId,
                 "[IDENTIFIER_LENGTH] identifier's length is incorrect, it" +
-                    " should be in range of [2, 64] symbols: a", false),
+                        " should be in range of [2, 64] symbols: a", false),
             rulesConfigList = rulesConfigBooleanFunctions,
         )
     }

@@ -264,10 +264,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val nextNodeDot = getNextDotExpression(whiteSpace.node.treeNext)
         if (nextNodeDot != null &&
-            nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
-            nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
-            nextNodeDot.firstChildNode.text.startsWith("\"\"\"") &&
-            nextNodeDot.findChildByType(CALL_EXPRESSION).isTrimIndentOrMarginCall()) {
+                nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
+                nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
+                nextNodeDot.firstChildNode.text.startsWith("\"\"\"") &&
+                nextNodeDot.findChildByType(CALL_EXPRESSION).isTrimIndentOrMarginCall()) {
             fixStringLiteral(nextNodeDot.firstChildNode, expectedIndent, actualIndent)
         }
     }
@@ -319,8 +319,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                         val escapedText = text.replace(NEWLINE.toString(), "\\n")
 
                         "A LITERAL_STRING_TEMPLATE_ENTRY at index $index contains extra characters in addition to the newline, " +
-                            "entry: \"$escapedText\", " +
-                            "string template: ${stringTemplate.text}"
+                                "entry: \"$escapedText\", " +
+                                "string template: ${stringTemplate.text}"
                     }
                 }
 
@@ -546,7 +546,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
              * @return boolean result
              */
             fun isActive(currentNode: ASTNode): Boolean = currentNode.psi.parentsWithSelf.any { it.node == initiator } &&
-                (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
+                    (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
         }
     }
 
@@ -698,9 +698,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
             check(lastRegularStringPartType == REGULAR_STRING_PART) {
                 "Unexpected type of the 1st child of the string template entry, " +
-                    "expected: $REGULAR_STRING_PART, " +
-                    "actual: $lastRegularStringPartType, " +
-                    "string template: ${parent.parent.text}"
+                        "expected: $REGULAR_STRING_PART, " +
+                        "actual: $lastRegularStringPartType, " +
+                        "string template: ${parent.parent.text}"
             }
 
             return this

@@ -112,7 +112,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
-            if (excludes.isNotEmpty()) " and excluding $excludes" else ""
+                if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
         val ruleSets by lazy {

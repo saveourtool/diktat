@@ -162,11 +162,11 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun findBeforeAndAfterSpaces(tag: KDocTag) = Pair(tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE).let {
         it?.text != " " &&
-            !(it?.isWhiteSpaceWithNewline() ?: false)
+                !(it?.isWhiteSpaceWithNewline() ?: false)
     },
         tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE).let {
             it?.text != " " &&
-                !(it?.isWhiteSpaceWithNewline() ?: false)
+                    !(it?.isWhiteSpaceWithNewline() ?: false)
         }
     )
 
@@ -290,11 +290,11 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         val poorlyFormattedTagNodes = presentSpecialTagNodes?.filterNot { specialTagNode ->
             // empty line with just * followed by white space or end of block
             specialTagNode.lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
-                (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
-                    specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
-                // and with no empty line before
-                specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
-                specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
+                    (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
+                            specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
+                    // and with no empty line before
+                    specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
+                    specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
         }
 
         if (poorlyFormattedTagNodes != null && poorlyFormattedTagNodes.isNotEmpty()) {
@@ -324,7 +324,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         node.kDocTags()
             .filter {
                 it.knownTag == KDocKnownTag.AUTHOR ||
-                    it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
+                        it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
             }
             .forEach {
                 KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
@@ -335,7 +335,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.hasEmptyLineAfter(): Boolean {
         require(this.elementType == KDOC_TAG) { "This check is only for KDOC_TAG" }
         return lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
-            (treeNext == null || treeNext.elementType == WHITE_SPACE && treeNext.text.count { it == '\n' } == 1)
+                (treeNext == null || treeNext.elementType == WHITE_SPACE && treeNext.text.count { it == '\n' } == 1)
     }
 
     private fun ASTNode.kDocBasicTags() = kDocTags().filter { basicTagsList.contains(it.knownTag) }
