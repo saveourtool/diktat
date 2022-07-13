@@ -127,6 +127,7 @@
     newlineAtEnd: true
     extendedIndentOfParameters: false
     alignedParameters: true
+    extendedIndentForExpressionBodies: false
     extendedIndentAfterOperators: false
     indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR

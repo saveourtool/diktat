@@ -125,6 +125,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentForExpressionBodies" to "true",
                     "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "true",
                 )
@@ -172,6 +173,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentForExpressionBodies" to "true",
                     "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "false",
                 )
@@ -199,6 +201,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentForExpressionBodies" to "true",
                     "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "true",
                 )
@@ -222,6 +225,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentForExpressionBodies" to "true",
                     "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "false",
                 )

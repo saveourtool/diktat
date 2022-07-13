@@ -36,6 +36,7 @@ internal object IndentationRuleTestMixin {
             "indentationSize" to "$indentationSize",
             "newlineAtEnd" to "$newlineAtEnd",
             "extendedIndentOfParameters" to "$extendedIndentOfParameters",
+            "extendedIndentForExpressionBodies" to "$extendedIndentForExpressionBodies",
             "extendedIndentAfterOperators" to "$extendedIndentAfterOperators",
             "extendedIndentBeforeDot" to "$extendedIndentBeforeDot",
         ).apply {
@@ -68,6 +69,7 @@ internal object IndentationRuleTestMixin {
     fun extendedIndent(enabled: Boolean): Array<Pair<String, Any>> =
         arrayOf(
             "extendedIndentOfParameters" to enabled,
+            "extendedIndentForExpressionBodies" to enabled,
             "extendedIndentAfterOperators" to enabled,
             "extendedIndentBeforeDot" to enabled)
 
