@@ -79,7 +79,7 @@ jobs:
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md || echo "File README.md hasn't been updated!"
-          for file in examples/maven/pom.xml examples/gradle-groovy-dsl/build.gradle examples/gradle-kotlin-dsl/build.gradle.kts
+          for file in examples/{maven/pom.xml,gradle-groovy-dsl/build.gradle,{gradle-kotlin-dsl,gradle-kotlin-dsl-multiproject}/build.gradle.kts}
           do
             sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file || echo "File $file hasn't been updated!"
             cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
