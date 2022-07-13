@@ -252,7 +252,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
      * @property type a type to which the reference is being cast
      * @property node a node that holds the entire expression
      */
-    class AsExpressions(
+    data class AsExpressions(
         val identifier: String,
         val type: String,
         val node: ASTNode
@@ -262,7 +262,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
      * @property identifier a reference that is checked
      * @property type a type with which the reference is being compared
      */
-    class IsExpressions(val identifier: String, val type: String)
+    data class IsExpressions(val identifier: String, val type: String)
 
     companion object {
         const val NAME_ID = "smart-cast-rule"
