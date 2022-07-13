@@ -104,7 +104,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
                     ?: false &&
                 getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
-        return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
+        return classBody?.getFirstChildWithType(FUN) == null &&
             getFirstChildWithType(SUPER_TYPE_LIST) == null &&
             // if there is any prop with logic in accessor then don't recommend to convert class to data class
             classBody?.let(::areGoodProps)
