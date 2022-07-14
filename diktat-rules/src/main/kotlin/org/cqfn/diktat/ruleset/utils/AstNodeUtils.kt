@@ -190,9 +190,9 @@ fun ASTNode.isFollowedByNewlineWithComment() =
             EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
             else -> false
         } ||
-            parent({ it.treeNext != null }, strict = false)?.let {
-                it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
-            } ?: false
+                parent({ it.treeNext != null }, strict = false)?.let {
+                    it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
+                } ?: false
     } ?: false
 
 /**
@@ -202,7 +202,7 @@ fun ASTNode.isFollowedByNewlineWithComment() =
 fun ASTNode.isBeginByNewline() =
     parent({ it.treePrev != null }, strict = false)?.let {
         it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n") ||
-            (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
+                (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
     } ?: false
 
 /**
@@ -489,7 +489,7 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
             this.getChildren(null).forEach { child ->
                 result.append(
                     "${"-".repeat(level + 1)} " +
-                        child.doPrettyPrint(level + 1, maxLevel - 1)
+                            child.doPrettyPrint(level + 1, maxLevel - 1)
                 )
             }
         }
@@ -506,7 +506,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
     this?.run {
         require(this.elementType == MODIFIER_LIST)
         this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
-            !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
+                !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
     }
         ?: true
 
@@ -688,7 +688,7 @@ fun List<ASTNode>.handleIncorrectOrder(
         val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
         val isPositionIncorrect =
             (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode)) ||
-                !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
+                    !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
 
         if (isPositionIncorrect) {
             incorrectPositionHandler(astNode, beforeThisNode)
@@ -839,10 +839,10 @@ private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T
 private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
     this.any {
         it.shortName.toString() == (Suppress::class.simpleName) &&
-            (it.valueArgumentList
-                ?.arguments
-                ?.any { annotation -> annotation.text.trim('"') == name }
-                ?: false)
+                (it.valueArgumentList
+                    ?.arguments
+                    ?.any { annotation -> annotation.text.trim('"') == name }
+                    ?: false)
     }
 
 private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {

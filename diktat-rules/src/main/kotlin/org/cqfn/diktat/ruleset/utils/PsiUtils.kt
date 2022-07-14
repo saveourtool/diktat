@@ -32,13 +32,13 @@ fun KtExpression.containsOnlyConstants(): Boolean =
         // left and right are marked @Nullable @IfNotParsed, so it should be safe to `!!`
         is KtBinaryExpression -> left!!.containsOnlyConstants() && right!!.containsOnlyConstants()
         is KtDotQualifiedExpression -> receiverExpression.containsOnlyConstants() &&
-            (selectorExpression is KtReferenceExpression ||
-                ((selectorExpression as? KtCallExpression)
-                    ?.valueArgumentList
-                    ?.arguments
-                    ?.all { it.getArgumentExpression()!!.containsOnlyConstants() }
-                    ?: false)
-            )
+                (selectorExpression is KtReferenceExpression ||
+                        ((selectorExpression as? KtCallExpression)
+                            ?.valueArgumentList
+                            ?.arguments
+                            ?.all { it.getArgumentExpression()!!.containsOnlyConstants() }
+                            ?: false)
+                )
         else -> false
     }
 
@@ -65,9 +65,9 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
             .mapNotNull { it as? KtProperty }
             .find {
                 it.isLocal &&
-                    it.hasInitializer() &&
-                    it.name?.equals(getReferencedName())
-                        ?: false
+                        it.hasInitializer() &&
+                        it.name?.equals(getReferencedName())
+                            ?: false
             }
     }
     .firstOrNull()

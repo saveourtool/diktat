@@ -28,6 +28,18 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
 
     @Test
     @Tag(USE_DATA_CLASS)
+    fun `_regression_ trigger on default class without a body`() {
+        lintMethod(
+            """
+                    |class Some(val a: Int = 5)
+                    |
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `should trigger - dont forget to consider this class in fix`() {
         lintMethod(
             """

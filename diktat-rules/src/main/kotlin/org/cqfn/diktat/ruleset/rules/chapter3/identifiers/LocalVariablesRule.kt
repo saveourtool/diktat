@@ -64,9 +64,9 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
         .findAllVariablesWithUsages { propertyNode ->
             propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
-                (propertyNode.isVar && propertyNode.initializer == null ||
-                    (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
-                    (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
+                    (propertyNode.isVar && propertyNode.initializer == null ||
+                            (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
+                            (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
         }
 
         .filterNot { it.value.isEmpty() }
@@ -208,7 +208,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
             // `referenceExpression()` can return something different than just a name, e.g. when function returns a function:
             // `foo()()` `referenceExpression()` will be a `KtCallExpression` as well
             (referenceExpression() as? KtNameReferenceExpression)?.getReferencedName() in functionInitializers &&
-                valueArguments.isEmpty()
+                    valueArguments.isEmpty()
         } ?: false
 
     private fun warnMessage(

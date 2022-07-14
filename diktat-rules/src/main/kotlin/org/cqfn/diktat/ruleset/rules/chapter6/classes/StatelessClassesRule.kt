@@ -67,8 +67,8 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         val properties = (node.psi as KtClass).getProperties()
         val functions = node.findAllDescendantsWithSpecificType(FUN)
         return properties.isEmpty() &&
-            functions.isNotEmpty() &&
-            !(node.psi as KtClass).hasExplicitPrimaryConstructor()
+                functions.isNotEmpty() &&
+                !(node.psi as KtClass).hasExplicitPrimaryConstructor()
     }
 
     private fun isClassExtendsValidInterface(node: ASTNode, interfaces: List<ASTNode>): Boolean =

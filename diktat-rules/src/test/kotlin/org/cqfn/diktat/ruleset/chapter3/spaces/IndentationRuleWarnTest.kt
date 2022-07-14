@@ -43,6 +43,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             mapOf(
                 "extendedIndentOfParameters" to "true",
                 "alignedParameters" to "true",
+                "extendedIndentForExpressionBodies" to "true",
                 "extendedIndentAfterOperators" to "true",
                 "extendedIndentBeforeDot" to "false",
                 "indentationSize" to "4"
@@ -54,6 +55,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             mapOf(
                 "extendedIndentOfParameters" to "false",
                 "alignedParameters" to "false",
+                "extendedIndentForExpressionBodies" to "false",
                 "extendedIndentAfterOperators" to "false",
                 "extendedIndentBeforeDot" to "false",
                 "indentationSize" to "4"
@@ -619,20 +621,20 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |        ?.count()
                     |
                     |    list.any { predicate(it) } &&
-                    |        list.any {
-                    |            predicate(it)
-                    |        }
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
                     |
                     |    list.any { predicate(it) } &&
-                    |        // comment
-                    |        list.any {
-                    |            predicate(it)
-                    |        }
+                    |            // comment
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
                     |
                     |    list.filter {
                     |        predicate(it) &&
-                    |            // comment
-                    |            predicate(it)
+                    |                // comment
+                    |                predicate(it)
                     |    }
                     |}
                     |
@@ -663,9 +665,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                     |fun foo() {
                     |    return x +
-                    |        (y +
-                    |            foo(x)
-                    |        )
+                    |            (y +
+                    |                    foo(x)
+                    |            )
                     |}
                     |
             """.trimMargin()
@@ -820,29 +822,29 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Expression body functions` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be properly indented`(extendedIndentAfterOperators: Boolean) {
+        fun `should be properly indented`(extendedIndentForExpressionBodies: Boolean) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
-                expressionBodyFunctions[extendedIndentAfterOperators].assertNotNull(),
+                expressionBodyFunctions[extendedIndentForExpressionBodies].assertNotNull(),
                 lintErrors = emptyArray(),
                 customConfig.asRulesConfigList()
             )
         }
 
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reported if mis-indented`(extendedIndentAfterOperators: Boolean) {
+        fun `should be reported if mis-indented`(extendedIndentForExpressionBodies: Boolean) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             assertSoftly { softly ->
-                expressionBodyFunctions[!extendedIndentAfterOperators].assertNotNull().forEach { code ->
+                expressionBodyFunctions[!extendedIndentForExpressionBodies].assertNotNull().forEach { code ->
                     softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
                         .describedAs("lint result for ${code.describe()}")
                         .isNotEmpty
@@ -904,29 +906,29 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Parentheses-surrounded infix expressions` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be properly indented`(extendedIndentAfterOperators: Boolean) {
+        fun `should be properly indented`(extendedIndentForExpressionBodies: Boolean) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
-                parenthesesSurroundedInfixExpressions[extendedIndentAfterOperators].assertNotNull(),
+                parenthesesSurroundedInfixExpressions[extendedIndentForExpressionBodies].assertNotNull(),
                 lintErrors = emptyArray(),
                 customConfig.asRulesConfigList()
             )
         }
 
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reported if mis-indented`(extendedIndentAfterOperators: Boolean) {
+        fun `should be reported if mis-indented`(extendedIndentForExpressionBodies: Boolean) {
             val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
 
             assertSoftly { softly ->
-                parenthesesSurroundedInfixExpressions[!extendedIndentAfterOperators].assertNotNull().forEach { code ->
+                parenthesesSurroundedInfixExpressions[!extendedIndentForExpressionBodies].assertNotNull().forEach { code ->
                     softly.assertThat(lintResult(code, customConfig.asRulesConfigList()))
                         .describedAs("lint result for ${code.describe()}")
                         .hasSizeBetween(0, 3).allSatisfy(Consumer { lintError ->

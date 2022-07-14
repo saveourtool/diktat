@@ -41,7 +41,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.treeParent.let {
             // kts files are parsed as a SCRIPT node containing BLOCK, therefore WHITE_SPACEs from these BLOCKS shouldn't be checked
             it.elementType == BLOCK && it.treeParent?.elementType != SCRIPT ||
-                it.elementType == CLASS_BODY || it.elementType == FUNCTION_LITERAL
+                    it.elementType == CLASS_BODY || it.elementType == FUNCTION_LITERAL
         }) {
             node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
                 // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
@@ -64,7 +64,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleTooManyBlankLines(node: ASTNode) {
         TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
             if (node.treeParent.elementType != FILE && (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node ||
-                node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
+                    node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
                 node.leaveExactlyNumNewLines(1)
             } else {
                 node.leaveExactlyNumNewLines(2)

@@ -50,7 +50,6 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             mapOf(
                 WRONG_INDENTATION.name to mapOf(
                     "newlineAtEnd" to "false",
-                    "extendedIndentOfParameters" to "false",
                 )
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
@@ -75,7 +74,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         fixAndCompareSmokeTest("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         Assertions.assertEquals(
             LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
-                "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
             unfixedLintErrors.single()
         )
     }

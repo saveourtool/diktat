@@ -37,11 +37,11 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
             // FixMe: Currently we check only val a = 5, ++a is not checked here
             // FixMe: also there can be some tricky cases with setters, but I am not able to imagine them now
             it.isGoingAfter(property.node) &&
-                (it.psi as KtBinaryExpression).operationToken == ElementType.EQ &&
-                (it.psi as KtBinaryExpression)
-                    .left
-                    ?.node
-                    ?.elementType == ElementType.REFERENCE_EXPRESSION
+                    (it.psi as KtBinaryExpression).operationToken == ElementType.EQ &&
+                    (it.psi as KtBinaryExpression)
+                        .left
+                        ?.node
+                        ?.elementType == ElementType.REFERENCE_EXPRESSION
         }
         .map { (it.psi as KtBinaryExpression).left as KtNameReferenceExpression }
         // checking that name of the property in usage matches with the name in the declaration
@@ -49,8 +49,8 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
         .filterNot { expression ->
             // to avoid false triggering on objects' fields with same name as property
             expression.isReferenceToFieldOfObject() ||
-                // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
-                isReferenceToOtherVariableWithSameName(expression, this, property)
+                    // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
+                    isReferenceToOtherVariableWithSameName(expression, this, property)
         }
         .toList()
 }

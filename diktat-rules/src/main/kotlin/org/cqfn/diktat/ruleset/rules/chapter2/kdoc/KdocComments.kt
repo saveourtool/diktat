@@ -111,8 +111,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(valueParameterNode: ASTNode) {
         if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-            !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
-                !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+                !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
+                        !valueParameterNode.hasChildOfType(VAR_KEYWORD)
         ) {
             return
         }

@@ -57,14 +57,14 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Performs the following check: assignment operator increases indent by one step for the expression after it.
- * If [IndentationConfig.extendedIndentAfterOperators] is set to true, indentation is increased by two steps instead.
+ * If [IndentationConfig.extendedIndentForExpressionBodies] is set to `true`, indentation is increased by two steps instead.
  */
 internal class AssignmentOperatorChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
+                ?: indentError.expected) + (if (configuration.extendedIndentForExpressionBodies) 2 else 1) * configuration.indentationSize, true)
         }
         return null
     }
@@ -87,11 +87,11 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
             .node
             .elementType
             .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
-            whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
-            // no need to trigger when there are no more parameters in the list
-            whiteSpace.siblings(forward = true, withItself = false).any {
-                it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
-            }
+                whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                // no need to trigger when there are no more parameters in the list
+                whiteSpace.siblings(forward = true, withItself = false).any {
+                    it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                }
 
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
@@ -102,8 +102,8 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 ?.treeNext
                 ?.takeIf {
                     it.elementType != WHITE_SPACE &&
-                        // there can be multiline arguments and in this case we don't align parameters with them
-                        !it.textContains('\n')
+                            // there can be multiline arguments and in this case we don't align parameters with them
+                            !it.textContains('\n')
                 }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
@@ -137,7 +137,7 @@ internal class ExpressionIndentationChecker(configuration: IndentationConfig) : 
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
             val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
-                (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
+                    (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
             return CheckResult.from(indentError.actual, expectedIndent, true)
         }
         return null
@@ -186,7 +186,7 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
  */
 internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
-        treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
+            treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
 
     private fun ASTNode.isCommentBeforeDot(): Boolean {
         if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
@@ -208,15 +208,15 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
             .node
             .takeIf { nextNode ->
                 (nextNode.isDotBeforeCallOrReference() ||
-                    nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
-                        type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
-                    } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
+                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
+                            type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
+                        } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
             ?.let { node ->
                 val indentIncrement = (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize
                 if (node.isFromStringTemplate()) {
                     return CheckResult.from(indentError.actual, indentError.expected +
-                        indentIncrement, true)
+                            indentIncrement, true)
                 }
 
                 // we need to get indent before the first expression in calls chain
@@ -255,7 +255,7 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         return when (parent) {
             is KtLoopExpression -> nextNode?.elementType == BODY && parent.body !is KtBlockExpression
             is KtIfExpression -> nextNode?.elementType == THEN && parent.then !is KtBlockExpression ||
-                nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
+                    nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
             .takeIf { it }
