@@ -11,6 +11,8 @@ import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
 
+const val SAVE_VERSION: String = "0.3.2"
+
 /**
  * @property resourceFilePath path to files which will be compared in tests
  */
@@ -127,9 +129,5 @@ open class FixTestBase(
         }
 
         return testComparatorUnit.compareFilesFromFileSystem(expected, actual)
-    }
-
-    companion object {
-        private const val SAVE_VERSION = "0.3.2"
     }
 }
