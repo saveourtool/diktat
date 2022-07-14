@@ -7,6 +7,8 @@ import org.apache.http.impl.client.HttpClients
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
@@ -15,6 +17,7 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 import kotlin.io.path.pathString
 
+@DisabledOnOs(OS.MAC)
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     override val isLintErrors = false
     override fun fixAndCompare(
@@ -22,13 +25,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         expected: String,
         test: String,
     ) {
-        // FixMe: it is necessary to fix after the correct assembly of the Save-cli for MacOs
-        val systemName = System.getProperty("os.name")
-        if (systemName.startsWith("Mac", ignoreCase = true)) {
-            Assertions.assertTrue(true)
-        } else {
-            saveSmokeTest(config, test)
-        }
+        saveSmokeTest(config, test)
     }
 
     /**
@@ -96,11 +93,11 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         @JvmStatic
         internal fun beforeAll() {
             val diktatDir: String =
-                    Paths.get("../diktat-ruleset/target")
-                        .takeIf { it.exists() }
-                        ?.listDirectoryEntries()
-                        ?.single { it.name.contains("diktat") }
-                        ?.pathString ?: ""
+                Paths.get("../diktat-ruleset/target")
+                    .takeIf { it.exists() }
+                    ?.listDirectoryEntries()
+                    ?.single { it.name.contains("diktat") }
+                    ?.pathString ?: ""
 
             val diktat = File("src/test/resources/test/smoke/diktat.jar")
             val diktatFrom = File(diktatDir)

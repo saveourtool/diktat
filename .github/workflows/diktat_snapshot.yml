@@ -46,7 +46,7 @@ jobs:
           mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via maven plugin
         run: |
-          mvn -e -B diktat:check@diktat -Ddiktat.debug=true -Ddiktat.githubActions=true
+          mvn -B diktat:check@diktat -Ddiktat.debug=true -Ddiktat.githubActions=true
       - name: Upload SARIF to Github using the upload-sarif action
         uses: github/codeql-action/upload-sarif@v2
         if: ${{ always() }}
