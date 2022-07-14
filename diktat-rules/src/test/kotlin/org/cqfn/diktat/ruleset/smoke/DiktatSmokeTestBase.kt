@@ -7,19 +7,42 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
+import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
+import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.util.FixTestBase
+import org.cqfn.diktat.util.assertEquals
+
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+
 import java.time.LocalDate
+
 import kotlinx.serialization.builtins.ListSerializer
 
 typealias RuleToConfig = Map<String, Map<String, String>>
@@ -31,6 +54,11 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
     { DiktatRuleSetProvider(configFilePath) },
     { lintError, _ -> unfixedLintErrors.add(lintError) },
 ) {
+    /**
+     * Flag to check LintError in smoke tests
+     */
+    abstract val isLintErrors: Boolean
+
     /**
      * Disable some of the rules.
      *
@@ -99,7 +127,8 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
-                Warnings.WRONG_INDENTATION.name to mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentForExpressionBodies" to "true",
                     "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "true",
                 )
@@ -130,20 +159,21 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
             )
         )
         fixAndCompare(configFilePath, "Example5Expected.kt", "Example5Test.kt")
+
+        if (isLintErrors) {
+            Assertions.assertFalse(
+                unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:${CommentsRule.NAME_ID}", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+            )
+
+            Assertions.assertTrue(
+                unfixedLintErrors.contains(LintError(1, 1, "diktat-ruleset:${InlineClassesRule.NAME_ID}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some"))
+            )
+        }
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #4`() {
-        overrideRulesConfig(
-            rulesToDisable = emptyList(),
-            rulesToOverride = mapOf(
-                Warnings.WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentAfterOperators" to "true",
-                    "extendedIndentBeforeDot" to "false",
-                )
-            )
-        )
         fixAndCompare(configFilePath, "Example4Expected.kt", "Example4Test.kt")
     }
 
@@ -165,13 +195,23 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
-                Warnings.WRONG_INDENTATION.name to mapOf(
+                WRONG_INDENTATION.name to mapOf(
                     "extendedIndentAfterOperators" to "true",
                     "extendedIndentBeforeDot" to "true",
                 )
             )
         )
         fixAndCompare(configFilePath, "Example2Expected.kt", "Example2Test.kt")
+        if (isLintErrors) {
+            unfixedLintErrors.assertEquals(
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
+                    "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
+                LintError(15, 23, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}",
+                    "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
+                LintError(31, 14, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
+                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
+            )
+        }
     }
 
     @Test
@@ -180,13 +220,29 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
         overrideRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
-                Warnings.WRONG_INDENTATION.name to mapOf(
+                WRONG_INDENTATION.name to mapOf(
                     "extendedIndentAfterOperators" to "true",
-                    "extendedIndentBeforeDot" to "false",
+                    "extendedIndentForExpressionBodies" to "true",
                 )
             )
         )
         fixAndCompare(configFilePath, "Example1Expected.kt", "Example1Test.kt")
+        if (isLintErrors) {
+            unfixedLintErrors.assertEquals(
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(3, 6, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
+                LintError(3, 26, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+                LintError(6, 9, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+                LintError(9, 3, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
+                        " empty blocks are forbidden unless it is function with override keyword", false),
+                LintError(12, 10, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(14, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(19, 20, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+            )
+        }
     }
 
     @Test
@@ -216,6 +272,14 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `fix can cause long line`() {
+        overrideRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    "extendedIndentAfterOperators" to "false",
+                )
+            )
+        )
         fixAndCompare(configFilePath, "ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 

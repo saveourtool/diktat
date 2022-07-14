@@ -16,6 +16,7 @@ import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
+    override val isLintErrors = false
     override fun fixAndCompare(
         config: String,
         expected: String,
@@ -62,7 +63,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
     companion object {
         private const val KTLINT_VERSION = "0.46.1"
-        private const val SAVE_VERSION = "0.3.1"
+        private const val SAVE_VERSION = "0.3.2"
 
         private fun getSaveForCurrentOs() = when {
             System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-$SAVE_VERSION-linuxX64.kexe"
@@ -89,11 +90,11 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         @JvmStatic
         internal fun beforeAll() {
             val diktatDir: String =
-                Paths.get("../diktat-ruleset/target")
-                    .takeIf { it.exists() }
-                    ?.listDirectoryEntries()
-                    ?.single { it.name.contains("diktat") }
-                    ?.pathString ?: ""
+                    Paths.get("../diktat-ruleset/target")
+                        .takeIf { it.exists() }
+                        ?.listDirectoryEntries()
+                        ?.single { it.name.contains("diktat") }
+                        ?.pathString ?: ""
 
             val diktat = File("src/test/resources/test/smoke/diktat.jar")
             val diktatFrom = File(diktatDir)

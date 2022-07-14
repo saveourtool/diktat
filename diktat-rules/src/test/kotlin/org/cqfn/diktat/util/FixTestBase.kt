@@ -130,6 +130,6 @@ open class FixTestBase(
     }
 
     companion object {
-        private const val SAVE_VERSION = "0.3.1"
+        private const val SAVE_VERSION = "0.3.2"
     }
 }

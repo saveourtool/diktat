@@ -27,6 +27,7 @@ import java.io.File
  * may change after some changes to text or other rules.
  */
 class DiktatSmokeTest : DiktatSmokeTestBase() {
+    override val isLintErrors = true
     override fun fixAndCompare(
         config: String,
         expected: String,
