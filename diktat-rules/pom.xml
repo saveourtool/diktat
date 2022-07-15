@@ -15,6 +15,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <apache.httpclient.version>4.5.13</apache.httpclient.version>
     </properties>
 
     <dependencies>
@@ -92,6 +93,11 @@
         <dependency>
             <groupId>com.bpodgursky</groupId>
             <artifactId>jbool_expressions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.httpclient.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,3 +1,4 @@
+// ;warn:1:1: [HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE] files that contain multiple or no classes should contain description of what is inside of this file: there are 0 declared classes and/or objects (cannot be auto-corrected){{.*}}
 package org.cqfn.diktat
 
 val foo =
@@ -15,7 +16,7 @@ val bar =
 
 val text =
         """
-       x 
+       x
     """
 
 val dockerFileAsText =
