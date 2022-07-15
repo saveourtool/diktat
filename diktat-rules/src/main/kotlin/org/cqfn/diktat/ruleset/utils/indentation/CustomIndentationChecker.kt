@@ -5,6 +5,8 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
+import org.cqfn.diktat.ruleset.utils.NEWLINE
+
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 
 /**
@@ -15,7 +17,8 @@ internal abstract class CustomIndentationChecker(protected val configuration: In
      * This method checks if this white space is an exception from general rule
      * If true, checks if it is properly indented and fixes
      *
-     * @param whiteSpace PSI element of type [PsiWhiteSpace]
+     * @param whiteSpace PSI element of type [PsiWhiteSpace]. The whitespace is
+     *   guaranteed to contain a [newline][NEWLINE].
      * @param indentError and [IndentationError] on this node
      * @return null true if node is not an exception, CheckResult otherwise
      */

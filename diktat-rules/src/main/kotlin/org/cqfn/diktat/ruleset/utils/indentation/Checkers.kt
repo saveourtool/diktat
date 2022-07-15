@@ -4,6 +4,8 @@
 
 package org.cqfn.diktat.ruleset.utils.indentation
 
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationConfigAware
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.lastIndent
@@ -134,14 +136,18 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
  * Performs the following check: When breaking line after operators like +/-/`*` etc. new line can be indented with 8 space
  */
 internal class ExpressionIndentationChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
-    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
-            val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
-                    (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
-            return CheckResult.from(indentError.actual, expectedIndent, true)
+    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? =
+        with(IndentationConfigAware(configuration)) {
+            when {
+                whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE -> {
+                    val parentIndent = whiteSpace.parentIndent() ?: indentError.expected
+                    val expectedIndent = parentIndent + IndentationAmount.valueOf(configuration.extendedIndentAfterOperators)
+                    CheckResult.from(indentError.actual, expectedIndent, true)
+                }
+
+                else -> null
+            }
         }
-        return null
-    }
 }
 
 /**
