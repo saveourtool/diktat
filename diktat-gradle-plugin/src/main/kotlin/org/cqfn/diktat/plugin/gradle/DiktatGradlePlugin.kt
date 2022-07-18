@@ -27,9 +27,7 @@ class DiktatGradlePlugin : Plugin<Project> {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
 
-        // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
-        // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added
-        // configuration to provide JavaExec with correct classpath
+        // Configuration that will be used as classpath for JavaExec task.
         val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
             configuration.isVisible = false
             configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
@@ -48,12 +46,26 @@ class DiktatGradlePlugin : Plugin<Project> {
 
         project.registerDiktatCheckTask(diktatExtension, diktatConfiguration, patternSet)
         project.registerDiktatFixTask(diktatExtension, diktatConfiguration, patternSet)
-        project.tasks.register("mergeDiktatReports", SarifReportMergeTask::class.java) {
-            it.enabled = isSarifReporterActive
-            it.inputs = project.tasks.withType<DiktatJavaExecTaskBase>().map {
-                it.reportFile
+        if (project.path == project.rootProject.path) {
+            project.tasks.register("mergeDiktatReports", SarifReportMergeTask::class.java) { reportMergeTask ->
+                reportMergeTask.enabled = isSarifReporterActive(
+                    project.createReporterFlag(diktatExtension)
+                )
+                project.allprojects.forEach { subproject ->
+                    val diktatOutputFile =
+                        subproject.extensions.findByType(DiktatExtension::class.java)?.let {
+                            subproject.getOutputFile(it)
+                        }
+                    subproject.tasks.withType(DiktatJavaExecTaskBase::class.java) {
+                        diktatOutputFile?.let { reportMergeTask.input.from(it) }
+                    }
+                }
+                val diktatReportsDir = "${project.buildDir}/reports/diktat"
+                reportMergeTask.outputs.dir(diktatReportsDir)
+                reportMergeTask.output.set(
+                    project.file("$diktatReportsDir/diktat-merged.sarif")
+                )
             }
-            it.output = project.file("$buildDir/reports/diktat/diktat-merged.sarif")
         }
     }
 

@@ -152,53 +152,21 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val flag: StringBuilder = StringBuilder()
 
         // appending the flag with the reporter
-        setReporter(diktatExtension, flag)
-
-        val outFlag = when {
-            // githubActions should have higher priority than a custom input
-            diktatExtension.githubActions -> {
-                val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
-                outputs.dir(reportDir)
-                ",output=${reportDir.resolve("diktat.sarif")}"
-            }
-            diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
-            else -> ""
-        }
-
-        flag.append(outFlag)
-
-        return flag.toString()
-    }
-
-    private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
-        val name = diktatExtension.reporter.trim()
-        val validReporters = listOf("sarif", "plain", "json", "html")
-        val reporterFlag = when {
-            diktatExtension.githubActions -> {
-                if (diktatExtension.reporter.isNotEmpty()) {
-                    // githubActions should have higher priority than custom input
-                    project.logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
-                }
-                "--reporter=sarif"
-            }
-            name.isEmpty() -> {
-                project.logger.info("Reporter name was not set. Using 'plain' reporter")
-                "--reporter=plain"
-            }
-            name !in validReporters -> {
-                project.logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
-                "--reporter=plain"
-            }
-            else -> "--reporter=$name"
-        }
-
-        val isSarifReporterActive = reporterFlag.contains("sarif")
-        if (isSarifReporterActive) {
+        val reporterFlag = createReporterFlag(diktatExtension)
+        flag.append(reporterFlag)
+        if (isSarifReporterActive(reporterFlag)) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
             systemProperty("user.home", project.rootDir.toString())
         }
 
-        flag.append(reporterFlag)
+        val outputFile = project.getOutputFile(diktatExtension)
+        if (outputFile != null) {
+            outputs.file(outputFile)
+            val outFlag = ",output=${outputFile}"
+            flag.append(outFlag)
+        }
+
+        return flag.toString()
     }
 
     @Suppress("MagicNumber")
