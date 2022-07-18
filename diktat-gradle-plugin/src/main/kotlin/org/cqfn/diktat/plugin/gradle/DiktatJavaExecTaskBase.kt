@@ -27,8 +27,6 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import javax.inject.Inject
 
 /**
@@ -119,7 +117,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                     addInput(it)
                 }
 
-            add(createReporterFlag(diktatExtension))
+            add(reporterFlag(diktatExtension))
         }
         project.logger.debug("Setting JavaExec args to $args")
     }
@@ -148,12 +146,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
 
-    private fun createReporterFlag(diktatExtension: DiktatExtension): String {
-        val flag: StringBuilder = StringBuilder()
-
+    private fun reporterFlag(diktatExtension: DiktatExtension): String = buildString {
         // appending the flag with the reporter
-        val reporterFlag = createReporterFlag(diktatExtension)
-        flag.append(reporterFlag)
+        val reporterFlag = project.createReporterFlag(diktatExtension)
+        append(reporterFlag)
         if (isSarifReporterActive(reporterFlag)) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
             systemProperty("user.home", project.rootDir.toString())
@@ -163,10 +159,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         if (outputFile != null) {
             outputs.file(outputFile)
             val outFlag = ",output=${outputFile}"
-            flag.append(outFlag)
+            append(outFlag)
         }
-
-        return flag.toString()
     }
 
     @Suppress("MagicNumber")
