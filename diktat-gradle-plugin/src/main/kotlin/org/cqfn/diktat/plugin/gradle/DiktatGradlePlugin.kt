@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.tasks.SarifReportMergeTask
+import org.cqfn.diktat.plugin.gradle.tasks.registerMergeReportsTask
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
@@ -47,25 +48,7 @@ class DiktatGradlePlugin : Plugin<Project> {
         project.registerDiktatCheckTask(diktatExtension, diktatConfiguration, patternSet)
         project.registerDiktatFixTask(diktatExtension, diktatConfiguration, patternSet)
         if (project.path == project.rootProject.path) {
-            project.tasks.register("mergeDiktatReports", SarifReportMergeTask::class.java) { reportMergeTask ->
-                reportMergeTask.enabled = isSarifReporterActive(
-                    project.createReporterFlag(diktatExtension)
-                )
-                project.allprojects.forEach { subproject ->
-                    val diktatOutputFile =
-                        subproject.extensions.findByType(DiktatExtension::class.java)?.let {
-                            subproject.getOutputFile(it)
-                        }
-                    subproject.tasks.withType(DiktatJavaExecTaskBase::class.java) {
-                        diktatOutputFile?.let { reportMergeTask.input.from(it) }
-                    }
-                }
-                val diktatReportsDir = "${project.buildDir}/reports/diktat"
-                reportMergeTask.outputs.dir(diktatReportsDir)
-                reportMergeTask.output.set(
-                    project.file("$diktatReportsDir/diktat-merged.sarif")
-                )
-            }
+            project.registerMergeReportsTask(diktatExtension)
         }
     }
 
