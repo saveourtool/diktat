@@ -432,7 +432,7 @@ To allow gradual adoption, diktat and ktlint support baseline mode. When running
 the baseline file will be generated. It is a xml file with a complete list of findings by the tool. On later invocations,
 only the findings that are not in the baseline file will be reported. Baseline can be activated with CLI flag:
 ```bash
-java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
+java -jar ktlint -R diktat.jar --baseline=diktat-baseline.xml **/*.kt
 ```
 or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
 but it can be removed and re-generated later, if needed.

@@ -12,7 +12,6 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.NEWLINE
 import org.cqfn.diktat.ruleset.utils.SPACE
 import org.cqfn.diktat.ruleset.utils.TAB
-import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
@@ -99,7 +98,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     private lateinit var filePath: String
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
-    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -213,7 +211,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
         context.maybeIncrement()
-        positionByOffset = astNode.treeParent.calculateLineColByOffset()
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.isIndentDecrementing()) {
             // if newline is followed by closing token, it should already be indented less
