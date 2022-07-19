@@ -1,7 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
-import org.cqfn.diktat.plugin.gradle.tasks.SarifReportMergeTask
-import org.cqfn.diktat.plugin.gradle.tasks.registerMergeReportsTask
+import org.cqfn.diktat.plugin.gradle.tasks.configureMergeReportsTask
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
@@ -47,9 +46,7 @@ class DiktatGradlePlugin : Plugin<Project> {
 
         project.registerDiktatCheckTask(diktatExtension, diktatConfiguration, patternSet)
         project.registerDiktatFixTask(diktatExtension, diktatConfiguration, patternSet)
-        if (project.path == project.rootProject.path) {
-            project.registerMergeReportsTask(diktatExtension)
-        }
+        project.configureMergeReportsTask(diktatExtension)
     }
 
     companion object {
