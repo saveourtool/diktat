@@ -1,3 +1,4 @@
+# vim:ai et ts=2 sts=2 sw=2:
 name: Build and test
 
 on:
@@ -125,6 +126,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest, macos-latest ]
+
+    # A possible workaround for <https://github.com/dorny/test-reporter/issues/168>.
+    permissions:
+      checks: write
+      contents: write
+      pull-requests: write
+      statuses: write
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -175,6 +184,11 @@ jobs:
           # Comma-separated values.
           path: "**/target/*-reports/TEST-*.xml, **/build/test-results/*/TEST-*.xml"
           reporter: java-junit
+        # Ignore the "Resource not accessible by integration" error when a PR
+        # originates from a non-collaborator. This is
+        # <https://github.com/dorny/test-reporter/issues/168> which may be
+        # potentially fixed with <https://github.com/dorny/test-reporter/pull/174>.
+        continue-on-error: true
 
       - name: Upload test results
         uses: actions/upload-artifact@v3
