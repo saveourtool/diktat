@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle.tasks
 
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
+import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
 import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
 import org.cqfn.diktat.plugin.gradle.getOutputFile
 import io.github.detekt.sarif4k.SarifSchema210
@@ -19,14 +20,26 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * A task to merge SARIF reports produced by diktat check / diktat fix tasks.
+ */
 abstract class SarifReportMergeTask : DefaultTask() {
+    /**
+     * Source reports that should be merged
+     */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val input: ConfigurableFileCollection
 
+    /**
+     * Destination for the merged report
+     */
     @get:OutputFile
     abstract val output: RegularFileProperty
 
+    /**
+     * @throws TaskExecutionException if failed to deserialize SARIF
+     */
     @TaskAction
     fun mergeReports() {
         val sarifReports = input.files
@@ -62,19 +75,19 @@ abstract class SarifReportMergeTask : DefaultTask() {
     }
 }
 
+/**
+ * @param diktatExtension extension of type [DiktatExtension]
+ */
 internal fun Project.configureMergeReportsTask(diktatExtension: DiktatExtension) {
     if (path == rootProject.path) {
-        tasks.register("mergeDiktatReports", SarifReportMergeTask::class.java) { reportMergeTask ->
+        tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
             val diktatReportsDir = "${project.buildDir}/reports/diktat"
             val mergedReportFile = project.file("$diktatReportsDir/diktat-merged.sarif")
             reportMergeTask.outputs.file(mergedReportFile)
             reportMergeTask.output.set(mergedReportFile)
         }
     }
-//    val diktatOutputFile = objects.fileProperty().convention(
-//        { getOutputFile(diktatExtension) }
-//    )
-    val reportMergeTaskTaskProvider = rootProject.tasks.named("mergeDiktatReports", SarifReportMergeTask::class.java) { reportMergeTask ->
+    val reportMergeTaskTaskProvider = rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
         getOutputFile(diktatExtension)?.let { reportMergeTask.input.from(it) }
         reportMergeTask.shouldRunAfter(tasks.withType(DiktatJavaExecTaskBase::class.java))
     }

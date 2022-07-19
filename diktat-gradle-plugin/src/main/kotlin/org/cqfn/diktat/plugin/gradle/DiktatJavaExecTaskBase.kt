@@ -146,6 +146,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
 
+    @Suppress("AVOID_NULL_CHECKS")
     private fun reporterFlag(diktatExtension: DiktatExtension): String = buildString {
         // appending the flag with the reporter
         val reporterFlag = project.createReporterFlag(diktatExtension)
@@ -158,7 +159,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val outputFile = project.getOutputFile(diktatExtension)
         if (outputFile != null) {
             outputs.file(outputFile)
-            val outFlag = ",output=${outputFile}"
+            val outFlag = ",output=$outputFile"
             append(outFlag)
         }
     }

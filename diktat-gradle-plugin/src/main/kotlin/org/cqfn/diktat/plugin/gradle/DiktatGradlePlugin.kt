@@ -71,6 +71,11 @@ class DiktatGradlePlugin : Plugin<Project> {
         const val DIKTAT_FIX_TASK = "diktatFix"
 
         /**
+         * Name of the task that merges SARIF reports of diktat tasks
+         */
+        internal const val MERGE_SARIF_REPORTS_TASK_NAME = "mergeDiktatReports"
+
+        /**
          * Version of JVM with more strict module system, which requires `add-opens` for kotlin compiler
          */
         const val MIN_JVM_REQUIRES_ADD_OPENS = 16
