@@ -40,7 +40,9 @@ class DiktatGradlePluginTest {
     @Test
     fun `check default reporter type value`() {
         val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
-        // fixme: verify that correct reporter flag is built from this setting.
         Assertions.assertEquals("", diktatExtension.reporter)
+
+        val reporterFlag = project.createReporterFlag(diktatExtension)
+        Assertions.assertEquals("--reporter=plain", reporterFlag)
     }
 }

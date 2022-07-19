@@ -119,7 +119,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                     addInput(it)
                 }
 
-            add(createReporterFlag(diktatExtension))
+            add(reporterFlag(diktatExtension))
         }
         project.logger.debug("Setting JavaExec args to $args")
     }
@@ -148,11 +148,14 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
 
-    private fun createReporterFlag(diktatExtension: DiktatExtension): String {
-        val flag: StringBuilder = StringBuilder()
-
-        // appending the flag with the reporter
-        setReporter(diktatExtension, flag)
+    private fun reporterFlag(diktatExtension: DiktatExtension): String = buildString {
+        val reporterFlag = project.createReporterFlag(diktatExtension)
+        append(reporterFlag)
+        val isSarifReporterActive = reporterFlag.contains("sarif")
+        if (isSarifReporterActive) {
+            // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
+            systemProperty("user.home", project.rootDir.toString())
+        }
 
         val outFlag = when {
             // githubActions should have higher priority than a custom input
@@ -165,40 +168,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             else -> ""
         }
 
-        flag.append(outFlag)
-
-        return flag.toString()
-    }
-
-    private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
-        val name = diktatExtension.reporter.trim()
-        val validReporters = listOf("sarif", "plain", "json", "html")
-        val reporterFlag = when {
-            diktatExtension.githubActions -> {
-                if (diktatExtension.reporter.isNotEmpty()) {
-                    // githubActions should have higher priority than custom input
-                    project.logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
-                }
-                "--reporter=sarif"
-            }
-            name.isEmpty() -> {
-                project.logger.info("Reporter name was not set. Using 'plain' reporter")
-                "--reporter=plain"
-            }
-            name !in validReporters -> {
-                project.logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
-                "--reporter=plain"
-            }
-            else -> "--reporter=$name"
-        }
-
-        val isSarifReporterActive = reporterFlag.contains("sarif")
-        if (isSarifReporterActive) {
-            // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
-            systemProperty("user.home", project.rootDir.toString())
-        }
-
-        flag.append(reporterFlag)
+        append(outFlag)
     }
 
     @Suppress("MagicNumber")
