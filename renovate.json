@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "dependencyDashboard": true,
   "schedule": [
     "before 4am on Monday"
   ],
@@ -26,7 +27,7 @@
       "groupSlug": "all-minor-patch"
     },
     {
-      "managers": ["maven"],
+      "managers": ["maven", "gradle"],
       "matchPackagePatterns": [
         "^org\\.jetbrains\\.kotlin[.:]"
       ],
@@ -52,6 +53,10 @@
       "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"
+      ],
+      "excludePackagePatterns": [
+        "^org\\.jetbrains\\.kotlin[.:]",
+        "^com\\.pinterest\\.ktlint[.:]"
       ],
       "matchUpdateTypes": [
         "minor",
