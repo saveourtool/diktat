@@ -31,7 +31,7 @@ open class DiktatExtension(
     /**
      * Type of the reporter to use
      */
-    var reporter: String = "plain"
+    var reporter: String = ""
 
     /**
      * Destination for reporter. If empty, will write to stdout.

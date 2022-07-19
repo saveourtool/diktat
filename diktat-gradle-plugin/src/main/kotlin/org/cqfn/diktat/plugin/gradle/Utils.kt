@@ -7,6 +7,7 @@
 package org.cqfn.diktat.plugin.gradle
 
 import groovy.lang.Closure
+import org.gradle.api.Project
 
 @Suppress(
     "MISSING_KDOC_TOP_LEVEL",
@@ -35,3 +36,34 @@ class KotlinClosure1<in T : Any?, V : Any>(
 )
 fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
     KotlinClosure1(action, this, this)
+
+/**
+ * Create CLI flag to select reporter based on [diktatExtension]
+ *
+ * @param diktatExtension project extension of type [DiktatExtension]
+ * @return CLI flag
+ */
+internal fun Project.createReporterFlag(diktatExtension: DiktatExtension): String {
+    val name = diktatExtension.reporter.trim()
+    val validReporters = listOf("sarif", "plain", "json", "html")
+    val reporterFlag = when {
+        diktatExtension.githubActions -> {
+            if (diktatExtension.reporter.isNotEmpty()) {
+                // githubActions should have higher priority than custom input
+                logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
+            }
+            "--reporter=sarif"
+        }
+        name.isEmpty() -> {
+            logger.info("Reporter name was not set. Using 'plain' reporter")
+            "--reporter=plain"
+        }
+        name !in validReporters -> {
+            logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
+            "--reporter=plain"
+        }
+        else -> "--reporter=$name"
+    }
+
+    return reporterFlag
+}
