@@ -26,7 +26,7 @@ jobs:
       - name: Maven Install
         run: mvn -B clean install -DskipTests
       - name: Maven run test
-        run: mvn test
+        run: mvn verify
       - name: Code coverage report
         uses: codecov/codecov-action@v3
         with:
@@ -158,7 +158,7 @@ jobs:
       - name: Maven run test
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          mvn test
+          mvn verify
         shell: bash
 
       - name: Maven Install on windows
@@ -170,7 +170,7 @@ jobs:
       - name: Maven run test
         if: runner.os == 'Windows'
         run: |
-          mvn test
+          mvn verify
         shell: cmd
 
         # This step needs a Git repository, so it's impossible to extract it
