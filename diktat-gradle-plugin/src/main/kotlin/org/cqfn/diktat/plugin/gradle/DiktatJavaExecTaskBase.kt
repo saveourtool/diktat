@@ -148,7 +148,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     @Suppress("AVOID_NULL_CHECKS")
     private fun reporterFlag(diktatExtension: DiktatExtension): String = buildString {
-        // appending the flag with the reporter
         val reporterFlag = project.createReporterFlag(diktatExtension)
         append(reporterFlag)
         if (isSarifReporterActive(reporterFlag)) {
