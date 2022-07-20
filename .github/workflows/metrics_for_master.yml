@@ -32,7 +32,7 @@ jobs:
         # we need to run `install` goal here so that gradle will be able to resolve dependencies and run tests on diktat-gradle-plugin
         run: mvn -B install -DskipPluginMarker -DskipTests
       - name: Run tests
-        run: mvn test
+        run: mvn verify
       - name: Generate code coverage report
         uses: codecov/codecov-action@v3
         with:
