@@ -47,9 +47,10 @@ class DiktatRuleSetProviderTest {
                  * constructor call).
                  */
                 val constructorCall = Regex(""":\s*(?:Diktat)?Rule\s*\(""")
-                file.bufferedReader().lineSequence().take(150).any { line ->
-                    line.contains(constructorCall)
-                }
+                file.bufferedReader().lineSequence().take(150)
+                    .any { line ->
+                        line.contains(constructorCall)
+                    }
             }
             .map { it.nameWithoutExtension }
             .filterNot { it in ignoreFile }
