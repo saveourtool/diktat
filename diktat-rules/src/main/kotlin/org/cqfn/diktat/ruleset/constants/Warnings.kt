@@ -71,7 +71,7 @@ enum class Warnings(
     KDOC_WITHOUT_THROWS_TAG(true, "2.1.2", "all methods which throw exceptions should have @throws tag in KDoc"),
     KDOC_EMPTY_KDOC(false, "2.1.3", "KDoc should never be empty"),
     KDOC_WRONG_SPACES_AFTER_TAG(true, "2.1.3", "there should be exactly one white space after tag name in KDoc"),
-    KDOC_WRONG_TAGS_ORDER(true, "2.1.3", "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
+    KDOC_WRONG_TAGS_ORDER(true, "2.1.3", "in KDoc standard tags are arranged in this order: @receiver, @param, @property, @return, @throws or @exception, @constructor, but are"),
     KDOC_NEWLINES_BEFORE_BASIC_TAGS(true, "2.1.3",
         "in KDoc block of standard tags @param, @return, @throws should contain newline before only if there is other content before it"),
     KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS(true, "2.1.3", "in KDoc standard tags @param, @return, @throws should not containt newline between them, but these tags do"),
