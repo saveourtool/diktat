@@ -46,8 +46,9 @@ class DiktatRuleSetProviderTest {
                  * descendants (any of the 1st 150 lines contains a superclass
                  * constructor call).
                  */
+                val constructorCall = Regex(""":\s*(?:Diktat)?Rule\s*\(""")
                 file.bufferedReader().lineSequence().take(150).any { line ->
-                    line.contains(Regex(""":\s*(?:Diktat)?Rule\s*\("""))
+                    line.contains(constructorCall)
                 }
             }
             .map { it.nameWithoutExtension }
