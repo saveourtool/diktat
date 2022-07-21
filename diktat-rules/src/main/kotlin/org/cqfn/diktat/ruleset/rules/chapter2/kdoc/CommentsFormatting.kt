@@ -213,9 +213,14 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
             }
         } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
-            // if there are too many spaces before comment
+            // if there are too many or too few spaces before comment
+            val manyOrFew = when {
+                node.treePrev.text.length > configuration.maxSpacesBeforeComment -> "many"
+                else -> "few"
+            }
+            val message = "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too $manyOrFew in ${node.text}"
             COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
+                message, node.startOffset, node) {
                 (node.treePrev as LeafPsiElement).rawReplaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
             }
         }
