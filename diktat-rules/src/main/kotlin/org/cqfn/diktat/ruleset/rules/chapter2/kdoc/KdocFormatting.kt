@@ -67,7 +67,30 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,
         KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER),
 ) {
-    private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
+    /**
+     * The reasoning behind the tag ordering:
+     *
+     * 1. `@receiver` documents `this` instance which is the 1st function call
+     *    parameter (ordered before `@param`).
+     * 1. `@param` followed by `@return`, then followed by `@throws` or
+     *    `@exception` is the conventional order inherited from _JavaDoc_.
+     * 1. `@param` tags can also be used to document generic type parameters.
+     * 1. `@property` tags are placed after `@param` tags in the official
+     *    [example](https://kotlinlang.org/docs/kotlin-doc.html#kdoc-syntax). Looking at the
+     *    [code](https://github.com/JetBrains/kotlin/blob/master/libraries/stdlib/src/kotlin/util/Tuples.kt#L22),
+     *    this is also the style _JetBrains_ use themselves.
+     * 1. looking at the examples, `@constructor` tags are placed last in
+     *    constructor descriptions.
+     */
+    private val basicTagsList = listOf(
+        KDocKnownTag.RECEIVER,
+        KDocKnownTag.PARAM,
+        KDocKnownTag.PROPERTY,
+        KDocKnownTag.RETURN,
+        KDocKnownTag.THROWS,
+        KDocKnownTag.EXCEPTION,
+        KDocKnownTag.CONSTRUCTOR,
+    )
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
     private var versionRegex: Regex? = null
 
