@@ -4,6 +4,8 @@
 
 package org.cqfn.diktat.ruleset.utils.indentation
 
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.SINGLE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.lastIndent
@@ -64,7 +66,7 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                ?: indentError.expected) + (if (configuration.extendedIndentForExpressionBodies) 2 else 1) * configuration.indentationSize, true)
+                ?: indentError.expected) + IndentationAmount.valueOf(configuration.extendedIndentForExpressionBodies), true)
         }
         return null
     }
@@ -119,7 +121,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     }
                     .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
             } else if (configuration.extendedIndentOfParameters) {
-                indentError.expected + configuration.indentationSize
+                indentError.expected + SINGLE
             } else {
                 indentError.expected
             }
@@ -134,14 +136,16 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
  * Performs the following check: When breaking line after operators like +/-/`*` etc. new line can be indented with 8 space
  */
 internal class ExpressionIndentationChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
-    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
-            val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
-                    (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
-            return CheckResult.from(indentError.actual, expectedIndent, true)
+    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? =
+        when {
+            whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE -> {
+                val parentIndent = whiteSpace.parentIndent() ?: indentError.expected
+                val expectedIndent = parentIndent + IndentationAmount.valueOf(configuration.extendedIndentAfterOperators)
+                CheckResult.from(indentError.actual, expectedIndent, true)
+            }
+
+            else -> null
         }
-        return null
-    }
 }
 
 /**
@@ -170,10 +174,10 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
                 .treePrev
                 .takeIf { it.elementType == WHITE_SPACE }
                 ?.textContains('\n') ?: false
-            val expectedIndent = indentError.expected + (if (hasNewlineBeforeColon) 2 else 1) * configuration.indentationSize
+            val expectedIndent = indentError.expected + IndentationAmount.valueOf(extendedIndent = hasNewlineBeforeColon)
             return CheckResult.from(indentError.actual, expectedIndent)
         } else if (whiteSpace.parent.node.elementType == SUPER_TYPE_LIST) {
-            val expectedIndent = whiteSpace.parentIndent() ?: (indentError.expected + configuration.indentationSize)
+            val expectedIndent = whiteSpace.parentIndent() ?: (indentError.expected + SINGLE)
             return CheckResult.from(indentError.actual, expectedIndent)
         }
         return null
@@ -213,7 +217,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                         } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
             ?.let { node ->
-                val indentIncrement = (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize
+                val indentIncrement = IndentationAmount.valueOf(configuration.extendedIndentBeforeDot)
                 if (node.isFromStringTemplate()) {
                     return CheckResult.from(indentError.actual, indentError.expected +
                             indentIncrement, true)
@@ -260,7 +264,7 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         }
             .takeIf { it }
             ?.let {
-                CheckResult.from(indentError.actual, indentError.expected + configuration.indentationSize, true)
+                CheckResult.from(indentError.actual, indentError.expected + SINGLE, true)
             }
     }
 }
@@ -273,7 +277,7 @@ internal class CustomGettersAndSettersChecker(config: IndentationConfig) : Custo
         val parent = whiteSpace.parent
         if (parent is KtProperty && whiteSpace.nextSibling is KtPropertyAccessor) {
             return CheckResult.from(indentError.actual, (parent.parentIndent()
-                ?: indentError.expected) + configuration.indentationSize, true)
+                ?: indentError.expected) + SINGLE, true)
         }
         return null
     }
@@ -287,7 +291,7 @@ internal class ArrowInWhenChecker(configuration: IndentationConfig) : CustomInde
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == ARROW && whiteSpace.parent is KtWhenEntry) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                ?: indentError.expected) + configuration.indentationSize, true)
+                ?: indentError.expected) + SINGLE, true)
         }
         return null
     }
