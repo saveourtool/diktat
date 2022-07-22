@@ -290,6 +290,58 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
 
     @Test
     @Tag(USE_DATA_CLASS)
+    fun `annotation classes bug`() {
+        lintMethod(
+            """
+                |@Retention(AnnotationRetention.SOURCE)
+                |@Target(AnnotationTarget.CLASS)
+                |annotation class NavGraphDestination(
+                |    val name: String = Defaults.NULL,
+                |    val routePrefix: String = Defaults.NULL,
+                |    val deepLink: Boolean = false,
+                |) {
+                |    object Defaults {
+                |        const val NULL = "@null"
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `value or inline classes bug`() {
+        lintMethod(
+            """
+                |@JvmInline
+                |value class Password(private val s: String)
+                |val securePassword = Password("Don't try this in production")
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `sealed classes bug`() {
+        lintMethod(
+            """
+                |sealed class Password(private val s: String)
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `inner classes bug`() {
+        lintMethod(
+            """
+                |inner class Password(private val s: String)
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `shouldn't trigger on interface`() {
         lintMethod(
             """

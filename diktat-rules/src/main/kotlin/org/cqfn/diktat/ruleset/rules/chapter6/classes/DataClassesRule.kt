@@ -42,11 +42,10 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun handleClass(node: ASTNode) {
-        with((node.psi as KtClass)) {
-            if (isData() || isInterface()) {
-                return
-            }
+        if ((node.psi as KtClass).isDefinitelyNotADataClass()) {
+            return
         }
+
         if (node.canBeDataClass()) {
             raiseWarn(node)
         }
@@ -127,6 +126,12 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
         return true
     }
+
+    /** we do not exclude inner classes and enums here as if they have no
+     * methods, then we definitely can refactor the code and make them data classes
+     **/
+    private fun KtClass.isDefinitelyNotDataClass() =
+        isValue() || isAnnotation() || isInterface() || isData() || isSealed() || isInline() || isInner()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
