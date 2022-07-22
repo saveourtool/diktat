@@ -3,7 +3,9 @@ package org.cqfn.diktat.plugin.gradle.tasks
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
 import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
+import org.cqfn.diktat.plugin.gradle.createReporterFlag
 import org.cqfn.diktat.plugin.gradle.getOutputFile
+import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -88,8 +90,10 @@ internal fun Project.configureMergeReportsTask(diktatExtension: DiktatExtension)
         }
     }
     val reportMergeTaskTaskProvider = rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
-        getOutputFile(diktatExtension)?.let { reportMergeTask.input.from(it) }
-        reportMergeTask.shouldRunAfter(tasks.withType(DiktatJavaExecTaskBase::class.java))
+        if (isSarifReporterActive(createReporterFlag(diktatExtension))) {
+            getOutputFile(diktatExtension)?.let { reportMergeTask.input.from(it) }
+            reportMergeTask.shouldRunAfter(tasks.withType(DiktatJavaExecTaskBase::class.java))
+        }
     }
     tasks.withType(DiktatJavaExecTaskBase::class.java).configureEach { diktatJavaExecTaskBase ->
         diktatJavaExecTaskBase.finalizedBy(reportMergeTaskTaskProvider)
