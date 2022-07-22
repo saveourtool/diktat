@@ -11,6 +11,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.NONE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.SINGLE
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationConfigAware.Factory.withIndentationConfig
 import org.cqfn.diktat.ruleset.utils.NEWLINE
 import org.cqfn.diktat.ruleset.utils.SPACE
 import org.cqfn.diktat.ruleset.utils.TAB
@@ -395,14 +396,14 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
 
-        with(IndentationConfigAware(configuration)) {
+        withIndentationConfig(configuration) {
             /*
              * A `REGULAR_STRING_PART`.
              */
             val regularStringPart = templateEntry.firstChildNode as LeafPsiElement
             val regularStringPartText = regularStringPart.checkRegularStringPart().text
             // shift of the node depending on its initial string template indentation
-            val nodeStartIndent = (regularStringPartText.leadingSpaceCount() - actualIndentation).unindent().zeroIfNegative()
+            val nodeStartIndent = (regularStringPartText.leadingSpaceCount() - actualIndentation - SINGLE).zeroIfNegative()
 
             val isPrevStringTemplate = templateEntry.treePrev.elementType in stringLiteralTokens
             val isNextStringTemplate = templateEntry.treeNext.elementType in stringLiteralTokens
@@ -417,7 +418,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
                 // if string template is after literal_string
                 // or if there is no string template in literal_string
-                else -> (expectedIndentation.indent() + nodeStartIndent).spaces + regularStringPartText.trimStart()
+                else -> (expectedIndentation + SINGLE + nodeStartIndent).spaces + regularStringPartText.trimStart()
             }
 
             regularStringPart.rawReplaceWithText(correctedText)
