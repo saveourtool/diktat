@@ -21,7 +21,9 @@ internal object IndentationRuleTestMixin {
      */
     @Suppress("TestFunctionName", "FUNCTION_NAME_INCORRECT_CASE")
     fun IndentationConfig(vararg configEntries: Pair<String, Any>): IndentationConfig =
-        IndentationConfig(mapOf(*configEntries).mapValues(Any::toString))
+        IndentationConfig(mapOf(*configEntries).mapValues { (_, value) ->
+            value.toString()
+        })
 
     /**
      * @param configEntries the optional values which override the state of this
