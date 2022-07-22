@@ -44,7 +44,7 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
  * Create CLI flag to set reporter for ktlint based on [diktatExtension].
  * [DiktatExtension.githubActions] should have higher priority than a custom input.
  *
- * @param diktatExtension extension of typ [DiktatExtension]
+ * @param diktatExtension extension of type [DiktatExtension]
  * @return CLI flag as string
  */
 fun Project.createReporterFlag(diktatExtension: DiktatExtension): String {
