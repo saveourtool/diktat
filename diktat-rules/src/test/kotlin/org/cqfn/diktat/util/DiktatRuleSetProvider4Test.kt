@@ -40,6 +40,18 @@ class DiktatRuleSetProviderTest {
         val filesName = File(path)
             .walk()
             .filter { it.isFile }
+            .filter { file ->
+                /*
+                 * Include only those files which contain `Rule` or `DiktatRule`
+                 * descendants (any of the 1st 150 lines contains a superclass
+                 * constructor call).
+                 */
+                val constructorCall = Regex(""":\s*(?:Diktat)?Rule\s*\(""")
+                file.bufferedReader().lineSequence().take(150)
+                    .any { line ->
+                        line.contains(constructorCall)
+                    }
+            }
             .map { it.nameWithoutExtension }
             .filterNot { it in ignoreFile }
         val rulesName = DiktatRuleSetProvider().get()
@@ -61,9 +73,8 @@ class DiktatRuleSetProviderTest {
 
     companion object {
         private val ignoreFile = listOf(
-            "DiktatRuleSetProvider",
             "DiktatRule",
-            "IndentationError",
-            "OrderedRuleSet")
+            "OrderedRuleSet",
+        )
     }
 }
