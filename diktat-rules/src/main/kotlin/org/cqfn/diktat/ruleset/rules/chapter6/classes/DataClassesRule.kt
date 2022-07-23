@@ -42,7 +42,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun handleClass(node: ASTNode) {
-        if ((node.psi as KtClass).isDefinitelyNotADataClass()) {
+        if ((node.psi as KtClass).isDefinitelyNotDataClass()) {
             return
         }
 
