@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
 import org.cqfn.diktat.util.assertEquals
 
 import com.pinterest.ktlint.core.LintError
@@ -50,7 +51,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             emptyList(),
             mapOf(
                 WRONG_INDENTATION.name to mapOf(
-                    "newlineAtEnd" to "false",
+                    NEWLINE_AT_END to "false",
                 )
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself

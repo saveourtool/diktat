@@ -1,5 +1,10 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
+
 import org.intellij.lang.annotations.Language
 
 /**
@@ -849,8 +854,8 @@ internal object IndentationRuleTestResources {
         true to expressionsWrappedAfterOperatorContinuationIndent)
 
     /**
-     * Parenthesized expressions, single indent
-     * (`extendedIndentForExpressionBodies` is **off**).
+     * Parenthesized expressions, `extendedIndentForExpressionBodies` is **off**,
+     * `extendedIndentAfterOperators` is **on**.
      *
      * When adding new code fragments to this list, be sure to also add their
      * counterparts (preserving order) to
@@ -864,56 +869,56 @@ internal object IndentationRuleTestResources {
     private val parenthesesSurroundedInfixExpressionsSingleIndent = arrayOf(
         """
         |fun f1() = (
-        |    1 + 2
+        |        1 + 2
         |)
         """.trimMargin(),
 
         """
         |fun f2() = (
-        |    1 + 2)
+        |        1 + 2)
         """.trimMargin(),
 
         """
         |fun f3() =
         |    (
-        |        1 + 2
+        |            1 + 2
         |    )
         """.trimMargin(),
 
         """
         |fun f4() =
         |    (
-        |        1 + 2)
+        |            1 + 2)
         """.trimMargin(),
 
         """
         |const val v1 = (
-        |    1 + 2
+        |        1 + 2
         |)
         """.trimMargin(),
 
         """
         |const val v2 = (
-        |    1 + 2)
+        |        1 + 2)
         """.trimMargin(),
 
         """
         |const val v3 =
         |    (
-        |        1 + 2
+        |            1 + 2
         |    )
         """.trimMargin(),
 
         """
         |const val v4 =
         |    (
-        |        1 + 2)
+        |            1 + 2)
         """.trimMargin(),
     )
 
     /**
-     * Parenthesized expressions, continuation indent
-     * (`extendedIndentForExpressionBodies` is **on**).
+     * Parenthesized expressions, `extendedIndentForExpressionBodies` is **on**,
+     * `extendedIndentAfterOperators` is **off**.
      *
      * When adding new code fragments to this list, be sure to also add their
      * counterparts (preserving order) to
@@ -980,8 +985,16 @@ internal object IndentationRuleTestResources {
      * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
      */
     val parenthesesSurroundedInfixExpressions = mapOf(
-        false to parenthesesSurroundedInfixExpressionsSingleIndent,
-        true to parenthesesSurroundedInfixExpressionsContinuationIndent)
+        IndentationConfig(
+            NEWLINE_AT_END to false,
+            EXTENDED_INDENT_FOR_EXPRESSION_BODIES to false,
+            EXTENDED_INDENT_AFTER_OPERATORS to true,
+        ) to parenthesesSurroundedInfixExpressionsSingleIndent,
+        IndentationConfig(
+            NEWLINE_AT_END to false,
+            EXTENDED_INDENT_FOR_EXPRESSION_BODIES to true,
+            EXTENDED_INDENT_AFTER_OPERATORS to false,
+        ) to parenthesesSurroundedInfixExpressionsContinuationIndent)
 
     /**
      * Dot-qualified and safe-access expressions, single indent

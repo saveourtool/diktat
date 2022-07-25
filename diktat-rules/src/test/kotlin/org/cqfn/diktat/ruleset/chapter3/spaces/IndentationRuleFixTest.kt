@@ -15,6 +15,13 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.pare
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.whitespaceInStringLiterals
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.ALIGNED_PARAMETERS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
@@ -27,6 +34,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 import java.nio.file.Path
@@ -37,12 +45,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
             mapOf(
-                "newlineAtEnd" to "true",  // expected file should have two newlines at end in order to be read by BufferedReader correctly
-                "extendedIndentOfParameters" to "true",
-                "alignedParameters" to "true",
-                "extendedIndentForExpressionBodies" to "true",
-                "extendedIndentAfterOperators" to "true",
-                "extendedIndentBeforeDot" to "true",
+                NEWLINE_AT_END to "true",  // expected file should have two newlines at end in order to be read by BufferedReader correctly
+                EXTENDED_INDENT_OF_PARAMETERS to "true",
+                ALIGNED_PARAMETERS to "true",
+                EXTENDED_INDENT_FOR_EXPRESSION_BODIES to "true",
+                EXTENDED_INDENT_AFTER_OPERATORS to "true",
+                EXTENDED_INDENT_BEFORE_DOT to "true",
             )
         )
     )
@@ -121,12 +129,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Expression body functions` {
-        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
+        @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `should remain unchanged if properly indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(EXTENDED_INDENT_FOR_EXPRESSION_BODIES to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
                 expressionBodyFunctions[extendedIndentForExpressionBodies].assertNotNull(),
@@ -134,12 +142,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
+        @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `should be reformatted if mis-indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(EXTENDED_INDENT_FOR_EXPRESSION_BODIES to extendedIndentForExpressionBodies)
 
             lintMultipleMethods(
                 actualContent = expressionBodyFunctions[!extendedIndentForExpressionBodies].assertNotNull(),
@@ -159,7 +167,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `no whitespace should be injected (code matches settings)`(extendedIndent: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
             val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
 
             lintMultipleMethods(
@@ -172,7 +180,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `no whitespace should be injected (mis-indented code reformatted)`(extendedIndent: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
             val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
 
             lintMultipleMethods(
@@ -189,12 +197,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Expressions wrapped after operator` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `should be properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(EXTENDED_INDENT_AFTER_OPERATORS to extendedIndentAfterOperators)
 
             lintMultipleMethods(
                 expressionsWrappedAfterOperator[extendedIndentAfterOperators].assertNotNull(),
@@ -202,12 +210,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
+        @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(EXTENDED_INDENT_AFTER_OPERATORS to extendedIndentAfterOperators)
 
             lintMultipleMethods(
                 actualContent = expressionsWrappedAfterOperator[!extendedIndentAfterOperators].assertNotNull(),
@@ -223,31 +231,49 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Parentheses-surrounded infix expressions` {
-        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
-        @ValueSource(booleans = [false, true])
+        @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}, $EXTENDED_INDENT_AFTER_OPERATORS = {1}")
+        @CsvSource(value = ["false,true", "true,false"])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be properly indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
+        fun `should be properly indented`(
+            extendedIndentForExpressionBodies: Boolean,
+            extendedIndentAfterOperators: Boolean,
+            @TempDir tempDir: Path,
+        ) {
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(
+                EXTENDED_INDENT_FOR_EXPRESSION_BODIES to extendedIndentForExpressionBodies,
+                EXTENDED_INDENT_AFTER_OPERATORS to extendedIndentAfterOperators,
+            )
 
             lintMultipleMethods(
-                parenthesesSurroundedInfixExpressions[extendedIndentForExpressionBodies].assertNotNull(),
+                parenthesesSurroundedInfixExpressions[IndentationConfig(customConfig)].assertNotNull(),
                 tempDir = tempDir,
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        @ParameterizedTest(name = "extendedIndentForExpressionBodies = {0}")
-        @ValueSource(booleans = [false, true])
+        @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}, $EXTENDED_INDENT_AFTER_OPERATORS = {1}")
+        @CsvSource(value = ["false,true", "true,false"])
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reformatted if mis-indented`(extendedIndentForExpressionBodies: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentForExpressionBodies" to extendedIndentForExpressionBodies)
+        fun `should be reformatted if mis-indented`(
+            extendedIndentForExpressionBodies: Boolean,
+            extendedIndentAfterOperators: Boolean,
+            @TempDir tempDir: Path,
+        ) {
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val actualCodeStyle = defaultConfig.withCustomParameters(
+                EXTENDED_INDENT_FOR_EXPRESSION_BODIES to !extendedIndentForExpressionBodies,
+                EXTENDED_INDENT_AFTER_OPERATORS to !extendedIndentAfterOperators,
+            )
+            val desiredCodeStyle = defaultConfig.withCustomParameters(
+                EXTENDED_INDENT_FOR_EXPRESSION_BODIES to extendedIndentForExpressionBodies,
+                EXTENDED_INDENT_AFTER_OPERATORS to extendedIndentAfterOperators,
+            )
 
             lintMultipleMethods(
-                actualContent = parenthesesSurroundedInfixExpressions[!extendedIndentForExpressionBodies].assertNotNull(),
-                expectedContent = parenthesesSurroundedInfixExpressions[extendedIndentForExpressionBodies].assertNotNull(),
+                actualContent = parenthesesSurroundedInfixExpressions[IndentationConfig(actualCodeStyle)].assertNotNull(),
+                expectedContent = parenthesesSurroundedInfixExpressions[IndentationConfig(desiredCodeStyle)].assertNotNull(),
                 tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
+                rulesConfigList = desiredCodeStyle.asRulesConfigList())
         }
     }
 
@@ -257,12 +283,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Nested
     @TestMethodOrder(DisplayName::class)
     inner class `Dot- and safe-qualified expressions` {
-        @ParameterizedTest(name = "extendedIndentBeforeDot = {0}")
+        @ParameterizedTest(name = "$EXTENDED_INDENT_BEFORE_DOT = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `should be properly indented`(extendedIndentBeforeDot: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentBeforeDot" to extendedIndentBeforeDot)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(EXTENDED_INDENT_BEFORE_DOT to extendedIndentBeforeDot)
 
             lintMultipleMethods(
                 dotQualifiedExpressions[extendedIndentBeforeDot].assertNotNull(),
@@ -270,12 +296,12 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 rulesConfigList = customConfig.asRulesConfigList())
         }
 
-        @ParameterizedTest(name = "extendedIndentBeforeDot = {0}")
+        @ParameterizedTest(name = "$EXTENDED_INDENT_BEFORE_DOT = {0}")
         @ValueSource(booleans = [false, true])
         @Tag(WarningNames.WRONG_INDENTATION)
         fun `should be reformatted if mis-indented`(extendedIndentBeforeDot: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentBeforeDot" to extendedIndentBeforeDot)
+            val defaultConfig = IndentationConfig(NEWLINE_AT_END to false)
+            val customConfig = defaultConfig.withCustomParameters(EXTENDED_INDENT_BEFORE_DOT to extendedIndentBeforeDot)
 
             lintMultipleMethods(
                 actualContent = dotQualifiedExpressions[!extendedIndentBeforeDot].assertNotNull(),

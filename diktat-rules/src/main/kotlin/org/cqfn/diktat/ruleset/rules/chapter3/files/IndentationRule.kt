@@ -504,7 +504,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  * indentation if it's immediately followed by a newline.
                  */
                 LPAR -> when {
-                    treeNext.isWhiteSpaceWithNewline() -> SINGLE
+                    treeNext.isWhiteSpaceWithNewline() -> IndentationAmount.valueOf(configuration.extendedIndentAfterOperators)
                     else -> NONE
                 }
 
