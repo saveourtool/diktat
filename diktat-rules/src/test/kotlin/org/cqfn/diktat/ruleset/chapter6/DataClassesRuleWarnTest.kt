@@ -241,6 +241,20 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
 
     @Test
     @Tag(USE_DATA_CLASS)
+    fun `should not trigger on enums`() {
+        lintMethod(
+            """
+                |enum class Style(val str: String) {
+                |    PASCAL_CASE("PascalCase"),
+                |    SNAKE_CASE("UPPER_SNAKE_CASE"),
+                |    ;
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `should trigger on class with parameter in constructor`() {
         lintMethod(
             """

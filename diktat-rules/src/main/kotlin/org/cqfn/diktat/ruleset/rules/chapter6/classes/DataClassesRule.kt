@@ -125,16 +125,16 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * We do not exclude inner classes and enums here as if they have no
+     * We do not exclude inner classes here as if they have no
      * methods, then we definitely can refactor the code and make them data classes.
-     * We only exclude: value/inline classes, annotations, interfaces, abstract classes,
+     * We only exclude: value/inline classes, enums, annotations, interfaces, abstract classes,
      * sealed classes and data classes itself. For sure there will be other corner cases,
      * for example, simple classes in Spring marked with @Entity annotation.
      * For these classes we expect users to Suppress warning manually for each corner case.
      **/
     private fun KtClass.isDefinitelyNotDataClass() =
         isValue() || isAnnotation() || isInterface() || isData() ||
-                isSealed() || isInline() || isAbstract()
+                isSealed() || isInline() || isAbstract() || isEnum()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
