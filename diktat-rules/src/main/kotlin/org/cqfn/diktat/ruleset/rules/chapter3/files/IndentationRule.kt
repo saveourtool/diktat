@@ -185,8 +185,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         with(IndentContext(configuration)) {
             node.visit { astNode ->
                 checkAndReset(astNode)
-                if (astNode.getIndentationIncrement().isNonZero()) {
-                    storeIncrementingToken(astNode.elementType)
+                val indentationIncrement = astNode.getIndentationIncrement()
+                if (indentationIncrement.isNonZero()) {
+                    storeIncrementingToken(astNode.elementType, indentationIncrement)
                 } else if (astNode.getIndentationDecrement().isNonZero() && !astNode.treePrev.isMultilineWhitespace()) {
                     // if decreasing token is after WHITE_SPACE with \n, indents are corrected in visitWhiteSpace method
                     this -= astNode.elementType
@@ -449,7 +450,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private class IndentContext(config: IndentationConfig) : IndentationAware, IndentationConfigAware by IndentationConfigAware(config) {
         private var regularIndent = 0
         private val exceptionalIndents: MutableList<ExceptionalIndent> = mutableListOf()
-        private val activeTokens: Stack<IElementType> = Stack()
+
+        /**
+         * The stack of element types (either [WHITE_SPACE] or any of
+         * [increasingTokens]) along with the indentation changes the
+         * corresponding elements induce.
+         *
+         * [WHITE_SPACE] is always accompanied by [no indentation change][NONE].
+         */
+        private val activeTokens: Stack<IndentedElementType> = Stack()
 
         /**
          * @return full current indentation.
@@ -472,14 +481,18 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          *
          * @param token a token that caused indentation increment, any of
          *   [increasingTokens] (e.g.: an [opening brace][LPAR]).
+         * @param increment the indentation increment (must be non-zero).
          * @see maybeIncrement
          */
-        fun storeIncrementingToken(token: IElementType) {
+        fun storeIncrementingToken(token: IElementType, increment: IndentationAmount) {
             require(token in increasingTokens) {
                 "The token is $token while any of $increasingTokens expected"
             }
+            require(increment.isNonZero()) {
+                "The indentation increment is zero"
+            }
 
-            activeTokens.push(token)
+            activeTokens.push(token to increment)
         }
 
         /**
@@ -492,16 +505,16 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          * @see minusAssign
          */
         fun maybeIncrement() {
-            val headOrNull: IElementType? = activeTokens.peek()
+            val headOrNull: IndentedElementType? = activeTokens.peek()
             check(headOrNull == null ||
-                    headOrNull == WHITE_SPACE ||
-                    headOrNull in increasingTokens) {
+                    headOrNull.type == WHITE_SPACE ||
+                    headOrNull.type in increasingTokens) {
                 "The head of the stack is $headOrNull while only $WHITE_SPACE or any of $increasingTokens expected"
             }
 
-            if (activeTokens.isNotEmpty() && activeTokens.peek() != WHITE_SPACE) {
-                regularIndent += SINGLE
-                activeTokens.push(WHITE_SPACE)
+            if (headOrNull != null && headOrNull.type != WHITE_SPACE) {
+                regularIndent += headOrNull.indentationChange
+                activeTokens.push(WHITE_SPACE to NONE)
             }
         }
 
@@ -518,7 +531,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 "The token is $token while any of $decreasingTokens expected"
             }
 
-            if (activeTokens.peek() == WHITE_SPACE) {
+            if (activeTokens.peek()?.type == WHITE_SPACE) {
                 /*-
                  * In practice, there's always only a single `WHITE_SPACE`
                  * element type (representing the newline) pushed onto the stack
@@ -527,7 +540,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  *
                  * Still, preserving the logic for compatibility.
                  */
-                while (activeTokens.peek() == WHITE_SPACE) {
+                while (activeTokens.peek()?.type == WHITE_SPACE) {
                     activeTokens.pop()
                 }
 
@@ -537,14 +550,18 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  *
                  * Now, let's decrease it back to the original value.
                  */
-                regularIndent -= SINGLE
+                val headOrNull: IndentedElementType? = activeTokens.peek()
+                if (headOrNull != null && headOrNull.type == token.braceMatchOrNull()) {
+                    regularIndent -= headOrNull.indentationChange
+                }
             }
 
             /*
              * In practice, the predicate is always `true` (provided braces are
              * balanced) and can be replaced with a `check()` call.
              */
-            if (activeTokens.isNotEmpty() && activeTokens.peek() == token.braceMatchOrNull()) {
+            val headOrNull: IndentedElementType? = activeTokens.peek()
+            if (headOrNull != null && headOrNull.type == token.braceMatchOrNull()) {
                 /*
                  * Pop the matching opening brace.
                  */
@@ -629,10 +646,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  * A special case of an opening parenthesis which *may* or *may not*
                  * increment the indentation.
                  */
-                LPAR -> when {
-                    isParenthesisAffectingIndent() -> SINGLE
-                    else -> NONE
-                }
+                LPAR -> getParenthesisIndentationChange()
 
                 in increasingTokens -> SINGLE
 
@@ -650,10 +664,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  * A special case of a closing parenthesis which *may* or *may not*
                  * increment the indentation.
                  */
-                RPAR -> when {
-                    isParenthesisAffectingIndent() -> SINGLE
-                    else -> NONE
-                }
+                RPAR -> getParenthesisIndentationChange()
 
                 in decreasingTokens -> SINGLE
 
@@ -669,13 +680,17 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          * [BINARY_EXPRESSION]), contribute to the indentation depending on
          * whether there's a newline after the opening parenthesis.
          *
-         * @return whether this [LPAR] or [RPAR] node affects indentation.
+         * @receiver an opening or a closing parenthesis.
+         * @return the amount by which the indentation should be incremented
+         *   (after [LPAR]) or decremented (after [RPAR]). The returned value
+         *   may well be [NONE], meaning the indentation level should be
+         *   preserved.
          * @see BINARY_EXPRESSION
          * @see PARENTHESIZED
          * @see VALUE_ARGUMENT_LIST
          * @see VALUE_PARAMETER_LIST
          */
-        private fun ASTNode.isParenthesisAffectingIndent(): Boolean {
+        private fun ASTNode.getParenthesisIndentationChange(): IndentationAmount {
             require(elementType in arrayOf(LPAR, RPAR)) {
                 elementType.toString()
             }
@@ -686,7 +701,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                      * `LPAR` inside a binary expression only contributes to the
                      * indentation if it's immediately followed by a newline.
                      */
-                    LPAR -> treeNext.isWhiteSpaceWithNewline()
+                    LPAR -> when {
+                        treeNext.isWhiteSpaceWithNewline() -> SINGLE
+                        else -> NONE
+                    }
 
                     /*
                      * `RPAR` inside a binary expression affects the indentation
@@ -696,7 +714,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                         val openingParenthesis = elementType.braceMatchOrNull()?.let { braceMatch ->
                             treeParent.findChildByType(braceMatch)
                         }
-                        openingParenthesis?.isParenthesisAffectingIndent() ?: false
+                        openingParenthesis?.getParenthesisIndentationChange() ?: NONE
                     }
                 }
 
@@ -705,7 +723,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                  * DO_WHILE), a function declaration (VALUE_PARAMETER_LIST or
                  * PROPERTY_ACCESSOR), or a function call (VALUE_ARGUMENT_LIST).
                  */
-                else -> true
+                else -> SINGLE
             }
         }
 
