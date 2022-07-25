@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.EXTENDED
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.NONE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.SINGLE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationConfigAware.Factory.withIndentationConfig
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.INDENTATION_SIZE
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.MethodOrderer.DisplayName
@@ -14,10 +15,10 @@ import org.junit.jupiter.params.provider.ValueSource
 
 @TestMethodOrder(DisplayName::class)
 class IndentationConfigAwareTest {
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun `Int + IndentationAmount`(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(42 + NONE).isEqualTo(42)
@@ -26,10 +27,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun `Int - IndentationAmount`(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(42 - NONE).isEqualTo(42)
@@ -38,10 +39,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun `IndentationAmount + Int`(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(NONE + 42).isEqualTo(42 + NONE)
@@ -52,10 +53,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun `IndentationAmount - Int`(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(NONE - 42).isEqualTo(-(42 - NONE))
@@ -66,10 +67,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun `IndentationAmount + IndentationAmount`(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(NONE + SINGLE).isEqualTo(0 + SINGLE)
@@ -80,10 +81,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun `IndentationAmount - IndentationAmount`(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(NONE - SINGLE).isEqualTo(0 - SINGLE)
@@ -95,10 +96,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun unaryPlus(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(+NONE).isEqualTo(0)
@@ -109,10 +110,10 @@ class IndentationConfigAwareTest {
         }
     }
 
-    @ParameterizedTest(name = "indentationSize = {0}")
+    @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])
     fun unaryMinus(indentationSize: Int) {
-        val config = IndentationConfig("indentationSize" to indentationSize)
+        val config = IndentationConfig(INDENTATION_SIZE to indentationSize)
 
         withIndentationConfig(config) {
             assertThat(-NONE).isEqualTo(0)

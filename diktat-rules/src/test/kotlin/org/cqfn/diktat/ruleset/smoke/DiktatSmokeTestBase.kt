@@ -29,6 +29,9 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
 import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.util.assertEquals
 
@@ -128,9 +131,9 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentForExpressionBodies" to "true",
-                    "extendedIndentAfterOperators" to "true",
-                    "extendedIndentBeforeDot" to "true",
+                    EXTENDED_INDENT_FOR_EXPRESSION_BODIES to "true",
+                    EXTENDED_INDENT_AFTER_OPERATORS to "true",
+                    EXTENDED_INDENT_BEFORE_DOT to "true",
                 )
             )
         )
@@ -196,8 +199,8 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentAfterOperators" to "true",
-                    "extendedIndentBeforeDot" to "true",
+                    EXTENDED_INDENT_AFTER_OPERATORS to "true",
+                    EXTENDED_INDENT_BEFORE_DOT to "true",
                 )
             )
         )
@@ -221,8 +224,8 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentAfterOperators" to "true",
-                    "extendedIndentForExpressionBodies" to "true",
+                    EXTENDED_INDENT_AFTER_OPERATORS to "true",
+                    EXTENDED_INDENT_FOR_EXPRESSION_BODIES to "true",
                 )
             )
         )
@@ -276,7 +279,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
-                    "extendedIndentAfterOperators" to "false",
+                    EXTENDED_INDENT_AFTER_OPERATORS to "false",
                 )
             )
         )

@@ -3,6 +3,13 @@ package org.cqfn.diktat.ruleset.chapter3.spaces
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.ALIGNED_PARAMETERS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.INDENTATION_SIZE
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
 
 /**
  * Code shared by [IndentationRuleWarnTest] and [IndentationRuleFixTest].
@@ -34,13 +41,13 @@ internal object IndentationRuleTestMixin {
     @Suppress("STRING_TEMPLATE_QUOTES")
     fun IndentationConfig.withCustomParameters(vararg configEntries: Pair<String, Any>): Map<String, String> =
         mutableMapOf(
-            "alignedParameters" to "$alignedParameters",
-            "indentationSize" to "$indentationSize",
-            "newlineAtEnd" to "$newlineAtEnd",
-            "extendedIndentOfParameters" to "$extendedIndentOfParameters",
-            "extendedIndentForExpressionBodies" to "$extendedIndentForExpressionBodies",
-            "extendedIndentAfterOperators" to "$extendedIndentAfterOperators",
-            "extendedIndentBeforeDot" to "$extendedIndentBeforeDot",
+            ALIGNED_PARAMETERS to "$alignedParameters",
+            INDENTATION_SIZE to "$indentationSize",
+            NEWLINE_AT_END to "$newlineAtEnd",
+            EXTENDED_INDENT_OF_PARAMETERS to "$extendedIndentOfParameters",
+            EXTENDED_INDENT_FOR_EXPRESSION_BODIES to "$extendedIndentForExpressionBodies",
+            EXTENDED_INDENT_AFTER_OPERATORS to "$extendedIndentAfterOperators",
+            EXTENDED_INDENT_BEFORE_DOT to "$extendedIndentBeforeDot",
         ).apply {
             configEntries.forEach { (key, value) ->
                 this[key] = value.toString()
@@ -70,10 +77,10 @@ internal object IndentationRuleTestMixin {
      */
     fun extendedIndent(enabled: Boolean): Array<Pair<String, Any>> =
         arrayOf(
-            "extendedIndentOfParameters" to enabled,
-            "extendedIndentForExpressionBodies" to enabled,
-            "extendedIndentAfterOperators" to enabled,
-            "extendedIndentBeforeDot" to enabled)
+            EXTENDED_INDENT_OF_PARAMETERS to enabled,
+            EXTENDED_INDENT_FOR_EXPRESSION_BODIES to enabled,
+            EXTENDED_INDENT_AFTER_OPERATORS to enabled,
+            EXTENDED_INDENT_BEFORE_DOT to enabled)
 
     /**
      * @return the concatenated content of this array (elements separated with
