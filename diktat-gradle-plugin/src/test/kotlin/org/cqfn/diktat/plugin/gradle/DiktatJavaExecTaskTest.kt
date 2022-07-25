@@ -91,7 +91,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line has reporter type and output`() {
         assertCommandLineEquals(
-            listOf(null, "--reporter=json,output=some.txt")
+            listOf(null, "--reporter=json,output=${project.projectDir.resolve("some.txt")}")
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")

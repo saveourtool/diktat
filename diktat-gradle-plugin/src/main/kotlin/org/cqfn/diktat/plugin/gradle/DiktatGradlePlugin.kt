@@ -1,5 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
+import org.cqfn.diktat.plugin.gradle.tasks.configureMergeReportsTask
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
@@ -26,9 +27,7 @@ class DiktatGradlePlugin : Plugin<Project> {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
 
-        // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
-        // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added
-        // configuration to provide JavaExec with correct classpath
+        // Configuration that will be used as classpath for JavaExec task.
         val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
             configuration.isVisible = false
             configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
@@ -47,6 +46,7 @@ class DiktatGradlePlugin : Plugin<Project> {
 
         project.registerDiktatCheckTask(diktatExtension, diktatConfiguration, patternSet)
         project.registerDiktatFixTask(diktatExtension, diktatConfiguration, patternSet)
+        project.configureMergeReportsTask(diktatExtension)
     }
 
     companion object {
@@ -69,6 +69,11 @@ class DiktatGradlePlugin : Plugin<Project> {
          * Task to run diKTat with fix
          */
         const val DIKTAT_FIX_TASK = "diktatFix"
+
+        /**
+         * Name of the task that merges SARIF reports of diktat tasks
+         */
+        internal const val MERGE_SARIF_REPORTS_TASK_NAME = "mergeDiktatReports"
 
         /**
          * Version of JVM with more strict module system, which requires `add-opens` for kotlin compiler
