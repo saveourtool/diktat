@@ -438,6 +438,98 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
+     * @return the amount by which the indentation should be incremented
+     *   once this node is encountered (may be [none][NONE]).
+     * @see ASTNode.getIndentationDecrement
+     */
+    private fun ASTNode.getIndentationIncrement(): IndentationAmount =
+        when (elementType) {
+            /*
+             * A special case of an opening parenthesis which *may* or *may not*
+             * increment the indentation.
+             */
+            LPAR -> getParenthesisIndentationChange()
+
+            in increasingTokens -> SINGLE
+
+            else -> NONE
+        }
+
+    /**
+     * @return the amount by which the indentation should be decremented
+     *   once this node is encountered (may be [none][NONE]).
+     * @see ASTNode.getIndentationIncrement
+     */
+    private fun ASTNode.getIndentationDecrement(): IndentationAmount =
+        when (elementType) {
+            /*
+             * A special case of a closing parenthesis which *may* or *may not*
+             * increment the indentation.
+             */
+            RPAR -> getParenthesisIndentationChange()
+
+            in decreasingTokens -> SINGLE
+
+            else -> NONE
+        }
+
+    /**
+     * Parentheses always affect indentation when they're a part of a
+     * [VALUE_PARAMETER_LIST] (formal arguments) or a [VALUE_ARGUMENT_LIST]
+     * (effective function call arguments).
+     *
+     * When they're children of a [PARENTHESIZED] (often inside a
+     * [BINARY_EXPRESSION]), contribute to the indentation depending on
+     * whether there's a newline after the opening parenthesis.
+     *
+     * @receiver an opening or a closing parenthesis.
+     * @return the amount by which the indentation should be incremented
+     *   (after [LPAR]) or decremented (after [RPAR]). The returned value
+     *   may well be [NONE], meaning the indentation level should be
+     *   preserved.
+     * @see BINARY_EXPRESSION
+     * @see PARENTHESIZED
+     * @see VALUE_ARGUMENT_LIST
+     * @see VALUE_PARAMETER_LIST
+     */
+    private fun ASTNode.getParenthesisIndentationChange(): IndentationAmount {
+        require(elementType in arrayOf(LPAR, RPAR)) {
+            elementType.toString()
+        }
+
+        return when (treeParent.elementType) {
+            PARENTHESIZED -> when (elementType) {
+                /*
+                 * `LPAR` inside a binary expression only contributes to the
+                 * indentation if it's immediately followed by a newline.
+                 */
+                LPAR -> when {
+                    treeNext.isWhiteSpaceWithNewline() -> SINGLE
+                    else -> NONE
+                }
+
+                /*
+                 * `RPAR` inside a binary expression affects the indentation
+                 * only if its matching `LPAR` node does so.
+                 */
+                else -> {
+                    val openingParenthesis = elementType.braceMatchOrNull()?.let { braceMatch ->
+                        treeParent.findChildByType(braceMatch)
+                    }
+                    openingParenthesis?.getParenthesisIndentationChange() ?: NONE
+                }
+            }
+
+            /*
+             * Either a control-flow statement (one of IF, WHEN, FOR or
+             * DO_WHILE), a function declaration (VALUE_PARAMETER_LIST or
+             * PROPERTY_ACCESSOR), or a function call (VALUE_ARGUMENT_LIST).
+             */
+            else -> SINGLE
+        }
+    }
+
+    /**
      * Holds a mutable state needed to calculate the indentation and keep track
      * of exceptions.
      *
@@ -634,98 +726,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private val Int.spaces: String
             get() =
                 SPACE.toString().repeat(n = this)
-
-        /**
-         * @return the amount by which the indentation should be incremented
-         *   once this node is encountered (may be [none][NONE]).
-         * @see ASTNode.getIndentationDecrement
-         */
-        private fun ASTNode.getIndentationIncrement(): IndentationAmount =
-            when (elementType) {
-                /*
-                 * A special case of an opening parenthesis which *may* or *may not*
-                 * increment the indentation.
-                 */
-                LPAR -> getParenthesisIndentationChange()
-
-                in increasingTokens -> SINGLE
-
-                else -> NONE
-            }
-
-        /**
-         * @return the amount by which the indentation should be decremented
-         *   once this node is encountered (may be [none][NONE]).
-         * @see ASTNode.getIndentationIncrement
-         */
-        private fun ASTNode.getIndentationDecrement(): IndentationAmount =
-            when (elementType) {
-                /*
-                 * A special case of a closing parenthesis which *may* or *may not*
-                 * increment the indentation.
-                 */
-                RPAR -> getParenthesisIndentationChange()
-
-                in decreasingTokens -> SINGLE
-
-                else -> NONE
-            }
-
-        /**
-         * Parentheses always affect indentation when they're a part of a
-         * [VALUE_PARAMETER_LIST] (formal arguments) or a [VALUE_ARGUMENT_LIST]
-         * (effective function call arguments).
-         *
-         * When they're children of a [PARENTHESIZED] (often inside a
-         * [BINARY_EXPRESSION]), contribute to the indentation depending on
-         * whether there's a newline after the opening parenthesis.
-         *
-         * @receiver an opening or a closing parenthesis.
-         * @return the amount by which the indentation should be incremented
-         *   (after [LPAR]) or decremented (after [RPAR]). The returned value
-         *   may well be [NONE], meaning the indentation level should be
-         *   preserved.
-         * @see BINARY_EXPRESSION
-         * @see PARENTHESIZED
-         * @see VALUE_ARGUMENT_LIST
-         * @see VALUE_PARAMETER_LIST
-         */
-        private fun ASTNode.getParenthesisIndentationChange(): IndentationAmount {
-            require(elementType in arrayOf(LPAR, RPAR)) {
-                elementType.toString()
-            }
-
-            return when (treeParent.elementType) {
-                PARENTHESIZED -> when (elementType) {
-                    /*
-                     * `LPAR` inside a binary expression only contributes to the
-                     * indentation if it's immediately followed by a newline.
-                     */
-                    LPAR -> when {
-                        treeNext.isWhiteSpaceWithNewline() -> SINGLE
-                        else -> NONE
-                    }
-
-                    /*
-                     * `RPAR` inside a binary expression affects the indentation
-                     * only if its matching `LPAR` node does so.
-                     */
-                    else -> {
-                        val openingParenthesis = elementType.braceMatchOrNull()?.let { braceMatch ->
-                            treeParent.findChildByType(braceMatch)
-                        }
-                        openingParenthesis?.getParenthesisIndentationChange() ?: NONE
-                    }
-                }
-
-                /*
-                 * Either a control-flow statement (one of IF, WHEN, FOR or
-                 * DO_WHILE), a function declaration (VALUE_PARAMETER_LIST or
-                 * PROPERTY_ACCESSOR), or a function call (VALUE_ARGUMENT_LIST).
-                 */
-                else -> SINGLE
-            }
-        }
 
         /**
          * @return `true` if this is a [whitespace][WHITE_SPACE] node containing
