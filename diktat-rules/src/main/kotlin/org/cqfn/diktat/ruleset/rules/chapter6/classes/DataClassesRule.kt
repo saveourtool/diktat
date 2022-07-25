@@ -5,27 +5,24 @@ import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType.ABSTRACT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.INNER_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
+import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 
 /**
  * This rule checks if class can be made as data class
@@ -127,11 +124,17 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         return true
     }
 
-    /** we do not exclude inner classes and enums here as if they have no
-     * methods, then we definitely can refactor the code and make them data classes
+    /**
+     * We do not exclude inner classes and enums here as if they have no
+     * methods, then we definitely can refactor the code and make them data classes.
+     * We only exclude: value/inline classes, annotations, interfaces, abstract classes,
+     * sealed classes and data classes itself. For sure there will be other corner cases,
+     * for example, simple classes in Spring marked with @Entity annotation.
+     * For these classes we expect users to Suppress warning manually for each corner case.
      **/
     private fun KtClass.isDefinitelyNotDataClass() =
-        isValue() || isAnnotation() || isInterface() || isData() || isSealed() || isInline() || isInner()
+        isValue() || isAnnotation() || isInterface() || isData() ||
+                isSealed() || isInline() || isAbstract()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
@@ -151,6 +154,6 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val NAME_ID = "data-classes"
-        private val badModifiers = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD, ENUM_KEYWORD)
+        private val badModifiers = listOf(OPEN_KEYWORD)
     }
 }
