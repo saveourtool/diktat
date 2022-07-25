@@ -211,21 +211,15 @@ diktat {
 }
 ```
 
-Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter (it should be added as a dependency into `diktat` configuration):
+Also in `diktat` extension you can configure different reporters and their output. You can specify `json`, `html`, `sarif`, `plain` (default).
+If `output` is set, it should be a file path. If not set, results will be printed to stdout.
 ```kotlin
 diktat {
     // since 1.2.1 to keep in line with maven properties
     reporter = "json" // "html", "json", "plain" (default), "sarif"
     // before 1.2.1
     // reporterType = "json" // "html", "json", "plain" (default), "sarif"
-}
-```
 
-You can also specify an output.
-```kotlin
-diktat {
-    // since 1.2.1 (reporterType for old versions)
-    reporter = "json"
     output = "someFile.json"
 }
 ```
@@ -302,7 +296,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 ```
 </details>
 
-## GitHub Native Integration
+## GitHub Integration
 We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporter` (`reporterType`)  in CI/CD.
 GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
 with SARIF format and provides you a native reporting of diktat issues in Pull Requests.
@@ -337,6 +331,18 @@ mvn -B diktat:check@diktat -Ddiktat.githubActions=true
         with:
           sarif_file: ${{ github.workspace }}
 ```
+
+*Note*: `codeql-action/upload-sarif` limits the number of uploaded files at 15. If your project has more than 15 subprojects,
+the limit will be exceeded and the step will fail. To solve this issue one can merge SARIF reports.
+
+`diktat-gradle-plugin` provides this capability with `mergeDiktatReports` task. This task aggregates reports of all diktat tasks
+of all Gradle project, which produce SARIF reports, and outputs the merged report into root project's build directory. Then this single
+file can be used as an input for Github action:
+```yaml
+with:
+    sarif_file: build/reports/diktat/diktat-merged.sarif
+```
+
 </details>
 
 ## <a name="config"></a> Customizations via `diktat-analysis.yml`

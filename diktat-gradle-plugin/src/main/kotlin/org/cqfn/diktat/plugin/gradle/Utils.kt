@@ -8,6 +8,9 @@ package org.cqfn.diktat.plugin.gradle
 
 import groovy.lang.Closure
 import org.gradle.api.Project
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 @Suppress(
     "MISSING_KDOC_TOP_LEVEL",
@@ -38,18 +41,18 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
     KotlinClosure1(action, this, this)
 
 /**
- * Create CLI flag to select reporter based on [diktatExtension]
+ * Create CLI flag to set reporter for ktlint based on [diktatExtension].
+ * [DiktatExtension.githubActions] should have higher priority than a custom input.
  *
- * @param diktatExtension project extension of type [DiktatExtension]
- * @return CLI flag
+ * @param diktatExtension extension of type [DiktatExtension]
+ * @return CLI flag as string
  */
-internal fun Project.createReporterFlag(diktatExtension: DiktatExtension): String {
+fun Project.createReporterFlag(diktatExtension: DiktatExtension): String {
     val name = diktatExtension.reporter.trim()
     val validReporters = listOf("sarif", "plain", "json", "html")
     val reporterFlag = when {
         diktatExtension.githubActions -> {
             if (diktatExtension.reporter.isNotEmpty()) {
-                // githubActions should have higher priority than custom input
                 logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
             }
             "--reporter=sarif"
@@ -67,3 +70,27 @@ internal fun Project.createReporterFlag(diktatExtension: DiktatExtension): Strin
 
     return reporterFlag
 }
+
+/**
+ * Get destination file for Diktat report or null if stdout is used.
+ * [DiktatExtension.githubActions] should have higher priority than a custom input.
+ *
+ * @param diktatExtension extension of type [DiktatExtension]
+ * @return destination [File] or null if stdout is used
+ */
+internal fun Project.getOutputFile(diktatExtension: DiktatExtension): File? = when {
+    diktatExtension.githubActions -> {
+        val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
+        reportDir.resolve("diktat.sarif").toFile()
+    }
+    diktatExtension.output.isNotEmpty() -> file(diktatExtension.output)
+    else -> null
+}
+
+/**
+ * Whether SARIF reporter is enabled or not
+ *
+ * @param reporterFlag
+ * @return whether SARIF reporter is enabled
+ */
+internal fun isSarifReporterActive(reporterFlag: String) = reporterFlag.contains("sarif")

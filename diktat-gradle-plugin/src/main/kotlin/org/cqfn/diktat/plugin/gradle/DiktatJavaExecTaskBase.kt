@@ -27,8 +27,6 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import javax.inject.Inject
 
 /**
@@ -148,27 +146,21 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
 
+    @Suppress("AVOID_NULL_CHECKS")
     private fun reporterFlag(diktatExtension: DiktatExtension): String = buildString {
         val reporterFlag = project.createReporterFlag(diktatExtension)
         append(reporterFlag)
-        val isSarifReporterActive = reporterFlag.contains("sarif")
-        if (isSarifReporterActive) {
+        if (isSarifReporterActive(reporterFlag)) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
             systemProperty("user.home", project.rootDir.toString())
         }
 
-        val outFlag = when {
-            // githubActions should have higher priority than a custom input
-            diktatExtension.githubActions -> {
-                val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
-                outputs.dir(reportDir)
-                ",output=${reportDir.resolve("diktat.sarif")}"
-            }
-            diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
-            else -> ""
+        val outputFile = project.getOutputFile(diktatExtension)
+        if (outputFile != null) {
+            outputs.file(outputFile)
+            val outFlag = ",output=$outputFile"
+            append(outFlag)
         }
-
-        append(outFlag)
     }
 
     @Suppress("MagicNumber")
