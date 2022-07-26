@@ -232,9 +232,9 @@ internal fun ProcessBuilder.prependPath(pathEntry: Path) {
     val defaultWindowsPathKey = "Path"
 
     val pathKey = when {
-        /*
+        /*-
          * Keys of the Windows environment are case-insensitive ("PATH" == "Path").
-         * Keys of the Java interface to the environment is not ("PATH" != "Path").
+         * Keys of the Java interface to the environment are not ("PATH" != "Path").
          * This is an attempt to work around the inconsistency.
          */
         System.getProperty("os.name").startsWith("Windows") -> environment.keys.firstOrNull { key ->
