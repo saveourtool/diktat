@@ -248,7 +248,7 @@ internal fun ProcessBuilder.prependPath(pathEntry: Path) {
     val oldPath = environment[pathKey]
 
     val newPath = when {
-        oldPath == null || oldPath.isEmpty() -> pathEntry.toString()
+        oldPath.isNullOrEmpty() -> pathEntry.toString()
         else -> "$pathEntry$pathSeparator$oldPath"
     }
 
