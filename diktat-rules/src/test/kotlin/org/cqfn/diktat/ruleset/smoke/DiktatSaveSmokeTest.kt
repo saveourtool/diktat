@@ -1,22 +1,35 @@
 package org.cqfn.diktat.ruleset.smoke
 
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.util.SAVE_VERSION
-import org.apache.commons.io.FileUtils
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.HttpClients
+import org.cqfn.diktat.util.deleteIfExistsSilently
+import org.cqfn.diktat.util.prependPath
+import org.cqfn.diktat.util.retry
+
+import mu.KotlinLogging
+import org.assertj.core.api.Assertions.fail
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.condition.DisabledOnOs
 import org.junit.jupiter.api.condition.OS
-import java.io.File
-import java.io.FileOutputStream
-import java.nio.file.Paths
+
+import java.net.URL
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.absolute
+import kotlin.io.path.copyTo
+import kotlin.io.path.createDirectories
+import kotlin.io.path.div
 import kotlin.io.path.exists
+import kotlin.io.path.isSameFileAs
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
+import kotlin.io.path.outputStream
 import kotlin.io.path.pathString
+import kotlin.io.path.readText
+import kotlin.io.path.relativeTo
+import kotlin.system.measureNanoTime
 
 @DisabledOnOs(OS.MAC)
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
@@ -26,7 +39,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         expected: String,
         test: String,
     ) {
-        saveSmokeTest(config, test)
+        saveSmokeTest(Path(config), test)
     }
 
     /**
@@ -35,55 +48,96 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
      */
     @Suppress("TOO_LONG_FUNCTION")
     private fun saveSmokeTest(
-        configFilePath: String,
+        configFilePath: Path,
         testPath: String
     ) {
-        val processBuilder = createProcessBuilderWithCmd(testPath)
+        assertSoftly { softly ->
+            softly.assertThat(configFilePath).isRegularFile
 
-        val file = File("src/test/resources/test/smoke/tmpSave.txt")
-        val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
-        val configFileFrom = File(configFilePath)
+            val configFile = (baseDirectory / "diktat-analysis.yml").apply {
+                parent.createDirectories()
+            }
+            val saveLog = (baseDirectory / "tmpSave.txt").apply {
+                parent.createDirectories()
+                deleteIfExistsSilently()
+            }
 
-        configFile.createNewFile()
-        file.createNewFile()
+            try {
+                configFilePath.copyTo(configFile, overwrite = true)
 
-        FileUtils.copyFile(configFileFrom, configFile)
+                val processBuilder = createProcessBuilderWithCmd(testPath).apply {
+                    redirectErrorStream(true)
+                    redirectOutput(ProcessBuilder.Redirect.appendTo(saveLog.toFile()))
 
-        processBuilder.redirectErrorStream(true)
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file))
+                    /*
+                     * Inherit JAVA_HOME for the child process.
+                     */
+                    val javaHome = System.getProperty("java.home")
+                    environment()["JAVA_HOME"] = javaHome
+                    prependPath(Path(javaHome) / "bin")
+                }
 
-        val process = processBuilder.start()
-        process.waitFor()
+                val saveProcess = processBuilder.start()
+                val saveExitCode = saveProcess.waitFor()
+                softly.assertThat(saveExitCode).describedAs("The exit code of SAVE").isZero
 
-        val output = file.readLines()
-        val saveOutput = output.joinToString("\n")
+                softly.assertThat(saveLog).isRegularFile
 
-        file.delete()
+                val saveOutput = saveLog.readText()
 
-        Assertions.assertTrue(
-            saveOutput.contains("SUCCESS")
-        )
+                val saveCommandLine = processBuilder.command().joinToString(separator = " ")
+                softly.assertThat(saveOutput)
+                    .describedAs("The output of \"$saveCommandLine\"")
+                    .isNotEmpty
+                    .contains("SUCCESS")
+            } finally {
+                configFile.deleteIfExistsSilently()
+                saveLog.deleteIfExistsSilently()
+            }
+        }
     }
 
+    @Suppress("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")  // False positives
     companion object {
         private const val KTLINT_VERSION = "0.46.1"
 
-        private fun getSaveForCurrentOs() = when {
-            System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-$SAVE_VERSION-linuxX64.kexe"
-            System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-$SAVE_VERSION-macosX64.kexe"
-            System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save-$SAVE_VERSION-mingwX64.exe"
-            else -> ""
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        private val logger = KotlinLogging.loggerWithKtlintConfig { }
+        private val baseDirectory = Path("src/test/resources/test/smoke").absolute()
+
+        private fun getSaveForCurrentOs(): String {
+            val osName = System.getProperty("os.name")
+
+            return when {
+                osName.startsWith("Linux", ignoreCase = true) -> "save-$SAVE_VERSION-linuxX64.kexe"
+                osName.startsWith("Mac", ignoreCase = true) -> "save-$SAVE_VERSION-macosX64.kexe"
+                osName.startsWith("Windows", ignoreCase = true) -> "save-$SAVE_VERSION-mingwX64.exe"
+                else -> fail("SAVE doesn't support $osName (version ${System.getProperty("os.version")})")
+            }
         }
 
-        private fun downloadFile(url: String, file: File) {
-            val httpClient = HttpClients.createDefault()
-            val request = HttpGet(url)
-            httpClient.use {
-                val response: CloseableHttpResponse = httpClient.execute(request)
-                response.use {
-                    val fileSave = response.entity
-                    fileSave?.let {
-                        FileOutputStream(file).use { outstream -> fileSave.writeTo(outstream) }
+        @Suppress("FLOAT_IN_ACCURATE_CALCULATIONS")
+        private fun downloadFile(from: URL, to: Path) {
+            logger.info {
+                "Downloading $from to ${to.relativeTo(baseDirectory)}..."
+            }
+
+            val attempts = 5
+
+            val lazyDefault: (Throwable) -> Unit = { error ->
+                fail("Failure downloading $from after $attempts attempt(s)", error)
+            }
+
+            retry(attempts, lazyDefault = lazyDefault) {
+                from.openStream().use { source ->
+                    to.outputStream().use { target ->
+                        val bytesCopied: Long
+                        val timeNanos = measureNanoTime {
+                            bytesCopied = source.copyTo(target)
+                        }
+                        logger.info {
+                            "$bytesCopied byte(s) copied in ${timeNanos / 1000 / 1e3} ms."
+                        }
                     }
                 }
             }
@@ -91,41 +145,53 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
         @BeforeAll
         @JvmStatic
+        @Suppress("AVOID_NULL_CHECKS")
         internal fun beforeAll() {
+            val forkedJavaHome = System.getenv("JAVA_HOME")
+            if (forkedJavaHome != null) {
+                val javaHome = System.getProperty("java.home")
+                if (javaHome != null && !Path(javaHome).isSameFileAs(Path(forkedJavaHome))) {
+                    logger.warn {
+                        "Current JDK home is $javaHome. Forked tests may use a different JDK at $forkedJavaHome."
+                    }
+                }
+                logger.warn {
+                    "Make sure JAVA_HOME ($forkedJavaHome) points to a Java 8 or Java 11 home. Java 17 is not yet supported."
+                }
+            }
+
+            logger.info {
+                "The base directory for the smoke test is $baseDirectory."
+            }
+
             val diktatDir: String =
-                Paths.get("../diktat-ruleset/target")
+                Path("../diktat-ruleset/target")
                     .takeIf { it.exists() }
                     ?.listDirectoryEntries()
                     ?.single { it.name.contains("diktat") }
                     ?.pathString ?: ""
 
-            val diktat = File("src/test/resources/test/smoke/diktat.jar")
-            val diktatFrom = File(diktatDir)
-            val save = File("src/test/resources/test/smoke/${getSaveForCurrentOs()}")
-            val ktlint = File("src/test/resources/test/smoke/ktlint")
+            val diktatFrom = Path(diktatDir)
+            val diktat = baseDirectory / "diktat.jar"
+            val save = baseDirectory / getSaveForCurrentOs()
+            val ktlint = baseDirectory / "ktlint"
 
-            ktlint.createNewFile()
-            save.createNewFile()
-            diktat.createNewFile()
+            downloadFile(URL("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}"), save)
+            downloadFile(URL("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint"), ktlint)
 
-            downloadFile("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}", save)
-            downloadFile("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint", ktlint)
-
-            FileUtils.copyFile(diktatFrom, diktat)
+            diktatFrom.copyTo(diktat)
         }
 
         @AfterAll
         @JvmStatic
         internal fun afterAll() {
-            val diktat = File("src/test/resources/test/smoke/diktat.jar")
-            val configFile = File("src/test/resources/test/smoke/diktat-analysis.yml")
-            val save = File("src/test/resources/test/smoke/${getSaveForCurrentOs()}")
-            val ktlint = File("src/test/resources/test/smoke/ktlint")
+            val diktat = baseDirectory / "diktat.jar"
+            val save = baseDirectory / getSaveForCurrentOs()
+            val ktlint = baseDirectory / "ktlint"
 
-            diktat.delete()
-            configFile.delete()
-            ktlint.delete()
-            save.delete()
+            diktat.deleteIfExistsSilently()
+            ktlint.deleteIfExistsSilently()
+            save.deleteIfExistsSilently()
         }
     }
 }

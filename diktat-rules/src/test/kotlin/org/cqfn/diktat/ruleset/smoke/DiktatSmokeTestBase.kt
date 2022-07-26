@@ -43,8 +43,10 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
 
 import java.time.LocalDate
+import java.util.concurrent.TimeUnit.SECONDS
 
 import kotlinx.serialization.builtins.ListSerializer
 
@@ -106,6 +108,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should not fail if package is not set`() {
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
@@ -114,18 +117,21 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #8 - anonymous function`() {
         fixAndCompare(configFilePath, "Example8Expected.kt", "Example8Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #7`() {
         fixAndCompare(configFilePath, "Example7Expected.kt", "Example7Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #6`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
@@ -142,6 +148,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
             mapOf(
@@ -176,24 +183,28 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #4`() {
         fixAndCompare(configFilePath, "Example4Expected.kt", "Example4Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #3`() {
         fixAndCompare(configFilePath, "Example3Expected.kt", "Example3Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - shouldn't throw exception in cases similar to #371`() {
         fixAndCompare(configFilePath, "Bug1Expected.kt", "Bug1Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #2`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
@@ -219,6 +230,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #1`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
@@ -250,30 +262,35 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test with kts files #2`() {
         fixAndCompare(configFilePath, "script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test with kts files with package name`() {
         fixAndCompare(configFilePath, "script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should correctly handle tags with empty lines`() {
         fixAndCompare(configFilePath, "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - FP of local variables rule`() {
         fixAndCompare(configFilePath, "LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `fix can cause long line`() {
         overrideRulesConfig(
             rulesToDisable = emptyList(),
@@ -294,6 +311,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     companion object {
         const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
+        private const val TEST_TIMEOUT_SECONDS = 20L
         val unfixedLintErrors: MutableList<LintError> = mutableListOf()
 
         // by default using same yml config as for diktat code style check, but allow to override
