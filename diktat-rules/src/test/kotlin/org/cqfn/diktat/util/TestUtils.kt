@@ -2,6 +2,8 @@
  * Utility classes and methods for tests
  */
 
+@file:Suppress("TOP_LEVEL_ORDER")// False positives
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -20,8 +22,13 @@ import org.assertj.core.api.SoftAssertions
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+import java.io.File
+import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
+import kotlin.io.path.absolute
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.isDirectory
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
@@ -137,4 +144,113 @@ internal fun applyToCode(code: String,
         .assertThat(counter.get())
         .`as`("Number of expected asserts")
         .isEqualTo(expectedAsserts)
+}
+
+/**
+ * Retries the execution of the [block].
+ *
+ * @param attempts the number of attempts (must be positive).
+ * @param delayMillis the timeout (in milliseconds) between the consecutive
+ *   attempts. The default is 0. Ignored if [attempts] is 1.
+ * @param lazyDefault allows to override the return value if none of the
+ *   attempts succeeds. By default, the last exception is thrown.
+ * @param block the block to execute.
+ * @return the result of the execution of the [block], or whatever [lazyDefault]
+ *   evaluates to if none of the attempts is successful.
+ */
+internal fun <T> retry(
+    attempts: Int,
+    delayMillis: Long = 0L,
+    lazyDefault: (Throwable) -> T = { error -> throw error },
+    block: () -> T
+): T {
+    require(attempts > 0) {
+        "The number of attempts should be positive: $attempts"
+    }
+
+    var lastError: Throwable? = null
+
+    for (i in 1..attempts) {
+        try {
+            return block()
+        } catch (error: Throwable) {
+            lastError = error
+        }
+
+        if (delayMillis > 0L) {
+            Thread.sleep(delayMillis)
+        }
+    }
+
+    return lazyDefault(lastError ?: Exception("The block was never executed"))
+}
+
+/**
+ * Deletes the file if it exists, retrying as necessary if the file is
+ * blocked by another process (on Windows).
+ *
+ * @receiver the file or empty directory.
+ * @see Path.deleteIfExists
+ */
+@Suppress(
+    "EMPTY_BLOCK_STRUCTURE_ERROR",
+    "MAGIC_NUMBER",
+)
+internal fun Path.deleteIfExistsSilently() {
+    val attempts = 10
+
+    val deleted = retry(attempts, delayMillis = 100L, lazyDefault = { false }) {
+        deleteIfExists()
+
+        /*
+         * Ignore the return code of `deleteIfExists()` (will be `false`
+         * if the file doesn't exist).
+         */
+        true
+    }
+
+    if (!deleted) {
+        log.warn {
+            "File \"${absolute()}\" not deleted after $attempts attempt(s)."
+        }
+    }
+}
+
+/**
+ * Prepends the `PATH` of this process builder with [pathEntry].
+ *
+ * @param pathEntry the entry to be prepended to the `PATH`.
+ */
+internal fun ProcessBuilder.prependPath(pathEntry: Path) {
+    require(pathEntry.isDirectory()) {
+        "$pathEntry is not a directory"
+    }
+
+    val environment = environment()
+
+    val defaultPathKey = "PATH"
+    val defaultWindowsPathKey = "Path"
+
+    val pathKey = when {
+        /*-
+         * Keys of the Windows environment are case-insensitive ("PATH" == "Path").
+         * Keys of the Java interface to the environment are not ("PATH" != "Path").
+         * This is an attempt to work around the inconsistency.
+         */
+        System.getProperty("os.name").startsWith("Windows") -> environment.keys.firstOrNull { key ->
+            key.equals(defaultPathKey, ignoreCase = true)
+        } ?: defaultWindowsPathKey
+
+        else -> defaultPathKey
+    }
+
+    val pathSeparator = File.pathSeparatorChar
+    val oldPath = environment[pathKey]
+
+    val newPath = when {
+        oldPath.isNullOrEmpty() -> pathEntry.toString()
+        else -> "$pathEntry$pathSeparator$oldPath"
+    }
+
+    environment[pathKey] = newPath
 }
