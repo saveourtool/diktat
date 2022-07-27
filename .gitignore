@@ -1,8 +1,11 @@
-target
-.gradle
-build
+target/
+.gradle/
+build/
 !ktlint/src/main/resources/config/.idea
-/.idea
+/.idea/
 *.iml
-out
+out/
 .DS_Store
+
+# Vim swap files
+*.swp
