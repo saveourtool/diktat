@@ -49,10 +49,15 @@ jobs:
               { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" },
               { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
             ]
-      - name: Deploy artifacts
-        run: mvn -B clean deploy -Prelease --projects '!diktat-ruleset'
-      - name: Build diktat.jar
-        run: mvn -B package --projects diktat-ruleset
+        # Runs tests, incl. smoke tests (using a fat JAR built from the
+        # "diktat-ruleset" module).
+      - name: Run tests
+        run: mvn -B clean install
+        # "diktat-ruleset" is a module that creates a fat JAR, which is,
+        # obviously, never released. Since we *do need* this fat JAR in order to
+        # run smoke tests, we *skip tests entirely* in this step.
+      - name: Deploy artifacts (skipping the clean, test, and verify phases)
+        run: mvn -B deploy -Prelease --projects "!diktat-ruleset" -DskipTests=true
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
