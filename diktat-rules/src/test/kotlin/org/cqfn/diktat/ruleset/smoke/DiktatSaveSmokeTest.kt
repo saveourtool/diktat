@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.smoke
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.util.SAVE_VERSION
 import org.cqfn.diktat.util.deleteIfExistsSilently
+import org.cqfn.diktat.util.isSameJavaHomeAs
 import org.cqfn.diktat.util.prependPath
 import org.cqfn.diktat.util.retry
 
@@ -22,7 +23,6 @@ import kotlin.io.path.copyTo
 import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.exists
-import kotlin.io.path.isSameFileAs
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 import kotlin.io.path.outputStream
@@ -150,7 +150,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             val forkedJavaHome = System.getenv("JAVA_HOME")
             if (forkedJavaHome != null) {
                 val javaHome = System.getProperty("java.home")
-                if (javaHome != null && !Path(javaHome).isSameFileAs(Path(forkedJavaHome))) {
+                if (javaHome != null && !Path(javaHome).isSameJavaHomeAs(Path(forkedJavaHome))) {
                     logger.warn {
                         "Current JDK home is $javaHome. Forked tests may use a different JDK at $forkedJavaHome."
                     }
