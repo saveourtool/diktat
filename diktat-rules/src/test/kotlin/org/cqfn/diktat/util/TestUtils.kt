@@ -23,12 +23,14 @@ import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.io.File
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import kotlin.io.path.absolute
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.isDirectory
+import kotlin.io.path.isSameFileAs
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
@@ -215,6 +217,33 @@ internal fun Path.deleteIfExistsSilently() {
         }
     }
 }
+
+/**
+ * @receiver the 1st operand.
+ * @param other the 2nd operand.
+ * @return `true` if, and only if, the two paths locate the same `JAVA_HOME`.
+ */
+internal fun Path.isSameJavaHomeAs(other: Path): Boolean =
+    isDirectory() &&
+            (isSameFileAsSafe(other) ||
+                    resolve("jre").isSameFileAsSafe(other) ||
+                    other.resolve("jre").isSameFileAsSafe(this))
+
+/**
+ * The same as [Path.isSameFileAs], but doesn't throw any [NoSuchFileException]
+ * if either of the operands doesn't exist.
+ *
+ * @receiver the 1st operand.
+ * @param other the 2nd operand.
+ * @return `true` if, and only if, the two paths locate the same file.
+ * @see Path.isSameFileAs
+ */
+internal fun Path.isSameFileAsSafe(other: Path): Boolean =
+    try {
+        isSameFileAs(other)
+    } catch (_: NoSuchFileException) {
+        false
+    }
 
 /**
  * Prepends the `PATH` of this process builder with [pathEntry].
