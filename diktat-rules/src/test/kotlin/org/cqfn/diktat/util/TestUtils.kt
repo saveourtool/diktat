@@ -221,7 +221,7 @@ internal fun Path.deleteIfExistsSilently() {
 /**
  * @receiver the 1st operand.
  * @param other the 2nd operand.
- * @return `true` if, and only if, the two paths locate the same file.
+ * @return `true` if, and only if, the two paths locate the same `JAVA_HOME`.
  */
 internal fun Path.isSameJavaHomeAs(other: Path): Boolean =
     isDirectory() &&
