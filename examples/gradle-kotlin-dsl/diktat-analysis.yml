@@ -217,7 +217,9 @@
     # ij_kotlin_continuation_indent_for_expression_bodies in .editorconfig.
     extendedIndentForExpressionBodies: false
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
-    extendedIndentAfterOperators: false
+    extendedIndentAfterOperators: true
+    # If true: when dot qualified expression starts on a new line, this line will be indented with two indentations instead of one
+    extendedIndentBeforeDot: false
     # The indentation size for each file
     indentationSize: 4
 # Checks that there is no empty blocks in a file.
