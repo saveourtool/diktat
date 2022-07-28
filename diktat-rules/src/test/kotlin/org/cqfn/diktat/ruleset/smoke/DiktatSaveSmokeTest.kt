@@ -101,9 +101,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     @Suppress("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")  // False positives
     companion object {
         private const val KTLINT_VERSION = "0.46.1"
-
         private const val BUILD_DIRECTORY = "target"
-
         private const val FAT_JAR_GLOB = "diktat-rules-*-fat-jar-for-smoke-tests.jar"
 
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
