@@ -161,6 +161,73 @@
                     </arguments>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <!-- Don't produce the JAR during the `package` phase. -->
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                    <!-- Instead, create it immediately before the `test` phase
+                         so that the shade plug-in may use it. -->
+                    <execution>
+                        <id>fat-jar-for-smoke-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Create a fat JAR to be used in smoke tests, removing the
+                 circular dependency between `diktat-rules` and `diktat-ruleset`. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <!-- Suppress the generation of `dependency-reduced-pom.xml`,
+                         because it will also get installed under `~/.m2`,
+                         resulting in the `diktat-maven-plugin` build failure
+                         (the plug-in depends on `diktat-rules`). -->
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!-- Should be `false`: otherwise, the generated JAR, even
+                         with a custom classifier, will still be installed/deployed. -->
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <!-- Necessary: otherwise, the artifact produced by the JAR
+                         plug-in will be overwritten by the fat JAR. -->
+                    <finalName>${project.name}-${project.version}-fat-jar-for-smoke-tests</finalName>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>com.squareup:kotlinpoet</exclude>
+                            <exclude>net.java.dev.jna:jna</exclude>
+                            <exclude>org.jetbrains.intellij.deps:trove4j</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-compiler-embeddable</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-daemon-embeddable</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-reflect</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-script-runtime</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-stdlib-common</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk7</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk8</exclude>
+                            <exclude>org.jetbrains.kotlin:kotlin-stdlib</exclude>
+                            <exclude>org.jetbrains:annotations</exclude>
+                        </excludes>
+                    </artifactSet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>fat-jar-for-smoke-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

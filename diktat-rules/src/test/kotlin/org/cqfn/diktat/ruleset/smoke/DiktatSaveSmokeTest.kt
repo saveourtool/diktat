@@ -8,6 +8,7 @@ import org.cqfn.diktat.util.prependPath
 import org.cqfn.diktat.util.retry
 
 import mu.KotlinLogging
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.AfterAll
@@ -24,9 +25,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
 import kotlin.io.path.outputStream
-import kotlin.io.path.pathString
 import kotlin.io.path.readText
 import kotlin.io.path.relativeTo
 import kotlin.system.measureNanoTime
@@ -99,6 +98,8 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
     @Suppress("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")  // False positives
     companion object {
+        private const val BUILD_DIRECTORY = "target"
+        private const val FAT_JAR_GLOB = "diktat-rules-*-fat-jar-for-smoke-tests.jar"
         private const val KTLINT_VERSION = "0.46.1"
 
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
@@ -164,14 +165,20 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 "The base directory for the smoke test is $baseDirectory."
             }
 
-            val diktatDir: String =
-                Path("../diktat-ruleset/target")
-                    .takeIf { it.exists() }
-                    ?.listDirectoryEntries()
-                    ?.single { it.name.contains("diktat") }
-                    ?.pathString ?: ""
+            /*
+             * The fat JAR should reside in the same directory as `ktlint` and
+             * `save*` and be named `diktat.jar`
+             * (see `diktat-rules/src/test/resources/test/smoke/save.toml`).
+             */
+            val diktatFrom = Path(BUILD_DIRECTORY)
+                .takeIf(Path::exists)
+                ?.listDirectoryEntries(FAT_JAR_GLOB)
+                ?.singleOrNull()
+            assertThat(diktatFrom)
+                .describedAs(diktatFrom?.toString() ?: "$BUILD_DIRECTORY/$FAT_JAR_GLOB")
+                .isNotNull
+                .isRegularFile
 
-            val diktatFrom = Path(diktatDir)
             val diktat = baseDirectory / "diktat.jar"
             val save = baseDirectory / getSaveForCurrentOs()
             val ktlint = baseDirectory / "ktlint"
@@ -179,7 +186,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             downloadFile(URL("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}"), save)
             downloadFile(URL("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint"), ktlint)
 
-            diktatFrom.copyTo(diktat)
+            diktatFrom?.copyTo(diktat)
         }
 
         @AfterAll

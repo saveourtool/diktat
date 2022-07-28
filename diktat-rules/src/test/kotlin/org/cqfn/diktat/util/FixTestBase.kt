@@ -69,8 +69,8 @@ open class FixTestBase(
         val systemName = System.getProperty("os.name")
         val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath src/test/resources/test/smoke/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "src/test/resources/test/smoke/src/main/kotlin", testPath)
+                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
+            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath)
         }
         return result
     }
