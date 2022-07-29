@@ -17,6 +17,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
+import org.gradle.api.tasks.VerificationTask
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -25,7 +26,7 @@ import kotlinx.serialization.json.Json
 /**
  * A task to merge SARIF reports produced by diktat check / diktat fix tasks.
  */
-abstract class SarifReportMergeTask : DefaultTask() {
+abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
     /**
      * Source reports that should be merged
      */
@@ -89,13 +90,13 @@ internal fun Project.configureMergeReportsTask(diktatExtension: DiktatExtension)
             reportMergeTask.output.set(mergedReportFile)
         }
     }
-    val reportMergeTaskTaskProvider = rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
+    rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
         if (isSarifReporterActive(createReporterFlag(diktatExtension))) {
             getOutputFile(diktatExtension)?.let { reportMergeTask.input.from(it) }
             reportMergeTask.shouldRunAfter(tasks.withType(DiktatJavaExecTaskBase::class.java))
         }
     }
     tasks.withType(DiktatJavaExecTaskBase::class.java).configureEach { diktatJavaExecTaskBase ->
-        diktatJavaExecTaskBase.finalizedBy(reportMergeTaskTaskProvider)
+        diktatJavaExecTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
     }
 }
