@@ -14,6 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.AS_SAFE
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
@@ -39,6 +40,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -138,7 +140,17 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
 internal class ExpressionIndentationChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? =
         when {
-            whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE -> {
+            whiteSpace.parent.node.elementType in sequenceOf(BINARY_EXPRESSION, BINARY_WITH_TYPE) &&
+                    whiteSpace.immediateSiblings().any { sibling ->
+                        /*
+                         * We're looking for an operation reference, including
+                         * `as` and `as?` (`AS_SAFE`), but excluding `?:` (`ELVIS`),
+                         * because there's a separate flag for Elvis expressions
+                         * in IDEA (`CONTINUATION_INDENT_IN_ELVIS`).
+                         */
+                        sibling.node.elementType == OPERATION_REFERENCE &&
+                                sibling.node.children().firstOrNull()?.elementType != ELVIS
+                    } -> {
                 val parentIndent = whiteSpace.parentIndent() ?: indentError.expected
                 val expectedIndent = parentIndent + IndentationAmount.valueOf(configuration.extendedIndentAfterOperators)
                 CheckResult.from(indentError.actual, expectedIndent, true)
@@ -308,3 +320,10 @@ internal fun PsiElement.parentIndent(): Int? = parentsWithSelf
     .firstOrNull()
     ?.text
     ?.lastIndent()
+
+/**
+ * @return the sequence of immediate siblings (the previous and the next one),
+ *   excluding `null`'s.
+ */
+private fun PsiElement.immediateSiblings(): Sequence<PsiElement> =
+    sequenceOf(prevSibling, nextSibling).filterNotNull()

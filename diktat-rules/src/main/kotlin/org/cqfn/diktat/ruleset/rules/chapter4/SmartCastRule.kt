@@ -126,7 +126,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
             val list: MutableList<KtNameReferenceExpression> = mutableListOf()
             asExpr.forEach { asCall ->
                 if (asCall.node.findParentNodeWithSpecificType(IF)
-                    == it.node.findParentNodeWithSpecificType(IF)) {
+                        == it.node.findParentNodeWithSpecificType(IF)) {
                     list.add(asCall)
                 }
             }

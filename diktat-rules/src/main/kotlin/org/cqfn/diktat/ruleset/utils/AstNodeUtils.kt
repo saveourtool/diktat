@@ -930,7 +930,7 @@ private fun ASTNode.hasExplicitIt(): Boolean {
     val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
         ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
         ?.psi
-        as KtParameterList?
+            as KtParameterList?
     return parameterList?.parameters
         ?.any { it.name == "it" }
         ?: false
