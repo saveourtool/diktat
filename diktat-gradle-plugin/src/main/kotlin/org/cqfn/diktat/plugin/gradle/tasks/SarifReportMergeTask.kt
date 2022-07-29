@@ -58,7 +58,7 @@ abstract class SarifReportMergeTask : DefaultTask() {
 
         if (sarifReports.isEmpty()) {
             logger.warn("Cannot perform merging of SARIF reports because no matching files were found; " +
-                    "Is SARIF reporter active?"
+                    "is SARIF reporter active?"
             )
             return
         }
