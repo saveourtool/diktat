@@ -36,6 +36,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>io.github.detekt.sarif4k</groupId>
+            <artifactId>sarif4k</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
