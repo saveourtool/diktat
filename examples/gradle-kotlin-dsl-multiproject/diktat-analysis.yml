@@ -1,187 +1,361 @@
+# Common configuration
 - name: DIKTAT_COMMON
   configuration:
     # put your package name here - it will be autofixed and checked
-    domainName: org.cqfn.diktat.example.gradle.multiproject
+    domainName: your.name.here
     testDirs: test
+    # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
+    # or: "1, 2, 3, 4, 5, 6"
+    disabledChapters: ""
+    kotlinVersion: 1.7
+    srcDirectories: "main"
+# Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
   # all code blocks with MyAnnotation will be ignored and not checked
   ignoreAnnotated: [ MyAnnotation ]
+# Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
+# Checks that enum value is in upper SNAKE_CASE or in PascalCase depending on the config. UPPER_SNAKE_CASE is the default, but can be changed by 'enumStyle' config
 - name: ENUM_VALUE
   enabled: true
+  configuration:
+    # Two options: SNAKE_CASE (default), PascalCase
+    enumStyle: SNAKE_CASE
+# Checks that class which extends any Exception class has Exception suffix
 - name: EXCEPTION_SUFFIX
   enabled: true
+# Checks that file name has extension
 - name: FILE_NAME_INCORRECT
   enabled: true
+# Checks that file name matches class name, if it is only one class in file
 - name: FILE_NAME_MATCH_CLASS
   enabled: true
+# Checks that functions/methods which return boolean have special prefix like "is/should/e.t.c"
 - name: FUNCTION_BOOLEAN_PREFIX
   enabled: true
+  configuration:
+    allowedPrefixes: "" # A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
+# Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true
+# Checks that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
+  enabled: true
+# Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T
 - name: GENERIC_NAME
   enabled: true
+# Identifier length should be in range [2,64] except names that used in industry like {i, j} and 'e' for catching exceptions
 - name: IDENTIFIER_LENGTH
   enabled: true
+# Checks that the object matches PascalCase
 - name: OBJECT_NAME_INCORRECT
   enabled: true
+# Checks that package name is in correct (lower) case
 - name: PACKAGE_NAME_INCORRECT_CASE
-  enabled: true # configuration domainName is taken from DIKTAT_COMMON
+  enabled: true
+# Checks that package name starts with the company's domain
 - name: PACKAGE_NAME_INCORRECT_PREFIX
   enabled: false
+# Checks that package name does not have incorrect symbols like underscore or non-ASCII letters/digits
 - name: PACKAGE_NAME_INCORRECT_SYMBOLS
   enabled: true
+# Checks that the path for a file matches with a package name
 - name: PACKAGE_NAME_INCORRECT_PATH
-  enabled: true # configuration domainName is taken from DIKTAT_COMMON
+  enabled: false
+# Checks that package name is in the file
 - name: PACKAGE_NAME_MISSING
   enabled: true
+# Checks that variable does not have prefix (like mVariable or M_VARIABLE)
 - name: VARIABLE_HAS_PREFIX
   enabled: true
+# Checks that variable does not contain one single letter, only exceptions are fixed names that used in industry like {i, j}
 - name: VARIABLE_NAME_INCORRECT
   enabled: true
+# Checks that the name of variable is in lowerCamelCase and contains only ASCII letters
 - name: VARIABLE_NAME_INCORRECT_FORMAT
   enabled: true
+# Checks that functions have kdoc
 - name: MISSING_KDOC_ON_FUNCTION
   enabled: true
+# Checks that on file level internal or public class or function has missing KDoc
 - name: MISSING_KDOC_TOP_LEVEL
   enabled: true
+# Checks that accessible internal elements (protected, public, internal) in a class are documented
 - name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: true
+# Checks that accessible method parameters are documented in KDoc
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
+# Checks that accessible method explicit return type is documented in KDoc
 - name: KDOC_WITHOUT_RETURN_TAG
   enabled: true
+# Checks that accessible method throw keyword is documented in KDoc
 - name: KDOC_WITHOUT_THROWS_TAG
   enabled: true
+# Checks that KDoc is not empty
 - name: KDOC_EMPTY_KDOC
   enabled: true
+# Checks that underscore is correctly used to split package naming
 - name: INCORRECT_PACKAGE_SEPARATOR
   enabled: true
+# Checks that code block doesn't contain kdoc comments
+- name: COMMENTED_BY_KDOC
+  enabled: true
+# Checks that there is no @deprecated tag in kdoc
 - name: KDOC_NO_DEPRECATED_TAG
   enabled: true
+# Checks that there is no empty content in kdoc tags
 - name: KDOC_NO_EMPTY_TAGS
   enabled: true
+# Checks that there is only one space after kdoc tag
 - name: KDOC_WRONG_SPACES_AFTER_TAG
   enabled: true
+# Checks tags order in kDoc. `@param`, `@return`, `@throws`
 - name: KDOC_WRONG_TAGS_ORDER
   enabled: true
+# Checks that there is no newline of empty KDoc line (with leading asterisk) between `@param`, `@return`, `@throws` tags
 - name: KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
   enabled: true
+# Checks that block of tags @param, @return, @throws is separated from previous part of KDoc by exactly one empty line
 - name: KDOC_NEWLINES_BEFORE_BASIC_TAGS
   enabled: true
+# Checks that special tags `@apiNote`, `@implNote`, `@implSpec` have exactly one empty line after
 - name: KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
   enabled: true
+# Checks that kdoc does not contain @author tag or date
 - name: KDOC_CONTAINS_DATE_OR_AUTHOR
   enabled: true
+  configuration:
+    versionRegex: \d+\.\d+\.\d+[-.\w\d]*
+# Checks that KDoc does not contain single line with words 'return', 'get' or 'set'
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
-  enabled: 'true'
+  enabled: true
+# Checks that there is newline after header KDoc
 - name: HEADER_WRONG_FORMAT
   enabled: true
+# Checks that file with zero or >1 classes has header KDoc
 - name: HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
   enabled: true
+# Checks that copyright exists on top of file and is properly formatted (as a block comment)
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
   configuration:
-    isCopyrightMandatory: true
+    isCopyrightMandatory: false
     copyrightText: 'Copyright (c) Your Company Name Here. 2010-;@currYear;'
+# Checks that header kdoc is located before package directive
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
+# Checks that file does not contain lines > maxSize
 - name: FILE_IS_TOO_LONG
   enabled: true
   configuration:
+    # number of lines
     maxSize: '2000'
-    ignoreFolders: ''
+# Checks that file does not contain commented out code
 - name: COMMENTED_OUT_CODE
   enabled: true
+# Checks that file does not contain only comments, imports and package directive
 - name: FILE_CONTAINS_ONLY_COMMENTS
   enabled: true
-  # order imports alphabetically
+# Orders imports alphabetically
 - name: FILE_UNORDERED_IMPORTS
   enabled: true
   configuration:
     # use logical imports grouping with sorting inside of a group
     useRecommendedImportsOrder: true
+# Checks that general order of code parts is right
 - name: FILE_INCORRECT_BLOCKS_ORDER
   enabled: true
+# Checks that there is exactly one line between code blocks
 - name: FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
   enabled: true
-# Check: warns if wildcard imports are used except allows. (e.g. import org.cqfn.diktat.*)
+# Checks that there is no wildcard imports. Exception: allowedWildcards
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
     allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
     useRecommendedImportsOrder: true
+# Checks unused imports
+- name: UNUSED_IMPORT
+  enabled: true
+  configuration:
+    deleteUnusedImport: true
+# Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line ternary operator statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
+# Checks that the declaration part of a class-like code structures (class/interface/etc.) is in the proper order
 - name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
   enabled: true
+# Checks that properties with comments are separated by a blank line
 - name: BLANK_LINE_BETWEEN_PROPERTIES
   enabled: true
+# Checks top level order
+- name: TOP_LEVEL_ORDER
+  enabled: true
+# Checks that non-empty code blocks with braces follow the K&R style (1TBS or OTBS style)
 - name: BRACES_BLOCK_STRUCTURE_ERROR
   enabled: true
   configuration:
     openBraceNewline: 'True'
     closeBraceNewline: 'True'
+# Checks that indentation is correct
 - name: WRONG_INDENTATION
   enabled: true
   configuration:
+    # Is newline at the end of a file needed
     newlineAtEnd: true
+    # If true: in parameter list when parameters are split by newline they are indented with two indentations instead of one
     extendedIndentOfParameters: false
+    # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
+    # If true, expression bodies which begin on a separate line are indented
+    # using a continuation indent. The default is false.
+    #
+    # This flag is called CONTINUATION_INDENT_FOR_EXPRESSION_BODIES in IDEA and
+    # ij_kotlin_continuation_indent_for_expression_bodies in .editorconfig.
     extendedIndentForExpressionBodies: false
-    extendedIndentAfterOperators: false
+    # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
+    extendedIndentAfterOperators: true
+    # If true: when dot qualified expression starts on a new line, this line will be indented with two indentations instead of one
+    extendedIndentBeforeDot: false
+    # The indentation size for each file
     indentationSize: 4
+# Checks that there is no empty blocks in a file.
+# If allowEmptyBlocks is true, checks that it follows correct style (have a newline)
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true
   configuration:
+    # Whether a newline after `{` is required in an empty block
     styleEmptyBlockWithNewline: 'True'
     allowEmptyBlocks: 'False'
+# Checks that there is no more than one statement per line
 - name: MORE_THAN_ONE_STATEMENT_PER_LINE
   enabled: true
+# Checks that the line length is < lineLength parameter
 - name: LONG_LINE
   enabled: true
   configuration:
     lineLength: '120'
+# Checks that semicolons are not used at the end of a line
 - name: REDUNDANT_SEMICOLON
   enabled: true
+# Checks that line breaks follow code style guide: rule 3.6
 - name: WRONG_NEWLINES
   enabled: true
   configuration:
+    # If the number of parameters on one line is more than this threshold, all parameters will be placed on separate lines.
     maxParametersInOneLine: 2
+    # 3 by default.
+    maxCallsInOneLine: 3
+# Checks trailing comma
+- name: TRAILING_COMMA
+  enabled: true
+  configuration:
+    # VALUE_ARGUMENT
+    valueArgument: false
+    # VALUE_PARAMETER
+    valueParameter: false
+    # REFERENCE_EXPRESSION
+    indices: false
+    # WHEN_CONDITION_WITH_EXPRESSION
+    whenConditions: false
+    # STRING_TEMPLATE
+    collectionLiteral: false
+    # TYPE_PROJECTION
+    typeArgument: false
+    # TYPE_PARAMETER
+    typeParameter: false
+    # DESTRUCTURING_DECLARATION_ENTRY
+    destructuringDeclaration: false
+# Checks that there are not too many consecutive spaces in line
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
   configuration:
-    max_spaces: '1'
+    # Maximum allowed number of consecutive spaces (not counting indentation)
+    maxSpaces: '1'
+    # Whether formatting for enums should be kept without checking
     saveInitialFormattingForEnums: false
+# Inspection that checks if a long dot qualified expression is used in condition or as an argument
+- name: COMPLEX_EXPRESSION
+  enabled: true
+# Checks that blank lines are used correctly.
+# For example: triggers when there are too many blank lines between function declaration
 - name: TOO_MANY_BLANK_LINES
   enabled: true
+# Checks that usage of horizontal spaces doesn't violate code style guide
 - name: WRONG_WHITESPACE
   enabled: true
+# Checks that backticks (``) are not used in the identifier name, except the case when it is test method (marked with @Test annotation)
 - name: BACKTICKS_PROHIBITED
   enabled: true
+# Checks that a single line concatenation of strings is not used
 - name: STRING_CONCATENATION
   enabled: true
+# Checks that each when statement have else in the end
 - name: WHEN_WITHOUT_ELSE
   enabled: true
+# Checks that annotation is on a single line
 - name: ANNOTATION_NEW_LINE
   enabled: true
+# Checks that enum structure is correct: enum entries should be separated by comma and line break and last entry should have semicolon in the end.
 - name: ENUMS_SEPARATED
   enabled: true
+# Checks that value on integer or float constant is not too big
 - name: LONG_NUMERICAL_VALUES_SEPARATED
   enabled: true
   configuration:
+    # Maximum number of digits which are not split
     maxNumberLength: '5'
+    # Maximum number of digits between separators
     maxBlockLength: '3'
+# Checks magic number
+- name: MAGIC_NUMBER
+  enabled: true
+  configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
+    # Ignore numbers
+    ignoreNumbers: "-1, 1, 0, 2, 0U, 1U, 2U, -1L, 0L, 1L, 2L, 0UL, 1UL, 2UL"
+    # Is ignore override hashCode function
+    ignoreHashCodeFunction: "true"
+    # Is ignore property
+    ignorePropertyDeclaration: "false"
+    # Is ignore local variable
+    ignoreLocalVariableDeclaration: "false"
+    # Is ignore constant
+    ignoreConstantDeclaration: "true"
+    # Is ignore property in companion object
+    ignoreCompanionObjectPropertyDeclaration: "true"
+    # Is ignore numbers in enum
+    ignoreEnums: "false"
+    # Is ignore number in ranges
+    ignoreRanges: "false"
+    # Is ignore number in extension function
+    ignoreExtensionFunctions: "false"
+# Checks that order of enum values or constant property inside companion is correct
 - name: WRONG_DECLARATIONS_ORDER
   enabled: true
   configuration:
+    # Whether enum members should be sorted alphabetically
     sortEnum: true
+    # Whether class properties should be sorted alphabetically
     sortProperty: true
+# Checks that multiple modifiers sequence is in the correct order
 - name: WRONG_MULTIPLE_MODIFIERS_ORDER
   enabled: true
+# Checks that identifier has appropriate name (See table of rule 1.2 part 6)
 - name: CONFUSING_IDENTIFIER_NAMING
+  enabled: true
+# Checks year in the copyright
+- name: WRONG_COPYRIGHT_YEAR
+  enabled: true
+# Inspection that checks if local variables are declared close to the first usage site
+- name: LOCAL_VARIABLE_EARLY_DECLARATION
+  enabled: true
+# Try to avoid initialize val by null (e.g. val a: Int? = null -> val a: Int = 0)
+- name: NULLABLE_PROPERTY_TYPE
   enabled: true
 # Inspection that checks if there is a blank line before kDoc and none after
 - name: WRONG_NEWLINES_AROUND_KDOC
@@ -198,21 +372,15 @@
 # Inspection that checks if all comment's are inside if-else code blocks. Exception is general if comment
 - name: IF_ELSE_COMMENTS
   enabled: true
-- name: WRONG_COPYRIGHT_YEAR
-  enabled: true
-# Inspection that checks if local variables are declared close to the first usage site
-- name: LOCAL_VARIABLE_EARLY_DECLARATION
-  enabled: true
-# Try to avoid initialize val by null (e.g. val a: Int? = null -> val a: Int = 0)
-- name: NULLABLE_PROPERTY_TYPE
-  enabled: true
 # Type aliases provide alternative names for existing types when type's reference text is longer 25 chars
 - name: TYPE_ALIAS
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+# Checks if casting can be omitted
 - name: SMART_CAST_NEEDED
   enabled: true
+# Checks that variables of generic types have explicit type declaration
 - name: GENERIC_VARIABLE_WRONG_DECLARATION
   enabled: true
 # Inspection that checks if string template has redundant curly braces
@@ -226,6 +394,11 @@
 # Inspection that checks if string template has redundant quotes
 - name: STRING_TEMPLATE_QUOTES
   enabled: true
+# Check if there are redundant nested if-statements, which could be collapsed into a single one by concatenating their conditions
+- name: COLLAPSE_IF_STATEMENTS
+  enabled: true
+  configuration:
+    startCollapseFromNestedLevel: 2
 # Checks that floating-point values are not used in arithmetic expressions
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
@@ -254,8 +427,25 @@
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
-# Checks that KDoc in constructor has property tag
+# Checks that using runBlocking inside async block code
+- name: RUN_BLOCKING_INSIDE_ASYNC
+  enabled: true
+# Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+# Checks that the long lambda has parameters
+- name: TOO_MANY_LINES_IN_LAMBDA
+  enabled: true
+  configuration:
+    maxLambdaLength: 10 # max length of lambda without parameters
+# Checks that using unnecessary, custom label
+- name: CUSTOM_LABEL
+  enabled: true
+# Check that lambda with inner lambda doesn't use implicit parameter
+- name: PARAMETER_NAME_IN_OUTER_LAMBDA
+  enabled: true
+# Checks that property in KDoc present in class
+- name: KDOC_EXTRA_PROPERTY
   enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
@@ -300,4 +490,50 @@
   enabled: true
 # Checks if extension function with the same signature don't have related classes
 - name: EXTENSION_FUNCTION_SAME_SIGNATURE
+  enabled: true
+# Checks if there is empty primary constructor
+- name: EMPTY_PRIMARY_CONSTRUCTOR
+  enabled: true
+# In case of not using field keyword in property accessors,
+# there should be explicit backing property with the name of real property
+# Example: val table get() {if (_table == null) ...} -> table should have _table
+- name: NO_CORRESPONDING_PROPERTY
+  enabled: true
+# Checks if there is class/object that can be replace with extension function
+- name: AVOID_USING_UTILITY_CLASS
+  enabled: true
+# If there is stateless class it is preferred to use object
+- name: OBJECT_IS_PREFERRED
+  enabled: true
+# If there exists negated version of function you should prefer it instead of !functionCall
+- name: INVERSE_FUNCTION_PREFERRED
+  enabled: true
+# Checks if class can be converted to inline class
+- name: INLINE_CLASS_CAN_BE_USED
+  enabled: true
+# If file contains class, then it can't contain extension functions for the same class
+- name: EXTENSION_FUNCTION_WITH_CLASS
+  enabled: true
+# Check if kts script contains other functions except run code
+- name: RUN_IN_SCRIPT
+  enabled: true
+# Check if boolean expression can be simplified
+- name: COMPLEX_BOOLEAN_EXPRESSION
+  enabled: true
+# Check if range can replace with until or `rangeTo` function with range
+- name: CONVENTIONAL_RANGE
+  enabled: true
+  configuration:
+    isRangeToIgnore: false
+# Check if there is a call of print()\println() or console.log(). Assumption that it's a debug print
+- name: DEBUG_PRINT
+  enabled: true
+# Check that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
+  enabled: true
+# Should change property length - 1 to property lastIndex
+- name: USE_LAST_INDEX
+  enabled: true
+# Only properties from the primary constructor should be documented in a @property tag in class KDoc
+- name: KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
   enabled: true
