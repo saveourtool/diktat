@@ -605,6 +605,29 @@ internal object IndentationRuleTestResources {
         |            2 to
         |            3))
         """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g(42 as
+        |        Integer)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g("" as?
+        |        String?)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    // The dot-qualified expression is always single-indented. 
+        |    ""
+        |        .length as
+        |        Int
+        |}
+        """.trimMargin(),
     )
 
     /**
@@ -842,6 +865,29 @@ internal object IndentationRuleTestResources {
         |                2 to
         |                3))
         """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g(42 as
+        |            Integer)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g("" as?
+        |            String?)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    // The dot-qualified expression is always single-indented. 
+        |    ""
+        |        .length as
+        |            Int
+        |}
+        """.trimMargin(),
     )
 
     /**
@@ -852,6 +898,491 @@ internal object IndentationRuleTestResources {
     val expressionsWrappedAfterOperator = mapOf(
         false to expressionsWrappedAfterOperatorSingleIndent,
         true to expressionsWrappedAfterOperatorContinuationIndent)
+
+    /**
+     * Expressions wrapped before an operator or an infix function, single
+     * indent (`extendedIndentAfterOperators` is **off**).
+     *
+     * When adding new code fragments to this list, be sure to also add their
+     * counterparts (preserving order) to [expressionsWrappedBeforeOperatorContinuationIndent].
+     *
+     * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
+     *
+     * @see expressionsWrappedBeforeOperatorContinuationIndent
+     */
+    @Language("kotlin")
+    private val expressionsWrappedBeforeOperatorSingleIndent = arrayOf(
+        """
+        |fun f() {
+        |    systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        |        or View.SYSTEM_UI_FLAG_FULLSCREEN
+        |        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        |        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        |        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        |        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        |}
+        """.trimMargin(),
+
+        """
+        |val systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        |    or View.SYSTEM_UI_FLAG_FULLSCREEN
+        |    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        |    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        |    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        |    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        """.trimMargin(),
+
+        """
+        |const val FOO = 1
+        |
+        |const val BAR = 2
+        |
+        |const val BAZ = 4
+        |
+        |fun acceptInteger(arg: Int) = Unit
+        |
+        |fun main() {
+        |    acceptInteger(FOO or BAR or BAZ or FOO or BAR or BAZ
+        |        or FOO or BAR or BAZ or FOO or BAR or BAZ or FOO or BAR or BAZ
+        |        or FOO or BAR or BAZ)
+        |}
+        """.trimMargin(),
+
+        """
+        |const val TRUE = true
+        |
+        |const val FALSE = false
+        |
+        |fun acceptBoolean(arg: Boolean) = Unit
+        |
+        |fun f() {
+        |    acceptBoolean(TRUE
+        |        || FALSE
+        |        || TRUE)
+        |}
+        """.trimMargin(),
+
+        """
+        |val c = (3
+        |    + 2)
+        """.trimMargin(),
+
+        """
+        |infix fun Int.combineWith(that: Int) = this + that
+        |
+        |fun f() {
+        |    val x = (1
+        |        combineWith 2
+        |        combineWith 3
+        |        combineWith 4
+        |        combineWith 5
+        |        combineWith 6)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f(i1: Int, i2: Int, i3: Int): Int {
+        |    if (i2 > 0
+        |        && i3 < 0) {
+        |        return 2
+        |    }
+        |    return 0
+        |}
+        """.trimMargin(),
+
+        """
+        |val value1 = (1
+        |    to 2
+        |    to 3)
+        """.trimMargin(),
+
+        """
+        |val value2 =
+        |    (1
+        |        to 2
+        |        to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value3 = identity(1
+        |    to 2
+        |    to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value4 = identity(
+        |    1
+        |        to 2
+        |        to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value5 =
+        |    identity(1
+        |        to 2
+        |        to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |/**
+        | * Line breaks:
+        | *
+        | * 1. before the expression body (`=`),
+        | * 2. before the effective function arguments, and
+        | * 3. on each infix function call ([to]).
+        | */
+        |val value6 =
+        |    identity(
+        |        1
+        |            to 2
+        |            to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value7 = identity(identity(1
+        |    to 2
+        |    to 3))
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value8 = identity(identity(
+        |    1
+        |        to 2
+        |        to 3))
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value9 =
+        |    identity(identity(1
+        |        to 2
+        |        to 3))
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value10 =
+        |    identity(identity(
+        |        1
+        |            to 2
+        |            to 3))
+        """.trimMargin(),
+
+        """
+        |// Same as above, but using a custom getter instead of an explicit initializer.
+        |val value11
+        |    get() =
+        |        (1
+        |            to 2
+        |            to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |// Same as above, but using a custom getter instead of an explicit initializer.
+        |val value12
+        |    get() =
+        |        identity(1
+        |            to 2
+        |            to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |// Same as above, but using a custom getter instead of an explicit initializer.
+        |val value13
+        |    get() =
+        |        identity(identity(1
+        |            to 2
+        |            to 3))
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g(42
+        |        as Integer)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g(""
+        |        as? String?)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    // The dot-qualified expression is always single-indented. 
+        |    ""
+        |        .length
+        |        as Int
+        |}
+        """.trimMargin(),
+    )
+
+    /**
+     * Expressions wrapped before an operator or an infix function, continuation
+     * indent (`extendedIndentAfterOperators` is **on**).
+     *
+     * When adding new code fragments to this list, be sure to also add their
+     * counterparts (preserving order) to [expressionsWrappedBeforeOperatorSingleIndent].
+     *
+     * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
+     *
+     * @see expressionsWrappedBeforeOperatorSingleIndent
+     */
+    @Language("kotlin")
+    private val expressionsWrappedBeforeOperatorContinuationIndent = arrayOf(
+        """
+        |fun f() {
+        |    systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        |            or View.SYSTEM_UI_FLAG_FULLSCREEN
+        |            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        |            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        |            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        |            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        |}
+        """.trimMargin(),
+
+        """
+        |val systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        |        or View.SYSTEM_UI_FLAG_FULLSCREEN
+        |        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        |        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        |        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        |        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        """.trimMargin(),
+
+        """
+        |const val FOO = 1
+        |
+        |const val BAR = 2
+        |
+        |const val BAZ = 4
+        |
+        |fun acceptInteger(arg: Int) = Unit
+        |
+        |fun main() {
+        |    acceptInteger(FOO or BAR or BAZ or FOO or BAR or BAZ
+        |            or FOO or BAR or BAZ or FOO or BAR or BAZ or FOO or BAR or BAZ
+        |            or FOO or BAR or BAZ)
+        |}
+        """.trimMargin(),
+
+        """
+        |const val TRUE = true
+        |
+        |const val FALSE = false
+        |
+        |fun acceptBoolean(arg: Boolean) = Unit
+        |
+        |fun f() {
+        |    acceptBoolean(TRUE
+        |            || FALSE
+        |            || TRUE)
+        |}
+        """.trimMargin(),
+
+        """
+        |val c = (3
+        |        + 2)
+        """.trimMargin(),
+
+        """
+        |infix fun Int.combineWith(that: Int) = this + that
+        |
+        |fun f() {
+        |    val x = (1
+        |            combineWith 2
+        |            combineWith 3
+        |            combineWith 4
+        |            combineWith 5
+        |            combineWith 6)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f(i1: Int, i2: Int, i3: Int): Int {
+        |    if (i2 > 0
+        |            && i3 < 0) {
+        |        return 2
+        |    }
+        |    return 0
+        |}
+        """.trimMargin(),
+
+        """
+        |val value1 = (1
+        |        to 2
+        |        to 3)
+        """.trimMargin(),
+
+        """
+        |val value2 =
+        |    (1
+        |            to 2
+        |            to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value3 = identity(1
+        |        to 2
+        |        to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value4 = identity(
+        |    1
+        |            to 2
+        |            to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value5 =
+        |    identity(1
+        |            to 2
+        |            to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |/**
+        | * Line breaks:
+        | *
+        | * 1. before the expression body (`=`),
+        | * 2. before the effective function arguments, and
+        | * 3. on each infix function call ([to]).
+        | */
+        |val value6 =
+        |    identity(
+        |        1
+        |                to 2
+        |                to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value7 = identity(identity(1
+        |        to 2
+        |        to 3))
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value8 = identity(identity(
+        |    1
+        |            to 2
+        |            to 3))
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value9 =
+        |    identity(identity(1
+        |            to 2
+        |            to 3))
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |val value10 =
+        |    identity(identity(
+        |        1
+        |                to 2
+        |                to 3))
+        """.trimMargin(),
+
+        """
+        |// Same as above, but using a custom getter instead of an explicit initializer.
+        |val value11
+        |    get() =
+        |        (1
+        |                to 2
+        |                to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |// Same as above, but using a custom getter instead of an explicit initializer.
+        |val value12
+        |    get() =
+        |        identity(1
+        |                to 2
+        |                to 3)
+        """.trimMargin(),
+
+        """
+        |fun <T : Any> identity(t: T): T = t
+        |
+        |// Same as above, but using a custom getter instead of an explicit initializer.
+        |val value13
+        |    get() =
+        |        identity(identity(1
+        |                to 2
+        |                to 3))
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g(42
+        |            as Integer)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    g(""
+        |            as? String?)
+        |}
+        """.trimMargin(),
+
+        """
+        |fun f() {
+        |    // The dot-qualified expression is always single-indented. 
+        |    ""
+        |        .length
+        |            as Int
+        |}
+        """.trimMargin(),
+    )
+
+    /**
+     * Expressions wrapped before an operator or an infix function.
+     *
+     * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
+     */
+    val expressionsWrappedBeforeOperator = mapOf(
+        false to expressionsWrappedBeforeOperatorSingleIndent,
+        true to expressionsWrappedBeforeOperatorContinuationIndent)
 
     /**
      * Parenthesized expressions, `extendedIndentForExpressionBodies` is **off**,
