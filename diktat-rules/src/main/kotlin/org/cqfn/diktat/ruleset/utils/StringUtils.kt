@@ -110,8 +110,16 @@ fun String.removePrefix(): String {
 internal fun String.lastIndent() = substringAfterLast(NEWLINE).count(::isSpaceCharacter)
 
 /**
+ * @return the number of leading space characters in this string.
+ */
+internal fun String.leadingSpaceCount(): Int =
+    asSequence()
+        .takeWhile(::isSpaceCharacter)
+        .count()
+
+/**
  * @param ch the character to examine.
  * @return `true` if [ch] is a [SPACE], `false` otherwise.
  */
-internal fun isSpaceCharacter(ch: Char): Boolean =
+private fun isSpaceCharacter(ch: Char): Boolean =
     ch == SPACE

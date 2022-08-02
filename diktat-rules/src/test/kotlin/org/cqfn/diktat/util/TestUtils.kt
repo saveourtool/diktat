@@ -2,8 +2,6 @@
  * Utility classes and methods for tests
  */
 
-@file:Suppress("TOP_LEVEL_ORDER")// False positives
-
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -17,10 +15,13 @@ import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import mu.KotlinLogging
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.AbstractSoftAssertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.opentest4j.MultipleFailuresError
 
 import java.io.File
 import java.nio.file.NoSuchFileException
@@ -51,10 +52,10 @@ typealias LintErrorCallback = (LintError, Boolean) -> Unit
  */
 internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) {
     if (size == expectedLintErrors.size) {
-        Assertions.assertThat(this)
+        assertThat(this)
             .allSatisfy(Consumer { actual ->
                 val expected = expectedLintErrors[this@assertEquals.indexOf(actual)]
-                SoftAssertions.assertSoftly { sa ->
+                assertSoftly { sa ->
                     sa
                         .assertThat(actual.line)
                         .`as`("Line")
@@ -78,113 +79,8 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
                 }
             })
     } else {
-        Assertions.assertThat(this).containsExactly(*expectedLintErrors)
+        assertThat(this).containsExactly(*expectedLintErrors)
     }
-}
-
-/**
- * @param ruleSetProviderRef
- * @param text
- * @param fileName
- * @param rulesConfigList
- * @param cb callback to be called on unhandled [LintError]s
- * @return formatted code
- */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-                    @Language("kotlin") text: String,
-                    fileName: String,
-                    rulesConfigList: List<RulesConfig>? = null,
-                    cb: LintErrorCallback = defaultCallback
-): String {
-    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get())
-    return KtLint.format(
-        KtLint.ExperimentalParams(
-            text = text,
-            ruleSets = ruleSets,
-            fileName = fileName.removeSuffix("_copy"),
-            script = fileName.removeSuffix("_copy").endsWith("kts"),
-            cb = cb,
-            debug = true,
-        )
-    )
-}
-
-/**
- * This utility function lets you run arbitrary code on every node of given [code].
- * It also provides you with counter which can be incremented inside [applyToNode] and then will be compared to [expectedAsserts].
- * This allows you to keep track of how many assertions have actually been run on your code during tests.
- *
- * @param code
- * @param expectedAsserts Number of expected times of assert invocation
- * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
- */
-@OptIn(FeatureInAlphaState::class)
-@Suppress("TYPE_ALIAS")
-internal fun applyToCode(code: String,
-                         expectedAsserts: Int,
-                         applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
-) {
-    val counter = AtomicInteger(0)
-    KtLint.lint(
-        KtLint.ExperimentalParams(
-            text = code,
-            ruleSets = listOf(
-                RuleSet("test", object : Rule("astnode-utils-test") {
-                    override fun visit(node: ASTNode,
-                                       autoCorrect: Boolean,
-                                       emit: EmitType
-                    ) {
-                        applyToNode(node, counter)
-                    }
-                })
-            ),
-            cb = { _, _ -> }
-        )
-    )
-    Assertions
-        .assertThat(counter.get())
-        .`as`("Number of expected asserts")
-        .isEqualTo(expectedAsserts)
-}
-
-/**
- * Retries the execution of the [block].
- *
- * @param attempts the number of attempts (must be positive).
- * @param delayMillis the timeout (in milliseconds) between the consecutive
- *   attempts. The default is 0. Ignored if [attempts] is 1.
- * @param lazyDefault allows to override the return value if none of the
- *   attempts succeeds. By default, the last exception is thrown.
- * @param block the block to execute.
- * @return the result of the execution of the [block], or whatever [lazyDefault]
- *   evaluates to if none of the attempts is successful.
- */
-internal fun <T> retry(
-    attempts: Int,
-    delayMillis: Long = 0L,
-    lazyDefault: (Throwable) -> T = { error -> throw error },
-    block: () -> T
-): T {
-    require(attempts > 0) {
-        "The number of attempts should be positive: $attempts"
-    }
-
-    var lastError: Throwable? = null
-
-    for (i in 1..attempts) {
-        try {
-            return block()
-        } catch (error: Throwable) {
-            lastError = error
-        }
-
-        if (delayMillis > 0L) {
-            Thread.sleep(delayMillis)
-        }
-    }
-
-    return lazyDefault(lastError ?: Exception("The block was never executed"))
 }
 
 /**
@@ -282,4 +178,142 @@ internal fun ProcessBuilder.prependPath(pathEntry: Path) {
     }
 
     environment[pathKey] = newPath
+}
+
+/**
+ * Casts a nullable value to a non-`null` one, similarly to the `!!`
+ * operator.
+ *
+ * @param lazyFailureMessage the message to evaluate in case of a failure.
+ * @return a non-`null` value.
+ */
+internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expecting actual not to be null" }): T =
+    this ?: fail(lazyFailureMessage())
+
+/**
+ * When within a scope of an `AbstractSoftAssertions`, collects failures
+ * thrown by [block], correctly accumulating multiple failures from nested
+ * soft assertions (if any).
+ *
+ * @param block the code block to execute, may throw a [MultipleFailuresError].
+ * @see org.assertj.core.api.AssertionErrorCollector.collectAssertionError
+ */
+internal fun AbstractSoftAssertions.collectAssertionErrors(block: () -> Unit) =
+    try {
+        block()
+    } catch (mfe: MultipleFailuresError) {
+        mfe.failures.forEach { failure ->
+            when (failure) {
+                is AssertionError -> collectAssertionError(failure)
+                else -> fail(failure.toString(), failure)
+            }
+        }
+    } catch (ae: AssertionError) {
+        collectAssertionError(ae)
+    } catch (th: Throwable) {
+        fail(th.toString(), th)
+    }
+
+/**
+ * @param ruleSetProviderRef
+ * @param text
+ * @param fileName
+ * @param rulesConfigList
+ * @param cb callback to be called on unhandled [LintError]s
+ * @return formatted code
+ */
+@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
+internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
+                    @Language("kotlin") text: String,
+                    fileName: String,
+                    rulesConfigList: List<RulesConfig>? = null,
+                    cb: LintErrorCallback = defaultCallback
+): String {
+    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get())
+    return KtLint.format(
+        KtLint.ExperimentalParams(
+            text = text,
+            ruleSets = ruleSets,
+            fileName = fileName.removeSuffix("_copy"),
+            script = fileName.removeSuffix("_copy").endsWith("kts"),
+            cb = cb,
+            debug = true,
+        )
+    )
+}
+
+/**
+ * This utility function lets you run arbitrary code on every node of given [code].
+ * It also provides you with counter which can be incremented inside [applyToNode] and then will be compared to [expectedAsserts].
+ * This allows you to keep track of how many assertions have actually been run on your code during tests.
+ *
+ * @param code
+ * @param expectedAsserts Number of expected times of assert invocation
+ * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
+ */
+@OptIn(FeatureInAlphaState::class)
+@Suppress("TYPE_ALIAS")
+internal fun applyToCode(code: String,
+                         expectedAsserts: Int,
+                         applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
+) {
+    val counter = AtomicInteger(0)
+    KtLint.lint(
+        KtLint.ExperimentalParams(
+            text = code,
+            ruleSets = listOf(
+                RuleSet("test", object : Rule("astnode-utils-test") {
+                    override fun visit(node: ASTNode,
+                                       autoCorrect: Boolean,
+                                       emit: EmitType
+                    ) {
+                        applyToNode(node, counter)
+                    }
+                })
+            ),
+            cb = { _, _ -> }
+        )
+    )
+    assertThat(counter.get())
+        .`as`("Number of expected asserts")
+        .isEqualTo(expectedAsserts)
+}
+
+/**
+ * Retries the execution of the [block].
+ *
+ * @param attempts the number of attempts (must be positive).
+ * @param delayMillis the timeout (in milliseconds) between the consecutive
+ *   attempts. The default is 0. Ignored if [attempts] is 1.
+ * @param lazyDefault allows to override the return value if none of the
+ *   attempts succeeds. By default, the last exception is thrown.
+ * @param block the block to execute.
+ * @return the result of the execution of the [block], or whatever [lazyDefault]
+ *   evaluates to if none of the attempts is successful.
+ */
+internal fun <T> retry(
+    attempts: Int,
+    delayMillis: Long = 0L,
+    lazyDefault: (Throwable) -> T = { error -> throw error },
+    block: () -> T
+): T {
+    require(attempts > 0) {
+        "The number of attempts should be positive: $attempts"
+    }
+
+    var lastError: Throwable? = null
+
+    for (i in 1..attempts) {
+        try {
+            return block()
+        } catch (error: Throwable) {
+            lastError = error
+        }
+
+        if (delayMillis > 0L) {
+            Thread.sleep(delayMillis)
+        }
+    }
+
+    return lazyDefault(lastError ?: Exception("The block was never executed"))
 }

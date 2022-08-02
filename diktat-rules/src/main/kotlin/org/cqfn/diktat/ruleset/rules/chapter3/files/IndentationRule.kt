@@ -31,8 +31,8 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
-import org.cqfn.diktat.ruleset.utils.isSpaceCharacter
 import org.cqfn.diktat.ruleset.utils.lastIndent
+import org.cqfn.diktat.ruleset.utils.leadingSpaceCount
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -782,14 +782,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
             return this
         }
-
-        /**
-         * @return the number of leading space characters in this string.
-         */
-        private fun String.leadingSpaceCount(): Int =
-            asSequence()
-                .takeWhile(::isSpaceCharacter)
-                .count()
 
         /**
          * @return this very integer if non-negative, 0 otherwise.

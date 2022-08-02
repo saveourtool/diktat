@@ -1,11 +1,13 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-
+import org.cqfn.diktat.ruleset.chapter3.spaces.asSequenceWithConcatenation
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
+import org.assertj.core.api.AbstractSoftAssertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
 
 /**
@@ -16,22 +18,37 @@ import org.intellij.lang.annotations.Language
 open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                         private val rulesConfigList: List<RulesConfig>? = null) {
     /**
-     * Perform linting of [code], collect errors and compare with [lintErrors]
+     * Perform linting of [code], collect errors and compare with [expectedLintErrors]
      *
      * @param code code to check
-     * @param lintErrors expected errors
+     * @param expectedLintErrors expected errors
      * @param rulesConfigList optional override for `this.rulesConfigList`
      * @param fileName optional override for file name
      * @see lintResult
      */
     fun lintMethod(@Language("kotlin") code: String,
-                   vararg lintErrors: LintError,
+                   vararg expectedLintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null
     ) {
-        assertThat(lintResult(code, rulesConfigList, fileName))
-            .describedAs("lint result for \"$code\"")
-            .containsExactly(*lintErrors)
+        val actualLintErrors = lintResult(code, rulesConfigList, fileName)
+
+        val description = "lint result for \"$code\""
+
+        when {
+            expectedLintErrors.size == 1 && actualLintErrors.size == 1 -> assertThat(actualLintErrors[0])
+                .describedAs(description)
+                .isEqualTo(expectedLintErrors[0])
+
+            else -> assertThat(actualLintErrors)
+                .describedAs(description)
+                .apply {
+                    when {
+                        expectedLintErrors.isEmpty() -> isEmpty()
+                        else -> containsExactly(*expectedLintErrors)
+                    }
+                }
+        }
     }
 
     /**
@@ -64,5 +81,65 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         )
 
         return lintErrors
+    }
+
+    /**
+     * Tests multiple code [fragments] using the same
+     * [rule configuration][rulesConfigList].
+     *
+     * All code fragments get concatenated together and the resulting, bigger
+     * fragment gets tested, too.
+     *
+     * @param fragments the code fragments to check.
+     * @param lintErrors the expected lint errors.
+     * @param rulesConfigList the list of rules which can optionally override
+     *   the [default value][LintTestBase.rulesConfigList].
+     * @param fileName the optional override for a file name,
+     * @see lintMethod
+     */
+    protected fun lintMultipleMethods(
+        @Language("kotlin") fragments: Array<String>,
+        vararg lintErrors: LintError,
+        rulesConfigList: List<RulesConfig>? = null,
+        fileName: String? = null
+    ) {
+        require(fragments.isNotEmpty()) {
+            "code fragments is an empty array"
+        }
+
+        assertSoftly { softly ->
+            fragments.asSequenceWithConcatenation().forEach { fragment ->
+                softly.lintMethodSoftly(
+                    fragment,
+                    lintErrors = lintErrors,
+                    rulesConfigList,
+                    fileName
+                )
+            }
+        }
+    }
+
+    /**
+     * Similar to [lintMethod], but can be invoked from a scope of
+     * `AbstractSoftAssertions` in order to accumulate test results from linting
+     * _multiple_ code fragments.
+     *
+     * @param rulesConfigList the list of rules which can optionally override
+     *   the [default value][LintTestBase.rulesConfigList].
+     * @see lintMethod
+     */
+    private fun AbstractSoftAssertions.lintMethodSoftly(
+        @Language("kotlin") code: String,
+        vararg lintErrors: LintError,
+        rulesConfigList: List<RulesConfig>? = null,
+        fileName: String? = null
+    ) {
+        require(code.isNotBlank()) {
+            "code is blank"
+        }
+
+        collectAssertionErrors {
+            lintMethod(code, expectedLintErrors = lintErrors, rulesConfigList, fileName)
+        }
     }
 }

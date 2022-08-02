@@ -96,14 +96,12 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         }
     }
 
-    @Suppress("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")  // False positives
     companion object {
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        private val logger = KotlinLogging.loggerWithKtlintConfig { }
         private const val BUILD_DIRECTORY = "target"
         private const val FAT_JAR_GLOB = "diktat-rules-*-fat-jar-for-smoke-tests.jar"
         private const val KTLINT_VERSION = "0.46.1"
-
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val logger = KotlinLogging.loggerWithKtlintConfig { }
         private val baseDirectory = Path("src/test/resources/test/smoke").absolute()
 
         private fun getSaveForCurrentOs(): String {
