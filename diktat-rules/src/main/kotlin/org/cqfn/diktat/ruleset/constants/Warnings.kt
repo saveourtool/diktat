@@ -81,6 +81,8 @@ enum class Warnings(
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
     KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER(true, "2.1.1", "only properties from the primary constructor should be documented in a @property tag in class KDoc"),
     KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
+    KDOC_DUPLICATE_PROPERTY(false, "2.1.1", "There is property in KDoc which is already present"),
+    KDOC_INCORRECT_TAG(false, "2.1.1", "There is incorrect tag in KDoc: see difference between @property and @param"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
     KDOC_CONTAINS_DATE_OR_AUTHOR(false, "2.1.3", "KDoc should not contain creation date and author name"),
     HEADER_WRONG_FORMAT(true, "2.2.1", "file header comments should be properly formatted"),

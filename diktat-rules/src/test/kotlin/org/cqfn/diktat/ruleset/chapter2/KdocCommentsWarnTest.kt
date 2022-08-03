@@ -619,4 +619,78 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimMargin()
         )
     }
+
+    @Test
+    fun `should warn if there are duplicate param tags`() {
+        lintMethod(
+            """
+                |/**
+                | * @param field1 description1
+                | * @param field2 description2
+                | * @param field2
+                | */
+                |fun foo(field1: Long, field2: Int) {
+                |    //
+                |}
+            """.trimMargin(),
+            LintError(4, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} param2"),
+        )
+    }
+
+
+    @Test
+    fun `should warn if there are duplicate property tags`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1
+                | * @property field2
+                | * @property field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(4, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} field2"),
+        )
+    }
+
+    @Test
+    fun `should warn if there is incorrect tag 1`() {
+        lintMethod(
+            """
+                |/**
+                | * @param field1
+                | * @property field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(3, 1, ruleId, "${Warnings.KDOC_INCORRECT_TAG.warnText()} field1"),
+        )
+    }
+
+    @Test
+    fun `should warn if there is incorrect tag 2`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1
+                | * @property field2
+                | * @param field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(4, 1, ruleId, "${Warnings.KDOC_INCORRECT_TAG.warnText()} field2"),
+        )
+    }
 }
