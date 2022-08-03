@@ -8,6 +8,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_INCORRECT_TAG
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.util.LintTestBase
 
@@ -633,7 +635,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    //
                 |}
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} param2"),
+            LintError(4, 1, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} param2"),
         )
     }
 
@@ -653,7 +655,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} field2"),
+            LintError(4, 1, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} field2"),
         )
     }
 
@@ -671,7 +673,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${Warnings.KDOC_INCORRECT_TAG.warnText()} field1"),
+            LintError(3, 1, ruleId, "${KDOC_INCORRECT_TAG.warnText()} field1"),
         )
     }
 
@@ -690,7 +692,25 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${Warnings.KDOC_INCORRECT_TAG.warnText()} field2"),
+            LintError(4, 1, ruleId, "${KDOC_INCORRECT_TAG.warnText()} field2"),
+        )
+    }
+
+    @Test
+    fun `should warn if there is incorrect tag 3`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1 description1
+                | * @property field2 description2
+                | * @param field2
+                | */
+                |fun foo(field1: Long, field2: Int) {
+                |    //
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${KDOC_INCORRECT_TAG.warnText()} field1"),
+            LintError(2, 1, ruleId, "${KDOC_INCORRECT_TAG.warnText()} field2"),
         )
     }
 }
