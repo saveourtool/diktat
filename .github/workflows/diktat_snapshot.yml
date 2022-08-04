@@ -37,7 +37,7 @@ jobs:
           mvn -B versions:set -DnewVersion=$base_version-pre
       - name: Build and install
         # install diktat with version 'base_version-pre' to local maven repo
-        run: mvn -B clean install -DskipTests=true --projects diktat-maven-plugin --also-make
+        run: mvn -B -Dstyle.color=always clean install -DskipTests=true --projects diktat-maven-plugin --also-make
       - name: Revert project version and set proper version for diktat check
         # revert project version to avoid cycle dependency
         # set diktat version in plugin dependencies to the version which was built in the previous step
@@ -46,7 +46,7 @@ jobs:
           mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via maven plugin
         run: |
-          mvn -B diktat:check@diktat -Ddiktat.debug=true -Ddiktat.githubActions=true
+          mvn -B -Dstyle.color=always diktat:check@diktat -Ddiktat.debug=true -Ddiktat.githubActions=true
       - name: Upload SARIF to Github using the upload-sarif action
         uses: github/codeql-action/upload-sarif@v2
         if: ${{ always() }}
