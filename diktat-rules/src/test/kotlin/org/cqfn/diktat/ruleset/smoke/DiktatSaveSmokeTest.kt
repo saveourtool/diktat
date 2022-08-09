@@ -186,7 +186,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             downloadFile(URL("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}"), save)
             downloadFile(URL("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint"), ktlint)
 
-            diktatFrom?.copyTo(diktat)
+            diktatFrom?.copyTo(diktat, overwrite = true)
         }
 
         @AfterAll
