@@ -9,5 +9,7 @@ import org.junit.platform.suite.api.Suite
 @Suite
 @SelectClasses(
     IndentationRuleWarnTest::class,
-    IndentationRuleFixTest::class)
+    IndentationRuleFixTest::class,
+    IndentationRuleTest::class,
+)
 class IndentationRuleTestSuite
