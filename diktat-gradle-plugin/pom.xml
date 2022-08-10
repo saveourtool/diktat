@@ -67,6 +67,7 @@
                         <phase>test</phase>
                         <configuration>
                             <executable>${gradle.executable}</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>test</argument>
@@ -89,6 +90,7 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <executable>${gradle.executable}</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>${gradle.task}</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
