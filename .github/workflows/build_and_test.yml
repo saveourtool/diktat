@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             maven-build-
       - name: Maven Install
-        run: mvn -B clean install
+        run: mvn -B -Dstyle.color=always clean install
       - name: Code coverage report
         uses: codecov/codecov-action@v3
         with:
@@ -150,13 +150,13 @@ jobs:
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          mvn -B -T1C clean install
+          mvn -B -Dstyle.color=always -T1C clean install
         shell: bash
 
       - name: Maven Install on windows
         if: runner.os == 'Windows'
         run: |
-          mvn -B -T1C clean install
+          mvn -B -Dstyle.color=always -T1C clean install
         shell: cmd
 
         # This step needs a Git repository, so it's impossible to extract it
