@@ -14,13 +14,12 @@
     <packaging>pom</packaging>
 
     <properties>
-        <gradle.executable>${project.basedir}/gradlew</gradle.executable>
+        <gradle.workingDir>${project.basedir}</gradle.workingDir>
+        <gradle.executable>gradlew</gradle.executable>
         <gradle.task>build</gradle.task>
         <gradle.builddir>build</gradle.builddir>
         <skip.gradle.build>false</skip.gradle.build>
         <skip.gradle.test>false</skip.gradle.test>
-        <!-- This property is set to excluded task in the specific build profile -->
-        <gradle.exclude.check></gradle.exclude.check>
     </properties>
 
     <dependencies>
@@ -61,13 +60,15 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <inherited>false</inherited>
+                <configuration>
+                    <executable>${gradle.executable}</executable>
+                    <workingDirectory>${gradle.workingDir}/</workingDirectory>
+                </configuration>
                 <executions>
                     <execution>
                         <id>gradle-test</id>
                         <phase>test</phase>
                         <configuration>
-                            <executable>${gradle.executable}</executable>
-                            <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>test</argument>
@@ -89,8 +90,6 @@
                         <id>gradle</id>
                         <phase>prepare-package</phase>
                         <configuration>
-                            <executable>${gradle.executable}</executable>
-                            <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>${gradle.task}</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
@@ -100,7 +99,8 @@
                                 <argument>-PjunitVersion=${junit.version}</argument>
                                 <argument>-PjacocoVersion=${jacoco.version}</argument>
                                 <argument>-S</argument>
-                                <argument>${gradle.exclude.check}</argument>
+                                <!-- This argument can be set to excluded task in the specific build profile -->
+<!--                                <argument></argument>-->
                             </arguments>
                             <skip>${skip.gradle.build}</skip>
                         </configuration>
@@ -187,7 +187,7 @@
                 </os>
             </activation>
             <properties>
-                <gradle.executable>${project.basedir}/gradlew.bat</gradle.executable>
+                <gradle.executable>gradlew.bat</gradle.executable>
             </properties>
         </profile>
         <profile>
