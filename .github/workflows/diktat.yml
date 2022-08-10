@@ -35,4 +35,4 @@ jobs:
           DIKTAT_CONFIG=diktat-analysis.yml
           wget -O $DIKTAT_CONFIG https://raw.githubusercontent.com/saveourtool/diKTat/$LATEST_TAG/$DIKTAT_CONFIG
       - name: Run diktat via maven plugin
-        run: mvn -B diktat:check@diktat -DskipPluginMarker
+        run: mvn -B -Dstyle.color=always diktat:check@diktat -DskipPluginMarker
