@@ -1,6 +1,8 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")// False positives, see #1494.
+
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
+import org.cqfn.diktat.ruleset.junit.NaturalDisplayName
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.EXTENDED
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.NONE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.SINGLE
@@ -8,12 +10,13 @@ import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationConfigAware.Facto
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.INDENTATION_SIZE
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.MethodOrderer.DisplayName
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-@TestMethodOrder(DisplayName::class)
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationConfigFactory as IndentationConfig
+
+@TestMethodOrder(NaturalDisplayName::class)
 class IndentationConfigAwareTest {
     @ParameterizedTest(name = "$INDENTATION_SIZE = {0}")
     @ValueSource(ints = [2, 4, 8])

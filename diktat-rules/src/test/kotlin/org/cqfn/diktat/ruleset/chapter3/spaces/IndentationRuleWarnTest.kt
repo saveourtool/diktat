@@ -2,12 +2,6 @@ package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asRulesConfigList
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asSequenceWithConcatenation
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.assertNotNull
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.withCustomParameters
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.dotQualifiedExpressions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperator
@@ -15,6 +9,7 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expr
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.ifExpressions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.parenthesesSurroundedInfixExpressions
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.junit.NaturalDisplayName
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.ALIGNED_PARAMETERS
@@ -25,14 +20,13 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.INDENTATION_SIZE
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
 import org.cqfn.diktat.util.LintTestBase
+import org.cqfn.diktat.util.assertNotNull
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.assertj.core.api.AbstractSoftAssertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.MethodOrderer.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -40,12 +34,11 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.opentest4j.MultipleFailuresError
 
 import java.util.function.Consumer
 
 @Suppress("LargeClass")
-@TestMethodOrder(DisplayName::class)
+@TestMethodOrder(NaturalDisplayName::class)
 class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
     private val rulesConfigList = listOf(
@@ -738,86 +731,6 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
      */
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 
-    /**
-     * When within a scope of an `AbstractSoftAssertions`, collects failures
-     * thrown by [block], correctly accumulating multiple failures from nested
-     * soft assertions (if any).
-     *
-     * @see org.assertj.core.api.AssertionErrorCollector.collectAssertionError
-     */
-    private fun AbstractSoftAssertions.collectAssertionErrors(block: () -> Unit) =
-        try {
-            block()
-        } catch (mfe: MultipleFailuresError) {
-            mfe.failures.forEach { failure ->
-                when (failure) {
-                    is AssertionError -> collectAssertionError(failure)
-                    else -> fail(failure.toString(), failure)
-                }
-            }
-        } catch (ae: AssertionError) {
-            collectAssertionError(ae)
-        } catch (th: Throwable) {
-            fail(th.toString(), th)
-        }
-
-    /**
-     * Similar to [lintMethod], but can be invoked from a scope of
-     * `AbstractSoftAssertions` in order to accumulate test results from linting
-     * _multiple_ code fragments.
-     *
-     * @param rulesConfigList the list of rules which can optionally override
-     *   the [default value][LintTestBase.rulesConfigList].
-     * @see lintMethod
-     */
-    private fun AbstractSoftAssertions.lintMethodSoftly(
-        @Language("kotlin") code: String,
-        vararg lintErrors: LintError,
-        rulesConfigList: List<RulesConfig>? = null,
-        fileName: String? = null
-    ) {
-        require(code.isNotBlank()) {
-            "code is blank"
-        }
-
-        collectAssertionErrors {
-            lintMethod(code, lintErrors = lintErrors, rulesConfigList, fileName)
-        }
-    }
-
-    /**
-     * Tests multiple code [fragments] using the same
-     * [rule configuration][rulesConfigList].
-     *
-     * All code fragments get concatenated together and the resulting, bigger
-     * fragment gets tested, too.
-     *
-     * @param rulesConfigList the list of rules which can optionally override
-     *   the [default value][LintTestBase.rulesConfigList].
-     * @see lintMethod
-     */
-    private fun lintMultipleMethods(
-        @Language("kotlin") fragments: Array<String>,
-        vararg lintErrors: LintError,
-        rulesConfigList: List<RulesConfig>? = null,
-        fileName: String? = null
-    ) {
-        require(fragments.isNotEmpty()) {
-            "code fragments is an empty array"
-        }
-
-        assertSoftly { softly ->
-            fragments.asSequenceWithConcatenation().forEach { fragment ->
-                softly.lintMethodSoftly(
-                    fragment,
-                    lintErrors = lintErrors,
-                    rulesConfigList,
-                    fileName
-                )
-            }
-        }
-    }
-
     companion object {
         /**
          * @see warnText
@@ -830,7 +743,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
      * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Expression body functions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}")
         @ValueSource(booleans = [false, true])
@@ -872,7 +785,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
      * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Expressions wrapped after operator` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])
@@ -914,7 +827,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
      * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Expressions wrapped before operator` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])
@@ -956,7 +869,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
      * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Parentheses-surrounded infix expressions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}, $EXTENDED_INDENT_AFTER_OPERATORS = {1}")
         @CsvSource(value = ["false,true", "true,false"])
@@ -1009,7 +922,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
      * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Dot- and safe-qualified expressions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_BEFORE_DOT = {0}")
         @ValueSource(booleans = [false, true])
@@ -1048,7 +961,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     }
 
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `If expressions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])

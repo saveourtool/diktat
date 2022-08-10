@@ -102,21 +102,20 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
         internal const val INDENTATION_SIZE = "indentationSize"
         internal const val NEWLINE_AT_END = "newlineAtEnd"
 
-        @Suppress(
-            "CUSTOM_GETTERS_SETTERS",
-            "STRING_TEMPLATE_QUOTES",
-        )
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val IndentationConfig.configWithExplicitDefaults: Map<String, String>
             get() =
-                mutableMapOf<String, String>().apply {
+                mutableMapOf<String, Any>().apply {
                     putAll(config)
-                    putIfAbsent(ALIGNED_PARAMETERS, "$alignedParameters")
-                    putIfAbsent(EXTENDED_INDENT_AFTER_OPERATORS, "$extendedIndentAfterOperators")
-                    putIfAbsent(EXTENDED_INDENT_BEFORE_DOT, "$extendedIndentBeforeDot")
-                    putIfAbsent(EXTENDED_INDENT_FOR_EXPRESSION_BODIES, "$extendedIndentForExpressionBodies")
-                    putIfAbsent(EXTENDED_INDENT_OF_PARAMETERS, "$extendedIndentOfParameters")
-                    putIfAbsent(INDENTATION_SIZE, "$indentationSize")
-                    putIfAbsent(NEWLINE_AT_END, "$newlineAtEnd")
+                    putIfAbsent(ALIGNED_PARAMETERS, alignedParameters)
+                    putIfAbsent(EXTENDED_INDENT_AFTER_OPERATORS, extendedIndentAfterOperators)
+                    putIfAbsent(EXTENDED_INDENT_BEFORE_DOT, extendedIndentBeforeDot)
+                    putIfAbsent(EXTENDED_INDENT_FOR_EXPRESSION_BODIES, extendedIndentForExpressionBodies)
+                    putIfAbsent(EXTENDED_INDENT_OF_PARAMETERS, extendedIndentOfParameters)
+                    putIfAbsent(INDENTATION_SIZE, indentationSize)
+                    putIfAbsent(NEWLINE_AT_END, newlineAtEnd)
+                }.mapValues { (_, value) ->
+                    value.toString()
                 }
     }
 }

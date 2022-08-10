@@ -1,11 +1,13 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")// False positives, see #1494.
+
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
-
 import org.intellij.lang.annotations.Language
+
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationConfigFactory as IndentationConfig
 
 /**
  * Test resources shared by [IndentationRuleWarnTest] and

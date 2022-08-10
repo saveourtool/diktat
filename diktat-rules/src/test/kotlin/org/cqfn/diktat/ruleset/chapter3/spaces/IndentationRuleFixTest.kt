@@ -1,13 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asRulesConfigList
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asSequenceWithConcatenation
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.assertNotNull
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.extendedIndent
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.withCustomParameters
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.dotQualifiedExpressions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperator
@@ -15,6 +8,7 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expr
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.parenthesesSurroundedInfixExpressions
 import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.whitespaceInStringLiterals
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.junit.NaturalDisplayName
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.ALIGNED_PARAMETERS
@@ -24,11 +18,11 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
 import org.cqfn.diktat.util.FixTestBase
+import org.cqfn.diktat.util.assertNotNull
 
 import generated.WarningNames
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.MethodOrderer.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -40,7 +34,7 @@ import org.junit.jupiter.params.provider.ValueSource
 
 import java.nio.file.Path
 
-@TestMethodOrder(DisplayName::class)
+@TestMethodOrder(NaturalDisplayName::class)
 class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     ::IndentationRule,
     listOf(
@@ -128,7 +122,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
      * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Expression body functions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}")
         @ValueSource(booleans = [false, true])
@@ -162,7 +156,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
      * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Multi-line string literals` {
         @ParameterizedTest(name = "extendedIndent = {0}")
         @ValueSource(booleans = [false, true])
@@ -196,7 +190,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
      * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Expressions wrapped after operator` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])
@@ -230,7 +224,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
      * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Expressions wrapped before operator` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_AFTER_OPERATORS = {0}")
         @ValueSource(booleans = [false, true])
@@ -264,7 +258,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
      * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Parentheses-surrounded infix expressions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_FOR_EXPRESSION_BODIES = {0}, $EXTENDED_INDENT_AFTER_OPERATORS = {1}")
         @CsvSource(value = ["false,true", "true,false"])
@@ -316,7 +310,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
      * See [#1336](https://github.com/saveourtool/diktat/issues/1336).
      */
     @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Dot- and safe-qualified expressions` {
         @ParameterizedTest(name = "$EXTENDED_INDENT_BEFORE_DOT = {0}")
         @ValueSource(booleans = [false, true])
