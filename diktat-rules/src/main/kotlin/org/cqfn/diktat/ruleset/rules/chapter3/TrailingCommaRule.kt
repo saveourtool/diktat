@@ -101,7 +101,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun ASTNode.checkTrailingComma(config: Boolean) {
         val shouldFix = this.siblings(true).toList().run {
-            !this.map { it.elementType }.contains(COMMA) && this.find { it.isWhiteSpaceWithNewline() || it.isPartOfComment() } != null
+            !this.map { it.elementType }.contains(COMMA) && this.any { it.isWhiteSpaceWithNewline() || it.isPartOfComment() }
         }
         if (shouldFix && config) {
             // we should write type of node in warning, to make it easier for user to find the parameter

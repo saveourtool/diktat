@@ -198,7 +198,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         val kdocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
         val basicTagsOrdered = basicTagsList.filter { basicTag ->
-            kdocTags.find { it.knownTag == basicTag } != null
+            kdocTags.any { it.knownTag == basicTag }
         }
         // all basic tags from current KDoc
         val basicTags = kdocTags.filter { basicTagsOrdered.contains(it.knownTag) }

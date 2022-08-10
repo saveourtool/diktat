@@ -98,10 +98,10 @@ class RulesConfigYamlTest {
 
         allRulesFromConfig.forEach { warning ->
             val warningName = warning.name
-            val ruleFound = allRulesFromCode.find { it.ruleName() == warningName || warningName == "DIKTAT_COMMON" } != null
+            val ruleFound = allRulesFromCode.any { it.ruleName() == warningName || warningName == "DIKTAT_COMMON" }
             Assertions.assertTrue(ruleFound) {
                 """
-                    Found rule (warning) in $filePath: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
+                    Found rule (warning) in $filePath: <$warningName> that does not exist in the code. Misprint or configuration was renamed?
                 """.trimIndent()
             }
         }
