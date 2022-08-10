@@ -110,7 +110,7 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
                     .filter { it.left is KtNameReferenceExpression }
                     .filter { statement ->
                         statement.right?.node?.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)?.all { arg ->
-                            propertiesFromClassBody.any { (it.psi as KtProperty).name == arg.text } || propertiesFromPrimaryConstructor?.find { it == arg.text } != null
+                            propertiesFromClassBody.any { (it.psi as KtProperty).name == arg.text } || propertiesFromPrimaryConstructor?.any { it == arg.text } == true
                         } ?: false
                     }
                     .groupBy { assignment ->

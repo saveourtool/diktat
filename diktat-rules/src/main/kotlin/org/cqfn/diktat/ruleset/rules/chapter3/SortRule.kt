@@ -117,15 +117,14 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("TYPE_ALIAS")
     private fun createOrderListOfList(propertyList: List<ASTNode>): List<List<ASTNode>> {
-        var oneOrderList = mutableListOf(propertyList.first())
+        val oneOrderList = mutableListOf(propertyList.first())
         val orderListOfList: MutableList<MutableList<ASTNode>> = mutableListOf()
         propertyList.zipWithNext().forEach { (currentProperty, nextProperty) ->
-            if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {
-                oneOrderList.add(nextProperty)
-            } else {
-                orderListOfList.add(oneOrderList)
-                oneOrderList = mutableListOf(nextProperty)
+            if (currentProperty.nextSibling { it.elementType == PROPERTY } != nextProperty) {
+                orderListOfList.add(oneOrderList.toMutableList())
+                oneOrderList.clear()
             }
+            oneOrderList.add(nextProperty)
         }
         orderListOfList.add(oneOrderList)
         return orderListOfList.toList()

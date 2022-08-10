@@ -65,7 +65,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
                     this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
         }
         val isExtensionFunctions = node.parent({ it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() }) != null &&
-                node.parents().find { it.elementType == PROPERTY } == null
+                node.parents().none { it.elementType == PROPERTY }
         val result = listOf(isHashFunction, isPropertyDeclaration, isLocalVariable, isValueParameter, isConstant,
             isCompanionObjectProperty, isEnums, isRanges, isExtensionFunctions).zip(mapConfiguration.map { configuration.getParameter(it.key) })
         if (result.any { it.first && it.first != it.second } && !isIgnoreNumber) {

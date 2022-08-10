@@ -33,7 +33,7 @@ class AvailableRulesDocTest {
 
         allRulesFromCode.forEach { warning ->
             val ruleName = warning.ruleName()
-            val ruleFound = allRulesFromDoc.find { it.trim() == ruleName } != null
+            val ruleFound = allRulesFromDoc.any { it.trim() == ruleName }
             Assertions.assertTrue(ruleFound) {
                 val docs = "| | | $ruleName" +
                         "|  |  |  | |"
@@ -47,10 +47,10 @@ class AvailableRulesDocTest {
 
         allRulesFromDoc.forEach { warning ->
             val trimmedWarning = warning.trim()
-            val ruleFound = allRulesFromCode.find { it.ruleName() == trimmedWarning } != null
+            val ruleFound = allRulesFromCode.any { it.ruleName() == trimmedWarning }
             Assertions.assertTrue(ruleFound) {
                 """
-                    Found rule (warning) in documentation: <$trimmedWarning> that does not exist in the code. Misprint or configuration was renamed? 
+                    Found rule (warning) in documentation: <$trimmedWarning> that does not exist in the code. Misprint or configuration was renamed?
                 """.trimIndent()
             }
         }

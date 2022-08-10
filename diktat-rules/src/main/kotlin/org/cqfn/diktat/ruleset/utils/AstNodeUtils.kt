@@ -702,12 +702,11 @@ fun List<ASTNode>.handleIncorrectOrder(
  */
 @Suppress("WRONG_NEWLINES")
 fun ASTNode.extractLineOfText(): String {
-    var text: MutableList<String> = mutableListOf()
+    val text: MutableList<String> = mutableListOf()
     siblings(false)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
-        .forEach { text.add(it.last()) }
-    text = text.asReversed()
+        .forEach { text.add(0, it.last()) }
     text.add(this.text)
     val nextNode = parent({ it.treeNext != null }, false) ?: this
     nextNode.siblings(true)
