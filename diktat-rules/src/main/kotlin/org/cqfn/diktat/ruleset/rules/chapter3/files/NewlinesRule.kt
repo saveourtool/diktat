@@ -641,15 +641,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             return false
         }
         val callsByNewLine: ListOfList = mutableListOf()
-        var callsInOneNewLine: MutableList<ASTNode> = mutableListOf()
+        val callsInOneNewLine: MutableList<ASTNode> = mutableListOf()
         this.forEach { astNode ->
             if (astNode.treePrev.isFollowedByNewline() || astNode.treePrev.isWhiteSpaceWithNewline()) {
-                callsByNewLine.add(callsInOneNewLine)
-                callsInOneNewLine = mutableListOf()
-                callsInOneNewLine.add(astNode)
-            } else {
-                callsInOneNewLine.add(astNode)
+                callsByNewLine.add(callsInOneNewLine.toMutableList())
+                callsInOneNewLine.clear()
             }
+            callsInOneNewLine.add(astNode)
             if (astNode.treePrev.elementType == POSTFIX_EXPRESSION && !astNode.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1) {
                 return true
             }
