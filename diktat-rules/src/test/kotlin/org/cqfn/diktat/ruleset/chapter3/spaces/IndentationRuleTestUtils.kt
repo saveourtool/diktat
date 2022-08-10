@@ -1,3 +1,4 @@
+@file:JvmName("IndentationRuleTestUtils")
 @file:Suppress("HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE")
 
 package org.cqfn.diktat.ruleset.chapter3.spaces
@@ -64,19 +65,6 @@ internal fun Map<String, String>.asRulesConfigList(): List<RulesConfig> =
     )
 
 /**
- * @return a sequence which returns the elements of this array and,
- *   additionally, the result of concatenation of all the elements.
- */
-internal fun Array<String>.asSequenceWithConcatenation(): Sequence<String> =
-    sequence {
-        yieldAll(asSequence())
-
-        if (size > 1) {
-            yield(concatenated())
-        }
-    }
-
-/**
  * @return a brief description of this code fragment.
  */
 internal fun String.describe(): String {
@@ -95,36 +83,3 @@ internal fun String.describe(): String {
         else -> "\"$first\u2026\" ($count line(s))"
     }
 }
-
-/**
- * @return the concatenated content of this array (elements separated with
- *   blank lines).
- */
-private fun Array<String>.concatenated(): String =
-    joinToString(separator = "$NEWLINE$NEWLINE")
-
-/**
- * Creates an `IndentationConfig` from zero or more
- * [config entries][configEntries]. Invoke without arguments to create a
- * default `IndentationConfig`.
- *
- * @param configEntries the configuration entries to create this instance from.
- * @see [IndentationConfig]
- */
-@Suppress("TestFunctionName", "FUNCTION_NAME_INCORRECT_CASE")
-internal fun IndentationConfig(vararg configEntries: Pair<String, Any>): IndentationConfig =
-    IndentationConfigFactory(*configEntries)
-
-/**
- * Allows to simultaneously enable or disable _all_ `extendedIndent*` flags.
- *
- * @param enabled whether the _continuation indent_ should be enabled or
- *   disabled.
- * @return an array of map entries.
- */
-internal fun extendedIndent(enabled: Boolean): Array<Pair<String, Any>> =
-    arrayOf(
-        EXTENDED_INDENT_OF_PARAMETERS to enabled,
-        EXTENDED_INDENT_FOR_EXPRESSION_BODIES to enabled,
-        EXTENDED_INDENT_AFTER_OPERATORS to enabled,
-        EXTENDED_INDENT_BEFORE_DOT to enabled)

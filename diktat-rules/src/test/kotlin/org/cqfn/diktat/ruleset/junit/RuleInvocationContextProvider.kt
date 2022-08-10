@@ -76,11 +76,16 @@ interface RuleInvocationContextProvider<A : Annotation, out E : ExpectedLintErro
      * @param code the annotated code.
      * @param supportedTags the list of check names that should be recognized
      *   (implementation-dependent).
+     * @param includeWarnTests whether unit tests for the "warn" mode should also
+     *   be generated. If `false`, only fix mode tests get generated.
      * @return the list of expected errors as well as the filtered code.
      * @see expectedLintErrorFrom
      */
     @Suppress("TOO_LONG_FUNCTION")
-    fun extractExpectedErrors(@Language("kotlin") code: String, supportedTags: List<String>): ExpectedLintErrors<E> {
+    fun extractExpectedErrors(@Language("kotlin") code: String,
+                              supportedTags: List<String>,
+                              includeWarnTests: Boolean
+    ): ExpectedLintErrors<E> {
         require(supportedTags.isNotEmpty()) {
             "The list of supported tags is empty"
         }
@@ -115,10 +120,12 @@ interface RuleInvocationContextProvider<A : Annotation, out E : ExpectedLintErro
             1 -> supportedTags[0]
             else -> "any of $supportedTags"
         }
-        assertThat(expectedErrors)
-            .describedAs("The code contains no expected-error annotations or an unsupported tag is used (should be $supportedTagsDescription). " +
-                    "Please annotate your code:$NEWLINE$filteredCode")
-            .isNotEmpty
+        if (includeWarnTests) {
+            assertThat(expectedErrors)
+                .describedAs("The code contains no expected-error annotations or an unsupported tag is used (should be $supportedTagsDescription). " +
+                        "Please annotate your code or set `includeWarnTests` to `false`:$NEWLINE$filteredCode")
+                .isNotEmpty
+        }
 
         return ExpectedLintErrors(filteredCode, expectedErrors)
     }

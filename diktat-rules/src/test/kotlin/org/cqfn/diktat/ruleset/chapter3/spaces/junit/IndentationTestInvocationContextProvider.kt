@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext
 import org.junit.platform.commons.util.AnnotationUtils.findAnnotation
 import java.util.SortedMap
 import java.util.stream.Stream
+import java.util.stream.Stream.concat
 import kotlin.reflect.KClass
 
 /**
@@ -50,15 +51,18 @@ class IndentationTestInvocationContextProvider : RuleInvocationContextProvider<I
             actualIndent = actualIndent)
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     override fun provideTestTemplateInvocationContexts(context: ExtensionContext, supportedTags: List<String>): Stream<TestTemplateInvocationContext> {
         val testMethod = context.requiredTestMethod
 
         val indentationTest = findAnnotation(testMethod, annotationType().java).get()
 
-        val testInput0 = indentationTest.first.extractTestInput(supportedTags)
+        val includeWarnTests = indentationTest.includeWarnTests
+
+        val testInput0 = indentationTest.first.extractTestInput(supportedTags, includeWarnTests)
         val (code0, expectedErrors0, customConfig0) = testInput0
 
-        val testInput1 = indentationTest.second.extractTestInput(supportedTags)
+        val testInput1 = indentationTest.second.extractTestInput(supportedTags, includeWarnTests)
         val (code1, expectedErrors1, customConfig1) = testInput1
 
         assertThat(code0)
@@ -72,21 +76,33 @@ class IndentationTestInvocationContextProvider : RuleInvocationContextProvider<I
             .isNotEqualTo(testInput1.effectiveConfig)
 
         return Stream.of<TestTemplateInvocationContext>(
-            IndentationTestWarnInvocationContext(customConfig0, actualCode = code0),
-            IndentationTestWarnInvocationContext(customConfig1, actualCode = code1),
-            IndentationTestWarnInvocationContext(customConfig1, actualCode = code0, expectedErrors0),
-            IndentationTestWarnInvocationContext(customConfig0, actualCode = code1, expectedErrors1),
             IndentationTestFixInvocationContext(customConfig0, actualCode = code0),
             IndentationTestFixInvocationContext(customConfig1, actualCode = code1),
             IndentationTestFixInvocationContext(customConfig1, actualCode = code0, expectedCode = code1),
             IndentationTestFixInvocationContext(customConfig0, actualCode = code1, expectedCode = code0),
-        ).sorted { left, right ->
+        ).let { fixTests ->
+            when {
+                includeWarnTests -> concat(fixTests, Stream.of(
+                    IndentationTestWarnInvocationContext(customConfig0, actualCode = code0),
+                    IndentationTestWarnInvocationContext(customConfig1, actualCode = code1),
+                    IndentationTestWarnInvocationContext(customConfig1, actualCode = code0, expectedErrors0),
+                    IndentationTestWarnInvocationContext(customConfig0, actualCode = code1, expectedErrors1),
+                ))
+
+                else -> fixTests
+            }
+        }.sorted { left, right ->
             left.getDisplayName(0).compareTo(right.getDisplayName(0))
         }
     }
 
-    private fun IndentedSourceCode.extractTestInput(supportedTags: List<String>): IndentationTestInput {
-        val (code, expectedErrors) = extractExpectedErrors(code, supportedTags)
+    /**
+     * @param includeWarnTests whether unit tests for the "warn" mode should also
+     *   be generated. If `false`, only fix mode tests get generated.
+     */
+    private fun IndentedSourceCode.extractTestInput(supportedTags: List<String>,
+                                                    includeWarnTests: Boolean): IndentationTestInput {
+        val (code, expectedErrors) = extractExpectedErrors(code, supportedTags, includeWarnTests)
 
         return IndentationTestInput(code, expectedErrors, customConfig())
     }

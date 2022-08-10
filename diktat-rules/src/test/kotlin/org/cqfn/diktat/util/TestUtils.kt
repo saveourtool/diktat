@@ -15,13 +15,11 @@ import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import mu.KotlinLogging
-import org.assertj.core.api.AbstractSoftAssertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.opentest4j.MultipleFailuresError
 
 import java.io.File
 import java.nio.file.NoSuchFileException
@@ -189,30 +187,6 @@ internal fun ProcessBuilder.prependPath(pathEntry: Path) {
  */
 internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expecting actual not to be null" }): T =
     this ?: fail(lazyFailureMessage())
-
-/**
- * When within a scope of an `AbstractSoftAssertions`, collects failures
- * thrown by [block], correctly accumulating multiple failures from nested
- * soft assertions (if any).
- *
- * @param block the code block to execute, may throw a [MultipleFailuresError].
- * @see org.assertj.core.api.AssertionErrorCollector.collectAssertionError
- */
-internal fun AbstractSoftAssertions.collectAssertionErrors(block: () -> Unit) =
-    try {
-        block()
-    } catch (mfe: MultipleFailuresError) {
-        mfe.failures.forEach { failure ->
-            when (failure) {
-                is AssertionError -> collectAssertionError(failure)
-                else -> fail(failure.toString(), failure)
-            }
-        }
-    } catch (ae: AssertionError) {
-        collectAssertionError(ae)
-    } catch (th: Throwable) {
-        fail(th.toString(), th)
-    }
 
 /**
  * @param ruleSetProviderRef
