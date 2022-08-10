@@ -61,8 +61,8 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <executable>${gradle.executable}</executable>
-                    <workingDirectory>${gradle.workingDir}/</workingDirectory>
+                    <workingDirectory>${gradle.workingDir}</workingDirectory>
+                    <executable>${gradle.workingDir}/${gradle.executable}</executable>
                 </configuration>
                 <executions>
                     <execution>
