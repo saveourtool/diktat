@@ -76,15 +76,15 @@ interface RuleInvocationContextProvider<A : Annotation, out E : ExpectedLintErro
      * @param code the annotated code.
      * @param supportedTags the list of check names that should be recognized
      *   (implementation-dependent).
-     * @param includeWarnTests whether unit tests for the "warn" mode should also
-     *   be generated. If `false`, only fix mode tests get generated.
+     * @param allowEmptyErrors whether the list of expected errors is allowed to
+     *   be empty (i.e. the code may contain no known annotations).
      * @return the list of expected errors as well as the filtered code.
      * @see expectedLintErrorFrom
      */
     @Suppress("TOO_LONG_FUNCTION")
     fun extractExpectedErrors(@Language("kotlin") code: String,
                               supportedTags: List<String>,
-                              includeWarnTests: Boolean
+                              allowEmptyErrors: Boolean
     ): ExpectedLintErrors<E> {
         require(supportedTags.isNotEmpty()) {
             "The list of supported tags is empty"
@@ -120,7 +120,7 @@ interface RuleInvocationContextProvider<A : Annotation, out E : ExpectedLintErro
             1 -> supportedTags[0]
             else -> "any of $supportedTags"
         }
-        if (includeWarnTests) {
+        if (!allowEmptyErrors) {
             assertThat(expectedErrors)
                 .describedAs("The code contains no expected-error annotations or an unsupported tag is used (should be $supportedTagsDescription). " +
                         "Please annotate your code or set `includeWarnTests` to `false`:$NEWLINE$filteredCode")
@@ -177,7 +177,7 @@ interface RuleInvocationContextProvider<A : Annotation, out E : ExpectedLintErro
         private const val TAG = "tag"
 
         @Language("RegExp")
-        private const val VALUE = """[^,\h]*"""
+        private const val VALUE = """[^,\]]*?"""
         private const val VALUE_GROUP = "value"
         private val entryRegex = Regex("""\h*(?<$KEY_GROUP>$KEY)\h*=\h*(?<$VALUE_GROUP>$VALUE)\h*""")
 

@@ -33,9 +33,17 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val description = "lint result for \"$code\""
 
         when {
-            expectedLintErrors.size == 1 && actualLintErrors.size == 1 -> assertThat(actualLintErrors[0])
-                .describedAs(description)
-                .isEqualTo(expectedLintErrors[0])
+            expectedLintErrors.size == 1 && actualLintErrors.size == 1 -> {
+                val actual = actualLintErrors[0]
+                val expected = expectedLintErrors[0]
+
+                assertThat(actual)
+                    .describedAs(description)
+                    .isEqualTo(expected)
+                assertThat(actual.canBeAutoCorrected)
+                    .describedAs("canBeAutoCorrected")
+                    .isEqualTo(expected.canBeAutoCorrected)
+            }
 
             else -> assertThat(actualLintErrors)
                 .describedAs(description)

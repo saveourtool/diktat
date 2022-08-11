@@ -1,10 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces.junit
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.chapter3.spaces.ExpectedIndentationError
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule.Companion.NAME_ID
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.junit.ExpectedLintError
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.extension.Extension
 import java.util.SortedMap
@@ -36,25 +33,5 @@ internal class IndentationTestWarnInvocationContext(
         listOf(IndentationTestWarnExtension(
             customConfig,
             actualCode,
-            expectedErrors.map(asLintError).toTypedArray()))
-
-    private companion object {
-        private val warnText: (Int) -> (Int) -> String = { expectedIndent ->
-            { actualIndent ->
-                "${WRONG_INDENTATION.warnText()} expected $expectedIndent but was $actualIndent"
-            }
-        }
-
-        /**
-         * Converts this instance to a [LintError].
-         */
-        private val asLintError: ExpectedIndentationError.() -> LintError = {
-            LintError(
-                line,
-                column,
-                "$DIKTAT_RULE_SET_ID:$NAME_ID",
-                warnText(expectedIndent)(actualIndent),
-                true)
-        }
-    }
+            expectedErrors.map(ExpectedLintError::asLintError).toTypedArray()))
 }

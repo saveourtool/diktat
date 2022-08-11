@@ -37,9 +37,17 @@ internal class IndentationTestWarnExtension(
         val description = NEWLINE + actualCode.annotateWith(actualErrors) + NEWLINE
 
         when {
-            expectedErrors.size == 1 && actualErrors.size == 1 -> assertThat(actualErrors[0])
-                .describedAs(description)
-                .isEqualTo(expectedErrors[0])
+            expectedErrors.size == 1 && actualErrors.size == 1 -> {
+                val actual = actualErrors[0]
+                val expected = expectedErrors[0]
+
+                assertThat(actual)
+                    .describedAs(description)
+                    .isEqualTo(expected)
+                assertThat(actual.canBeAutoCorrected)
+                    .describedAs("canBeAutoCorrected")
+                    .isEqualTo(expected.canBeAutoCorrected)
+            }
 
             else -> assertThat(actualErrors)
                 .describedAs(description)

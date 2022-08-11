@@ -34,6 +34,14 @@ class IndentationTestInvocationContextProvider : RuleInvocationContextProvider<I
         tag: String,
         properties: Map<String, String?>
     ): ExpectedIndentationError {
+        val message = properties[MESSAGE]
+        @Suppress("AVOID_NULL_CHECKS")
+        if (message != null) {
+            return ExpectedIndentationError(
+                line = lineNumber,
+                message = "[$WRONG_INDENTATION] $message")
+        }
+
         val expectedIndent = properties.expectedIndent()
         val actualIndent = line.leadingSpaceCount()
 
@@ -58,57 +66,81 @@ class IndentationTestInvocationContextProvider : RuleInvocationContextProvider<I
         val indentationTest = findAnnotation(testMethod, annotationType().java).get()
 
         val includeWarnTests = indentationTest.includeWarnTests
+        val singleConfiguration = indentationTest.singleConfiguration
 
-        val testInput0 = indentationTest.first.extractTestInput(supportedTags, includeWarnTests)
+        val testInput0 = indentationTest.first.extractTestInput(
+            supportedTags,
+            allowEmptyErrors = !includeWarnTests || singleConfiguration)
         val (code0, expectedErrors0, customConfig0) = testInput0
 
-        val testInput1 = indentationTest.second.extractTestInput(supportedTags, includeWarnTests)
-        val (code1, expectedErrors1, customConfig1) = testInput1
+        var contexts: Stream<TestTemplateInvocationContext> = Stream.of(
+            IndentationTestFixInvocationContext(customConfig0, actualCode = code0)
+        )
 
-        assertThat(code0)
-            .describedAs("Both code fragments are the same")
-            .isNotEqualTo(code1)
-        assertThat(customConfig0)
-            .describedAs("Both custom configs are the same")
-            .isNotEqualTo(customConfig1)
-        assertThat(testInput0.effectiveConfig)
-            .describedAs("Both effective configs are the same")
-            .isNotEqualTo(testInput1.effectiveConfig)
-
-        return Stream.of<TestTemplateInvocationContext>(
-            IndentationTestFixInvocationContext(customConfig0, actualCode = code0),
-            IndentationTestFixInvocationContext(customConfig1, actualCode = code1),
-            IndentationTestFixInvocationContext(customConfig1, actualCode = code0, expectedCode = code1),
-            IndentationTestFixInvocationContext(customConfig0, actualCode = code1, expectedCode = code0),
-        ).let { fixTests ->
-            when {
-                includeWarnTests -> concat(fixTests, Stream.of(
-                    IndentationTestWarnInvocationContext(customConfig0, actualCode = code0),
-                    IndentationTestWarnInvocationContext(customConfig1, actualCode = code1),
-                    IndentationTestWarnInvocationContext(customConfig1, actualCode = code0, expectedErrors0),
-                    IndentationTestWarnInvocationContext(customConfig0, actualCode = code1, expectedErrors1),
-                ))
-
-                else -> fixTests
+        if (includeWarnTests) {
+            /*-
+             * In a double-configuration mode (the default), when the code is
+             * checked against its own configuration, the actual list of errors
+             * is expected to be empty (it's only used when the code is checked
+             * against the opposite configuration.
+             *
+             * In a single-configuration mode, the opposite configuration is
+             * empty, so let's allow a non-empty list of expected errors when
+             * the code is checked against its own configuration.
+             */
+            val expectedErrors = when {
+                singleConfiguration -> expectedErrors0
+                else -> emptyList()
             }
-        }.sorted { left, right ->
+            contexts += IndentationTestWarnInvocationContext(customConfig0, actualCode = code0, expectedErrors)
+        }
+
+        if (!singleConfiguration) {
+            val testInput1 = indentationTest.second.extractTestInput(
+                supportedTags,
+                allowEmptyErrors = !includeWarnTests)
+            val (code1, expectedErrors1, customConfig1) = testInput1
+
+            assertThat(code0)
+                .describedAs("Both code fragments are the same")
+                .isNotEqualTo(code1)
+            assertThat(customConfig0)
+                .describedAs("Both custom configs are the same")
+                .isNotEqualTo(customConfig1)
+            assertThat(testInput0.effectiveConfig)
+                .describedAs("Both effective configs are the same")
+                .isNotEqualTo(testInput1.effectiveConfig)
+
+            contexts += IndentationTestFixInvocationContext(customConfig1, actualCode = code1)
+            contexts += IndentationTestFixInvocationContext(customConfig1, actualCode = code0, expectedCode = code1)
+            contexts += IndentationTestFixInvocationContext(customConfig0, actualCode = code1, expectedCode = code0)
+
+            if (includeWarnTests) {
+                contexts += IndentationTestWarnInvocationContext(customConfig1, actualCode = code1)
+                contexts += IndentationTestWarnInvocationContext(customConfig1, actualCode = code0, expectedErrors0)
+                contexts += IndentationTestWarnInvocationContext(customConfig0, actualCode = code1, expectedErrors1)
+            }
+        }
+
+        return contexts.sorted { left, right ->
             left.getDisplayName(0).compareTo(right.getDisplayName(0))
         }
     }
 
     /**
-     * @param includeWarnTests whether unit tests for the "warn" mode should also
-     *   be generated. If `false`, only fix mode tests get generated.
+     * @param allowEmptyErrors whether the list of expected errors is allowed to
+     *   be empty (i.e. the code may contain no known annotations).
      */
     private fun IndentedSourceCode.extractTestInput(supportedTags: List<String>,
-                                                    includeWarnTests: Boolean): IndentationTestInput {
-        val (code, expectedErrors) = extractExpectedErrors(code, supportedTags, includeWarnTests)
+                                                    allowEmptyErrors: Boolean): IndentationTestInput {
+        val (code, expectedErrors) = extractExpectedErrors(code, supportedTags, allowEmptyErrors)
 
         return IndentationTestInput(code, expectedErrors, customConfig())
     }
 
     private companion object {
         private const val EXPECTED_INDENT = "expectedIndent"
+        private const val MESSAGE = "message"
 
         @Suppress("WRONG_NEWLINES")  // False positives, see #1495.
         private fun IndentedSourceCode.customConfig(): SortedMap<String, out Boolean> =
@@ -140,5 +172,8 @@ class IndentationTestInvocationContextProvider : RuleInvocationContextProvider<I
                 fail("Unparseable `$EXPECTED_INDENT`: $expectedIndentRaw")
             }
         }
+
+        private operator fun <T> Stream<T>.plus(value: T): Stream<T> =
+            concat(this, Stream.of(value))
     }
 }
