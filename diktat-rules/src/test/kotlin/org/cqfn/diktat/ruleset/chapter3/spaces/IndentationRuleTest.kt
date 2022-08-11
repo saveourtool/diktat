@@ -255,6 +255,22 @@ class IndentationRuleTest {
         fun `case 10`() = Unit
     }
 
+    @Nested
+    @TestMethodOrder(NaturalDisplayName::class)
+    inner class `String templates` {
+        /**
+         * See [#1490](https://github.com/saveourtool/diktat/issues/1490).
+         */
+        @IndentationTest(IndentedSourceCode(
+            """
+            val value = f(
+                "text ${'$'}variable text".isEmpty() // diktat:WRONG_INDENTATION[message = only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed): the same number of indents to the opening and closing quotes was expected]
+            )
+            """),
+            singleConfiguration = true)
+        fun `issue #1490`() = Unit
+    }
+
     /**
      * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
      */
