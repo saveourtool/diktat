@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3.spaces.junit
 
 import org.cqfn.diktat.ruleset.chapter3.spaces.ExpectedIndentationError
 import org.cqfn.diktat.ruleset.junit.RuleInvocationContextProvider
+import org.cqfn.diktat.ruleset.utils.NEWLINE
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
@@ -95,30 +96,39 @@ class IndentationTestInvocationContextProvider : RuleInvocationContextProvider<I
             contexts += IndentationTestWarnInvocationContext(customConfig0, actualCode = code0, expectedErrors)
         }
 
-        if (!singleConfiguration) {
-            val testInput1 = indentationTest.second.extractTestInput(
-                supportedTags,
-                allowEmptyErrors = !includeWarnTests)
-            val (code1, expectedErrors1, customConfig1) = testInput1
+        when {
+            singleConfiguration -> {
+                val code1 = indentationTest.second.code
+                assertThat(code1)
+                    .describedAs("The 2nd code fragment should be empty if `singleConfiguration` is `true`: $NEWLINE$code1")
+                    .isEmpty()
+            }
 
-            assertThat(code0)
-                .describedAs("Both code fragments are the same")
-                .isNotEqualTo(code1)
-            assertThat(customConfig0)
-                .describedAs("Both custom configs are the same")
-                .isNotEqualTo(customConfig1)
-            assertThat(testInput0.effectiveConfig)
-                .describedAs("Both effective configs are the same")
-                .isNotEqualTo(testInput1.effectiveConfig)
+            else -> {
+                val testInput1 = indentationTest.second.extractTestInput(
+                    supportedTags,
+                    allowEmptyErrors = !includeWarnTests)
+                val (code1, expectedErrors1, customConfig1) = testInput1
 
-            contexts += IndentationTestFixInvocationContext(customConfig1, actualCode = code1)
-            contexts += IndentationTestFixInvocationContext(customConfig1, actualCode = code0, expectedCode = code1)
-            contexts += IndentationTestFixInvocationContext(customConfig0, actualCode = code1, expectedCode = code0)
+                assertThat(code0)
+                    .describedAs("Both code fragments are the same")
+                    .isNotEqualTo(code1)
+                assertThat(customConfig0)
+                    .describedAs("Both custom configs are the same")
+                    .isNotEqualTo(customConfig1)
+                assertThat(testInput0.effectiveConfig)
+                    .describedAs("Both effective configs are the same")
+                    .isNotEqualTo(testInput1.effectiveConfig)
 
-            if (includeWarnTests) {
-                contexts += IndentationTestWarnInvocationContext(customConfig1, actualCode = code1)
-                contexts += IndentationTestWarnInvocationContext(customConfig1, actualCode = code0, expectedErrors0)
-                contexts += IndentationTestWarnInvocationContext(customConfig0, actualCode = code1, expectedErrors1)
+                contexts += IndentationTestFixInvocationContext(customConfig1, actualCode = code1)
+                contexts += IndentationTestFixInvocationContext(customConfig1, actualCode = code0, expectedCode = code1)
+                contexts += IndentationTestFixInvocationContext(customConfig0, actualCode = code1, expectedCode = code0)
+
+                if (includeWarnTests) {
+                    contexts += IndentationTestWarnInvocationContext(customConfig1, actualCode = code1)
+                    contexts += IndentationTestWarnInvocationContext(customConfig1, actualCode = code0, expectedErrors0)
+                    contexts += IndentationTestWarnInvocationContext(customConfig0, actualCode = code1, expectedErrors1)
+                }
             }
         }
 

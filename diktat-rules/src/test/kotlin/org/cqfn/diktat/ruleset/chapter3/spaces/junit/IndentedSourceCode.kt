@@ -24,6 +24,7 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
  * @property extendedIndentAfterOperators describes the effective formatting of [code].
  * @property extendedIndentBeforeDot describes the effective formatting of [code].
  */
+@Target
 @Retention(RUNTIME)
 @MustBeDocumented
 annotation class IndentedSourceCode(

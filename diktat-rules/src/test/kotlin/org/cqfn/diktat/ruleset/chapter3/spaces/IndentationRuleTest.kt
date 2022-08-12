@@ -259,16 +259,64 @@ class IndentationRuleTest {
     @TestMethodOrder(NaturalDisplayName::class)
     inner class `String templates` {
         /**
+         * No message like
+         *
+         * > only spaces are allowed for indentation and each indentation should
+         * > equal to 4 spaces (tabs are not allowed): the same number of
+         * > indents to the opening and closing quotes was expected
+         *
+         * should be reported.
+         *
          * See [#1490](https://github.com/saveourtool/diktat/issues/1490).
          */
         @IndentationTest(IndentedSourceCode(
             """
             val value = f(
-                "text ${'$'}variable text".isEmpty() // diktat:WRONG_INDENTATION[message = only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed): the same number of indents to the opening and closing quotes was expected]
+                "text ${'$'}variable text".isEmpty()
             )
             """),
             singleConfiguration = true)
-        fun `issue #1490`() = Unit
+        fun `mis-aligned opening and closing quotes of a string template, false positive, case 1 (#1490)`() = Unit
+
+        /**
+         * No message like
+         *
+         * > only spaces are allowed for indentation and each indentation should
+         * > equal to 4 spaces (tabs are not allowed): the same number of
+         * > indents to the opening and closing quotes was expected
+         *
+         * should be reported.
+         *
+         * See [#1490](https://github.com/saveourtool/diktat/issues/1490).
+         */
+        @IndentationTest(IndentedSourceCode(
+            """
+            val value = f(
+                "text ${'$'}variable text".trimIndent()
+            )
+            """),
+            singleConfiguration = true)
+        fun `mis-aligned opening and closing quotes of a string template, false positive, case 2 (#1490)`() = Unit
+
+        /**
+         * No message like
+         *
+         * > only spaces are allowed for indentation and each indentation should
+         * > equal to 4 spaces (tabs are not allowed): the same number of
+         * > indents to the opening and closing quotes was expected
+         *
+         * should be reported.
+         *
+         * See [#1490](https://github.com/saveourtool/diktat/issues/1490).
+         */
+        @IndentationTest(IndentedSourceCode(
+            """
+            val value = f(
+                "text ${'$'}variable text".trimMargin()
+            )
+            """),
+            singleConfiguration = true)
+        fun `mis-aligned opening and closing quotes of a string template, false positive, case 3 (#1490)`() = Unit
     }
 
     /**
