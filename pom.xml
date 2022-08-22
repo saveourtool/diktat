@@ -45,7 +45,7 @@
         <kotlin.version>1.7.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlinx.serialization.version>1.3.3</kotlinx.serialization.version>
+        <kotlinx.serialization.version>1.4.0</kotlinx.serialization.version>
         <ktlint.version>0.46.1</ktlint.version>
         <junit.version>5.9.0</junit.version>
         <junit.platform.version>1.9.0</junit.platform.version>
@@ -54,7 +54,7 @@
         <commons-cli.version>1.5.0</commons-cli.version>
         <diktat-check.version>1.2.3</diktat-check.version>
         <kotlinpoet.version>1.12.0</kotlinpoet.version>
-        <detekt.version>1.21.0</detekt.version>
+        <detekt.version>1.21.0.1</detekt.version>
         <dokka.version>1.7.10</dokka.version>
         <jacoco.version>0.8.8</jacoco.version>
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
@@ -150,7 +150,7 @@
             <dependency>
                 <groupId>com.charleskorn.kaml</groupId>
                 <artifactId>kaml-jvm</artifactId>
-                <version>0.46.0</version>
+                <version>0.47.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
