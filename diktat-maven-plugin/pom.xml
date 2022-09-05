@@ -283,16 +283,6 @@
         <profile>
             <!-- enable maven plugin documentation generation only for release builds to speed up ordinary builds -->
             <id>release</id>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>kotlin-maven-plugin-tools</id>
-                    <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/gantsign/kotlin-maven-plugin-tools</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </pluginRepository>
-            </pluginRepositories>
             <build>
                 <plugins>
                     <plugin>
@@ -308,10 +298,8 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>mojo-descriptor</id>
-                                <goals>
-                                    <goal>descriptor</goal>
-                                </goals>
+                                <id>default-descriptor</id>
+                                <phase>process-classes</phase>
                             </execution>
                             <execution>
                                 <id>help-goal</id>

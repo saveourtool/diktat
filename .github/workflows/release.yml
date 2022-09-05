@@ -47,7 +47,6 @@ jobs:
             [
               { "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" },
               { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" },
-              { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
             ]
       - name: Deploy artifacts
         run: mvn -B -Dstyle.color=always clean deploy -Prelease --projects '!diktat-ruleset'
