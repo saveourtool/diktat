@@ -29,7 +29,13 @@ val KOTLIN = KtTokens.KEYWORDS
     .map { line -> line.toString() }
     .plus(KtTokens.SOFT_KEYWORDS.types.map { line -> line.toString() })
 
-val loggerPropertyRegex = "(log|LOG|logger)".toRegex()
+/**
+ * Either `log` or `logger`, case-insensitive.
+ *
+ * A name like `psychologist` or `LOGIN` won't be matched by this regular
+ * expression.
+ */
+val loggerPropertyRegex = "(?iu)^log(?:ger)?$".toRegex()
 
 /**
  * @return whether [this] string represents a Java keyword
