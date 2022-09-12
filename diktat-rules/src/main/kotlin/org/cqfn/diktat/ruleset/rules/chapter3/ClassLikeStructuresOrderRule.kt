@@ -197,19 +197,22 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                 val allProperties = node.getAllChildrenWithType(PROPERTY)
                 val constProperties = allProperties.filterByModifier(CONST_KEYWORD)
                 val lateInitProperties = allProperties.filterByModifier(LATEINIT_KEYWORD)
-                val loggers = allProperties.filterByModifier(PRIVATE_KEYWORD).filterNot { astNode ->
-                    /*
-                     * A `const` field named "logger" is unlikely to be a logger.
-                     */
-                    astNode in constProperties
-                }.filterNot { astNode ->
-                    /*
-                     * A `lateinit` field named "logger" is unlikely to be a logger.
-                     */
-                    astNode in lateInitProperties
-                }.filter { astNode ->
-                    astNode.getIdentifierName()?.text?.matches(loggerPropertyRegex) ?: false
-                }
+                val loggers = allProperties.filterByModifier(PRIVATE_KEYWORD)
+                    .filterNot { astNode ->
+                        /*
+                         * A `const` field named "logger" is unlikely to be a logger.
+                         */
+                        astNode in constProperties
+                    }
+                    .filterNot { astNode ->
+                        /*
+                         * A `lateinit` field named "logger" is unlikely to be a logger.
+                         */
+                        astNode in lateInitProperties
+                    }
+                    .filter { astNode ->
+                        astNode.getIdentifierName()?.text?.matches(loggerPropertyRegex) ?: false
+                    }
                 val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }
                 return AllProperties(loggers, constProperties, properties, lateInitProperties)
             }
