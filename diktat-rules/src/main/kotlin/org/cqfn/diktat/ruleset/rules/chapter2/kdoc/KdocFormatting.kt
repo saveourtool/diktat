@@ -229,7 +229,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     .map { it.node }
 
                 basicTagChildren.mapIndexed { index, astNode ->
-                    kdocSection.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode)
+                    kdocSection.treeParent.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode.treeNext)
                     kdocSection.removeChild(astNode)
                 }
             }
