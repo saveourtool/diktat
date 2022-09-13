@@ -6,20 +6,15 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import org.jetbrains.kotlin.com.google.common.primitives.Ints.min
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.fir.analysis.checkers.getVisibility
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtParameter
-import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.jetbrains.kotlin.psi.psiUtil.visibilityModifier
 
 /**
  * Rule that suggests to use functions with default parameters instead of multiple overloads
@@ -57,10 +52,10 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * We can raise errors only on those methods that have same modifiers (inline/public/etc.)
      */
-    private fun KtFunction.hasSameModifiers(other: KtFunction): Boolean {
-        return this.modifierList?.node?.getChildren(KtTokens.MODIFIER_KEYWORDS)?.sortedBy { it.text } ==
-                other.modifierList?.node?.getChildren(KtTokens.MODIFIER_KEYWORDS)?.sortedBy { it.text }
-    }
+    private fun KtFunction.hasSameModifiers(other: KtFunction): Boolean = this.modifierList?.node?.getChildren(KtTokens.MODIFIER_KEYWORDS)
+        ?.sortedBy { it.text } ==
+            other.modifierList?.node?.getChildren(KtTokens.MODIFIER_KEYWORDS)
+                ?.sortedBy { it.text }
 
     /**
      * we need to compare following things for two functions:
@@ -73,17 +68,22 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun KtFunction.isOverloadedBy(other: KtFunction): Boolean {
         // no need to process methods with different names
-        if (this.nameIdentifier?.text != other.nameIdentifier?.text) return false
+        if (this.nameIdentifier?.text != other.nameIdentifier?.text) {
+            return false
+        }
         // if this function has more arguments, than other, then we will compare it on the next iteration cycle (at logic() level)
         // this hack will help us to point only to one function with smaller number of arguments
-        if (this.valueParameters.size < other.valueParameters.size) return false
+        if (this.valueParameters.size < other.valueParameters.size) {
+            return false
+        }
 
         for (i in 0 until other.valueParameters.size) {
             // all arguments on the same position should match by name and type
-            if (!(
-                        this.valueParameters[i].getFunctionName() == other.valueParameters[i].getFunctionName() &&
-                                this.valueParameters[i].getFunctionType() == other.valueParameters[i].getFunctionType())
-            ) return false
+            if (this.valueParameters[i].getFunctionName() != other.valueParameters[i].getFunctionName() ||
+                    this.valueParameters[i].getFunctionType() != other.valueParameters[i].getFunctionType()
+            ) {
+                return false
+            }
         }
         return true
     }

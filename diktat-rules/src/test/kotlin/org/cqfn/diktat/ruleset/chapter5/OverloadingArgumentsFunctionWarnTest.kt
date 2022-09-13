@@ -57,7 +57,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |public fun foo() {}
                     |private fun foo(a: Int) {}
                     |inline fun foo(a: Int, b: Int) {}
-                    """.trimMargin(),
+            """.trimMargin(),
         )
     }
 
@@ -68,7 +68,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
             """
                     |fun foo(a: Double) {}
                     |fun foo(a: Double, b: Int) {}
-                    """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
         )
     }
@@ -80,7 +80,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
             """
                     |fun foo(a: Double) {}
                     |fun foo(b: Double, b: Int) {}
-                    """.trimMargin(),
+            """.trimMargin(),
         )
     }
 
