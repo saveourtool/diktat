@@ -43,8 +43,22 @@ open class FixTestBase(
     /**
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * @param overrideRulesConfigList optional override to [rulesConfigList]
+     * @see fixAndCompareContent
      */
-    protected fun fixAndCompare(expectedPath: String, testPath: String) {
+    protected fun fixAndCompare(
+        expectedPath: String,
+        testPath: String,
+        overrideRulesConfigList: List<RulesConfig> = emptyList()
+    ) {
+        val testComparatorUnit = if (overrideRulesConfigList.isNotEmpty()) {
+            TestComparatorUnit(resourceFilePath) { text, fileName ->
+                format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
+            }
+        } else {
+            testComparatorUnit
+        }
+
         Assertions.assertTrue(
             testComparatorUnit
                 .compareFilesFromResources(expectedPath, testPath)
@@ -73,25 +87,6 @@ open class FixTestBase(
             else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath)
         }
         return result
-    }
-
-    /**
-     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
-     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     * @param overrideRulesConfigList optional override to [rulesConfigList]
-     * @see fixAndCompareContent
-     */
-    protected fun fixAndCompare(expectedPath: String,
-                                testPath: String,
-                                overrideRulesConfigList: List<RulesConfig>
-    ) {
-        val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-            format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
-        }
-        Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath)
-        )
     }
 
     /**
