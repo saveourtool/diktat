@@ -176,13 +176,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Note: mapping is String to Char(and Char to Char) actually, but will keep it as String for simplicity
      */
     internal inner class ExpressionsReplacement {
-        private val expressionToToken: HashMap<String, String> = LinkedHashMap()
+        private val expressionToToken: HashMap<String, Pair<String, String>> = LinkedHashMap()
         private val tokenToOrderedToken: HashMap<String, String> = HashMap()
 
         /**
          * TokenMapper for first call ExprParser which remembers the order of expression.
          */
-        val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
+        val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) { it } }
 
         /**
          * Returns <tt>true</tt> if this object contains no replacements.
@@ -207,7 +207,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             val expressionText = expressionAstNode.textWithoutComments()
             // support case when `boolean_expression` matches to `!boolean_expression`
             val expression = if (expressionText.startsWith('!')) expressionText.substring(1) else expressionText
-            getLetter(expressionToToken, expression)
+            getLetter(expressionToToken, expression) { letter ->
+                letter to if (expressionAstNode.elementType == BINARY_EXPRESSION) {
+                    "($expression)"
+                } else {
+                    expression
+                }
+            }
         }
 
         /**
@@ -222,7 +228,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             expressionToToken.keys
                 .sortedByDescending { it.length }
                 .forEach { refExpr ->
-                    resultExpression = resultExpression.replace(refExpr, expressionToToken[refExpr]!!)
+                    resultExpression = resultExpression.replace(refExpr, expressionToToken.getValue(refExpr).first)
                 }
             return resultExpression
         }
@@ -241,16 +247,21 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             resultExpression = resultExpression.format(args = tokenToOrderedToken.keys.toTypedArray())
             // restore expression
-            expressionToToken.values.forEachIndexed { index, value ->
+            expressionToToken.values.forEachIndexed { index, (value, _) ->
                 resultExpression = resultExpression.replace(value, "%${index + 1}\$s")
             }
-            resultExpression = resultExpression.format(args = expressionToToken.keys.toTypedArray())
+            resultExpression = resultExpression.format(args = expressionToToken.values.map { it.second }.toTypedArray())
             return resultExpression
         }
 
-        private fun getLetter(letters: HashMap<String, String>, key: String) = letters
+        private fun <T> getLetter(
+            letters: HashMap<String, T>,
+            key: String,
+            valueBuilder: (String) -> T
+        ) = letters
             .computeIfAbsent(key) {
-                ('A'.code + letters.size).toChar().toString()
+                val letter = ('A'.code + letters.size).toChar().toString()
+                valueBuilder(letter)
             }
     }
 
