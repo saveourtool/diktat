@@ -1186,6 +1186,24 @@ if (condition1 && condition2 && condition1) {
 ```
 
 <!-- =============================================================================== -->
+### <a name="c3.17"></a> 3.17 Ranges
+This section describes guidelines for working with ranges.
+
+#### <a name="r3.17.1"></a> 3.17.1
+When creating a range with excluded upper boundary, instead of using range function with included upper boundary (`rangeTo` or `..`)
+it's preferred to use a range function with excluded upper boundary (`until`).
+Invalid example:
+```kotlin
+0..(a-1)
+```
+Valid example:
+```kotlin
+0 until a
+```
+
+Instead of `rangeTo` function it's preferred to use `..` operator.
+
+<!-- =============================================================================== -->
 ### <a name="c3.18"></a> 3.18 Logging
 This section describes the general rules of logging.
 
