@@ -816,12 +816,10 @@ fun ASTNode.getLineNumber(): Int =
 fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
     var node: ASTNode? = this
     types.forEach {
-        node = node?.findChildByType(it) ?: run {
-            while (node?.hasChildOfType(PARENTHESIZED) == true) {
-                node = node?.findChildByType(PARENTHESIZED)
-            }
-            node?.findChildByType(it)
+        while (node?.hasChildOfType(PARENTHESIZED) == true) {
+            node = node?.findChildByType(PARENTHESIZED)
         }
+        node = node?.findChildByType(it)
     }
     return node
 }
