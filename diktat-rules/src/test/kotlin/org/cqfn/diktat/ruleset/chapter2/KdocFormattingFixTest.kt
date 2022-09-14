@@ -22,6 +22,12 @@ class KdocFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocFormatt
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WRONG_TAGS_ORDER)
+    fun `extra new line with tags ordering should not cause assert`() {
+        fixAndCompare("OrderedTagsAssertionExpected.kt", "OrderedTagsAssertionTest.kt")
+    }
+
+    @Test
     @Tag(WarningNames.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS)
     fun `basic tags should not have empty lines between`() {
         fixAndCompare("BasicTagsEmptyLinesExpected.kt", "BasicTagsEmptyLinesTest.kt")
