@@ -33,27 +33,60 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |
                     |fun goo(a: Double? = 0.0) {}
                     |
-                    |override fun goo() {}
+                    |override fun goo() {} // this definitely is not an overload case... why we were treating it as an overload? New diktat rule!
                     |
                     |class A {
                     |   fun foo() {}
                     |}
                     |
                     |abstract class B {
-                    |   abstract fun foo(a: Int)
+                    |   abstract fun foo(a: Int) // modifiers are different. This is not related to default arguments. New diktat rule!
                     |
                     |   fun foo(){}
                     |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
-            LintError(16, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} goo", false),
-            LintError(25, 4, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
         )
     }
 
     @Test
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
-    fun `check simple`() {
+    fun `functions with modifiers`() {
+        lintMethod(
+            """
+                    |public fun foo() {}
+                    |private fun foo(a: Int) {}
+                    |inline fun foo(a: Int, b: Int) {}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `functions with unordered, but same modifiers`() {
+        lintMethod(
+            """
+                    |fun foo(a: Double) {}
+                    |fun foo(a: Double, b: Int) {}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `functions with unordered, but same modifiers and different names`() {
+        lintMethod(
+            """
+                    |fun foo(a: Double) {}
+                    |fun foo(b: Double, b: Int) {}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `check for extensions`() {
         lintMethod(
             """
                     private fun isComparisonWithAbs(psiElement: PsiElement) =
