@@ -201,6 +201,31 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WRONG_TAGS_ORDER)
+    fun `tags should be ordered assertion issue`() {
+        val invalidCode = """
+            /**
+             * Reporter that produces a JSON report as a [Report]
+             *
+             * @property out a sink for output
+             *
+             * @param builder additional configuration lambda for serializers module
+             */
+            class JsonReporter(
+                override val out: BufferedSink,
+                builder: PolymorphicModuleBuilder<Plugin.TestFiles>.() -> Unit = {}
+            ) : Reporter
+        """.trimIndent()
+
+        lintMethod(invalidCode,
+            LintError(4, 4, ruleId,
+                "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @property", true),
+            LintError(4, 4, ruleId,
+                "${KDOC_WRONG_TAGS_ORDER.warnText()} @property, @param", true)
+        )
+    }
+
+    @Test
     @Tag(WarningNames.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS)
     fun `newlines are not allowed between basic tags`() {
         val invalidCode = """
