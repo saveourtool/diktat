@@ -83,7 +83,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    fun `disable charters`() {
+    fun `disable chapters`() {
         overrideRulesConfig(
             emptyList(),
             mapOf(
