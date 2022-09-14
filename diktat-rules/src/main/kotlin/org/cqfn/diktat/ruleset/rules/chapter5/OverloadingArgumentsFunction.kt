@@ -53,12 +53,14 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
      * We can raise errors only on those methods that have same modifiers (inline/public/etc.)
      */
     private fun KtFunction.hasSameModifiers(other: KtFunction) =
-        this.modifierList?.node?.getChildren(KtTokens.MODIFIER_KEYWORDS)
-            ?.map { it.text }
-            ?.sortedBy { it } ==
-                other.modifierList?.node?.getChildren(KtTokens.MODIFIER_KEYWORDS)
-                    ?.map { it.text }
-                    ?.sortedBy { it }
+        this.getSortedModifiers() ==
+                other.getSortedModifiers()
+
+    private fun KtFunction.getSortedModifiers() = this.modifierList
+        ?.node
+        ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
+        ?.map { it.text }
+        ?.sortedBy { it }
 
     /**
      * we need to compare following things for two functions:
