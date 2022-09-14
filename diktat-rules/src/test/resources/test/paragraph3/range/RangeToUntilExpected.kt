@@ -11,5 +11,7 @@ class A {
         for (i in 1 until (4)) print(i)
         for (i in 1 until (b)) print(i)
         for (i in ((1 until ((4))))) print(i)
+        for (i in 1..(4 - 2)) print(i)
+        for (i in 1..(b - 10)) print(i)
     }
 }
