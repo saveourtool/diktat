@@ -40,7 +40,6 @@ fun `method name incorrect, part 4`() {
 
 // ;warn:41:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: foo (cannot be auto-corrected){{.*}}
 // ;warn:41:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected){{.*}}
-// ;warn:41:1: [WRONG_OVERLOADING_FUNCTION_ARGUMENTS] use default argument instead of function overloading: foo (cannot be auto-corrected){{.*}}
 fun foo() {
     foo(
         0,
@@ -63,11 +62,10 @@ fun bar() {
     }
 }
 
-// ;warn:66:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: foo (cannot be auto-corrected){{.*}}
-// ;warn:66:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected){{.*}}
-// ;warn:66:1: [WRONG_OVERLOADING_FUNCTION_ARGUMENTS] use default argument instead of function overloading: foo (cannot be auto-corrected){{.*}}
+// ;warn:66:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: boo (cannot be auto-corrected){{.*}}
+// ;warn:66:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: boo (cannot be auto-corrected){{.*}}
 @Suppress("")
-fun foo() {
+fun boo() {
     val y = "akgjsaujtmaksdkfasakgjsaujtmaksdkfasakgjsaujtmaksdkfasakgjsaujtm" +
             " aksdkfasfasakgjsaujtmaksdfasafasakgjsaujtmaksdfasakgjsaujtmaksdfasakgjsaujtmaksdfasakgjsaujtmaksdfasakgjsaujtmaksdkgjsaujtmaksdfasakgjsaujtmaksd"
 }
