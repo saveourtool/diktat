@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.chapter3.spaces.describe
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
@@ -8,6 +9,8 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.assertj.core.api.Assertions.assertThat
+import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -16,6 +19,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
 
     // ===== order of declarations =====
 
+    @Language("kotlin")
     private fun codeTemplate(keyword: String) = """
                     |$keyword Example {
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
@@ -212,5 +216,70 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                 }
             """.trimMargin()
         )
+    }
+
+    /**
+     * An exception to the "loggers on top" rule.
+     *
+     * See [#1516](https://github.com/saveourtool/diktat/issues/1516).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `logger-like const property should not be reordered`() {
+        val code = """
+            |object C {
+            |    private const val A = "value"
+            |
+            |    private const val LOG = "value" // Not a logger
+            |}
+        """.trimMargin()
+
+        val actualErrors = lintResult(code)
+        assertThat(actualErrors)
+            .describedAs("lint result for ${code.describe()}")
+            .isEmpty()
+    }
+
+    /**
+     * An exception to the "loggers on top" rule.
+     *
+     * See [#1516](https://github.com/saveourtool/diktat/issues/1516).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `logger-like lateinit property should not be reordered`() {
+        val code = """
+            |object C {
+            |    private lateinit val A
+            |
+            |    private lateinit val LOG // Not a logger
+            |}
+        """.trimMargin()
+
+        val actualErrors = lintResult(code)
+        assertThat(actualErrors)
+            .describedAs("lint result for ${code.describe()}")
+            .isEmpty()
+    }
+
+    /**
+     * An exception to the "loggers on top" rule.
+     *
+     * See [#1516](https://github.com/saveourtool/diktat/issues/1516).
+     */
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `property with a name containing 'log' is not a logger`() {
+        val code = """
+            |object C {
+            |    private val a = System.getProperty("os.name")
+            |    private val loginName = LoggerFactory.getLogger({}.javaClass)
+            |}
+        """.trimMargin()
+
+        val actualErrors = lintResult(code)
+        assertThat(actualErrors)
+            .describedAs("lint result for ${code.describe()}")
+            .isEmpty()
     }
 }
