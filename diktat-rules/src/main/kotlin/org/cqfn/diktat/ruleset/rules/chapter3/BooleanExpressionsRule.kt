@@ -27,6 +27,8 @@ import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
+typealias ExpressionMapping = HashMap<String, Pair<String, String>>
+
 /**
  * Rule that checks if the boolean expression can be simplified.
  */
