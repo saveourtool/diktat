@@ -13,6 +13,7 @@ import org.cqfn.diktat.ruleset.utils.takeByChainOfTypes
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -25,12 +26,13 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 
 /**
- * This rule warn and fix cases when it possible to replace range with until or replace rangeTo function with range
+ * This rule warn and fix cases when it's possible to replace range operator `..` with infix function `until`
+ * or replace `rangeTo` function with range operator `..`
  */
-@Suppress("UnsafeCallOnNullableType")
 class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
@@ -69,23 +71,31 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("TOO_MANY_LINES_IN_LAMBDA")
     private fun handleRange(node: ASTNode) {
-        val binaryInExpression = (node.parent({ it.elementType == BINARY_EXPRESSION })?.psi as KtBinaryExpression?)
-        (binaryInExpression
+        val binaryInExpression = node.parent(BINARY_EXPRESSION)?.psi as KtBinaryExpression?
+        binaryInExpression
             ?.right
             ?.node
+            // Unwrap parentheses and get `BINARY_EXPRESSION` on the RHS of `..`
             ?.takeByChainOfTypes(BINARY_EXPRESSION)
-            ?.psi as KtBinaryExpression?)
-            ?.let {
-                if (it.operationReference.node.hasChildOfType(MINUS)) {
-                    val errorNode = binaryInExpression!!.node
-                    CONVENTIONAL_RANGE.warnAndFix(configRules, emitWarn, isFixMode, "replace `..` with `until`: ${errorNode.text}", errorNode.startOffset, errorNode) {
-                        replaceUntil(node)
-                        // fix right side of binary expression to correct form (remove ` - 1 `) : (b-1) -> (b)
-                        val astNode = it.node
-                        val parent = astNode.treeParent
-                        parent.addChild(astNode.firstChildNode, astNode)
-                        parent.removeChild(astNode)
-                    }
+            ?.run { psi as? KtBinaryExpression }
+            ?.takeIf { it.operationReference.node.hasChildOfType(MINUS) }
+            ?.let { upperBoundExpression ->
+                val isMinusOne = (upperBoundExpression.right as? KtConstantExpression)?.firstChild?.let {
+                    it.node.elementType == INTEGER_LITERAL && it.text == "1"
+                } ?: false
+                if (!isMinusOne) {
+                    return@let
+                }
+                // At this point we are sure that `upperBoundExpression` is `[left] - 1` and should be replaced.
+                val errorNode = binaryInExpression.node
+                CONVENTIONAL_RANGE.warnAndFix(configRules, emitWarn, isFixMode, "replace `..` with `until`: ${errorNode.text}", errorNode.startOffset, errorNode) {
+                    // Replace `..` with `until`
+                    replaceUntil(node)
+                    // fix right side of binary expression to correct form (remove ` - 1 `) : (b-1) -> (b)
+                    val astNode = upperBoundExpression.node
+                    val parent = astNode.treeParent
+                    parent.addChild(astNode.firstChildNode, astNode)
+                    parent.removeChild(astNode)
                 }
             }
     }
