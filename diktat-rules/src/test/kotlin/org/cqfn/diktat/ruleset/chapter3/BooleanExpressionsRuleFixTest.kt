@@ -43,4 +43,10 @@ class BooleanExpressionsRuleFixTest : FixTestBase("test/paragraph3/boolean_expre
     fun `check handling of negative expression`() {
         fixAndCompare("NegativeExpressionExpected.kt", "NegativeExpressionTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
+    fun `check expression simplification`() {
+        fixAndCompare("ExpressionSimplificationExpected.kt", "ExpressionSimplificationTest.kt")
+    }
 }
