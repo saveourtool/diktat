@@ -219,7 +219,6 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     .first()
                     .node
                     .startOffset, basicTags.first().node) {
-                val kdocSection = node.getFirstChildWithType(KDOC_SECTION)!!
                 val basicTagChildren = kdocTags
                     .filter { basicTagsOrdered.contains(it.knownTag) }
                     .map { it.node }
@@ -229,6 +228,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     .map { it.node }
 
                 basicTagChildren.mapIndexed { index, astNode ->
+                    val kdocSection = astNode.treeParent
                     kdocSection.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode)
                     kdocSection.removeChild(astNode)
                 }
