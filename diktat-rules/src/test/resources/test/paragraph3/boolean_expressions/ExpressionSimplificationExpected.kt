@@ -13,3 +13,10 @@ fun F.foo2() {
         return false
     }
 }
+
+fun F.foo3() {
+    if (!(this.valueParameters[i].getFunctionName() xor other.valueParameters[i].getFunctionName()) || !(this.valueParameters[i].getFunctionType() xor other.valueParameters[i].getFunctionType())
+    ) {
+        return false
+    }
+}
