@@ -23,9 +23,22 @@ internal const val EMPTY_BLOCK_TEXT = "{}"
 internal val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
 
 /**
+ * Mapping (value is negative infix) of infix methods that return Boolean
+ */
+internal val logicalInfixMethodMapping = mapOf(
+    "==" to "!=",
+    "!=" to "==",
+    ">" to "<=",
+    "<" to ">=",
+    ">=" to "<",
+    "<=" to ">",
+    "in" to "!in",
+    "!in" to "in",
+)
+/**
  * List of infix methods that return Boolean
  */
-internal val logicalInfixMethods = setOf("==", "!=", ">", "<", ">=", "<=", "in", "!in", "xor")
+internal val logicalInfixMethods = logicalInfixMethodMapping.keys + "xor"
 
 /**
  * List of element types present in empty code block `{ }`

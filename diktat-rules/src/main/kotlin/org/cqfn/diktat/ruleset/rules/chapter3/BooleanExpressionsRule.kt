@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_BOOLEAN_EXPRESSION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
+import org.cqfn.diktat.ruleset.utils.logicalInfixMethodMapping
 import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
 import com.bpodgursky.jbool_expressions.Expression
 import com.bpodgursky.jbool_expressions.options.ExprOptions
@@ -15,6 +16,7 @@ import com.bpodgursky.jbool_expressions.rules.DistributiveLaw
 import com.bpodgursky.jbool_expressions.rules.Rule
 import com.bpodgursky.jbool_expressions.rules.RuleList
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -22,12 +24,11 @@ import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
-
-typealias ExpressionMapping = HashMap<String, Pair<String, String>>
 
 /**
  * Rule that checks if the boolean expression can be simplified.
@@ -90,8 +91,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     internal fun formatBooleanExpressionAsString(node: ASTNode, expressionsReplacement: ExpressionsReplacement): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
         val logicalExpressions = otherBinaryExpressions.filter { otherBinaryExpression ->
-            // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
-            (otherBinaryExpression.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
+            otherBinaryExpression.isLogicalOperation() &&
                     // todo: support xor; for now skip all expressions that are nested in xor
                     otherBinaryExpression.parents()
                         .takeWhile { it != node }
@@ -143,6 +143,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             operationReferenceText == "&&" || operationReferenceText == "||"
         }
 
+    // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
+    private fun ASTNode.isLogicalOperation(): Boolean =
+            (psi as KtBinaryExpression).operationReference.text in logicalInfixMethods
+
     private fun ASTNode.removeAllParentheses(): ASTNode {
         val result = (this.psi as? KtParenthesizedExpression)?.expression?.node ?: return this
         return result.removeAllParentheses()
@@ -178,13 +182,14 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Note: mapping is String to Char(and Char to Char) actually, but will keep it as String for simplicity
      */
     internal inner class ExpressionsReplacement {
-        private val expressionToToken: HashMap<String, Pair<String, String>> = LinkedHashMap()
+        private val expressionToToken: HashMap<String, String> = LinkedHashMap()
+        private val tokenToExpression: HashMap<String, String> = HashMap()
         private val tokenToOrderedToken: HashMap<String, String> = HashMap()
 
         /**
          * TokenMapper for first call ExprParser which remembers the order of expression.
          */
-        val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) { it } }
+        val orderedTokenMapper: TokenMapper<String> = TokenMapper { name -> getLetter(tokenToOrderedToken, name) }
 
         /**
          * Returns <tt>true</tt> if this object contains no replacements.
@@ -208,14 +213,14 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         fun addExpression(expressionAstNode: ASTNode) {
             val expressionText = expressionAstNode.textWithoutComments()
             // support case when `boolean_expression` matches to `!boolean_expression`
-            val expression = if (expressionText.startsWith('!')) expressionText.substring(1) else expressionText
-            getLetter(expressionToToken, expression) { letter ->
-                letter to if (expressionAstNode.elementType == BINARY_EXPRESSION) {
-                    "($expression)"
-                } else {
-                    expression
-                }
+            val (expression, negativeExpression) = if (expressionText.startsWith('!')) {
+                expressionText.substring(1) to expressionText
+            } else {
+                expressionText to getNegativeExpression(expressionAstNode, expressionText)
             }
+            val letter = getLetter(expressionToToken, expression)
+            tokenToExpression["!$letter"] = negativeExpression
+            tokenToExpression[letter] = expression
         }
 
         /**
@@ -230,7 +235,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             expressionToToken.keys
                 .sortedByDescending { it.length }
                 .forEach { refExpr ->
-                    resultExpression = resultExpression.replace(refExpr, expressionToToken.getValue(refExpr).first)
+                    resultExpression = resultExpression.replace(refExpr, expressionToToken.getValue(refExpr))
                 }
             return resultExpression
         }
@@ -249,22 +254,28 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             resultExpression = resultExpression.format(args = tokenToOrderedToken.keys.toTypedArray())
             // restore expression
-            expressionToToken.values.forEachIndexed { index, (value, _) ->
+            tokenToExpression.keys.forEachIndexed { index, value ->
                 resultExpression = resultExpression.replace(value, "%${index + 1}\$s")
             }
-            resultExpression = resultExpression.format(args = expressionToToken.values.map { it.second }.toTypedArray())
+            resultExpression = resultExpression.format(args = tokenToExpression.values.toTypedArray())
             return resultExpression
         }
 
-        private fun <T> getLetter(
-            letters: HashMap<String, T>,
-            key: String,
-            valueBuilder: (String) -> T
-        ) = letters
+        private fun getLetter(letters: HashMap<String, String>, key: String) = letters
             .computeIfAbsent(key) {
-                val letter = ('A'.code + letters.size).toChar().toString()
-                valueBuilder(letter)
+                ('A'.code + letters.size).toChar().toString()
             }
+
+        private fun getNegativeExpression(expressionAstNode: ASTNode, expression: String): String {
+            return if (expressionAstNode.elementType == BINARY_EXPRESSION) {
+                val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
+                logicalInfixMethodMapping[operation]?.let {
+                    expression.replace(operation, it)
+                } ?: "!($expression)"
+            } else {
+                "!$expression"
+            }
+        }
     }
 
     companion object {
