@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_BOOLEAN_EXPRESSION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
+import org.cqfn.diktat.ruleset.utils.logicalInfixMethodMapping
 import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
 import com.bpodgursky.jbool_expressions.Expression
 import com.bpodgursky.jbool_expressions.options.ExprOptions
@@ -177,6 +178,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     internal inner class ExpressionsReplacement {
         private val expressionToToken: HashMap<String, String> = LinkedHashMap()
+        private val tokenToExpression: HashMap<String, String> = HashMap()
         private val tokenToOrderedToken: HashMap<String, String> = HashMap()
 
         /**
@@ -206,8 +208,14 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         fun addExpression(expressionAstNode: ASTNode) {
             val expressionText = expressionAstNode.textWithoutComments()
             // support case when `boolean_expression` matches to `!boolean_expression`
-            val expression = if (expressionText.startsWith('!')) expressionText.substring(1) else expressionText
-            getLetter(expressionToToken, expression)
+            val (expression, negativeExpression) = if (expressionText.startsWith('!')) {
+                expressionText.substring(1) to expressionText
+            } else {
+                expressionText to getNegativeExpression(expressionAstNode, expressionText)
+            }
+            val letter = getLetter(expressionToToken, expression)
+            tokenToExpression["!$letter"] = negativeExpression
+            tokenToExpression[letter] = expression
         }
 
         /**
@@ -216,13 +224,12 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          * @param fullExpression full boolean expression in kotlin
          * @return full expression in jbool format
          */
-        @Suppress("UnsafeCallOnNullableType")
         fun replaceExpressions(fullExpression: String): String {
             var resultExpression = fullExpression
             expressionToToken.keys
                 .sortedByDescending { it.length }
                 .forEach { refExpr ->
-                    resultExpression = resultExpression.replace(refExpr, expressionToToken[refExpr]!!)
+                    resultExpression = resultExpression.replace(refExpr, expressionToToken.getValue(refExpr))
                 }
             return resultExpression
         }
@@ -241,16 +248,26 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             resultExpression = resultExpression.format(args = tokenToOrderedToken.keys.toTypedArray())
             // restore expression
-            expressionToToken.values.forEachIndexed { index, value ->
+            tokenToExpression.keys.forEachIndexed { index, value ->
                 resultExpression = resultExpression.replace(value, "%${index + 1}\$s")
             }
-            resultExpression = resultExpression.format(args = expressionToToken.keys.toTypedArray())
+            resultExpression = resultExpression.format(args = tokenToExpression.values.toTypedArray())
             return resultExpression
         }
 
         private fun getLetter(letters: HashMap<String, String>, key: String) = letters
             .computeIfAbsent(key) {
                 ('A'.code + letters.size).toChar().toString()
+            }
+
+        private fun getNegativeExpression(expressionAstNode: ASTNode, expression: String): String =
+            if (expressionAstNode.elementType == BINARY_EXPRESSION) {
+                val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
+                logicalInfixMethodMapping[operation]?.let {
+                    expression.replace(operation, it)
+                } ?: "!($expression)"
+            } else {
+                "!$expression"
             }
     }
 
