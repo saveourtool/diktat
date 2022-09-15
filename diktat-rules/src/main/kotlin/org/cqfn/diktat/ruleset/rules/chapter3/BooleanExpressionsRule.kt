@@ -16,7 +16,6 @@ import com.bpodgursky.jbool_expressions.rules.DistributiveLaw
 import com.bpodgursky.jbool_expressions.rules.Rule
 import com.bpodgursky.jbool_expressions.rules.RuleList
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -24,7 +23,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
@@ -91,7 +89,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     internal fun formatBooleanExpressionAsString(node: ASTNode, expressionsReplacement: ExpressionsReplacement): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
         val logicalExpressions = otherBinaryExpressions.filter { otherBinaryExpression ->
-            otherBinaryExpression.isLogicalOperation() &&
+            // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
+            (otherBinaryExpression.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
                     // todo: support xor; for now skip all expressions that are nested in xor
                     otherBinaryExpression.parents()
                         .takeWhile { it != node }
@@ -142,10 +141,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             val operationReferenceText = (it.psi as KtBinaryExpression).operationReference.text
             operationReferenceText == "&&" || operationReferenceText == "||"
         }
-
-    // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
-    private fun ASTNode.isLogicalOperation(): Boolean =
-            (psi as KtBinaryExpression).operationReference.text in logicalInfixMethods
 
     private fun ASTNode.removeAllParentheses(): ASTNode {
         val result = (this.psi as? KtParenthesizedExpression)?.expression?.node ?: return this
@@ -266,16 +261,15 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                 ('A'.code + letters.size).toChar().toString()
             }
 
-        private fun getNegativeExpression(expressionAstNode: ASTNode, expression: String): String {
-            return if (expressionAstNode.elementType == BINARY_EXPRESSION) {
-                val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
-                logicalInfixMethodMapping[operation]?.let {
-                    expression.replace(operation, it)
-                } ?: "!($expression)"
-            } else {
-                "!$expression"
-            }
-        }
+        private fun getNegativeExpression(expressionAstNode: ASTNode, expression: String): String =
+                if (expressionAstNode.elementType == BINARY_EXPRESSION) {
+                    val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
+                    logicalInfixMethodMapping[operation]?.let {
+                        expression.replace(operation, it)
+                    } ?: "!($expression)"
+                } else {
+                    "!$expression"
+                }
     }
 
     companion object {
