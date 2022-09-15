@@ -224,7 +224,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          * @param fullExpression full boolean expression in kotlin
          * @return full expression in jbool format
          */
-        @Suppress("UnsafeCallOnNullableType")
         fun replaceExpressions(fullExpression: String): String {
             var resultExpression = fullExpression
             expressionToToken.keys
@@ -262,14 +261,14 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
 
         private fun getNegativeExpression(expressionAstNode: ASTNode, expression: String): String =
-                if (expressionAstNode.elementType == BINARY_EXPRESSION) {
-                    val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
-                    logicalInfixMethodMapping[operation]?.let {
-                        expression.replace(operation, it)
-                    } ?: "!($expression)"
-                } else {
-                    "!$expression"
-                }
+            if (expressionAstNode.elementType == BINARY_EXPRESSION) {
+                val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
+                logicalInfixMethodMapping[operation]?.let {
+                    expression.replace(operation, it)
+                } ?: "!($expression)"
+            } else {
+                "!$expression"
+            }
     }
 
     companion object {
