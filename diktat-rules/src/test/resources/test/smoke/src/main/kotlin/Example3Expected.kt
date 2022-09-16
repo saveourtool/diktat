@@ -57,7 +57,7 @@ enum class IssueType2 {
 
     /**
      * @param bar
-     // ;warn:$line+9:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
+     // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun foo(bar: Int) = bar
