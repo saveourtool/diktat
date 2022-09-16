@@ -4,29 +4,27 @@ package org.cqfn.diktat
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: Example (cannot be auto-corrected){{.*}}
 class Example {
     // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: isValid (cannot be auto-corrected){{.*}}
-    // ;warn:$line+3:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: foo (cannot be auto-corrected){{.*}}
     @get:JvmName("getIsValid")
     val isValid = true
+    // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: foo (cannot be auto-corrected){{.*}}
     val foo: Int = 1
 
     // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: foo (cannot be auto-corrected){{.*}}
     // ;warn:$line-1:5: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: foo (cannot be auto-corrected){{.*}}
     // ;warn:19: [EMPTY_BLOCK_STRUCTURE_ERROR] incorrect format of empty block: empty blocks are forbidden unless it is function with override keyword (cannot be auto-corrected){{.*}}
-    // ;warn:$line+9:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
-    // ;warn:$line+14:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
-    // ;warn:$line+21:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
-    // ;warn:$line+29:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
     fun Foo.foo() { }
 
     /**
      * @param x
      * @param y
+    // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun bar(x: Int, y: Int): Int = x + y
 
     /**
      * @param sub
+    // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun String.countSubStringOccurrences(sub: String): Int {
@@ -35,6 +33,7 @@ class Example {
     }
 
     /**
+    // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun String.splitPathToDirs(): List<String> =
@@ -44,6 +43,7 @@ class Example {
     /**
      * @param x
      * @param y
+    // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun foo(x: Int,
