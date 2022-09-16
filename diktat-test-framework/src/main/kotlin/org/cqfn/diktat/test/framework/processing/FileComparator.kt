@@ -60,7 +60,7 @@ class FileComparator(
             if (expectedResultList.isEmpty()) {
                 return false
             }
-            val regex = (".*// ;warn:(\\d+):(\\d+): (.*)").toRegex()
+            val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
             val expectWithoutWarn = expectedResultList.filterNot { line ->
                 line.contains(regex)
             }
