@@ -19,7 +19,7 @@ class SpecialTagsInKdoc {
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: `method name incorrect, part 4` (cannot be auto-corrected){{.*}}
 // ;warn:$line-1:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: `method name incorrect, part 4` (cannot be auto-corrected){{.*}}
-// ;warn:$line+1:5: [BACKTICKS_PROHIBITED] backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation: `method name incorrect, part 4` (cannot be auto-corrected){{.*}}
+// ;warn:5: [BACKTICKS_PROHIBITED] backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation: `method name incorrect, part 4` (cannot be auto-corrected){{.*}}
 fun `method name incorrect, part 4`() {
     val code = """
                   class TestPackageName {

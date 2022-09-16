@@ -18,7 +18,7 @@ class HttpClient(var name: String) {
 
     // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: doRequest (cannot be auto-corrected){{.*}}
     // ;warn:$line-1:5: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: doRequest (cannot be auto-corrected){{.*}}
-    // ;warn:$line+1:21: [EMPTY_BLOCK_STRUCTURE_ERROR] incorrect format of empty block: empty blocks are forbidden unless it is function with override keyword (cannot be auto-corrected){{.*}}
+    // ;warn:21: [EMPTY_BLOCK_STRUCTURE_ERROR] incorrect format of empty block: empty blocks are forbidden unless it is function with override keyword (cannot be auto-corrected){{.*}}
     fun doRequest() {}
 }
 
@@ -66,16 +66,16 @@ enum class IssueType2 {
 }
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: IssueType3 (cannot be auto-corrected){{.*}}
-// ;warn:$line+7:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: A (cannot be auto-corrected){{.*}}
-// ;warn:$line+7:5: [CONFUSING_IDENTIFIER_NAMING] it's a bad name for identifier: better name is: bt, nxt (cannot be auto-corrected){{.*}}
-// ;warn:$line+6:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: B (cannot be auto-corrected){{.*}}
-// ;warn:$line+6:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: C (cannot be auto-corrected){{.*}}
-// ;warn:$line+6:5: [CONFUSING_IDENTIFIER_NAMING] it's a bad name for identifier: better name is: obj, dgt (cannot be auto-corrected){{.*}}
-// ;warn:$line+5:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: D (cannot be auto-corrected){{.*}}
 enum class IssueType3 {
+    // ;warn:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: A (cannot be auto-corrected){{.*}}
     A,
+    // ;warn:5: [CONFUSING_IDENTIFIER_NAMING] it's a bad name for identifier: better name is: bt, nxt (cannot be auto-corrected){{.*}}
+    // ;warn:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: B (cannot be auto-corrected){{.*}}
     B,
+    // ;warn:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: C (cannot be auto-corrected){{.*}}
     C,
+    // ;warn:5: [CONFUSING_IDENTIFIER_NAMING] it's a bad name for identifier: better name is: obj, dgt (cannot be auto-corrected){{.*}}
+    // ;warn:5: [IDENTIFIER_LENGTH] identifier's length is incorrect, it should be in range of [2, 64] symbols: D (cannot be auto-corrected){{.*}}
     D,
     ;
 }
@@ -93,11 +93,11 @@ class Foo {
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: mains (cannot be auto-corrected){{.*}}
 // ;warn:$line-1:1: [MISSING_KDOC_ON_FUNCTION] all public, internal and protected functions should have Kdoc with proper tags: mains (cannot be auto-corrected){{.*}}
 fun mains() {
-    // ;warn:$line+5:23: [MAGIC_NUMBER] avoid using magic numbers, instead define constants with clear names describing what the magic number means: 100 (cannot be auto-corrected){{.*}}
     val httpClient = HttpClient("myConnection")
         .apply {
             url = "http://example.com"
             port = "8080"
+            // ;warn:23: [MAGIC_NUMBER] avoid using magic numbers, instead define constants with clear names describing what the magic number means: 100 (cannot be auto-corrected){{.*}}
             timeout = 100
         }
     httpClient.doRequest()
