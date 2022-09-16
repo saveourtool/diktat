@@ -10,10 +10,10 @@ package org.cqfn.diktat
  */
 class HttpClient(var name: String) {
     // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: url (cannot be auto-corrected){{.*}}
-    // ;warn:$line+3:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: port (cannot be auto-corrected){{.*}}
-    // ;warn:$line+3:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: timeout (cannot be auto-corrected){{.*}}
     var url: String = ""
+    // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: port (cannot be auto-corrected){{.*}}
     var port: String = ""
+    // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: timeout (cannot be auto-corrected){{.*}}
     var timeout = 0
 
     // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: doRequest (cannot be auto-corrected){{.*}}
