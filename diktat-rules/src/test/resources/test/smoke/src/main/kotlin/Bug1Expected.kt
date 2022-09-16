@@ -7,9 +7,9 @@ package org.cqfn.diktat
 class D {
     // ;warn:$line:5: [MISSING_KDOC_CLASS_ELEMENTS] all public, internal and protected classes, functions and variables inside the class should have Kdoc: x (cannot be auto-corrected){{.*}}
     val x = 0
-    // ;warn:$line+3:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
 
     /**
+     // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun bar(): Bar {

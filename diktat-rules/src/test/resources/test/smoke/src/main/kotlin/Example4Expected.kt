@@ -2,7 +2,6 @@
 package org.cqfn.diktat
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: SpecialTagsInKdoc (cannot be auto-corrected){{.*}}
-// ;warn:15:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
 class SpecialTagsInKdoc {
     /**
      * Empty function to test KDocs
@@ -12,6 +11,7 @@ class SpecialTagsInKdoc {
      *
      * @implNote baz
      *
+     // ;warn:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun test() = Unit

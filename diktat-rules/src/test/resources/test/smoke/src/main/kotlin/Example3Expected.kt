@@ -49,7 +49,6 @@ enum class IssueType {
 }
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: IssueType2 (cannot be auto-corrected){{.*}}
-// ;warn:$line+9:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
 enum class IssueType2 {
     PROJECT_STRUCTURE,
     TESTS,
@@ -58,6 +57,7 @@ enum class IssueType2 {
 
     /**
      * @param bar
+     // ;warn:$line+9:8: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected){{.*}}
      * @return
      */
     fun foo(bar: Int) = bar
