@@ -220,7 +220,7 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         with:
           check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v1)
-          files: |
+          junit_files: |
             **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
 
@@ -229,6 +229,6 @@ jobs:
         if: ${{ runner.os == 'Windows' || runner.os == 'macOS' }}
         with:
           check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v1)
-          files: |
+          junit_files: |
             **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
