@@ -215,20 +215,20 @@ jobs:
           name: xml-test-reports-${{ runner.os }}
 
         # Uses Docker, that's why Linux-only.
-      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v1, Linux)
-        uses: EnricoMi/publish-unit-test-result-action@v1
+      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v2, Linux)
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ runner.os == 'Linux' }}
         with:
-          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v1)
-          files: |
+          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v2)
+          junit_files: |
             **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
 
-      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v1, Windows or Mac OS X)
-        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v2, Windows or Mac OS X)
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
         if: ${{ runner.os == 'Windows' || runner.os == 'macOS' }}
         with:
-          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v1)
-          files: |
+          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v2)
+          junit_files: |
             **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
