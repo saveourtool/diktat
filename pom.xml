@@ -46,7 +46,7 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlinx.serialization.version>1.4.0</kotlinx.serialization.version>
-        <ktlint.version>0.46.1</ktlint.version>
+        <ktlint.version>0.47.1</ktlint.version>
         <junit.version>5.9.0</junit.version>
         <junit.platform.version>1.9.0</junit.platform.version>
         <guava.version>31.1-jre</guava.version>
