@@ -1,6 +1,9 @@
 /**
  * Utility classes and methods for tests
  */
+@file:Suppress(
+    "Deprecation"
+)
 
 package org.cqfn.diktat.util
 

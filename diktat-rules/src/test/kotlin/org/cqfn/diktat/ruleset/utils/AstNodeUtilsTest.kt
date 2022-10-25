@@ -1,7 +1,8 @@
 @file:Suppress(
     "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE",
     "LOCAL_VARIABLE_EARLY_DECLARATION",
-    "AVOID_NULL_CHECKS"
+    "AVOID_NULL_CHECKS",
+    "Deprecation",
 )
 
 package org.cqfn.diktat.ruleset.utils

@@ -1,6 +1,9 @@
 /**
  * Stub for diktat ruleset provide to be used in tests and other related utilities
  */
+@file:Suppress(
+    "Deprecation"
+)
 
 package org.cqfn.diktat.util
 

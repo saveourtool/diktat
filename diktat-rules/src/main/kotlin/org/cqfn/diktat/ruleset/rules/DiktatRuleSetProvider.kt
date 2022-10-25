@@ -1,3 +1,7 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF

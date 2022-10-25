@@ -1,3 +1,7 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.ruleset.constants.EmitType
