@@ -93,6 +93,7 @@ class OrderedRuleSetTest {
             visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
             onVisit: (Rule) -> Unit = { }
         ) = object : Rule(id, visitorModifiers) {
+            @Suppress("OVERRIDE_DEPRECATION")
             override fun visit(
                 node: ASTNode,
                 autoCorrect: Boolean,
