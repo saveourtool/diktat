@@ -30,6 +30,7 @@ class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: Lis
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun get() = RuleSet(
         DIKTAT_RULE_SET_ID,
         ruleSupplier.invoke(rulesConfigList ?: emptyList())

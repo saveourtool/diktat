@@ -26,6 +26,7 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule(NAME_ID) {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,

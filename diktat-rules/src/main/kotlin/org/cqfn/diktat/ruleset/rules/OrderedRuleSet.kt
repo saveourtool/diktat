@@ -76,6 +76,7 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
             /**
              * Delegating a call of this method
              */
+            @Suppress("OVERRIDE_DEPRECATION")
             override fun visit(
                 node: ASTNode,
                 autoCorrect: Boolean,

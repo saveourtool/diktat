@@ -112,6 +112,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     @Suppress(
         "LongMethod",
         "TOO_LONG_FUNCTION",
+        "OVERRIDE_DEPRECATION",
     )
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
