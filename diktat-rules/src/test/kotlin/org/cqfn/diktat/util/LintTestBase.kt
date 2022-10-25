@@ -74,6 +74,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val actualFileName = fileName ?: TEST_FILE_NAME
         val lintErrors: MutableList<LintError> = mutableListOf()
 
+        @Suppress("DEPRECATION")
         KtLint.lint(
             KtLint.ExperimentalParams(
                 fileName = actualFileName,
