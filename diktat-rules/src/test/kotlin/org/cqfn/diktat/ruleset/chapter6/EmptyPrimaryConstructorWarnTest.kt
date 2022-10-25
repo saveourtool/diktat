@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.util.LintTestBase
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstructor) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidEmptyPrimaryConstructor.NAME_ID}"
+    private val ruleId = AvoidEmptyPrimaryConstructor.NAME_ID
 
     @Test
     @Tag(WarningNames.EMPTY_PRIMARY_CONSTRUCTOR)

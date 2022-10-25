@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.junit.NaturalDisplayName
@@ -29,7 +28,7 @@ import org.junit.jupiter.api.TestMethodOrder
 @Suppress("LargeClass")
 @TestMethodOrder(NaturalDisplayName::class)
 class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
+    private val ruleId = IndentationRule.NAME_ID
     private val rulesConfigList = listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
             mapOf(

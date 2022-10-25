@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.LongNumericalValuesSeparatedRule
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesSeparatedRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${LongNumericalValuesSeparatedRule.NAME_ID}"
+    private val ruleId = LongNumericalValuesSeparatedRule.NAME_ID
     private val rulesConfig: List<RulesConfig> = listOf(
         RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,
             mapOf("maxNumberLength" to "2"))

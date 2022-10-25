@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.util.LintTestBase
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSameNameRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${ExtensionFunctionsSameNameRule.NAME_ID}"
+    private val ruleId = ExtensionFunctionsSameNameRule.NAME_ID
 
     @Test
     @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)

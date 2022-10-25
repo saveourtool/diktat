@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
 import org.cqfn.diktat.util.LintTestBase
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${CustomGetterSetterRule.NAME_ID}"
+    private val ruleId = CustomGetterSetterRule.NAME_ID
 
     @Test
     @Tag(CUSTOM_GETTERS_SETTERS)

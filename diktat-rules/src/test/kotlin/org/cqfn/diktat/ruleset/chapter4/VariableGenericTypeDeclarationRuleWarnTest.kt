@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter4
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter4.VariableGenericTypeDeclarationRule
 import org.cqfn.diktat.util.LintTestBase
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGenericTypeDeclarationRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${VariableGenericTypeDeclarationRule.NAME_ID}"
+    private val ruleId = VariableGenericTypeDeclarationRule.NAME_ID
 
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)

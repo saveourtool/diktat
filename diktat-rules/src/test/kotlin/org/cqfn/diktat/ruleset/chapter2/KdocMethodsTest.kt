@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocMethodsTest : LintTestBase(::KdocMethods) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}"
+    private val ruleId: String = KdocMethods.NAME_ID
     private val funCode = """
         fun doubleInt(a: Int): Int {
             if (Config.condition) throw IllegalStateException()

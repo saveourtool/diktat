@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
@@ -9,7 +8,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}"
+    private val ruleId: String = "${IdentifierNaming.NAME_ID}"
 
     @Test
     fun `test suppress on class`() {
@@ -140,7 +139,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                 }
             """.trimIndent()
         lintMethod(code,
-            LintError(3, 15, "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}",
+            LintError(3, 15, "${IdentifierNaming.NAME_ID}",
                 "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 }

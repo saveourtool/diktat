@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter1
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
@@ -25,7 +24,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}"
+    private val ruleId: String = IdentifierNaming.NAME_ID
     private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
         RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
             mapOf("allowedPrefixes" to "equals, equivalent, foo"))

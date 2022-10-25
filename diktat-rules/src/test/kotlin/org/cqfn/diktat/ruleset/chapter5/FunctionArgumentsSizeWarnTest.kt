@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_PARAMETERS
 import org.cqfn.diktat.ruleset.rules.chapter5.FunctionArgumentsSize
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FunctionArgumentsSizeWarnTest : LintTestBase(::FunctionArgumentsSize) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${FunctionArgumentsSize.NAME_ID}"
+    private val ruleId = FunctionArgumentsSize.NAME_ID
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(TOO_MANY_PARAMETERS.name, true,
             mapOf("maxParameterListSize" to "1"))

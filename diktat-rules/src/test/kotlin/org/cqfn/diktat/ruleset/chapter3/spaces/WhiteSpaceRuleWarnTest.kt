@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import org.cqfn.diktat.util.LintTestBase
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${WhiteSpaceRule.NAME_ID}"
+    private val ruleId = WhiteSpaceRule.NAME_ID
     private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
     private fun keywordWarn(keyword: String, sep: String) =

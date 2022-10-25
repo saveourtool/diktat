@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.util.LintTestBase
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${SingleInitRule.NAME_ID}"
+    private val ruleId = SingleInitRule.NAME_ID
 
     @Test
     @Tag(WarningNames.MULTIPLE_INIT_BLOCKS)

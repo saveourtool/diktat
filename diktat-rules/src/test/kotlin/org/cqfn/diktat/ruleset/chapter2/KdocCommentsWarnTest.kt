@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
+    private val ruleId: String = KdocComments.NAME_ID
 
     @Test
     @Tag(WarningNames.COMMENTED_BY_KDOC)

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
 import org.cqfn.diktat.util.LintTestBase
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${StringTemplateFormatRule.NAME_ID}"
+    private val ruleId = StringTemplateFormatRule.NAME_ID
 
     @Test
     @Tag(STRING_TEMPLATE_CURLY_BRACES)

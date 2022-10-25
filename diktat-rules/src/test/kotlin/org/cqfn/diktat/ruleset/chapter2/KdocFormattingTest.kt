@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class KdocFormattingTest : LintTestBase(::KdocFormatting) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}"
+    private val ruleId: String = KdocFormatting.NAME_ID
     private val funCode = """
          fun foo(a: Int): Int {
              if (false) throw IllegalStateException()

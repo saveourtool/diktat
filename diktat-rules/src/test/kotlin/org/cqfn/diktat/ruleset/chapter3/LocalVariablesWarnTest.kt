@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
 import org.cqfn.diktat.util.LintTestBase
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${LocalVariablesRule.NAME_ID}"
+    private val ruleId = LocalVariablesRule.NAME_ID
 
     private fun warnMessage(name: String,
                             declared: Int,

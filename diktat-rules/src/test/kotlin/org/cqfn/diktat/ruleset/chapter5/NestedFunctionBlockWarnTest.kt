@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.cqfn.diktat.ruleset.rules.chapter5.NestedFunctionBlock
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${NestedFunctionBlock.NAME_ID}"
+    private val ruleId = NestedFunctionBlock.NAME_ID
     private val rulesConfigList = listOf(
         RulesConfig(NESTED_BLOCK.name, true, mapOf("maxNestedBlockQuantity" to "2"))
     )

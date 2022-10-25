@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
 import org.cqfn.diktat.ruleset.rules.chapter3.SortRule
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SortRuleWarnTest : LintTestBase(::SortRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${SortRule.NAME_ID}"
+    private val ruleId = SortRule.NAME_ID
     private val rulesConfigNotSortEnum: List<RulesConfig> = listOf(
         RulesConfig(WRONG_DECLARATIONS_ORDER.name, true,
             mapOf("sortEnum" to "false"))
