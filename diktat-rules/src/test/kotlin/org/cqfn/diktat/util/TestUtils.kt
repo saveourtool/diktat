@@ -17,7 +17,6 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -229,7 +228,6 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
  * @param expectedAsserts Number of expected times of assert invocation
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
-@OptIn(FeatureInAlphaState::class)
 @Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,

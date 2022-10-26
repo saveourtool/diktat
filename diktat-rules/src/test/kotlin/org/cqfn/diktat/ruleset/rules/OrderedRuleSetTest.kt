@@ -4,7 +4,6 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -57,7 +56,6 @@ class OrderedRuleSetTest {
     }
 
     @Test
-    @OptIn(FeatureInAlphaState::class)
     fun `KtLint keeps order with RuleVisitorModifierRunAfterRule`() {
         val ruleIdOrder: MutableList<String> = mutableListOf()
         val onVisit: (Rule) -> Unit = {
