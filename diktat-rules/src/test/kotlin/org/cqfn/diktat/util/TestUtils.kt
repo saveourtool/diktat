@@ -4,7 +4,6 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 
@@ -48,18 +47,17 @@ internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expectin
  * @param ruleSetProviderRef
  * @param text
  * @param fileName
- * @param rulesConfigList
  * @param cb callback to be called on unhandled [LintError]s
  * @return formatted code
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-                    @Language("kotlin") text: String,
-                    fileName: String,
-                    rulesConfigList: List<RulesConfig>? = null,
-                    cb: LintErrorCallback = defaultCallback
+internal fun format(
+    ruleSetProviderRef: () -> RuleSetProvider,
+    @Language("kotlin") text: String,
+    fileName: String,
+    cb: LintErrorCallback = defaultCallback
 ): String {
-    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get())
+    val ruleSets = listOf(ruleSetProviderRef().get())
     return KtLint.format(
         KtLint.ExperimentalParams(
             text = text,

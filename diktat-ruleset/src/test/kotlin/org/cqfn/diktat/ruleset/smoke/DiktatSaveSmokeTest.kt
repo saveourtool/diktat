@@ -33,11 +33,11 @@ import kotlin.system.measureNanoTime
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     override val isLintErrors = false
     override fun fixAndCompare(
-        config: String,
+        config: Path,
         expected: String,
         test: String,
     ) {
-        saveSmokeTest(Path(config), test)
+        saveSmokeTest(config, test)
     }
 
     /**
@@ -93,6 +93,23 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 saveLog.deleteIfExistsSilently()
             }
         }
+    }
+
+    /**
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * @return ProcessBuilder
+     */
+    private fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
+        val filesDir = "src/test/resources/test/smoke"
+        val savePath = "$filesDir/${getSaveForCurrentOs()}"
+
+        val systemName = System.getProperty("os.name")
+        val result = when {
+            systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
+                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
+            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath)
+        }
+        return result
     }
 
     companion object {

@@ -1,6 +1,8 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
@@ -9,11 +11,12 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
  */
 class DiktatSmokeTest : DiktatSmokeTestBase() {
     override val isLintErrors = true
+
     override fun fixAndCompare(
-        config: String,
+        config: Path,
         expected: String,
         test: String,
     ) {
-        fixAndCompare(expected, test, emptyList(), true)
+        fixAndCompare(expected, test,  DiktatRuleSetProvider(config.absolutePathString()), true)
     }
 }

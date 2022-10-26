@@ -4,27 +4,16 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.RuleSetProvider
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.fail
 import org.assertj.core.api.SoftAssertions.assertSoftly
-import org.intellij.lang.annotations.Language
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.io.File
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import kotlin.io.path.absolute
 import kotlin.io.path.deleteIfExists

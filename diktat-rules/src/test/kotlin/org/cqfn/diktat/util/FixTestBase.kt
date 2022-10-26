@@ -1,51 +1,28 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.test.framework.processing.FileComparisonResult
-import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSetProvider
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
-import kotlin.io.path.bufferedWriter
-import kotlin.io.path.div
-
-const val SAVE_VERSION: String = "0.3.2"
 
 /**
  * @property resourceFilePath path to files which will be compared in tests
  */
 open class FixTestBase(
-    protected val resourceFilePath: String,
-    private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-    private val cb: LintErrorCallback = defaultCallback,
-    private val rulesConfigList: List<RulesConfig>? = null,
+    resourceFilePath: String,
+    ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+    private val defaultRulesConfigList: List<RulesConfig> = emptyList(),
+) : FixTestBaseCommon(
+    resourceFilePath = resourceFilePath,
 ) {
-    /**
-     * testComparatorUnit
-     */
-    protected val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-        format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
-    }
-
-    constructor(resourceFilePath: String,
-                ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
-                rulesConfigList: List<RulesConfig>? = null,
-                cb: LintErrorCallback = defaultCallback
-    ) : this(
-        resourceFilePath,
-        { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
-        cb,
-        rulesConfigList
-    )
+    private val ruleSetProviderRef = { rulesConfigList: List<RulesConfig>? -> DiktatRuleSetProvider4Test(ruleSupplier, rulesConfigList ?: defaultRulesConfigList) }
 
     /**
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     * @param overrideRulesConfigList optional override to [rulesConfigList]
+     * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
      * @param trimLastEmptyLine whether the last (empty) line should be
-     *   discarded when reading the content of [testFileStr].
+     *   discarded when reading the content of [testPath].
      * @see fixAndCompareContent
      */
     protected fun fixAndCompare(
@@ -53,44 +30,7 @@ open class FixTestBase(
         testPath: String,
         overrideRulesConfigList: List<RulesConfig> = emptyList(),
         trimLastEmptyLine: Boolean = false,
-    ) {
-        val testComparatorUnit = if (overrideRulesConfigList.isNotEmpty()) {
-            TestComparatorUnit(resourceFilePath) { text, fileName ->
-                format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
-            }
-        } else {
-            testComparatorUnit
-        }
-
-        Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
-        )
-    }
-
-    private fun getSaveForCurrentOs() = when {
-        System.getProperty("os.name").startsWith("Linux", ignoreCase = true) -> "save-$SAVE_VERSION-linuxX64.kexe"
-        System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> "save-$SAVE_VERSION-macosX64.kexe"
-        System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> "save-$SAVE_VERSION-mingwX64.exe"
-        else -> ""
-    }
-
-    /**
-     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     * @return ProcessBuilder
-     */
-    protected fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
-        val filesDir = "src/test/resources/test/smoke"
-        val savePath = "$filesDir/${getSaveForCurrentOs()}"
-
-        val systemName = System.getProperty("os.name")
-        val result = when {
-            systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath)
-        }
-        return result
-    }
+    ) = super.fixAndCompare(expectedPath, testPath, ruleSetProviderRef(overrideRulesConfigList), trimLastEmptyLine)
 
     /**
      * Unlike [fixAndCompare], this method doesn't perform any assertions.
@@ -111,21 +51,5 @@ open class FixTestBase(
         @Language("kotlin") expectedContent: String = actualContent,
         tempDir: Path,
         overrideRulesConfigList: List<RulesConfig>? = null
-    ): FileComparisonResult {
-        val actual = tempDir / "actual.kt"
-        actual.bufferedWriter().use { out ->
-            out.write(actualContent)
-        }
-
-        val expected = tempDir / "expected.kt"
-        expected.bufferedWriter().use { out ->
-            out.write(expectedContent)
-        }
-
-        val testComparatorUnit = TestComparatorUnit(tempDir.toString()) { text, fileName ->
-            format(ruleSetProviderRef, text, fileName, overrideRulesConfigList ?: rulesConfigList, cb)
-        }
-
-        return testComparatorUnit.compareFilesFromFileSystem(expected, actual)
-    }
+    ) = super.fixAndCompareContent(actualContent, expectedContent, tempDir, ruleSetProviderRef(overrideRulesConfigList))
 }

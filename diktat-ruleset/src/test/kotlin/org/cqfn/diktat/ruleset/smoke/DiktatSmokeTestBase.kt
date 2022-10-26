@@ -33,7 +33,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
-import org.cqfn.diktat.util.FixTestBase
+import org.cqfn.diktat.util.FixTestBaseCommon
 import org.cqfn.diktat.util.assertEquals
 
 import com.charleskorn.kaml.Yaml
@@ -46,9 +46,14 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit.SECONDS
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempFile
+import kotlin.io.path.writeText
 
 import kotlinx.serialization.builtins.ListSerializer
 
@@ -56,14 +61,14 @@ typealias RuleToConfig = Map<String, Map<String, String>>
 
 /**
  * Base class for smoke test classes
+ *
+ * @property unfixedLintErrors
  */
 abstract class DiktatSmokeTestBase(
     private val unfixedLintErrors: MutableList<LintError> = mutableListOf(),
-    // by default using same yml config as for diktat code style check, but allow to override
-    private var configFilePath: String = DEFAULT_CONFIG_PATH,
-) : FixTestBase("test/smoke/src/main/kotlin",
-    { DiktatRuleSetProvider(configFilePath) },
-    { lintError, _ -> unfixedLintErrors.add(lintError) },
+) : FixTestBaseCommon(
+    "test/smoke/src/main/kotlin",
+    { lintError, _ -> unfixedLintErrors.add(lintError) }
 ) {
     /**
      * Flag to check LintError in smoke tests
@@ -77,7 +82,7 @@ abstract class DiktatSmokeTestBase(
      * @param rulesToOverride
      */
     @Suppress("UnsafeCallOnNullableType")
-    open fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: RuleToConfig = emptyMap()) {
+    private fun prepareOverriddenRulesConfig(rulesToDisable: List<Warnings> = emptyList(), rulesToOverride: RuleToConfig = emptyMap()): Path {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(DEFAULT_CONFIG_PATH)!!
             .toMutableList()
             .also { rulesConfig ->
@@ -91,15 +96,13 @@ abstract class DiktatSmokeTestBase(
                 }
             }
             .toList()
-        kotlin.io.path.createTempFile()
-            .toFile()
+        return createTempFile()
             .also {
-                configFilePath = it.absolutePath
+                it.writeText(
+                    Yaml(configuration = YamlConfiguration(strictMode = true))
+                        .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
+                )
             }
-            .writeText(
-                Yaml(configuration = YamlConfiguration(strictMode = true))
-                    .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
-            )
     }
 
     @BeforeEach
@@ -107,16 +110,11 @@ abstract class DiktatSmokeTestBase(
         unfixedLintErrors.clear()
     }
 
-    @AfterEach
-    fun tearDown() {
-        configFilePath = DEFAULT_CONFIG_PATH
-    }
-
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should not fail if package is not set`() {
-        overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
+        val configFilePath = prepareOverriddenRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
         fixAndCompare(configFilePath, "DefaultPackageExpected.kt", "DefaultPackageTest.kt")
     }
@@ -125,21 +123,21 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #8 - anonymous function`() {
-        fixAndCompare(configFilePath, "Example8Expected.kt", "Example8Test.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "Example8Expected.kt", "Example8Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #7`() {
-        fixAndCompare(configFilePath, "Example7Expected.kt", "Example7Test.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "Example7Expected.kt", "Example7Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #6`() {
-        overrideRulesConfig(
+        val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
@@ -156,7 +154,7 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #5`() {
-        overrideRulesConfig(emptyList(),
+        val configFilePath = prepareOverriddenRulesConfig(emptyList(),
             mapOf(
                 Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
                     "isCopyrightMandatory" to "true",
@@ -191,28 +189,28 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #4`() {
-        fixAndCompare(configFilePath, "Example4Expected.kt", "Example4Test.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "Example4Expected.kt", "Example4Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #3`() {
-        fixAndCompare(configFilePath, "Example3Expected.kt", "Example3Test.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "Example3Expected.kt", "Example3Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - shouldn't throw exception in cases similar to #371`() {
-        fixAndCompare(configFilePath, "Bug1Expected.kt", "Bug1Test.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "Bug1Expected.kt", "Bug1Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #2`() {
-        overrideRulesConfig(
+        val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
@@ -238,7 +236,7 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test #1`() {
-        overrideRulesConfig(
+        val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
@@ -270,35 +268,35 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test with kts files #2`() {
-        fixAndCompare(configFilePath, "script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
+        fixAndCompare(prepareOverriddenRulesConfig(), "script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `smoke test with kts files with package name`() {
-        fixAndCompare(configFilePath, "script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
+        fixAndCompare(prepareOverriddenRulesConfig(), "script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should correctly handle tags with empty lines`() {
-        fixAndCompare(configFilePath, "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - FP of local variables rule`() {
-        fixAndCompare(configFilePath, "LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
+        fixAndCompare(prepareOverriddenRulesConfig(), "LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `fix can cause long line`() {
-        overrideRulesConfig(
+        val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
             rulesToOverride = mapOf(
                 WRONG_INDENTATION.name to mapOf(
@@ -313,7 +311,7 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with multiplatform project layout`() {
         fixAndCompare(
-            configFilePath,
+            prepareOverriddenRulesConfig(),
             "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptExpected.kt",
             "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptTest.kt"
         )
@@ -322,7 +320,7 @@ abstract class DiktatSmokeTestBase(
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files`() {
-        overrideRulesConfig(
+        val configFilePath = prepareOverriddenRulesConfig(
             emptyList(),
             mapOf(
                 WRONG_INDENTATION.name to mapOf(
@@ -336,7 +334,7 @@ abstract class DiktatSmokeTestBase(
             .toURI()
             .let {
                 val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
-                File(it).copyTo(tmpTestFile)
+                File(it).copyTo(tmpTestFile, true)
                 tmpTestFile
             }
         val tmpFilePath = "../../../build.gradle.kts"
@@ -348,7 +346,7 @@ abstract class DiktatSmokeTestBase(
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with gradle script plugin`() {
-        fixAndCompare(configFilePath, "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
+        fixAndCompare(prepareOverriddenRulesConfig(), "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         Assertions.assertEquals(
             LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
                     "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
@@ -359,7 +357,7 @@ abstract class DiktatSmokeTestBase(
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `disable chapters`() {
-        overrideRulesConfig(
+        val configFilePath = prepareOverriddenRulesConfig(
             emptyList(),
             mapOf(
                 DIKTAT_COMMON to mapOf(
@@ -383,7 +381,7 @@ abstract class DiktatSmokeTestBase(
     }
 
     abstract fun fixAndCompare(
-        config: String,
+        config: Path,
         expected: String,
         test: String,
     )
