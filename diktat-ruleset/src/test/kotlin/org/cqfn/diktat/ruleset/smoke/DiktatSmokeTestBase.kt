@@ -29,6 +29,7 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
@@ -44,6 +45,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
+import java.io.File
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit.SECONDS
@@ -55,7 +57,11 @@ typealias RuleToConfig = Map<String, Map<String, String>>
 /**
  * Base class for smoke test classes
  */
-abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
+abstract class DiktatSmokeTestBase(
+    private val unfixedLintErrors: MutableList<LintError> = mutableListOf(),
+    // by default using same yml config as for diktat code style check, but allow to override
+    private var configFilePath: String = DEFAULT_CONFIG_PATH,
+) : FixTestBase("test/smoke/src/main/kotlin",
     { DiktatRuleSetProvider(configFilePath) },
     { lintError, _ -> unfixedLintErrors.add(lintError) },
 ) {
@@ -303,6 +309,79 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare(configFilePath, "ManyLineTransformInLongLineExpected.kt", "ManyLineTransformInLongLineTest.kt")
     }
 
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with multiplatform project layout`() {
+        fixAndCompare(
+            configFilePath,
+            "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptExpected.kt",
+            "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptTest.kt"
+        )
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files`() {
+        overrideRulesConfig(
+            emptyList(),
+            mapOf(
+                WRONG_INDENTATION.name to mapOf(
+                    IndentationConfig.NEWLINE_AT_END to "false",
+                )
+            )
+        )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
+        // file name is `gradle_` so that IDE doesn't suggest to import gradle project
+        val tmpTestFile = javaClass.classLoader
+            .getResource("$resourceFilePath/../../../build.gradle_.kts")!!
+            .toURI()
+            .let {
+                val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
+                File(it).copyTo(tmpTestFile)
+                tmpTestFile
+            }
+        val tmpFilePath = "../../../build.gradle.kts"
+        fixAndCompare(configFilePath, tmpFilePath, tmpFilePath)
+        Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        tmpTestFile.delete()
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with gradle script plugin`() {
+        fixAndCompare(configFilePath, "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
+        Assertions.assertEquals(
+            LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
+            unfixedLintErrors.single()
+        )
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `disable chapters`() {
+        overrideRulesConfig(
+            emptyList(),
+            mapOf(
+                DIKTAT_COMMON to mapOf(
+                    "domainName" to "org.cqfn.diktat",
+                    "disabledChapters" to "Naming,3,4,5,Classes"
+                )
+            )
+        )
+        fixAndCompare(configFilePath, "Example1-2Expected.kt", "Example1Test.kt")
+        unfixedLintErrors.assertEquals(
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
+            LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+            LintError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+        )
+    }
+
     abstract fun fixAndCompare(
         config: String,
         expected: String,
@@ -312,9 +391,5 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
     companion object {
         const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private const val TEST_TIMEOUT_SECONDS = 20L
-        val unfixedLintErrors: MutableList<LintError> = mutableListOf()
-
-        // by default using same yml config as for diktat code style check, but allow to override
-        var configFilePath = DEFAULT_CONFIG_PATH
     }
 }

@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-import org.cqfn.diktat.util.SAVE_VERSION
 import org.cqfn.diktat.util.deleteIfExistsSilently
 import org.cqfn.diktat.util.isSameJavaHomeAs
 import org.cqfn.diktat.util.prependPath
@@ -100,8 +99,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val logger = KotlinLogging.loggerWithKtlintConfig { }
         private const val BUILD_DIRECTORY = "target"
-        private const val FAT_JAR_GLOB = "diktat-rules-*-fat-jar-for-smoke-tests.jar"
+        private const val FAT_JAR_GLOB = "diktat-*.jar"
         private const val KTLINT_VERSION = "0.46.1"
+        private const val SAVE_VERSION: String = "0.3.2"
         private val baseDirectory = Path("src/test/resources/test/smoke").absolute()
 
         private fun getSaveForCurrentOs(): String {
