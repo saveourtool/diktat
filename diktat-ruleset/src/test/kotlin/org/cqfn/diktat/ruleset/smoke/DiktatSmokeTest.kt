@@ -17,6 +17,6 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         expected: String,
         test: String,
     ) {
-        fixAndCompare(expected, test,  DiktatRuleSetProvider(config.absolutePathString()), true)
+        fixAndCompare(expected, test, DiktatRuleSetProvider(config.absolutePathString()), true)
     }
 }
