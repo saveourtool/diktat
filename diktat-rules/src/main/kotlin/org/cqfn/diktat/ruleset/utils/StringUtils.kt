@@ -12,6 +12,8 @@ internal const val SPACE = ' '
 
 internal const val TAB = '\t'
 
+private const val REGEX_FOR_ASSIGNMENT_DETECTION = "[^=]+=[^=]+"
+
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val JAVA = arrayOf("abstract", "assert", "boolean",
     "break", "byte", "case", "catch", "char", "class", "const",
@@ -129,3 +131,8 @@ internal fun String.leadingSpaceCount(): Int =
  */
 private fun isSpaceCharacter(ch: Char): Boolean =
     ch == SPACE
+
+/**
+ * @return true if this String includes assignment operator, false otherwise
+ */
+fun String.hasAssignment(): Boolean = contains(REGEX_FOR_ASSIGNMENT_DETECTION.toRegex())

@@ -149,15 +149,15 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val text = "$thenEditedCodeLines $elseEditedCodeLines"
         val tree = KotlinParser().createNode(text)
-        condition.treeParent.treeParent.addChild(tree, condition.treeParent)
-        condition.treeParent.treeParent.removeChild(condition.treeParent)
+        val ifNode = condition.treeParent
+        ifNode.treeParent.replaceChild(ifNode, tree)
     }
 
     private fun getEditedElseCodeLines(elseCodeLines: List<String>?, numberOfStatementsInElseBlock: Int): String = when {
         // else { "null"/empty } -> ""
         elseCodeLines == null || elseCodeLines.singleOrNull() == "null" -> ""
         // else { bar() } -> ?: bar()
-        numberOfStatementsInElseBlock == 1 -> "?: ${elseCodeLines.joinToString(postfix = "\n", separator = "\n")}"
+        numberOfStatementsInElseBlock == 1 && elseCodeLines.singleOrNull()?.hasAssignment() != true -> "?: ${elseCodeLines.joinToString(postfix = "\n", separator = "\n")}"
         // else { ... } -> ?: run { ... }
         else -> getDefaultCaseElseCodeLines(elseCodeLines)
     }
