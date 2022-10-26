@@ -40,6 +40,11 @@ val KOTLIN = KtTokens.KEYWORDS
 val loggerPropertyRegex = "(?iu)^log(?:ger)?$".toRegex()
 
 /**
+ * @return true if this String includes assignment operator, false otherwise
+ */
+fun String.hasAssignment(): Boolean = contains(REGEX_FOR_ASSIGNMENT_DETECTION.toRegex())
+
+/**
  * @return whether [this] string represents a Java keyword
  */
 fun String.isJavaKeyWord() = JAVA.contains(this)
@@ -131,8 +136,3 @@ internal fun String.leadingSpaceCount(): Int =
  */
 private fun isSpaceCharacter(ch: Char): Boolean =
     ch == SPACE
-
-/**
- * @return true if this String includes assignment operator, false otherwise
- */
-fun String.hasAssignment(): Boolean = contains(REGEX_FOR_ASSIGNMENT_DETECTION.toRegex())
