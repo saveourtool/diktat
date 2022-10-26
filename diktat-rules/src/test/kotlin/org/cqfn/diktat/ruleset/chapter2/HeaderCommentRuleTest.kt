@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
-    private val ruleId: String = HeaderCommentRule.NAME_ID
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}"
     private val curYear = LocalDate.now().year
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,

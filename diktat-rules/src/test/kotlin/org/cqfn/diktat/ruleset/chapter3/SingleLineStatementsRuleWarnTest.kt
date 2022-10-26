@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
 import org.cqfn.diktat.util.LintTestBase
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule) {
-    private val ruleId = SingleLineStatementsRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${SingleLineStatementsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)

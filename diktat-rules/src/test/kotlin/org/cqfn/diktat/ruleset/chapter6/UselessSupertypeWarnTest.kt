@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_SUPERTYPE
 import org.cqfn.diktat.ruleset.rules.chapter6.UselessSupertype
 import org.cqfn.diktat.util.LintTestBase
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class UselessSupertypeWarnTest : LintTestBase(::UselessSupertype) {
-    private val ruleId = UselessSupertype.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${UselessSupertype.NAME_ID}"
 
     @Test
     @Tag(WarningNames.USELESS_SUPERTYPE)

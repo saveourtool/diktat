@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.rules.chapter4.TypeAliasRule
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
-    private val ruleId = TypeAliasRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${TypeAliasRule.NAME_ID}"
     private val rulesConfigListShortType: List<RulesConfig> = listOf(
         RulesConfig(TYPE_ALIAS.name, true,
             mapOf("typeReferenceLength" to "4"))

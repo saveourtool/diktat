@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
 import org.cqfn.diktat.ruleset.rules.chapter4.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.util.LintTestBase
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
-    private val ruleId = AccurateCalculationsRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AccurateCalculationsRule.NAME_ID}"
 
     private fun warnText(ref: String, expr: String) = "${FLOAT_IN_ACCURATE_CALCULATIONS.warnText()} float value of <$ref> used in arithmetic expression in $expr"
 

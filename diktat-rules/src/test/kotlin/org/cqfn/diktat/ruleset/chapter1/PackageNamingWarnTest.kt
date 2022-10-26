@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter1
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
-    private val ruleId: String = PackageNaming.NAME_ID
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${PackageNaming.NAME_ID}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )

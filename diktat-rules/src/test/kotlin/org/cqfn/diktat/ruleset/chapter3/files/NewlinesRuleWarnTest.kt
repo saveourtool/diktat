@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
@@ -24,7 +25,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         RulesConfig(WRONG_NEWLINES.name, true,
             mapOf("maxCallsInOneLine" to "1"))
     )
-    private val ruleId = NewlinesRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${NewlinesRule.NAME_ID}"
     private val dotQuaOrSafeAccessOrPostfixExpression = "${WRONG_NEWLINES.warnText()} wrong split long `dot qualified expression` or `safe access expression`"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"

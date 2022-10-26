@@ -1,5 +1,6 @@
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
@@ -8,7 +9,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressingTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "${IdentifierNaming.NAME_ID}"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}"
     private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
         RulesConfig(IDENTIFIER_LENGTH.name, true, emptyMap(), setOf("MySuperSuppress"))
     )

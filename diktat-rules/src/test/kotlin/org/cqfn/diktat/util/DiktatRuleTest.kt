@@ -1,5 +1,6 @@
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
@@ -9,7 +10,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
-    private val ruleId = ClassLikeStructuresOrderRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ClassLikeStructuresOrderRule.NAME_ID}"
     private val codeTemplate = """
         |class Example {
         |   private val FOO = 42

@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter4
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
 import org.cqfn.diktat.util.LintTestBase
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
-    private val ruleId = ImmutableValNoVarRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ImmutableValNoVarRule.NAME_ID}"
 
     @Test
     @Tag(SAY_NO_TO_VAR)

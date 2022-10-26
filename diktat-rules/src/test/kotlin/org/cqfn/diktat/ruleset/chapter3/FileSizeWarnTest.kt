@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class FileSizeWarnTest : LintTestBase(::FileSize) {
-    private val ruleId = FileSize.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${FileSize.NAME_ID}"
     private val rulesConfigListLarge: List<RulesConfig> = listOf(
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
             mapOf("maxSize" to "5"))

@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.COLLAPSE_IF_STATEMENTS
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.util.LintTestBase
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule) {
-    private val ruleId = CollapseIfStatementsRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CollapseIfStatementsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)

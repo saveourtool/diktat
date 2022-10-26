@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.junit.ExpectedLintError
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule.Companion.NAME_ID
@@ -35,7 +36,7 @@ class ExpectedIndentationError(override val line: Int,
         LintError(
             line,
             column,
-            NAME_ID,
+            "$DIKTAT_RULE_SET_ID:$NAME_ID",
             message,
             true)
 

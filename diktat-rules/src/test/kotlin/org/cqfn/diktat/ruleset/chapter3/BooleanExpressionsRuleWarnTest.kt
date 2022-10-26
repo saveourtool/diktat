@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
@@ -14,7 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
-    private val ruleId = BooleanExpressionsRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${BooleanExpressionsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)

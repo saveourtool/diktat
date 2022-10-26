@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_OVERLOADING_FUNCTION_ARGUMENTS
 import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.util.LintTestBase
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArgumentsFunction) {
-    private val ruleId = OverloadingArgumentsFunction.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${OverloadingArgumentsFunction.NAME_ID}"
 
     @Test
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)

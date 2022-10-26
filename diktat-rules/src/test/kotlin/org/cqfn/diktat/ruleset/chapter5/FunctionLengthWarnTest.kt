@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter5
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_LONG_FUNCTION
 import org.cqfn.diktat.ruleset.rules.chapter5.FunctionLength
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
-    private val ruleId = FunctionLength.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${FunctionLength.NAME_ID}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(TOO_LONG_FUNCTION.name, true,
             mapOf("maxFunctionLength" to "5"))

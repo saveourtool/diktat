@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
-    private val ruleId = FileStructureRule.NAME_ID
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${FileStructureRule.NAME_ID}"
     private val rulesConfigListWildCardImport: List<RulesConfig> = listOf(
         RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
             mapOf("allowedWildcards" to "org.cqfn.diktat.*"))

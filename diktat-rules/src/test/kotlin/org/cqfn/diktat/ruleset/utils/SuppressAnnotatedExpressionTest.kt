@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.util.LintTestBase
@@ -8,7 +9,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressAnnotatedExpressionTest : LintTestBase(::CollapseIfStatementsRule) {
-    private val ruleId: String = "${CollapseIfStatementsRule.NAME_ID}"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${CollapseIfStatementsRule.NAME_ID}"
 
     @Test
     fun `should lint errors without suppress`() {
