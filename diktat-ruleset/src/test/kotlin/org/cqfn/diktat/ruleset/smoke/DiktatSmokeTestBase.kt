@@ -20,7 +20,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
@@ -39,7 +38,6 @@ import org.cqfn.diktat.util.assertEquals
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -47,11 +45,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import java.io.File
 import java.nio.file.Path
-import java.nio.file.Paths
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit.SECONDS
-import kotlin.io.path.absolutePathString
 import kotlin.io.path.createTempFile
 import kotlin.io.path.writeText
 
