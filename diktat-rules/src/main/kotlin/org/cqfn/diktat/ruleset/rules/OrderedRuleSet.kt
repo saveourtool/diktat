@@ -4,6 +4,7 @@
 
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
@@ -72,7 +73,7 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
             ruleSetId: String,
             val rule: Rule,
             prevRule: Rule
-        ) : Rule(rule.id, adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
+        ) : Rule(rule.id.qualifiedWithRuleSetId(), adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
             /**
              * Delegating a call of this method
              */

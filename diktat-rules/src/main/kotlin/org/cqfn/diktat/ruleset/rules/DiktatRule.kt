@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.getFilePath
@@ -25,7 +26,7 @@ abstract class DiktatRule(
     val configRules: List<RulesConfig>,
     private val inspections: List<DiktatConfigRule>,
     visitorModifiers: Set<VisitorModifier> = emptySet(),
-) : Rule(id, visitorModifiers) {
+) : Rule(id.qualifiedWithRuleSetId(), visitorModifiers) {
     /**
      * Default value is false
      */
