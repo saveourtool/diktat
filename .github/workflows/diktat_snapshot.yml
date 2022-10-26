@@ -31,7 +31,7 @@ jobs:
         # Base version is stored in env variable for later usage.
         # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
         run: |
-          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate 2>/dev/null | grep '^VERSION' | cut -d= -f2)
           base_version=${snapshot_version%-SNAPSHOT}
           echo "BASE_VERSION=$base_version" >> $GITHUB_ENV
           mvn -B versions:set -DnewVersion=$base_version-pre
