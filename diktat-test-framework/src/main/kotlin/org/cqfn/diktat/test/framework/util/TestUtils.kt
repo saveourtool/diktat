@@ -1,3 +1,7 @@
+/**
+ * Utility classes and methods for tests
+ */
+
 package org.cqfn.diktat.test.framework.util
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig

@@ -13,15 +13,24 @@ import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
 
 /**
- * @property resourceFilePath path to files which will be compared in tests
+ * Base class for FixTest
  */
 open class FixTestBase(
-    private val resourceFilePath: String,
+    resourceFilePath: String,
     ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
-    private val defaultRulesConfigList: List<RulesConfig>? = null,
-    private val cb: LintErrorCallback = defaultCallback,
+    defaultRulesConfigList: List<RulesConfig>? = null,
+    cb: LintErrorCallback = defaultCallback,
 ) {
-    private val ruleSetProviderRef = { rulesConfigList: List<RulesConfig>? -> DiktatRuleSetProvider4Test(ruleSupplier, rulesConfigList ?: defaultRulesConfigList) }
+    /**
+     * testComparatorUnit
+     */
+    private val testComparatorUnitSupplier = { overrideRulesConfigList: List<RulesConfig>? ->
+        TestComparatorUnit(
+            resourceFilePath = resourceFilePath,
+            ruleSetProviderSupplier = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
+            cb = cb
+        )
+    }
 
     /**
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
@@ -37,11 +46,7 @@ open class FixTestBase(
         overrideRulesConfigList: List<RulesConfig>? = null,
         trimLastEmptyLine: Boolean = false,
     )  {
-        val testComparatorUnit = TestComparatorUnit(
-            resourceFilePath = resourceFilePath,
-            ruleSetProviderSupplier = { ruleSetProviderRef(overrideRulesConfigList) },
-            cb = cb
-        )
+        val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         Assertions.assertTrue(
             testComparatorUnit
                 .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
@@ -79,11 +84,7 @@ open class FixTestBase(
             out.write(expectedContent)
         }
 
-        val testComparatorUnit = TestComparatorUnit(
-            resourceFilePath = resourceFilePath,
-            ruleSetProviderSupplier = { ruleSetProviderRef(overrideRulesConfigList) },
-            cb = cb
-        )
+        val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         return testComparatorUnit
             .compareFilesFromFileSystem(expected, actual, false)
     }
