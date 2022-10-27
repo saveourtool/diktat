@@ -11,7 +11,7 @@ import java.nio.file.Path
 open class FixTestBase(
     resourceFilePath: String,
     ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
-    private val defaultRulesConfigList: List<RulesConfig> = emptyList(),
+    private val defaultRulesConfigList: List<RulesConfig>? = null,
 ) : FixTestBaseCommon(
     resourceFilePath = resourceFilePath,
 ) {
