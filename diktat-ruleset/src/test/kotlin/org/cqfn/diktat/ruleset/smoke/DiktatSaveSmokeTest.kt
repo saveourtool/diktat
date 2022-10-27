@@ -112,7 +112,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
                 ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath)
+            else -> ProcessBuilder(savePath, "--log", "all", "$filesDir/src/main/kotlin", testPath)
         }
         return result
     }
