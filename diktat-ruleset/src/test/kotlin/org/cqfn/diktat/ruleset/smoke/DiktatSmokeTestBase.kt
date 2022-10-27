@@ -365,7 +365,6 @@ abstract class DiktatSmokeTestBase {
         }
     }
 
-
     abstract fun fixAndCompare(
         config: Path,
         expected: String,
@@ -380,5 +379,4 @@ abstract class DiktatSmokeTestBase {
         const val RESOURCE_FILE_PATH = "test/smoke/src/main/kotlin"
         private const val TEST_TIMEOUT_SECONDS = 20L
     }
-
 }
