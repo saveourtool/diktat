@@ -13,7 +13,6 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
-import org.cqfn.diktat.util.assertEquals
 import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.pinterest.ktlint.core.LintError
@@ -98,7 +97,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             )
         )
         fixAndCompareSmokeTest("Example1-2Expected.kt", "Example1Test.kt")
-        unfixedLintErrors.assertEquals(
+        assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
             LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),

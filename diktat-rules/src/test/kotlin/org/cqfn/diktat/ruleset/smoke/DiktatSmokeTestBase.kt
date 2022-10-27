@@ -33,11 +33,11 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
 import org.cqfn.diktat.util.FixTestBase
-import org.cqfn.diktat.util.assertEquals
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -217,7 +217,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
         )
         fixAndCompare(configFilePath, "Example2Expected.kt", "Example2Test.kt")
         if (isLintErrors) {
-            unfixedLintErrors.assertEquals(
+            assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
                     "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
                 LintError(15, 23, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}",
@@ -243,7 +243,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
         )
         fixAndCompare(configFilePath, "Example1Expected.kt", "Example1Test.kt")
         if (isLintErrors) {
-            unfixedLintErrors.assertEquals(
+            assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
                 LintError(3, 6, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
