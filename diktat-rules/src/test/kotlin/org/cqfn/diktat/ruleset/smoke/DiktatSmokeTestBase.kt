@@ -311,7 +311,7 @@ abstract class DiktatSmokeTestBase : FixTestBase("test/smoke/src/main/kotlin",
 
     companion object {
         const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
-        private const val TEST_TIMEOUT_SECONDS = 20L
+        private const val TEST_TIMEOUT_SECONDS = 25L
         val unfixedLintErrors: MutableList<LintError> = mutableListOf()
 
         // by default using same yml config as for diktat code style check, but allow to override
