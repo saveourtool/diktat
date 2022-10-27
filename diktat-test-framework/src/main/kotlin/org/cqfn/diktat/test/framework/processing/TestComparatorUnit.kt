@@ -1,5 +1,8 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.cqfn.diktat.test.framework.util.LintErrorCallback
+import org.cqfn.diktat.test.framework.util.format
+import com.pinterest.ktlint.core.RuleSetProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -22,6 +25,22 @@ import kotlin.io.path.readLines
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(private val resourceFilePath: String,
                          private val function: (expectedText: String, testFilePath: String) -> String) {
+    constructor(
+        resourceFilePath: String,
+        ruleSetProviderSupplier: () -> RuleSetProvider,
+        cb: LintErrorCallback,
+    ) : this(
+        resourceFilePath = resourceFilePath,
+        function = { text, fileName ->
+            format(
+                ruleSetProviderRef = ruleSetProviderSupplier,
+                text = text,
+                fileName = fileName,
+                cb = cb
+            )
+        }
+    )
+
     /**
      * @param expectedResult the name of the resource which has the expected
      *   content. The trailing newline, if any, **won't be read** as a separate

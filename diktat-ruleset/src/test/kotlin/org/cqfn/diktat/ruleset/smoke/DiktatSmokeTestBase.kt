@@ -32,14 +32,12 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
-import org.cqfn.diktat.util.FixTestBaseCommon
 import org.cqfn.diktat.util.assertEquals
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -57,20 +55,8 @@ typealias RuleToConfig = Map<String, Map<String, String>>
 
 /**
  * Base class for smoke test classes
- *
- * @property unfixedLintErrors
  */
-abstract class DiktatSmokeTestBase(
-    private val unfixedLintErrors: MutableList<LintError> = mutableListOf(),
-) : FixTestBaseCommon(
-    "test/smoke/src/main/kotlin",
-    { lintError, _ -> unfixedLintErrors.add(lintError) }
-) {
-    /**
-     * Flag to check LintError in smoke tests
-     */
-    abstract val isLintErrors: Boolean
-
+abstract class DiktatSmokeTestBase {
     /**
      * Disable some of the rules.
      *
@@ -99,11 +85,6 @@ abstract class DiktatSmokeTestBase(
                         .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
                 )
             }
-    }
-
-    @BeforeEach
-    fun setUp() {
-        unfixedLintErrors.clear()
     }
 
     @Test
@@ -170,7 +151,7 @@ abstract class DiktatSmokeTestBase(
         )
         fixAndCompare(configFilePath, "Example5Expected.kt", "Example5Test.kt")
 
-        if (isLintErrors) {
+        assertUnfixedLintErrors { unfixedLintErrors ->
             Assertions.assertFalse(
                 unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:${CommentsRule.NAME_ID}", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
             )
@@ -216,7 +197,7 @@ abstract class DiktatSmokeTestBase(
             )
         )
         fixAndCompare(configFilePath, "Example2Expected.kt", "Example2Test.kt")
-        if (isLintErrors) {
+        assertUnfixedLintErrors { unfixedLintErrors ->
             unfixedLintErrors.assertEquals(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
                     "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
@@ -242,7 +223,7 @@ abstract class DiktatSmokeTestBase(
             )
         )
         fixAndCompare(configFilePath, "Example1Expected.kt", "Example1Test.kt")
-        if (isLintErrors) {
+        assertUnfixedLintErrors { unfixedLintErrors ->
             unfixedLintErrors.assertEquals(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
@@ -326,7 +307,7 @@ abstract class DiktatSmokeTestBase(
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
         val tmpTestFile = javaClass.classLoader
-            .getResource("$resourceFilePath/../../../build.gradle_.kts")!!
+            .getResource("$RESOURCE_FILE_PATH/../../../build.gradle_.kts")!!
             .toURI()
             .let {
                 val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
@@ -334,8 +315,10 @@ abstract class DiktatSmokeTestBase(
                 tmpTestFile
             }
         val tmpFilePath = "../../../build.gradle.kts"
-        fixAndCompare(configFilePath, tmpFilePath, tmpFilePath)
-        Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        fixAndCompare(configFilePath, tmpFilePath, tmpFilePath, false)
+        assertUnfixedLintErrors { unfixedLintErrors ->
+            Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        }
         tmpTestFile.delete()
     }
 
@@ -343,11 +326,15 @@ abstract class DiktatSmokeTestBase(
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with gradle script plugin`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
-        Assertions.assertEquals(
-            LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
-                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
-            unfixedLintErrors.single()
-        )
+        assertUnfixedLintErrors { unfixedLintErrors ->
+            Assertions.assertEquals(
+                LintError(
+                    2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
+                            "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false
+                ),
+                unfixedLintErrors.single()
+            )
+        }
     }
 
     @Test
@@ -363,27 +350,35 @@ abstract class DiktatSmokeTestBase(
             )
         )
         fixAndCompare(configFilePath, "Example1-2Expected.kt", "Example1Test.kt")
-        unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
-            LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
-            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
-            LintError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-            LintError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
-        )
+        assertUnfixedLintErrors { unfixedLintErrors ->
+            unfixedLintErrors.assertEquals(
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
+                LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+                LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+                LintError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                LintError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+            )
+        }
     }
+
 
     abstract fun fixAndCompare(
         config: Path,
         expected: String,
         test: String,
+        trimLastEmptyLine: Boolean = true,
     )
 
+    abstract fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit)
+
     companion object {
-        const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
+        private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
+        const val RESOURCE_FILE_PATH = "test/smoke/src/main/kotlin"
         private const val TEST_TIMEOUT_SECONDS = 20L
     }
+
 }

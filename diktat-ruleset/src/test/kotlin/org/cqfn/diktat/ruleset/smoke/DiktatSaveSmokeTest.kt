@@ -5,6 +5,7 @@ import org.cqfn.diktat.util.deleteIfExistsSilently
 import org.cqfn.diktat.util.isSameJavaHomeAs
 import org.cqfn.diktat.util.prependPath
 import org.cqfn.diktat.util.retry
+import com.pinterest.ktlint.core.LintError
 
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
@@ -31,13 +32,17 @@ import kotlin.system.measureNanoTime
 
 @DisabledOnOs(OS.MAC)
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
-    override val isLintErrors = false
     override fun fixAndCompare(
         config: Path,
         expected: String,
         test: String,
+        trimLastEmptyLine: Boolean,
     ) {
         saveSmokeTest(config, test)
+    }
+
+    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) {
+        // do nothing, we can't check unfixed lint errors here
     }
 
     /**

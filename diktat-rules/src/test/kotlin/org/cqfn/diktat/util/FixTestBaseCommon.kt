@@ -31,13 +31,6 @@ open class FixTestBaseCommon(
         ruleSetProvider: RuleSetProvider,
         trimLastEmptyLine: Boolean = false,
     ) {
-        val expectedPathResource = requireNotNull(javaClass.classLoader.getResource("$resourceFilePath/$expectedPath")) {
-            "Not able to find a file for running test: $expectedPath"
-        }
-        val testPathResource = requireNotNull(javaClass.classLoader.getResource("$resourceFilePath/$testPath")) {
-            "Not able to find a file for running test: $testPath"
-        }
-
         val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
             format(
                 ruleSetProviderRef = { ruleSetProvider },
@@ -48,7 +41,7 @@ open class FixTestBaseCommon(
         }
         Assertions.assertTrue(
             testComparatorUnit
-                .compareFilesFromFileSystem(Paths.get(expectedPathResource.toURI()), Paths.get(testPathResource.toURI()), trimLastEmptyLine)
+                .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
                 .isSuccessful
         )
     }

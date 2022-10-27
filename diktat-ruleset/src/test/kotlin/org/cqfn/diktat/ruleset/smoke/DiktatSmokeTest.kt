@@ -1,6 +1,10 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import com.pinterest.ktlint.core.LintError
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
@@ -10,13 +14,33 @@ import kotlin.io.path.absolutePathString
  * may change after some changes to text or other rules.
  */
 class DiktatSmokeTest : DiktatSmokeTestBase() {
-    override val isLintErrors = true
+    private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
 
     override fun fixAndCompare(
         config: Path,
         expected: String,
         test: String,
+        trimLastEmptyLine: Boolean,
     ) {
-        fixAndCompare(expected, test, DiktatRuleSetProvider(config.absolutePathString()), true)
+        Assertions.assertTrue(
+            getTestComparatorUnit(config)
+                .compareFilesFromResources(expected, test, trimLastEmptyLine)
+                .isSuccessful
+        )
     }
+
+    @BeforeEach
+    internal fun setUp() {
+        unfixedLintErrors.clear()
+    }
+
+    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) {
+        lintErrorsConsumer(unfixedLintErrors)
+    }
+
+    private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
+        resourceFilePath = RESOURCE_FILE_PATH,
+        ruleSetProviderSupplier = { DiktatRuleSetProvider(config.absolutePathString()) },
+        cb = { lintError, _ -> unfixedLintErrors.add(lintError) }
+    )
 }
