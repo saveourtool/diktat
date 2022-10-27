@@ -28,7 +28,7 @@ open class FixTestBase(
     protected fun fixAndCompare(
         expectedPath: String,
         testPath: String,
-        overrideRulesConfigList: List<RulesConfig> = emptyList(),
+        overrideRulesConfigList: List<RulesConfig>? = null,
         trimLastEmptyLine: Boolean = false,
     ) = super.fixAndCompare(expectedPath, testPath, ruleSetProviderRef(overrideRulesConfigList), trimLastEmptyLine)
 
