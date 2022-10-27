@@ -162,11 +162,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * Get source directories from configuration
      */
     val srcDirectories: List<String> by lazy {
-        val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
-        if (srcDirs.any { !it.lowercase(Locale.getDefault()).endsWith("main") }) {
-            log.error("source directory names should end with `main`")
-        }
-        srcDirs
+        configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
     }
 
     companion object {
