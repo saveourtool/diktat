@@ -151,8 +151,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             ?.blockExpressionsOrSingle()
             ?.let { elements ->
-                elements.count() to elements.any {
-                        element -> KtPsiUtil.isAssignment(element)
+                elements.count() to elements.any { element ->
+                    KtPsiUtil.isAssignment(element)
                 }
             }
             ?: Pair(0, false)
