@@ -1,19 +1,25 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.test.framework.processing.FileComparisonResult
+import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import org.cqfn.diktat.test.framework.util.LintErrorCallback
+import org.cqfn.diktat.test.framework.util.defaultCallback
 import com.pinterest.ktlint.core.Rule
 import org.intellij.lang.annotations.Language
+import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
+import kotlin.io.path.bufferedWriter
+import kotlin.io.path.div
 
 /**
  * @property resourceFilePath path to files which will be compared in tests
  */
 open class FixTestBase(
-    resourceFilePath: String,
+    private val resourceFilePath: String,
     ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
     private val defaultRulesConfigList: List<RulesConfig>? = null,
-) : FixTestBaseCommon(
-    resourceFilePath = resourceFilePath,
+    private val cb: LintErrorCallback = defaultCallback,
 ) {
     private val ruleSetProviderRef = { rulesConfigList: List<RulesConfig>? -> DiktatRuleSetProvider4Test(ruleSupplier, rulesConfigList ?: defaultRulesConfigList) }
 
@@ -30,7 +36,18 @@ open class FixTestBase(
         testPath: String,
         overrideRulesConfigList: List<RulesConfig>? = null,
         trimLastEmptyLine: Boolean = false,
-    ) = super.fixAndCompare(expectedPath, testPath, ruleSetProviderRef(overrideRulesConfigList), trimLastEmptyLine)
+    )  {
+        val testComparatorUnit = TestComparatorUnit(
+            resourceFilePath = resourceFilePath,
+            ruleSetProviderSupplier = { ruleSetProviderRef(overrideRulesConfigList) },
+            cb = cb
+        )
+        Assertions.assertTrue(
+            testComparatorUnit
+                .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
+                .isSuccessful
+        )
+    }
 
     /**
      * Unlike [fixAndCompare], this method doesn't perform any assertions.
@@ -51,5 +68,23 @@ open class FixTestBase(
         @Language("kotlin") expectedContent: String = actualContent,
         tempDir: Path,
         overrideRulesConfigList: List<RulesConfig>? = null
-    ) = super.fixAndCompareContent(actualContent, expectedContent, tempDir, ruleSetProviderRef(overrideRulesConfigList))
+    ): FileComparisonResult {
+        val actual = tempDir / "actual.kt"
+        actual.bufferedWriter().use { out ->
+            out.write(actualContent)
+        }
+
+        val expected = tempDir / "expected.kt"
+        expected.bufferedWriter().use { out ->
+            out.write(expectedContent)
+        }
+
+        val testComparatorUnit = TestComparatorUnit(
+            resourceFilePath = resourceFilePath,
+            ruleSetProviderSupplier = { ruleSetProviderRef(overrideRulesConfigList) },
+            cb = cb
+        )
+        return testComparatorUnit
+            .compareFilesFromFileSystem(expected, actual, false)
+    }
 }
