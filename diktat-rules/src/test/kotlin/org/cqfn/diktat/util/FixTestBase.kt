@@ -45,7 +45,7 @@ open class FixTestBase(
         testPath: String,
         overrideRulesConfigList: List<RulesConfig>? = null,
         trimLastEmptyLine: Boolean = false,
-    )  {
+    ) {
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         Assertions.assertTrue(
             testComparatorUnit
