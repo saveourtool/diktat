@@ -4,34 +4,19 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.RuleSetProvider
 import com.pinterest.ktlint.core.api.FeatureInAlphaState
-import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.util.concurrent.atomic.AtomicInteger
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
-
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
-
-@Suppress("TYPE_ALIAS")
-internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
-    log.warn("Received linting error: $lintError")
-}
-
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
 
 /**
  * Casts a nullable value to a non-`null` one, similarly to the `!!`
@@ -42,33 +27,6 @@ typealias LintErrorCallback = (LintError, Boolean) -> Unit
  */
 internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expecting actual not to be null" }): T =
     this ?: fail(lazyFailureMessage())
-
-/**
- * @param ruleSetProviderRef
- * @param text
- * @param fileName
- * @param cb callback to be called on unhandled [LintError]s
- * @return formatted code
- */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-internal fun format(
-    ruleSetProviderRef: () -> RuleSetProvider,
-    @Language("kotlin") text: String,
-    fileName: String,
-    cb: LintErrorCallback = defaultCallback
-): String {
-    val ruleSets = listOf(ruleSetProviderRef().get())
-    return KtLint.format(
-        KtLint.ExperimentalParams(
-            text = text,
-            ruleSets = ruleSets,
-            fileName = fileName.removeSuffix("_copy"),
-            script = fileName.removeSuffix("_copy").endsWith("kts"),
-            cb = cb,
-            debug = true,
-        )
-    )
-}
 
 /**
  * This utility function lets you run arbitrary code on every node of given [code].

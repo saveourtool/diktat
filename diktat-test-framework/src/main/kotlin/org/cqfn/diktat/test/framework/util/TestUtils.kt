@@ -11,7 +11,7 @@ import org.intellij.lang.annotations.Language
 private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 @Suppress("TYPE_ALIAS")
-internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
+val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
     log.warn("Received linting error: $lintError")
 }
 

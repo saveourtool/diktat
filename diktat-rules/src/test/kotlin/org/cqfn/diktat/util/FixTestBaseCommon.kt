@@ -2,11 +2,12 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import org.cqfn.diktat.test.framework.util.LintErrorCallback
+import org.cqfn.diktat.test.framework.util.defaultCallback
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
-import java.nio.file.Paths
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
 
@@ -31,14 +32,7 @@ open class FixTestBaseCommon(
         ruleSetProvider: RuleSetProvider,
         trimLastEmptyLine: Boolean = false,
     ) {
-        val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-            format(
-                ruleSetProviderRef = { ruleSetProvider },
-                text = text,
-                fileName = fileName,
-                cb = cb
-            )
-        }
+        val testComparatorUnit = TestComparatorUnit(resourceFilePath, { ruleSetProvider }, cb)
         Assertions.assertTrue(
             testComparatorUnit
                 .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
@@ -73,14 +67,7 @@ open class FixTestBaseCommon(
             out.write(expectedContent)
         }
 
-        val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-            format(
-                ruleSetProviderRef = { ruleSetProvider },
-                text = text,
-                fileName = fileName,
-                cb = cb
-            )
-        }
+        val testComparatorUnit = TestComparatorUnit(resourceFilePath, { ruleSetProvider }, cb)
         return testComparatorUnit
             .compareFilesFromFileSystem(expected, actual, false)
     }

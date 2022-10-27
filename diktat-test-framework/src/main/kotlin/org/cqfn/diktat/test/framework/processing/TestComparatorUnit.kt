@@ -20,27 +20,14 @@ import kotlin.io.path.readLines
  *
  * @property resourceFilePath only used when the files are loaded as resources,
  *   via [compareFilesFromResources].
- * @property function a transformation that will be applied to the file
+ * @property ruleSetProviderSupplier a supplier for [RuleSetProvider]
+ * @property cb a callback for [com.pinterest.ktlint.core.LintError]
  */
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(private val resourceFilePath: String,
-                         private val function: (expectedText: String, testFilePath: String) -> String) {
-    constructor(
-        resourceFilePath: String,
-        ruleSetProviderSupplier: () -> RuleSetProvider,
-        cb: LintErrorCallback,
-    ) : this(
-        resourceFilePath = resourceFilePath,
-        function = { text, fileName ->
-            format(
-                ruleSetProviderRef = ruleSetProviderSupplier,
-                text = text,
-                fileName = fileName,
-                cb = cb
-            )
-        }
-    )
-
+                         private val ruleSetProviderSupplier: () -> RuleSetProvider,
+                         private val cb: LintErrorCallback,
+) {
     /**
      * @param expectedResult the name of the resource which has the expected
      *   content. The trailing newline, if any, **won't be read** as a separate
@@ -105,9 +92,11 @@ class TestComparatorUnit(private val resourceFilePath: String,
         val copyTestFile = Path("${testFile.absolutePathString()}_copy")
         testFile.copyTo(copyTestFile, overwrite = true)
 
-        val actualResult = function(
-            readFile(copyTestFile).joinToString("\n"),
-            copyTestFile.absolutePathString()
+        val actualResult = format(
+            ruleSetProviderRef = ruleSetProviderSupplier,
+            text = readFile(copyTestFile).joinToString("\n"),
+            fileName = copyTestFile.absolutePathString(),
+            cb = cb
         )
 
         val actualFileContent = if (trimLastEmptyLine) {
