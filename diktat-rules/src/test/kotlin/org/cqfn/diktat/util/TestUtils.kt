@@ -11,6 +11,7 @@ package org.cqfn.diktat.util
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.utils.ignoreCorrectedErrors
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
@@ -215,7 +216,7 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
             script = fileName.removeSuffix("_copy").endsWith("kts"),
             cb = cb,
             debug = true,
-        )
+        ).ignoreCorrectedErrors()
     )
 }
 
