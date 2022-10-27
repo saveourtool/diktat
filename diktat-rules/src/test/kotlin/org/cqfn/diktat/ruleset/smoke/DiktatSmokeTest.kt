@@ -17,6 +17,7 @@ import org.cqfn.diktat.util.assertEquals
 import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.pinterest.ktlint.core.LintError
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -78,10 +79,9 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with gradle script plugin`() {
         fixAndCompareSmokeTest("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
-        Assertions.assertEquals(
+        assertThat(unfixedLintErrors).containsExactly(
             LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
-                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
-            unfixedLintErrors.single()
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false)
         )
     }
 
