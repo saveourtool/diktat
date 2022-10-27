@@ -14,6 +14,7 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
 import org.cqfn.diktat.util.assertEquals
+import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
@@ -64,10 +65,13 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
                 File(it).copyTo(tmpTestFile)
                 tmpTestFile
             }
-        val tmpFilePath = "../../../build.gradle.kts"
-        fixAndCompare(tmpFilePath, tmpFilePath)
-        Assertions.assertTrue(unfixedLintErrors.isEmpty())
-        tmpTestFile.delete()
+        try {
+            val tmpFilePath = "../../../build.gradle.kts"
+            fixAndCompare(tmpFilePath, tmpFilePath)
+            Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        } finally {
+            tmpTestFile.toPath().deleteIfExistsSilently()
+        }
     }
 
     @Test

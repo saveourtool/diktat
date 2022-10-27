@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.InvalidPropertyValueException
 import org.junit.jupiter.api.AfterEach
@@ -12,10 +13,8 @@ import org.junit.jupiter.api.assertThrows
 
 import java.io.File
 import java.lang.IllegalArgumentException
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 
-@OptIn(ExperimentalPathApi::class)
 class RulesConfigValidationTest {
     private lateinit var file: File
 
@@ -26,7 +25,7 @@ class RulesConfigValidationTest {
 
     @AfterEach
     fun tearDown() {
-        file.delete()
+        file.toPath().deleteIfExistsSilently()
     }
 
     @Test
