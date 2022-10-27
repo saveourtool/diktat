@@ -9,3 +9,5 @@ out/
 
 # Vim swap files
 *.swp
+
+*.sarif
