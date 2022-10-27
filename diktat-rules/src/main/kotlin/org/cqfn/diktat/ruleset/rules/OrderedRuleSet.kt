@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.api.EditorConfigProperties
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -21,7 +22,7 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
     companion object {
         private fun adjustRules(ruleSetId: String, vararg rules: Rule): Array<out Rule> {
             if (rules.isEmpty()) {
-                return rules
+                return emptyArray()
             }
             return rules.mapIndexed { index, rule ->
                 if (index == 0) {
@@ -40,11 +41,13 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
         ): Set<Rule.VisitorModifier> {
             val visitorModifiers: Set<Rule.VisitorModifier> = rule.visitorModifiers
             checkVisitorModifiers(rule)
-            require(rule.id != prevRule.id) {
-                "PrevRule has same ID as rule: ${rule.id}"
+            val ruleId = rule.id.qualifiedWithRuleSetId(ruleSetId)
+            val previousRuleId = prevRule.id.qualifiedWithRuleSetId(ruleSetId)
+            require(ruleId != previousRuleId) {
+                "PrevRule has same ID as rule: $ruleId"
             }
             return visitorModifiers + Rule.VisitorModifier.RunAfterRule(
-                ruleId = ruleSetId + ":" + prevRule.id,
+                ruleId = previousRuleId,
                 loadOnlyWhenOtherRuleIsLoaded = false,
                 runOnlyWhenOtherRuleIsEnabled = false
             )
@@ -64,7 +67,11 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
         /**
          * @return RuleSet with ordered rules
          */
-        fun RuleSet.ordered(): OrderedRuleSet = OrderedRuleSet(id = id, rules = rules)
+        fun RuleSet.ordered(): RuleSet =
+            when (this) {
+                is OrderedRuleSet -> this
+                else -> OrderedRuleSet(id = id, rules = rules)
+            }
 
         /**
          * @property rule wraps this rule to keep order
@@ -73,18 +80,37 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
             ruleSetId: String,
             val rule: Rule,
             prevRule: Rule
-        ) : Rule(rule.id.qualifiedWithRuleSetId(), adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
-            /**
-             * Delegating a call of this method
-             */
-            @Suppress("OVERRIDE_DEPRECATION")
+        ) : Rule(rule.id.qualifiedWithRuleSetId(ruleSetId), adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
+            override fun beforeFirstNode(editorConfigProperties: EditorConfigProperties) =
+                rule.beforeFirstNode(editorConfigProperties)
+
+            override fun beforeVisitChildNodes(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType,
+            ) =
+                rule.beforeVisitChildNodes(node, autoCorrect, emit)
+
+            @Deprecated(
+                "Marked for deletion in ktlint 0.48.0",
+                replaceWith = ReplaceWith("beforeVisitChildNodes(node, autoCorrect, emit)"),
+            )
             override fun visit(
                 node: ASTNode,
                 autoCorrect: Boolean,
-                emit: EmitType
-            ) {
+                emit: EmitType,
+            ) =
                 rule.visit(node, autoCorrect, emit)
-            }
+
+            override fun afterVisitChildNodes(
+                node: ASTNode,
+                autoCorrect: Boolean,
+                emit: EmitType,
+            ) =
+                rule.afterVisitChildNodes(node, autoCorrect, emit)
+
+            override fun afterLastNode() =
+                rule.afterLastNode()
         }
     }
 }

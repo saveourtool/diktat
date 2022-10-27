@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import com.pinterest.ktlint.core.KtLint
@@ -29,10 +30,11 @@ class OrderedRuleSetTest {
 
     @Test
     fun `check OrderedRule`() {
-        val rule1 = mockRule("rule-first")
-        val rule2 = mockRule("rule-second")
-
         val ruleSetId = "id"
+
+        val rule1 = mockRule(id = "rule-first".qualifiedWithRuleSetId(ruleSetId))
+        val rule2 = mockRule(id = "rule-second".qualifiedWithRuleSetId(ruleSetId))
+
         val orderedRuleSet = OrderedRuleSet(ruleSetId, rule1, rule2)
 
         val orderedRuleSetIterator = orderedRuleSet.iterator()
@@ -50,7 +52,7 @@ class OrderedRuleSetTest {
             }
             .first()
             .let {
-                Assertions.assertEquals(ruleSetId + ":" + rule1.id, it.ruleId,
+                Assertions.assertEquals(rule1.id.qualifiedWithRuleSetId(ruleSetId), it.ruleId,
                     "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
             }
     }
@@ -58,15 +60,16 @@ class OrderedRuleSetTest {
     @Test
     fun `KtLint keeps order with RuleVisitorModifierRunAfterRule`() {
         val ruleIdOrder: MutableList<String> = mutableListOf()
-        val onVisit: (Rule) -> Unit = {
-            ruleIdOrder.add(it.id)
+        val onVisit: (Rule) -> Unit = { rule ->
+            ruleIdOrder += rule.id
         }
-        val rule1 = mockRule("ccc", onVisit = onVisit)
-        val rule2 = mockRule("bbb", onVisit = onVisit)
-        val rule3 = mockRule("aaa", onVisit = onVisit)
+        val ruleSetId = "id"
+        val rule1 = mockRule(id = "ccc".qualifiedWithRuleSetId(ruleSetId), onVisit = onVisit)
+        val rule2 = mockRule(id = "bbb".qualifiedWithRuleSetId(ruleSetId), onVisit = onVisit)
+        val rule3 = mockRule(id = "aaa".qualifiedWithRuleSetId(ruleSetId), onVisit = onVisit)
         val expectedRuleIdOrder = listOf(rule1, rule2, rule3).map { it.id }
 
-        val ruleSet = OrderedRuleSet("id", rule1, rule2, rule3)
+        val ruleSet = OrderedRuleSet(ruleSetId, rule1, rule2, rule3)
 
         KtLint.lint(
             KtLint.ExperimentalParams(
@@ -90,9 +93,8 @@ class OrderedRuleSetTest {
             id: String,
             visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
             onVisit: (Rule) -> Unit = { }
-        ) = object : Rule(id, visitorModifiers) {
-            @Suppress("OVERRIDE_DEPRECATION")
-            override fun visit(
+        ) = object : Rule(id.qualifiedWithRuleSetId(), visitorModifiers) {
+            override fun beforeVisitChildNodes(
                 node: ASTNode,
                 autoCorrect: Boolean,
                 emit: EmitType
