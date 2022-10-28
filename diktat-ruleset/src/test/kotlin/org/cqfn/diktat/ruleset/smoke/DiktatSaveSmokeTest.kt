@@ -87,7 +87,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 softly.assertThat(saveLog).isRegularFile
 
                 val saveOutput = saveLog.readText()
-                println(saveOutput)
 
                 val saveCommandLine = processBuilder.command().joinToString(separator = " ")
                 softly.assertThat(saveOutput)
