@@ -1,3 +1,7 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -84,7 +88,7 @@ open class FixTestBase(
         val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
                 ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath)
+            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath, "--log", "all")
         }
         return result
     }

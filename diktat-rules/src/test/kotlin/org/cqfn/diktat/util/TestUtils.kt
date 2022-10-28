@@ -2,31 +2,41 @@
  * Utility classes and methods for tests
  */
 
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.utils.ignoreCorrectedErrors
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.io.File
+import java.io.IOException
+import java.nio.file.FileVisitResult
+import java.nio.file.FileVisitResult.CONTINUE
+import java.nio.file.Files
+import java.nio.file.Files.walkFileTree
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.function.Consumer
 import kotlin.io.path.absolute
+import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
@@ -42,44 +52,6 @@ internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit
 }
 
 typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
-/**
- * Compare [LintError]s from [this] with [expectedLintErrors]
- *
- * @param expectedLintErrors expected [LintError]s
- */
-internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) {
-    if (size == expectedLintErrors.size) {
-        assertThat(this)
-            .allSatisfy(Consumer { actual ->
-                val expected = expectedLintErrors[this@assertEquals.indexOf(actual)]
-                assertSoftly { sa ->
-                    sa
-                        .assertThat(actual.line)
-                        .`as`("Line")
-                        .isEqualTo(expected.line)
-                    sa
-                        .assertThat(actual.col)
-                        .`as`("Column")
-                        .isEqualTo(expected.col)
-                    sa
-                        .assertThat(actual.ruleId)
-                        .`as`("Rule id")
-                        .isEqualTo(expected.ruleId)
-                    sa
-                        .assertThat(actual.detail)
-                        .`as`("Detailed message")
-                        .isEqualTo(expected.detail)
-                    sa
-                        .assertThat(actual.canBeAutoCorrected)
-                        .`as`("Can be autocorrected")
-                        .isEqualTo(expected.canBeAutoCorrected)
-                }
-            })
-    } else {
-        assertThat(this).containsExactly(*expectedLintErrors)
-    }
-}
 
 /**
  * Deletes the file if it exists, retrying as necessary if the file is
@@ -111,6 +83,42 @@ internal fun Path.deleteIfExistsSilently() {
         }
     }
 }
+
+/**
+ * Deletes this directory recursively.
+ *
+ * @see Path.deleteIfExistsRecursively
+ */
+internal fun Path.deleteRecursively() {
+    walkFileTree(this, object : SimpleFileVisitor<Path>() {
+        override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+            file.deleteIfExistsSilently()
+            return CONTINUE
+        }
+
+        override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
+            dir.deleteExisting()
+            return CONTINUE
+        }
+    })
+}
+
+/**
+ * Deletes this directory recursively if it exists.
+ *
+ * @return `true` if the existing directory was successfully deleted, `false` if
+ *   the directory doesn't exist.
+ * @see Files.deleteIfExists
+ * @see Path.deleteRecursively
+ */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
+internal fun Path.deleteIfExistsRecursively(): Boolean =
+    try {
+        deleteRecursively()
+        true
+    } catch (_: NoSuchFileException) {
+        false
+    }
 
 /**
  * @receiver the 1st operand.
@@ -212,7 +220,7 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
             script = fileName.removeSuffix("_copy").endsWith("kts"),
             cb = cb,
             debug = true,
-        )
+        ).ignoreCorrectedErrors()
     )
 }
 
@@ -225,7 +233,6 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
  * @param expectedAsserts Number of expected times of assert invocation
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
-@OptIn(FeatureInAlphaState::class)
 @Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,
@@ -237,6 +244,7 @@ internal fun applyToCode(code: String,
             text = code,
             ruleSets = listOf(
                 RuleSet("test", object : Rule("astnode-utils-test") {
+                    @Suppress("OVERRIDE_DEPRECATION")
                     override fun visit(node: ASTNode,
                                        autoCorrect: Boolean,
                                        emit: EmitType

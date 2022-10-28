@@ -13,9 +13,10 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
-import org.cqfn.diktat.util.assertEquals
+import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.pinterest.ktlint.core.LintError
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -64,20 +65,22 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
                 File(it).copyTo(tmpTestFile)
                 tmpTestFile
             }
-        val tmpFilePath = "../../../build.gradle.kts"
-        fixAndCompare(tmpFilePath, tmpFilePath)
-        Assertions.assertTrue(unfixedLintErrors.isEmpty())
-        tmpTestFile.delete()
+        try {
+            val tmpFilePath = "../../../build.gradle.kts"
+            fixAndCompare(tmpFilePath, tmpFilePath)
+            Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        } finally {
+            tmpTestFile.toPath().deleteIfExistsSilently()
+        }
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with gradle script plugin`() {
         fixAndCompareSmokeTest("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
-        Assertions.assertEquals(
+        assertThat(unfixedLintErrors).containsExactly(
             LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
-                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
-            unfixedLintErrors.single()
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false)
         )
     }
 
@@ -94,7 +97,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             )
         )
         fixAndCompareSmokeTest("Example1-2Expected.kt", "Example1Test.kt")
-        unfixedLintErrors.assertEquals(
+        assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
             LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),

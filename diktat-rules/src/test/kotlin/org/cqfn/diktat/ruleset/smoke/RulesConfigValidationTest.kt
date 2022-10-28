@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.InvalidPropertyValueException
 import org.junit.jupiter.api.AfterEach
@@ -12,10 +13,8 @@ import org.junit.jupiter.api.assertThrows
 
 import java.io.File
 import java.lang.IllegalArgumentException
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 
-@OptIn(ExperimentalPathApi::class)
 class RulesConfigValidationTest {
     private lateinit var file: File
 
@@ -26,7 +25,7 @@ class RulesConfigValidationTest {
 
     @AfterEach
     fun tearDown() {
-        file.delete()
+        file.toPath().deleteIfExistsSilently()
     }
 
     @Test
@@ -40,6 +39,7 @@ class RulesConfigValidationTest {
             """.trimMargin()
         )
         val exception = assertThrows<IllegalArgumentException> {
+            @Suppress("DEPRECATION")
             DiktatRuleSetProvider(file.absolutePath).get()
         }
         Assertions.assertEquals("Warning name <MISSING_DOC_TOP_LEVEL> in configuration file is invalid, did you mean <MISSING_KDOC_TOP_LEVEL>?", exception.message)
@@ -55,6 +55,7 @@ class RulesConfigValidationTest {
             """.trimMargin()
         )
         assertThrows<InvalidPropertyValueException> {
+            @Suppress("DEPRECATION")
             DiktatRuleSetProvider(file.absolutePath).get()
         }
     }
@@ -71,6 +72,7 @@ class RulesConfigValidationTest {
                 |    isIncludeHeader: Fslse
             """.trimMargin()
         )
+        @Suppress("DEPRECATION")
         DiktatRuleSetProvider(file.absolutePath).get()
     }
 }
