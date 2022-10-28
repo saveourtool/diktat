@@ -33,11 +33,14 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
 import org.cqfn.diktat.util.assertEquals
+import org.cqfn.diktat.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -306,20 +309,11 @@ abstract class DiktatSmokeTestBase {
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
-        val tmpTestFile = javaClass.classLoader
-            .getResource("$RESOURCE_FILE_PATH/../../../build.gradle_.kts")!!
-            .toURI()
-            .let {
-                val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
-                File(it).copyTo(tmpTestFile, true)
-                tmpTestFile
-            }
         val tmpFilePath = "../../../build.gradle.kts"
         fixAndCompare(configFilePath, tmpFilePath, tmpFilePath, false)
         assertUnfixedLintErrors { unfixedLintErrors ->
             Assertions.assertTrue(unfixedLintErrors.isEmpty())
         }
-        tmpTestFile.delete()
     }
 
     @Test
@@ -349,7 +343,7 @@ abstract class DiktatSmokeTestBase {
                 )
             )
         )
-        fixAndCompare(configFilePath, "Example1-2Expected.kt", "Example1Test.kt")
+        fixAndCompare(configFilePath, "Example1-2Expected.kt", "Example1-2Test.kt")
         assertUnfixedLintErrors { unfixedLintErrors ->
             unfixedLintErrors.assertEquals(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
@@ -378,5 +372,35 @@ abstract class DiktatSmokeTestBase {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         const val RESOURCE_FILE_PATH = "test/smoke/src/main/kotlin"
         private const val TEST_TIMEOUT_SECONDS = 25L
+        private val tmpFiles: MutableList<File> = mutableListOf()
+
+        @BeforeAll
+        @JvmStatic
+        @Suppress("AVOID_NULL_CHECKS")
+        internal fun createTmpFiles() {
+            listOf(
+                "$RESOURCE_FILE_PATH/../../../build.gradle_.kts" to "build.gradle.kts",
+                "$RESOURCE_FILE_PATH/Example1Test.kt" to "Example1-2Test.kt",
+            )
+                .map { (resource, targetFileName) ->
+                    DiktatSmokeTestBase::class.java
+                        .classLoader
+                        .getResource(resource)!!
+                        .toURI()
+                        .let {
+                            val tmpTestFile = File(it).parentFile.resolve(targetFileName)
+                            File(it).copyTo(tmpTestFile, true)
+                        }
+                        .let { tmpFiles.add(it) }
+                }
+        }
+
+        @AfterAll
+        @JvmStatic
+        internal fun deleteTmpFiles() {
+            tmpFiles.forEach {
+                it.toPath().deleteIfExistsSilently()
+            }
+        }
     }
 }
