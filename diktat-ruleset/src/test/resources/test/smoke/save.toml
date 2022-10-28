@@ -5,6 +5,7 @@ description = "SmokeTest"
 suiteName = "SmokeTest"
 language = "Kotlin"
 expectedWarningsPattern = "// ;warn:?(.*):(\\d*): (.+)"
+timeOutMillis = 3600000
 
 ["fix and warn"]
     ["fix and warn".fix]
