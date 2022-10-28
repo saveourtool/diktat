@@ -75,4 +75,3 @@ internal fun ProcessBuilder.prependPath(pathEntry: Path) {
 
     environment[pathKey] = newPath
 }
-
