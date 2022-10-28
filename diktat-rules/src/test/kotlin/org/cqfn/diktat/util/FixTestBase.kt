@@ -33,12 +33,12 @@ open class FixTestBase(
         TestComparatorUnit(
             resourceFilePath = resourceFilePath,
             function = { expectedText, testFilePath ->
-               format(
-                   ruleSetProviderRef = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
-                   text = expectedText,
-                   fileName = testFilePath,
-                   cb = cb,
-               )
+                format(
+                    ruleSetProviderRef = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
+                    text = expectedText,
+                    fileName = testFilePath,
+                    cb = cb,
+                )
             },
         )
     }
