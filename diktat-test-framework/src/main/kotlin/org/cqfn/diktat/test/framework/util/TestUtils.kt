@@ -51,7 +51,6 @@ fun Path.deleteIfExistsSilently() {
     }
 }
 
-
 /**
  * Deletes this directory recursively.
  *

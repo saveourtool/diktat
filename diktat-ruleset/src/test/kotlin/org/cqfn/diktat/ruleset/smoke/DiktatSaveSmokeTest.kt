@@ -43,9 +43,8 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         saveSmokeTest(config, test)
     }
 
-    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) {
-        // do nothing, we can't check unfixed lint errors here
-    }
+    // do nothing, we can't check unfixed lint errors here
+    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) = Unit
 
     /**
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
