@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
+import org.cqfn.diktat.util.deleteIfExistsRecursively
 import org.cqfn.diktat.util.deleteIfExistsSilently
 import org.cqfn.diktat.util.isSameJavaHomeAs
 import org.cqfn.diktat.util.prependPath
@@ -20,6 +21,7 @@ import java.net.URL
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.absolute
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.copyTo
 import kotlin.io.path.createDirectories
 import kotlin.io.path.div
@@ -78,6 +80,21 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                     val javaHome = System.getProperty("java.home")
                     environment()["JAVA_HOME"] = javaHome
                     prependPath(Path(javaHome) / "bin")
+
+                    /*
+                     * On Windows, ktlint is often unable to relativize paths
+                     * (see https://github.com/pinterest/ktlint/issues/1608).
+                     *
+                     * So let's force the temporary directory to be the
+                     * sub-directory of the project root.
+                     */
+                    if (System.getProperty("os.name").startsWith("Windows")) {
+                        val tempDirectory = baseDirectory / ".save-cli"
+                        tempDirectory.createDirectories()
+                        val tempDirectoryPath = tempDirectory.absolutePathString()
+                        environment()["TMP"] = tempDirectoryPath
+                        environment()["TEMP"] = tempDirectoryPath
+                    }
                 }
 
                 val saveProcess = processBuilder.start()
@@ -122,7 +139,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         private val logger = KotlinLogging.loggerWithKtlintConfig { }
         private const val BUILD_DIRECTORY = "target"
         private const val FAT_JAR_GLOB = "diktat-*.jar"
-        private const val KTLINT_VERSION = "0.46.1"
+        private const val KTLINT_VERSION = "0.47.1"
         private const val SAVE_VERSION: String = "0.3.2"
         private val baseDirectory = Path("src/test/resources/test/smoke").absolute()
 
@@ -215,10 +232,12 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             val diktat = baseDirectory / "diktat.jar"
             val save = baseDirectory / getSaveForCurrentOs()
             val ktlint = baseDirectory / "ktlint"
+            val tempDirectory = baseDirectory / ".save-cli"
 
             diktat.deleteIfExistsSilently()
             ktlint.deleteIfExistsSilently()
             save.deleteIfExistsSilently()
+            tempDirectory.deleteIfExistsRecursively()
         }
     }
 }

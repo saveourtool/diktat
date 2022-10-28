@@ -28,8 +28,8 @@ repositories {
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
 // To debug gradle plugin, please set `diktatVersion` manually to the current maven project version.
-val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.46.1") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.1"
+val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.47.1") as String
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.3"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {

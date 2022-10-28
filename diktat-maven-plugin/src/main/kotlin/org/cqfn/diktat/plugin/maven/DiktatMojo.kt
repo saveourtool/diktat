@@ -4,8 +4,10 @@
 
 package org.cqfn.diktat.plugin.maven
 
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.utils.ignoreCorrectedErrors
+
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.apache.maven.plugins.annotations.Mojo
 
 import java.io.File
@@ -19,7 +21,6 @@ class DiktatCheckMojo : DiktatBaseMojo() {
     /**
      * @param params instance of [KtLint.ExperimentalParams] used in analysis
      */
-    @OptIn(FeatureInAlphaState::class)
     override fun runAction(params: KtLint.ExperimentalParams) {
         KtLint.lint(params)
     }
@@ -35,11 +36,10 @@ class DiktatFixMojo : DiktatBaseMojo() {
     /**
      * @param params instance of [KtLint.Params] used in analysis
      */
-    @OptIn(FeatureInAlphaState::class)
     override fun runAction(params: KtLint.ExperimentalParams) {
         val fileName = params.fileName
         val fileContent = File(fileName).readText(charset("UTF-8"))
-        val formattedText = KtLint.format(params)
+        val formattedText = KtLint.format(params.ignoreCorrectedErrors())
         if (fileContent != formattedText) {
             log.info("Original and formatted content differ, writing to $fileName...")
             File(fileName).writeText(formattedText, charset("UTF-8"))

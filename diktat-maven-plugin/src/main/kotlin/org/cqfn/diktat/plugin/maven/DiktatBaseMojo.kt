@@ -11,9 +11,10 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.internal.CurrentBaseline
-import com.pinterest.ktlint.core.internal.containsLintError
-import com.pinterest.ktlint.core.internal.loadBaseline
+import com.pinterest.ktlint.core.api.Baseline
+import com.pinterest.ktlint.core.api.Baseline.Status.VALID
+import com.pinterest.ktlint.core.api.containsLintError
+import com.pinterest.ktlint.core.api.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
@@ -21,6 +22,7 @@ import com.pinterest.ktlint.reporter.plain.PlainReporter
 import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
+import org.apache.maven.plugin.Mojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
@@ -119,7 +121,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             listOf(DiktatRuleSetProvider(configFile).get())
         }
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
-            ?: CurrentBaseline(emptyMap(), false)
+            ?: Baseline(status = VALID)
         reporterImpl = resolveReporter(baselineResults)
         reporterImpl.beforeAll()
         val lintErrors: MutableList<LintError> = mutableListOf()
@@ -127,7 +129,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         inputs
             .map(::File)
             .forEach {
-                checkDirectory(it, lintErrors, baselineResults.baselineRules ?: emptyMap(), ruleSets)
+                checkDirectory(it, lintErrors, baselineResults.lintErrorsPerFile, ruleSets)
             }
 
         reporterImpl.afterAll()
@@ -136,7 +138,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
+    private fun resolveReporter(baselineResults: Baseline): Reporter {
         val output = if (this.output.isBlank()) {
             if (this.githubActions) {
                 // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
@@ -164,7 +166,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
         }
 
-        return if (baselineResults.baselineGenerationNeeded) {
+        return if (baselineResults.status != VALID) {
             val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
             return Reporter.from(actualReporter, baselineReporter)
         } else {

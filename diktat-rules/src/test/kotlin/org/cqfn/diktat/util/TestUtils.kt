@@ -2,6 +2,10 @@
  * Utility classes and methods for tests
  */
 
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.ruleset.constants.EmitType
@@ -9,7 +13,6 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -37,7 +40,6 @@ internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expectin
  * @param expectedAsserts Number of expected times of assert invocation
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
-@OptIn(FeatureInAlphaState::class)
 @Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,
@@ -49,6 +51,7 @@ internal fun applyToCode(code: String,
             text = code,
             ruleSets = listOf(
                 RuleSet("test", object : Rule("astnode-utils-test") {
+                    @Suppress("OVERRIDE_DEPRECATION")
                     override fun visit(node: ASTNode,
                                        autoCorrect: Boolean,
                                        emit: EmitType

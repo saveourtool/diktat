@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
 import org.cqfn.diktat.ruleset.utils.*
@@ -22,10 +23,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
  * In .kts files allow use only property declaration, function, classes, and code inside `run` block
  * In gradle.kts files allow to call binary expression with EQ, expression and dot qualified expression in addition to everything used in .kts files
  */
-class RunInScript(private val configRules: List<RulesConfig>) : Rule(NAME_ID) {
+class RunInScript(private val configRules: List<RulesConfig>) : Rule(NAME_ID.qualifiedWithRuleSetId()) {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,

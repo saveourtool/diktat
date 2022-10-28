@@ -2,6 +2,10 @@
  * Stub for diktat ruleset provide to be used in tests and other related utilities
  */
 
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
@@ -26,6 +30,7 @@ class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: Lis
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun get() = RuleSet(
         DIKTAT_RULE_SET_ID,
         ruleSupplier.invoke(rulesConfigList ?: emptyList())
