@@ -82,7 +82,8 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 }
 
                 val saveProcess = processBuilder.start()
-                val saveProcessResult = saveProcess.waitFor(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                // set some big timeout to wait more that JUnit can be configured to wait
+                val saveProcessResult = saveProcess.waitFor(1, TimeUnit.HOURS)
                 softly.assertThat(saveProcessResult).describedAs("The exit code of SAVE").isTrue
 
                 softly.assertThat(saveLog).isRegularFile
