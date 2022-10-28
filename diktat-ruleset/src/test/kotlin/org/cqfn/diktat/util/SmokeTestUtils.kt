@@ -6,69 +6,16 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 
-import com.pinterest.ktlint.core.LintError
 import mu.KotlinLogging
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.SoftAssertions.assertSoftly
 
 import java.io.File
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
-import java.util.function.Consumer
-import kotlin.io.path.absolute
-import kotlin.io.path.deleteIfExists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
 
-internal const val TEST_FILE_NAME = "TestFileName.kt"
-
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val log = KotlinLogging.loggerWithKtlintConfig {}
-
-@Suppress("TYPE_ALIAS")
-internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
-    log.warn("Received linting error: $lintError")
-}
-
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
-/**
- * Compare [LintError]s from [this] with [expectedLintErrors]
- *
- * @param expectedLintErrors expected [LintError]s
- */
-internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) {
-    if (size == expectedLintErrors.size) {
-        assertThat(this)
-            .allSatisfy(Consumer { actual ->
-                val expected = expectedLintErrors[this@assertEquals.indexOf(actual)]
-                assertSoftly { sa ->
-                    sa
-                        .assertThat(actual.line)
-                        .`as`("Line")
-                        .isEqualTo(expected.line)
-                    sa
-                        .assertThat(actual.col)
-                        .`as`("Column")
-                        .isEqualTo(expected.col)
-                    sa
-                        .assertThat(actual.ruleId)
-                        .`as`("Rule id")
-                        .isEqualTo(expected.ruleId)
-                    sa
-                        .assertThat(actual.detail)
-                        .`as`("Detailed message")
-                        .isEqualTo(expected.detail)
-                    sa
-                        .assertThat(actual.canBeAutoCorrected)
-                        .`as`("Can be autocorrected")
-                        .isEqualTo(expected.canBeAutoCorrected)
-                }
-            })
-    } else {
-        assertThat(this).containsExactly(*expectedLintErrors)
-    }
-}
 
 /**
  * @receiver the 1st operand.
