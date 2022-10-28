@@ -125,7 +125,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * List of directory names which will be used to detect test sources
      */
     val testAnchors: List<String> by lazy {
-        val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
+        val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',').map { it.trim() }
         if (testDirs.any { !it.lowercase(Locale.getDefault()).endsWith("test") }) {
             log.error("test directory names should end with `test`")
         }
