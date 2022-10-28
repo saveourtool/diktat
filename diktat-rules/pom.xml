@@ -12,11 +12,6 @@
         <version>1.2.4-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
     <dependencies>
         <dependency>
             <!-- kotlinpoet is needed only during build, but maven doesn't have such scope. -->
