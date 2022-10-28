@@ -371,7 +371,7 @@ abstract class DiktatSmokeTestBase {
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         const val RESOURCE_FILE_PATH = "test/smoke/src/main/kotlin"
-        private const val TEST_TIMEOUT_SECONDS = 25L
+        const val TEST_TIMEOUT_SECONDS = 25L
         private val tmpFiles: MutableList<File> = mutableListOf()
 
         @BeforeAll

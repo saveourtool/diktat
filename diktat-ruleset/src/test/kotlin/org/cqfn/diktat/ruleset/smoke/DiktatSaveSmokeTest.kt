@@ -18,6 +18,7 @@ import org.junit.jupiter.api.condition.OS
 
 import java.net.URL
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 import kotlin.io.path.absolute
 import kotlin.io.path.copyTo
@@ -81,8 +82,8 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 }
 
                 val saveProcess = processBuilder.start()
-                val saveExitCode = saveProcess.waitFor()
-                softly.assertThat(saveExitCode).describedAs("The exit code of SAVE").isZero
+                val saveProcessResult = saveProcess.waitFor(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                softly.assertThat(saveProcessResult).describedAs("The exit code of SAVE").isTrue
 
                 softly.assertThat(saveLog).isRegularFile
 
