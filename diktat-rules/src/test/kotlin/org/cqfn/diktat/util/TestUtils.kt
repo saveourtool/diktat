@@ -25,10 +25,18 @@ import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.io.File
+import java.io.IOException
+import java.nio.file.FileVisitResult
+import java.nio.file.FileVisitResult.CONTINUE
+import java.nio.file.Files
+import java.nio.file.Files.walkFileTree
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.absolute
+import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
@@ -75,6 +83,42 @@ internal fun Path.deleteIfExistsSilently() {
         }
     }
 }
+
+/**
+ * Deletes this directory recursively.
+ *
+ * @see Path.deleteIfExistsRecursively
+ */
+internal fun Path.deleteRecursively() {
+    walkFileTree(this, object : SimpleFileVisitor<Path>() {
+        override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+            file.deleteIfExistsSilently()
+            return CONTINUE
+        }
+
+        override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
+            dir.deleteExisting()
+            return CONTINUE
+        }
+    })
+}
+
+/**
+ * Deletes this directory recursively if it exists.
+ *
+ * @return `true` if the existing directory was successfully deleted, `false` if
+ *   the directory doesn't exist.
+ * @see Files.deleteIfExists
+ * @see Path.deleteRecursively
+ */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
+internal fun Path.deleteIfExistsRecursively(): Boolean =
+    try {
+        deleteRecursively()
+        true
+    } catch (_: NoSuchFileException) {
+        false
+    }
 
 /**
  * @receiver the 1st operand.
