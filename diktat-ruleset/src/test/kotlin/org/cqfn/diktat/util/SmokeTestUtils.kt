@@ -71,37 +71,6 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
 }
 
 /**
- * Deletes the file if it exists, retrying as necessary if the file is
- * blocked by another process (on Windows).
- *
- * @receiver the file or empty directory.
- * @see Path.deleteIfExists
- */
-@Suppress(
-    "EMPTY_BLOCK_STRUCTURE_ERROR",
-    "MAGIC_NUMBER",
-)
-internal fun Path.deleteIfExistsSilently() {
-    val attempts = 10
-
-    val deleted = retry(attempts, delayMillis = 100L, lazyDefault = { false }) {
-        deleteIfExists()
-
-        /*
-         * Ignore the return code of `deleteIfExists()` (will be `false`
-         * if the file doesn't exist).
-         */
-        true
-    }
-
-    if (!deleted) {
-        log.warn {
-            "File \"${absolute()}\" not deleted after $attempts attempt(s)."
-        }
-    }
-}
-
-/**
  * @receiver the 1st operand.
  * @param other the 2nd operand.
  * @return `true` if, and only if, the two paths locate the same `JAVA_HOME`.
@@ -167,41 +136,3 @@ internal fun ProcessBuilder.prependPath(pathEntry: Path) {
     environment[pathKey] = newPath
 }
 
-/**
- * Retries the execution of the [block].
- *
- * @param attempts the number of attempts (must be positive).
- * @param delayMillis the timeout (in milliseconds) between the consecutive
- *   attempts. The default is 0. Ignored if [attempts] is 1.
- * @param lazyDefault allows to override the return value if none of the
- *   attempts succeeds. By default, the last exception is thrown.
- * @param block the block to execute.
- * @return the result of the execution of the [block], or whatever [lazyDefault]
- *   evaluates to if none of the attempts is successful.
- */
-internal fun <T> retry(
-    attempts: Int,
-    delayMillis: Long = 0L,
-    lazyDefault: (Throwable) -> T = { error -> throw error },
-    block: () -> T
-): T {
-    require(attempts > 0) {
-        "The number of attempts should be positive: $attempts"
-    }
-
-    var lastError: Throwable? = null
-
-    for (i in 1..attempts) {
-        try {
-            return block()
-        } catch (error: Throwable) {
-            lastError = error
-        }
-
-        if (delayMillis > 0L) {
-            Thread.sleep(delayMillis)
-        }
-    }
-
-    return lazyDefault(lastError ?: Exception("The block was never executed"))
-}

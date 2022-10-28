@@ -1,11 +1,11 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-import org.cqfn.diktat.util.deleteIfExistsRecursively
-import org.cqfn.diktat.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.deleteIfExistsRecursively
+import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.retry
 import org.cqfn.diktat.util.isSameJavaHomeAs
 import org.cqfn.diktat.util.prependPath
-import org.cqfn.diktat.util.retry
 import com.pinterest.ktlint.core.LintError
 
 import mu.KotlinLogging
@@ -129,7 +129,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
                 ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "--log", "all", "$filesDir/src/main/kotlin", testPath)
+            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath, "--log", "all")
         }
         return result
     }

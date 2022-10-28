@@ -32,8 +32,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
-import org.cqfn.diktat.util.assertEquals
-import org.cqfn.diktat.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -327,12 +326,11 @@ abstract class DiktatSmokeTestBase {
     fun `smoke test with gradle script plugin`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         assertUnfixedLintErrors { unfixedLintErrors ->
-            Assertions.assertEquals(
+            assertThat(unfixedLintErrors).containsExactly(
                 LintError(
                     2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
                             "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false
-                ),
-                unfixedLintErrors.single()
+                )
             )
         }
     }
@@ -351,7 +349,7 @@ abstract class DiktatSmokeTestBase {
         )
         fixAndCompare(configFilePath, "Example1-2Expected.kt", "Example1-2Test.kt")
         assertUnfixedLintErrors { unfixedLintErrors ->
-            unfixedLintErrors.assertEquals(
+            assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
                 LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
                 LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),

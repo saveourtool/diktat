@@ -1,8 +1,5 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.test.framework.util.LintErrorCallback
-import org.cqfn.diktat.test.framework.util.format
-import com.pinterest.ktlint.core.RuleSetProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -20,13 +17,12 @@ import kotlin.io.path.readLines
  *
  * @property resourceFilePath only used when the files are loaded as resources,
  *   via [compareFilesFromResources].
- * @property ruleSetProviderSupplier a supplier for [RuleSetProvider]
- * @property cb a callback for [com.pinterest.ktlint.core.LintError]
+ * @property function a transformation that will be applied to the file
  */
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
-class TestComparatorUnit(private val resourceFilePath: String,
-                         private val ruleSetProviderSupplier: () -> RuleSetProvider,
-                         private val cb: LintErrorCallback,
+class TestComparatorUnit(
+    private val resourceFilePath: String,
+    private val function: (expectedText: String, testFilePath: String) -> String,
 ) {
     /**
      * @param expectedResult the name of the resource which has the expected
@@ -92,11 +88,9 @@ class TestComparatorUnit(private val resourceFilePath: String,
         val copyTestFile = Path("${testFile.absolutePathString()}_copy")
         testFile.copyTo(copyTestFile, overwrite = true)
 
-        val actualResult = format(
-            ruleSetProviderRef = ruleSetProviderSupplier,
-            text = readFile(copyTestFile).joinToString("\n"),
-            fileName = copyTestFile.absolutePathString(),
-            cb = cb
+        val actualResult = function(
+            readFile(copyTestFile).joinToString("\n"),
+            copyTestFile.absolutePathString()
         )
 
         val actualFileContent = if (trimLastEmptyLine) {

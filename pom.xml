@@ -61,7 +61,6 @@
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
         <log4j.version>2.18.0</log4j.version>
-        <junit-tree-reporter.version>1.1.0</junit-tree-reporter.version>
     </properties>
 
     <modules>

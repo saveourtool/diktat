@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
@@ -40,7 +41,13 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceFilePath = RESOURCE_FILE_PATH,
-        ruleSetProviderSupplier = { DiktatRuleSetProvider(config.absolutePathString()) },
-        cb = { lintError, _ -> unfixedLintErrors.add(lintError) }
+        function = { expectedText, testFilePath ->
+           format(
+               ruleSetProviderRef = { DiktatRuleSetProvider(config.absolutePathString()) },
+               text = expectedText,
+               fileName = testFilePath,
+               cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
+           )
+        },
     )
 }

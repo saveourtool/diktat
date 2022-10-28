@@ -5,10 +5,11 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.utils.LintErrorCallback
+import org.cqfn.diktat.ruleset.utils.defaultCallback
+import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-import org.cqfn.diktat.test.framework.util.LintErrorCallback
-import org.cqfn.diktat.test.framework.util.defaultCallback
 import com.pinterest.ktlint.core.Rule
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
@@ -31,8 +32,14 @@ open class FixTestBase(
     private val testComparatorUnitSupplier = { overrideRulesConfigList: List<RulesConfig>? ->
         TestComparatorUnit(
             resourceFilePath = resourceFilePath,
-            ruleSetProviderSupplier = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
-            cb = cb
+            function = { expectedText, testFilePath ->
+               format(
+                   ruleSetProviderRef = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
+                   text = expectedText,
+                   fileName = testFilePath,
+                   cb = cb,
+               )
+            },
         )
     }
 
