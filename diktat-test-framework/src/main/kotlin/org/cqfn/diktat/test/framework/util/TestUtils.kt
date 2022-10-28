@@ -6,6 +6,7 @@ package org.cqfn.diktat.test.framework.util
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import mu.KotlinLogging
+
 import java.io.IOException
 import java.nio.file.FileVisitResult
 import java.nio.file.FileVisitResult.CONTINUE
@@ -14,6 +15,7 @@ import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.NoSuchFileException
 import java.nio.file.attribute.BasicFileAttributes
+
 import kotlin.io.path.absolute
 import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
