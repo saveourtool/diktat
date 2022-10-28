@@ -4,18 +4,11 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-
-import mu.KotlinLogging
-
 import java.io.File
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
-
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 /**
  * @receiver the 1st operand.
