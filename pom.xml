@@ -42,7 +42,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin-api.version>1.7</kotlin-api.version>
         <kotlin.version>1.7.20</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
@@ -115,12 +114,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
-                <artifactId>kotlinx-serialization-core-jvm</artifactId>
-                <version>${kotlinx.serialization.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains.kotlinx</groupId>
-                <artifactId>kotlinx-serialization-json-jvm</artifactId>
+                <artifactId>kotlinx-serialization-json</artifactId>
                 <version>${kotlinx.serialization.version}</version>
             </dependency>
             <dependency>
