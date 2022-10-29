@@ -142,37 +142,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>me.fabriciorby</groupId>
-                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
-                        <version>${junit-tree-reporter.version}</version>
-                    </dependency>
-                </dependencies>
                 <configuration>
                     <excludes>
                         <exclude>*IntegrationTest*</exclude>
                     </excludes>
-                    <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
-                        <!-- Prefer @DisplayName & friends, if any. -->
-                        <usePhrasedFileName>true</usePhrasedFileName>
-                        <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
-                        <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
-                        <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
-                    </statelessTestsetReporter>
-                    <!-- For the console output, use the tree reporter from
-                         https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
-                    <reportFormat>plain</reportFormat>
-                    <consoleOutputReporter>
-                        <disable>true</disable>
-                    </consoleOutputReporter>
-                    <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
-                        <!-- Prefer @DisplayName & friends, if any. -->
-                        <usePhrasedFileName>true</usePhrasedFileName>
-                        <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
-                        <!-- Avoid null's in *.txt summary -->
-                        <usePhrasedClassNameInTestCaseSummary>false</usePhrasedClassNameInTestCaseSummary>
-                    </statelessTestsetInfoReporter>
                 </configuration>
             </plugin>
             <plugin>
@@ -192,13 +165,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>me.fabriciorby</groupId>
-                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
-                        <version>${junit-tree-reporter.version}</version>
-                    </dependency>
-                </dependencies>
                 <configuration>
                     <systemProperties>
                         <maven.version>${maven.version}</maven.version>
@@ -207,28 +173,6 @@
                     <includes>
                         <include>**/*IntegrationTest*</include>
                     </includes>
-                    <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
-                    <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
-                    <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
-                        <!-- Prefer @DisplayName & friends, if any. -->
-                        <usePhrasedFileName>true</usePhrasedFileName>
-                        <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
-                        <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
-                        <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
-                    </statelessTestsetReporter>
-                    <!-- For the console output, use the tree reporter from
-                         https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
-                    <reportFormat>plain</reportFormat>
-                    <consoleOutputReporter>
-                        <disable>true</disable>
-                    </consoleOutputReporter>
-                    <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
-                        <!-- Prefer @DisplayName & friends, if any. -->
-                        <usePhrasedFileName>true</usePhrasedFileName>
-                        <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
-                        <!-- Avoid null's in *.txt summary -->
-                        <usePhrasedClassNameInTestCaseSummary>false</usePhrasedClassNameInTestCaseSummary>
-                    </statelessTestsetInfoReporter>
                 </configuration>
                 <executions>
                     <execution>

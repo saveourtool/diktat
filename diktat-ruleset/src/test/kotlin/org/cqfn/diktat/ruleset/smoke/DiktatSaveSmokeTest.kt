@@ -1,12 +1,12 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-import org.cqfn.diktat.util.SAVE_VERSION
-import org.cqfn.diktat.util.deleteIfExistsRecursively
-import org.cqfn.diktat.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.deleteIfExistsRecursively
+import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.retry
 import org.cqfn.diktat.util.isSameJavaHomeAs
 import org.cqfn.diktat.util.prependPath
-import org.cqfn.diktat.util.retry
+import com.pinterest.ktlint.core.LintError
 
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
@@ -34,14 +34,17 @@ import kotlin.system.measureNanoTime
 
 @DisabledOnOs(OS.MAC)
 class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
-    override val isLintErrors = false
     override fun fixAndCompare(
-        config: String,
+        config: Path,
         expected: String,
         test: String,
+        trimLastEmptyLine: Boolean,
     ) {
-        saveSmokeTest(Path(config), test)
+        saveSmokeTest(config, test)
     }
+
+    // do nothing, we can't check unfixed lint errors here
+    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) = Unit
 
     /**
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
@@ -113,12 +116,30 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         }
     }
 
+    /**
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * @return ProcessBuilder
+     */
+    private fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
+        val filesDir = "src/test/resources/test/smoke"
+        val savePath = "$filesDir/${getSaveForCurrentOs()}"
+
+        val systemName = System.getProperty("os.name")
+        val result = when {
+            systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
+                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
+            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath, "--log", "all")
+        }
+        return result
+    }
+
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val logger = KotlinLogging.loggerWithKtlintConfig { }
         private const val BUILD_DIRECTORY = "target"
-        private const val FAT_JAR_GLOB = "diktat-rules-*-fat-jar-for-smoke-tests.jar"
+        private const val FAT_JAR_GLOB = "diktat-*.jar"
         private const val KTLINT_VERSION = "0.47.1"
+        private const val SAVE_VERSION: String = "0.3.4"
         private val baseDirectory = Path("src/test/resources/test/smoke").absolute()
 
         private fun getSaveForCurrentOs(): String {

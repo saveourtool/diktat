@@ -49,6 +49,7 @@
         <ktlint.version>0.47.1</ktlint.version>
         <junit.version>5.9.0</junit.version>
         <junit.platform.version>1.9.0</junit.platform.version>
+        <surefire.junit5.tree-reporter.version>1.1.0</surefire.junit5.tree-reporter.version>
         <guava.version>31.1-jre</guava.version>
         <slf4j.version>1.7.36</slf4j.version>
         <commons-cli.version>1.5.0</commons-cli.version>
@@ -60,7 +61,6 @@
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
         <log4j.version>2.18.0</log4j.version>
-        <junit-tree-reporter.version>1.1.0</junit-tree-reporter.version>
     </properties>
 
     <modules>
@@ -90,6 +90,11 @@
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk7</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
@@ -268,6 +273,35 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M7</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>me.fabriciorby</groupId>
+                            <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                            <version>${surefire.junit5.tree-reporter.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
+                            <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
+                            <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
+                        </statelessTestsetReporter>
+                        <!-- For the console output, use the tree reporter from
+                             https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
+                        <reportFormat>plain</reportFormat>
+                        <consoleOutputReporter>
+                            <disable>true</disable>
+                        </consoleOutputReporter>
+                        <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
+                            <!-- Avoid null's in *.txt summary -->
+                            <usePhrasedClassNameInTestCaseSummary>false</usePhrasedClassNameInTestCaseSummary>
+                        </statelessTestsetInfoReporter>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -278,11 +312,35 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.0.0-M7</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>me.fabriciorby</groupId>
+                            <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                            <version>${surefire.junit5.tree-reporter.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
+                            <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
+                            <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
+                        </statelessTestsetReporter>
+                        <!-- For the console output, use the tree reporter from
+                             https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
+                        <reportFormat>plain</reportFormat>
+                        <consoleOutputReporter>
+                            <disable>true</disable>
+                        </consoleOutputReporter>
+                        <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
+                            <!-- Avoid null's in *.txt summary -->
+                            <usePhrasedClassNameInTestCaseSummary>false</usePhrasedClassNameInTestCaseSummary>
+                        </statelessTestsetInfoReporter>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -543,6 +601,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>jdk11</id>
+            <activation>
+                <jdk>[11,</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
         </profile>
     </profiles>
 </project>

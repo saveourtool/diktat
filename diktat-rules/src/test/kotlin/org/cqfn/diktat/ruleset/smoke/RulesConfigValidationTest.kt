@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.InvalidPropertyValueException
 import org.junit.jupiter.api.AfterEach
