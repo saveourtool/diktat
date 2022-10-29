@@ -1,10 +1,11 @@
 [general]
-execCmd="java -jar ktlint -R diktat.jar"
+execCmd="java -showversion -jar ktlint --debug --verbose -R diktat.jar"
 tags = ["smokeTest"]
 description = "SmokeTest"
 suiteName = "SmokeTest"
 language = "Kotlin"
 expectedWarningsPattern = "// ;warn:?(.*):(\\d*): (.+)"
+timeOutMillis = 3600000
 
 ["fix and warn"]
     ["fix and warn".fix]

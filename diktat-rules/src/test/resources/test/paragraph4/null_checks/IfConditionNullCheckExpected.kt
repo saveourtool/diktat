@@ -79,3 +79,25 @@ foo()
 } ?: boo()
 }
 
+fun nullCheckWithAssumption() {
+    val a: Int? = 5
+    a?.let {
+foo()
+} ?: run {
+a = 5
+}
+    a?.let {
+foo()
+} ?: run {
+a = 5
+}
+    a?.let {
+a = 5
+} ?: foo()
+    a?.let {
+a = 5
+} ?: foo()
+    a?.let {
+foo()
+} ?: a == 5
+}

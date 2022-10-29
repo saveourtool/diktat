@@ -25,6 +25,7 @@ class ConfigReaderTest {
             .readResource("src/test/resources/test-rules-config.yml")
         requireNotNull(rulesConfigList)
         assert(rulesConfigList.getCommonConfiguration().kotlinVersion == kotlinVersion)
+        assert(rulesConfigList.getCommonConfiguration().testAnchors.contains("androidUnitTest"))
         assert(rulesConfigList.find { it.name == DIKTAT_COMMON }
             ?.configuration
             ?.get("kotlinVersion")

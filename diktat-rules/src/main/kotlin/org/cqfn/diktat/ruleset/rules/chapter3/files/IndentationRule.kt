@@ -187,6 +187,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkIndentation(node: ASTNode) =
         with(IndentContext(configuration)) {
+            @Suppress("Deprecation")
             node.visit { astNode ->
                 checkAndReset(astNode)
                 val indentationIncrement = astNode.getIndentationIncrement()

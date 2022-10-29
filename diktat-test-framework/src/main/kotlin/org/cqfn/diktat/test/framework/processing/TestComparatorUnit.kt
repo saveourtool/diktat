@@ -20,8 +20,10 @@ import kotlin.io.path.readLines
  * @property function a transformation that will be applied to the file
  */
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
-class TestComparatorUnit(private val resourceFilePath: String,
-                         private val function: (expectedText: String, testFilePath: String) -> String) {
+class TestComparatorUnit(
+    private val resourceFilePath: String,
+    private val function: (expectedText: String, testFilePath: String) -> String,
+) {
     /**
      * @param expectedResult the name of the resource which has the expected
      *   content. The trailing newline, if any, **won't be read** as a separate
@@ -32,7 +34,7 @@ class TestComparatorUnit(private val resourceFilePath: String,
      * @param testFileStr the name of the resource which has the original content.
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testFileStr].
-     * @return `true` if transformed file equals expected result, `false` otherwise.
+     * @return the result of file comparison by their content.
      * @see compareFilesFromFileSystem
      */
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
@@ -40,18 +42,21 @@ class TestComparatorUnit(private val resourceFilePath: String,
         expectedResult: String,
         testFileStr: String,
         trimLastEmptyLine: Boolean = false
-    ): Boolean {
+    ): FileComparisonResult {
         val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
         val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
         if (testPath == null || expectedPath == null) {
             log.error("Not able to find files for running test: $expectedResult and $testFileStr")
-            return false
+            return FileComparisonResult(
+                isSuccessful = false,
+                actualContent = "// $resourceFilePath/$expectedResult is found: ${testPath != null}",
+                expectedContent = "// $resourceFilePath/$testFileStr is found: ${expectedPath != null}")
         }
 
         return compareFilesFromFileSystem(
             Paths.get(expectedPath.toURI()),
             Paths.get(testPath.toURI()),
-            trimLastEmptyLine).isSuccessful
+            trimLastEmptyLine)
     }
 
     /**
