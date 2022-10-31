@@ -345,8 +345,11 @@
                         <!-- For the console output, use the tree reporter from
                              https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
                         <reportFormat>plain</reportFormat>
+                        <!-- For the Failsafe plug-in, don't disable
+                             the consoleOutputReporter so that important logging
+                             is not hidden. -->
                         <consoleOutputReporter>
-                            <disable>true</disable>
+                            <disable>false</disable>
                         </consoleOutputReporter>
                         <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
                             <!-- Prefer @DisplayName & friends, if any. -->
