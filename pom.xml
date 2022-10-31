@@ -42,24 +42,25 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.7.0</kotlin.version>
+        <kotlin.version>1.7.20</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlinx.serialization.version>1.3.3</kotlinx.serialization.version>
-        <ktlint.version>0.46.1</ktlint.version>
-        <junit.version>5.8.2</junit.version>
-        <junit.platform.version>1.8.2</junit.platform.version>
+        <kotlinx.serialization.version>1.4.1</kotlinx.serialization.version>
+        <ktlint.version>0.47.1</ktlint.version>
+        <junit.version>5.9.1</junit.version>
+        <junit.platform.version>1.9.1</junit.platform.version>
+        <surefire.junit5.tree-reporter.version>1.1.0</surefire.junit5.tree-reporter.version>
         <guava.version>31.1-jre</guava.version>
-        <slf4j.version>1.7.36</slf4j.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <diktat-check.version>1.2.3</diktat-check.version>
         <kotlinpoet.version>1.12.0</kotlinpoet.version>
-        <detekt.version>1.20.0</detekt.version>
-        <dokka.version>1.7.0</dokka.version>
+        <detekt.version>1.21.0.1</detekt.version>
+        <dokka.version>1.7.20</dokka.version>
         <jacoco.version>0.8.8</jacoco.version>
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
-        <jbool.version>1.23</jbool.version>
-        <log4j.version>2.18.0</log4j.version>
+        <jbool.version>1.24</jbool.version>
+        <mu-logging.version>3.0.3</mu-logging.version>
+        <log4j.version>2.19.0</log4j.version>
     </properties>
 
     <modules>
@@ -93,6 +94,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk7</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib-jdk8</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
@@ -105,6 +111,21 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-compiler-embeddable</artifactId>
                 <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-core</artifactId>
+                <version>${kotlinx.serialization.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-core-jvm</artifactId>
+                <version>${kotlinx.serialization.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-json</artifactId>
+                <version>${kotlinx.serialization.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
@@ -150,7 +171,7 @@
             <dependency>
                 <groupId>com.charleskorn.kaml</groupId>
                 <artifactId>kaml-jvm</artifactId>
-                <version>0.46.0</version>
+                <version>0.47.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -175,17 +196,7 @@
             <dependency>
                 <groupId>io.github.microutils</groupId>
                 <artifactId>kotlin-logging-jvm</artifactId>
-                <version>2.1.23</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
+                <version>${mu-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -244,17 +255,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M2</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.4.2</version>
                     <configuration>
                         <archive>
                             <manifestEntries>
@@ -267,6 +278,35 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M7</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>me.fabriciorby</groupId>
+                            <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                            <version>${surefire.junit5.tree-reporter.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
+                            <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
+                            <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
+                        </statelessTestsetReporter>
+                        <!-- For the console output, use the tree reporter from
+                             https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
+                        <reportFormat>plain</reportFormat>
+                        <consoleOutputReporter>
+                            <disable>true</disable>
+                        </consoleOutputReporter>
+                        <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
+                            <!-- Avoid null's in *.txt summary -->
+                            <usePhrasedClassNameInTestCaseSummary>false</usePhrasedClassNameInTestCaseSummary>
+                        </statelessTestsetInfoReporter>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -277,16 +317,43 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.0.0-M7</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>me.fabriciorby</groupId>
+                            <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                            <version>${surefire.junit5.tree-reporter.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
+                            <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
+                            <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
+                        </statelessTestsetReporter>
+                        <!-- For the console output, use the tree reporter from
+                             https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter. -->
+                        <reportFormat>plain</reportFormat>
+                        <!-- For the Failsafe plug-in, don't disable
+                             the consoleOutputReporter so that important logging
+                             is not hidden. -->
+                        <consoleOutputReporter>
+                            <disable>false</disable>
+                        </consoleOutputReporter>
+                        <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                            <!-- Prefer @DisplayName & friends, if any. -->
+                            <usePhrasedFileName>true</usePhrasedFileName>
+                            <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
+                            <!-- Avoid null's in *.txt summary -->
+                            <usePhrasedClassNameInTestCaseSummary>false</usePhrasedClassNameInTestCaseSummary>
+                        </statelessTestsetInfoReporter>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.11.0</version>
+                    <version>2.13.0</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
@@ -316,7 +383,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
@@ -333,7 +400,7 @@
             <plugin>
                 <groupId>com.rudikershaw.gitbuildhook</groupId>
                 <artifactId>git-build-hook-maven-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <installHooks>
                         <!-- The location of a git hook to install into the default hooks directory. -->
@@ -542,6 +609,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>jdk11</id>
+            <activation>
+                <jdk>[11,</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
         </profile>
     </profiles>
 </project>

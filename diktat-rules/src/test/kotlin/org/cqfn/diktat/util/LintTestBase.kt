@@ -1,7 +1,6 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
@@ -16,22 +15,45 @@ import org.intellij.lang.annotations.Language
 open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                         private val rulesConfigList: List<RulesConfig>? = null) {
     /**
-     * Perform linting of [code], collect errors and compare with [lintErrors]
+     * Perform linting of [code], collect errors and compare with [expectedLintErrors]
      *
      * @param code code to check
-     * @param lintErrors expected errors
+     * @param expectedLintErrors expected errors
      * @param rulesConfigList optional override for `this.rulesConfigList`
      * @param fileName optional override for file name
      * @see lintResult
      */
     fun lintMethod(@Language("kotlin") code: String,
-                   vararg lintErrors: LintError,
+                   vararg expectedLintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null
     ) {
-        assertThat(lintResult(code, rulesConfigList, fileName))
-            .describedAs("lint result for \"$code\"")
-            .containsExactly(*lintErrors)
+        val actualLintErrors = lintResult(code, rulesConfigList, fileName)
+
+        val description = "lint result for \"$code\""
+
+        when {
+            expectedLintErrors.size == 1 && actualLintErrors.size == 1 -> {
+                val actual = actualLintErrors[0]
+                val expected = expectedLintErrors[0]
+
+                assertThat(actual)
+                    .describedAs(description)
+                    .isEqualTo(expected)
+                assertThat(actual.canBeAutoCorrected)
+                    .describedAs("canBeAutoCorrected")
+                    .isEqualTo(expected.canBeAutoCorrected)
+            }
+
+            else -> assertThat(actualLintErrors)
+                .describedAs(description)
+                .apply {
+                    when {
+                        expectedLintErrors.isEmpty() -> isEmpty()
+                        else -> containsExactly(*expectedLintErrors)
+                    }
+                }
+        }
     }
 
     /**
@@ -52,6 +74,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val actualFileName = fileName ?: TEST_FILE_NAME
         val lintErrors: MutableList<LintError> = mutableListOf()
 
+        @Suppress("DEPRECATION")
         KtLint.lint(
             KtLint.ExperimentalParams(
                 fileName = actualFileName,

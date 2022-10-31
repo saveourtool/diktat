@@ -32,7 +32,7 @@ fun ASTNode.kDocTags(): List<KDocTag> {
  * @return whether this tag is present
  */
 fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
-    this.find { it.knownTag == knownTag } != null
+    this.any { it.knownTag == knownTag }
 
 /**
  * Checks for trailing newlines in tag's body. Handles cases, when there is no leading asterisk on an empty line:

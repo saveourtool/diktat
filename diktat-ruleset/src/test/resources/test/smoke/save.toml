@@ -1,0 +1,23 @@
+[general]
+execCmd="java -showversion -jar ktlint --debug --verbose -R diktat.jar"
+tags = ["smokeTest"]
+description = "SmokeTest"
+suiteName = "SmokeTest"
+language = "Kotlin"
+expectedWarningsPattern = "// ;warn:?(.*):(\\d*): (.+)"
+timeOutMillis = 3600000
+
+["fix and warn"]
+    ["fix and warn".fix]
+        execFlags="--disabled_rules=standard -F"
+    ["fix and warn".warn]
+        lineCaptureGroup = 1
+        columnCaptureGroup = 2
+        messageCaptureGroup = 3
+        lineCaptureGroupOut = 2
+        columnCaptureGroupOut = 3
+        messageCaptureGroupOut = 4
+        actualWarningsPattern = "(\\w+\\..+):(\\d+):(\\d+): (\\[.*\\].*)$"
+        exactWarningsMatch = false
+        warningTextHasColumn = true
+        warningTextHasLine = true

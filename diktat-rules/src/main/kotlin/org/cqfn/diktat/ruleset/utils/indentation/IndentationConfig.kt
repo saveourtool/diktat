@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 /**
  * [RuleConfiguration] for indentation logic
  */
-internal class IndentationConfig(config: Map<String, String>) : RuleConfiguration(config) {
+class IndentationConfig(config: Map<String, String>) : RuleConfiguration(config) {
     /**
      * Is newline at the end of a file needed
      */
@@ -87,7 +87,7 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     override fun toString(): String =
         "${javaClass.simpleName}$configWithExplicitDefaults"
 
-    internal companion object {
+    companion object {
         internal const val ALIGNED_PARAMETERS = "alignedParameters"
 
         /**
@@ -95,28 +95,27 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
          * `indentationSize`.
          */
         private const val DEFAULT_INDENTATION_SIZE = 4
-        internal const val EXTENDED_INDENT_AFTER_OPERATORS = "extendedIndentAfterOperators"
-        internal const val EXTENDED_INDENT_BEFORE_DOT = "extendedIndentBeforeDot"
-        internal const val EXTENDED_INDENT_FOR_EXPRESSION_BODIES = "extendedIndentForExpressionBodies"
-        internal const val EXTENDED_INDENT_OF_PARAMETERS = "extendedIndentOfParameters"
-        internal const val INDENTATION_SIZE = "indentationSize"
-        internal const val NEWLINE_AT_END = "newlineAtEnd"
+        const val EXTENDED_INDENT_AFTER_OPERATORS = "extendedIndentAfterOperators"
+        const val EXTENDED_INDENT_BEFORE_DOT = "extendedIndentBeforeDot"
+        const val EXTENDED_INDENT_FOR_EXPRESSION_BODIES = "extendedIndentForExpressionBodies"
+        const val EXTENDED_INDENT_OF_PARAMETERS = "extendedIndentOfParameters"
+        const val INDENTATION_SIZE = "indentationSize"
+        const val NEWLINE_AT_END = "newlineAtEnd"
 
-        @Suppress(
-            "CUSTOM_GETTERS_SETTERS",
-            "STRING_TEMPLATE_QUOTES",
-        )
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val IndentationConfig.configWithExplicitDefaults: Map<String, String>
             get() =
-                mutableMapOf<String, String>().apply {
+                mutableMapOf<String, Any>().apply {
                     putAll(config)
-                    putIfAbsent(ALIGNED_PARAMETERS, "$alignedParameters")
-                    putIfAbsent(EXTENDED_INDENT_AFTER_OPERATORS, "$extendedIndentAfterOperators")
-                    putIfAbsent(EXTENDED_INDENT_BEFORE_DOT, "$extendedIndentBeforeDot")
-                    putIfAbsent(EXTENDED_INDENT_FOR_EXPRESSION_BODIES, "$extendedIndentForExpressionBodies")
-                    putIfAbsent(EXTENDED_INDENT_OF_PARAMETERS, "$extendedIndentOfParameters")
-                    putIfAbsent(INDENTATION_SIZE, "$indentationSize")
-                    putIfAbsent(NEWLINE_AT_END, "$newlineAtEnd")
+                    putIfAbsent(ALIGNED_PARAMETERS, alignedParameters)
+                    putIfAbsent(EXTENDED_INDENT_AFTER_OPERATORS, extendedIndentAfterOperators)
+                    putIfAbsent(EXTENDED_INDENT_BEFORE_DOT, extendedIndentBeforeDot)
+                    putIfAbsent(EXTENDED_INDENT_FOR_EXPRESSION_BODIES, extendedIndentForExpressionBodies)
+                    putIfAbsent(EXTENDED_INDENT_OF_PARAMETERS, extendedIndentOfParameters)
+                    putIfAbsent(INDENTATION_SIZE, indentationSize)
+                    putIfAbsent(NEWLINE_AT_END, newlineAtEnd)
+                }.mapValues { (_, value) ->
+                    value.toString()
                 }
     }
 }

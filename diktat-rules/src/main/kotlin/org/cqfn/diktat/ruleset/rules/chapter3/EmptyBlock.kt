@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
@@ -38,50 +39,52 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun searchNode(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         val newNode = node.findLBrace()?.treeParent ?: return
-        checkEmptyBlock(newNode, configuration)
+        if (!isAllowedEmptyBlock(newNode) && newNode.isBlockEmpty()) {
+            checkEmptyBlock(newNode, configuration)
+        }
     }
 
     private fun isNewLine(node: ASTNode) =
         node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: false
 
+    private fun isAllowedEmptyBlock(node: ASTNode) = node.treeParent.isOverridden() ||
+            isAnonymousSamClass(node) ||
+            isLambdaUsedAsFunction(node) ||
+            isKotlinLogging(node)
+
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.isOverridden() || isAnonymousSamClass(node) || isLambdaUsedAsFunction(node)) {
-            return
-        }
-        if (node.isBlockEmpty()) {
-            if (!configuration.emptyBlockExist) {
-                EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
-                    node.startOffset, node)
-            } else {
-                node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
-                    // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
-                    if (isNewLine(node)) {
-                        val freeText = "do not put newlines in empty lambda"
-                        EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
-                            val whiteSpaceNode = node.findChildByType(WHITE_SPACE)
-                            whiteSpaceNode?.let {
-                                node.replaceChild(whiteSpaceNode, PsiWhiteSpaceImpl(" "))
-                            }
+        if (!configuration.emptyBlockExist) {
+            EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
+                node.startOffset, node)
+        } else {
+            node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
+                // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
+                if (isNewLine(node)) {
+                    val freeText = "do not put newlines in empty lambda"
+                    EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
+                        val whiteSpaceNode = node.findChildByType(WHITE_SPACE)
+                        whiteSpaceNode?.let {
+                            node.replaceChild(whiteSpaceNode, PsiWhiteSpaceImpl(" "))
                         }
                     }
-                    return
                 }
-                val space = node.findChildByType(RBRACE)!!.treePrev
-                if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
-                    EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
-                        node.startOffset, node) {
-                        if (space.elementType == WHITE_SPACE) {
-                            (space.treeNext as LeafPsiElement).rawReplaceWithText("\n")
-                        } else {
-                            node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
-                        }
+                return
+            }
+            val space = node.findChildByType(RBRACE)!!.treePrev
+            if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
+                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
+                    node.startOffset, node) {
+                    if (space.elementType == WHITE_SPACE) {
+                        (space.treeNext as LeafPsiElement).rawReplaceWithText("\n")
+                    } else {
+                        node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
                     }
-                } else if (!configuration.emptyBlockNewline && space.text.contains("\n")) {
-                    EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
-                        node.startOffset, node) {
-                        node.removeChild(space)
-                    }
+                }
+            } else if (!configuration.emptyBlockNewline && space.text.contains("\n")) {
+                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
+                    node.startOffset, node) {
+                    node.removeChild(space)
                 }
             }
         }
@@ -117,6 +120,13 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
             else -> false
         }
     }
+
+    private fun isKotlinLogging(node: ASTNode): Boolean = node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)
+        ?.text
+        ?.replace(" ", "")
+        .let {
+            it == "KotlinLogging.logger{}"
+        }
 
     /**
      * [RuleConfiguration] for empty blocks formatting

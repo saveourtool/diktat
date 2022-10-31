@@ -5,15 +5,14 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_BOOLEAN_EXPRESSION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
+import org.cqfn.diktat.ruleset.utils.logicalInfixMethodMapping
 import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
-import com.bpodgursky.jbool_expressions.And
 import com.bpodgursky.jbool_expressions.Expression
-import com.bpodgursky.jbool_expressions.NExpression
-import com.bpodgursky.jbool_expressions.Or
 import com.bpodgursky.jbool_expressions.options.ExprOptions
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
 import com.bpodgursky.jbool_expressions.parsers.TokenMapper
 import com.bpodgursky.jbool_expressions.rules.DeMorgan
+import com.bpodgursky.jbool_expressions.rules.DistributiveLaw
 import com.bpodgursky.jbool_expressions.rules.Rule
 import com.bpodgursky.jbool_expressions.rules.RuleList
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
@@ -28,8 +27,6 @@ import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
-
-typealias ExpressionCreator<K> = (List<Expression<K>?>) -> Expression<K>
 
 /**
  * Rule that checks if the boolean expression can be simplified.
@@ -181,6 +178,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     internal inner class ExpressionsReplacement {
         private val expressionToToken: HashMap<String, String> = LinkedHashMap()
+        private val tokenToExpression: HashMap<String, String> = HashMap()
         private val tokenToOrderedToken: HashMap<String, String> = HashMap()
 
         /**
@@ -210,8 +208,14 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         fun addExpression(expressionAstNode: ASTNode) {
             val expressionText = expressionAstNode.textWithoutComments()
             // support case when `boolean_expression` matches to `!boolean_expression`
-            val expression = if (expressionText.startsWith('!')) expressionText.substring(1) else expressionText
-            getLetter(expressionToToken, expression)
+            val (expression, negativeExpression) = if (expressionText.startsWith('!')) {
+                expressionText.substring(1) to expressionText
+            } else {
+                expressionText to getNegativeExpression(expressionAstNode, expressionText)
+            }
+            val letter = getLetter(expressionToToken, expression)
+            tokenToExpression["!$letter"] = negativeExpression
+            tokenToExpression[letter] = expression
         }
 
         /**
@@ -220,13 +224,12 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
          * @param fullExpression full boolean expression in kotlin
          * @return full expression in jbool format
          */
-        @Suppress("UnsafeCallOnNullableType")
         fun replaceExpressions(fullExpression: String): String {
             var resultExpression = fullExpression
             expressionToToken.keys
                 .sortedByDescending { it.length }
                 .forEach { refExpr ->
-                    resultExpression = resultExpression.replace(refExpr, expressionToToken[refExpr]!!)
+                    resultExpression = resultExpression.replace(refExpr, expressionToToken.getValue(refExpr))
                 }
             return resultExpression
         }
@@ -245,10 +248,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             resultExpression = resultExpression.format(args = tokenToOrderedToken.keys.toTypedArray())
             // restore expression
-            expressionToToken.values.forEachIndexed { index, value ->
+            tokenToExpression.keys.forEachIndexed { index, value ->
                 resultExpression = resultExpression.replace(value, "%${index + 1}\$s")
             }
-            resultExpression = resultExpression.format(args = expressionToToken.keys.toTypedArray())
+            resultExpression = resultExpression.format(args = tokenToExpression.values.toTypedArray())
             return resultExpression
         }
 
@@ -256,77 +259,16 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .computeIfAbsent(key) {
                 ('A'.code + letters.size).toChar().toString()
             }
-    }
 
-    /**
-     * Rule that checks that the expression can be simplified by distributive law.
-     * Distributive law - A && B || A && C -> A && (B || C) or (A || B) && (A || C) -> A || (B && C)
-     */
-    @Suppress("UnsafeCallOnNullableType")
-    private class DistributiveLaw<K> : Rule<NExpression<K>, K>() {
-        override fun applyInternal(input: NExpression<K>, options: ExprOptions<K>): Expression<K> {
-            val exprFactory = options.exprFactory!!
-            val orExpressionCreator: ExpressionCreator<K> = { expressions -> exprFactory.or(expressions.toTypedArray()) }
-            val andExpressionCreator: ExpressionCreator<K> = { expressions -> exprFactory.and(expressions.toTypedArray()) }
-            return when (input) {
-                is And -> applyInternal(input, orExpressionCreator, andExpressionCreator)
-                is Or -> applyInternal(input, andExpressionCreator, orExpressionCreator)
-                else -> throw UnsupportedOperationException("Not supported input expression: ${input.exprType}")
-            }
-        }
-
-        private fun applyInternal(
-            input: NExpression<K>,
-            upperExpressionCreator: ExpressionCreator<K>,
-            innerExpressionCreator: ExpressionCreator<K>
-        ): Expression<K> {
-            // we can be here only after `isApply` -- common exists
-            val commonExpression = findCommonExpression(input.children)!!
-            return upperExpressionCreator(
-                listOf(commonExpression,
-                    innerExpressionCreator(
-                        input.expressions.map { excludeChild(it, upperExpressionCreator, commonExpression) }
-                    )))
-        }
-
-        private fun excludeChild(
-            expression: Expression<K>,
-            expressionCreator: ExpressionCreator<K>,
-            childToExclude: Expression<K>
-        ): Expression<K> {
-            val leftChildren = expression.children.filterNot { it.equals(childToExclude) }
-            return if (leftChildren.size == 1) {
-                leftChildren.first()
+        private fun getNegativeExpression(expressionAstNode: ASTNode, expression: String): String =
+            if (expressionAstNode.elementType == BINARY_EXPRESSION) {
+                val operation = (expressionAstNode.psi as KtBinaryExpression).operationReference.text
+                logicalInfixMethodMapping[operation]?.let {
+                    expression.replace(operation, it)
+                } ?: "!($expression)"
             } else {
-                expressionCreator(leftChildren)
+                "!$expression"
             }
-        }
-
-        /**
-         * Checks the input expression
-         */
-        override fun isApply(inputNullable: Expression<K>?): Boolean = inputNullable?.let { input ->
-            when (input) {
-                is And -> isApplicable<And<K>, Or<K>>(input)
-                is Or -> isApplicable<Or<K>, And<K>>(input)
-                else -> false
-            }
-        } ?: false
-
-        private inline fun <E : NExpression<K>, reified C : NExpression<K>> isApplicable(input: E): Boolean {
-            val children = input.children ?: return false
-            if (children.size < 2 || children.any { it !is C }) {
-                return false
-            }
-            return findCommonExpression(children) != null
-        }
-
-        private fun findCommonExpression(children: List<Expression<K>>): Expression<K>? = children.drop(1)
-            .fold(children[0].children) { commons, child ->
-                commons.filter { childResult ->
-                    child.children.any { it.equals(childResult) }
-                }
-            }.firstOrNull()
     }
 
     companion object {

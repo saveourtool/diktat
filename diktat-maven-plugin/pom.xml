@@ -173,8 +173,6 @@
                     <includes>
                         <include>**/*IntegrationTest*</include>
                     </includes>
-                    <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
-                    <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
                 </configuration>
                 <executions>
                     <execution>

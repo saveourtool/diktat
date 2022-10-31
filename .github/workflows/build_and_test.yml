@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             maven-build-
       - name: Maven Install
-        run: mvn -B clean install
+        run: mvn -B -Dstyle.color=always clean install
       - name: Code coverage report
         uses: codecov/codecov-action@v3
         with:
@@ -76,17 +76,9 @@ jobs:
 
       - name: Run diKTat from cli
         continue-on-error: true
-        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/maven/src/main/kotlin/Test.kt' &>out.txt
         shell: bash
-
-      - name: Run diKTat from cli on windows
-        continue-on-error: true
-        if: runner.os == 'Windows'
-        run: |
-          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
-        shell: cmd
 
       - name: Check output
         run: |
@@ -99,20 +91,73 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &>out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows (absolute paths)
         continue-on-error: true
         if: runner.os == 'Windows'
         run: |
-          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
         shell: cmd
 
       - name: Check output (absolute paths)
         run: |
           cat out.txt
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 1 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/maven/src/main/kotlin/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 1 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 2 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/**/main/kotlin/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 2 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 3 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/**/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 3 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 4 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard '**/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 4 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
         shell: bash
 
   build_and_test:
@@ -150,13 +195,13 @@ jobs:
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          mvn -B -T1C clean install
+          mvn -B -Dstyle.color=always -T1C clean install
         shell: bash
 
       - name: Maven Install on windows
         if: runner.os == 'Windows'
         run: |
-          mvn -B -T1C clean install
+          mvn -B -Dstyle.color=always -T1C clean install
         shell: cmd
 
         # This step needs a Git repository, so it's impossible to extract it
@@ -215,20 +260,20 @@ jobs:
           name: xml-test-reports-${{ runner.os }}
 
         # Uses Docker, that's why Linux-only.
-      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v1, Linux)
-        uses: EnricoMi/publish-unit-test-result-action@v1
+      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v2, Linux)
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ runner.os == 'Linux' }}
         with:
-          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v1)
-          files: |
+          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v2)
+          junit_files: |
             **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
 
-      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v1, Windows or Mac OS X)
-        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+      - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v2, Windows or Mac OS X)
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
         if: ${{ runner.os == 'Windows' || runner.os == 'macOS' }}
         with:
-          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v1)
-          files: |
+          check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v2)
+          junit_files: |
             **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml

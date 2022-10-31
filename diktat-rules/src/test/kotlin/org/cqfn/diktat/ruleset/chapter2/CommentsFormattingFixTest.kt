@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.ruleset.chapter2.CommentsFormattingTest.Companion.indentStyleComment
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
+import org.cqfn.diktat.ruleset.chapter3.spaces.describe
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.FixTestBase
 

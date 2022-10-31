@@ -1,8 +1,5 @@
 package org.cqfn.diktat.test.framework.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,21 +7,28 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class StreamGobbler extends Thread {
-    private static final Logger log = LoggerFactory.getLogger(StreamGobbler.class);
     private final InputStream inputStream;
     private final String streamType;
+    private final BiConsumer<Exception, String> exceptionHandler;
     private final ArrayList<String> result;
     private volatile boolean isStopped = false;
 
     /**
      * @param inputStream the InputStream to be consumed
-     * @param streamType  the stream type (should be OUTPUT or ERROR)
+     * @param streamType the stream type (should be OUTPUT or ERROR)
+     * @param exceptionHandler the exception handler
      */
-    public StreamGobbler(final InputStream inputStream, final String streamType) {
+    public StreamGobbler(
+            final InputStream inputStream,
+            final String streamType,
+            final BiConsumer<Exception, String> exceptionHandler
+    ) {
         this.inputStream = inputStream;
         this.streamType = streamType;
+        this.exceptionHandler = exceptionHandler;
         this.result = new ArrayList<>();
     }
 
@@ -43,7 +47,7 @@ public class StreamGobbler extends Thread {
                 this.result.add(line);
             }
         } catch (IOException ex) {
-                log.error("Failed to consume and display the input stream of type " + streamType + ".", ex);
+                exceptionHandler.accept(ex, "Failed to consume and display the input stream of type " + streamType + ".");
         } finally {
             this.isStopped = true;
             notify();
@@ -55,7 +59,7 @@ public class StreamGobbler extends Thread {
                 try {
                     wait();
                 } catch (InterruptedException e) {
-                    log.error("Cannot get content of output stream", e);
+                    exceptionHandler.accept(e, "Cannot get content of output stream");
                 }
         }
         return this.result;

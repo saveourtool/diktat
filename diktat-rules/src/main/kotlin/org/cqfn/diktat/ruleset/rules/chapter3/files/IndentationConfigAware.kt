@@ -162,7 +162,7 @@ internal interface IndentationConfigAware {
          * Calls the specified function [block] with [IndentationConfigAware] as
          * its receiver and returns its result.
          *
-         * @param configuration the indentation configuration.
+         * @param configuration the configuration for the indentation rule.
          * @param block the function block to call.
          * @return the result returned by the function block.
          */

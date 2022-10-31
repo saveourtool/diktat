@@ -2,6 +2,8 @@
  * Main logic of indentation including Rule and utility classes and methods.
  */
 
+@file:Suppress("FILE_UNORDERED_IMPORTS")// False positives, see #1494.
+
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -31,8 +33,8 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
-import org.cqfn.diktat.ruleset.utils.isSpaceCharacter
 import org.cqfn.diktat.ruleset.utils.lastIndent
+import org.cqfn.diktat.ruleset.utils.leadingSpaceCount
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -79,10 +81,12 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
-import java.util.ArrayDeque as Stack
-
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.math.abs
 import kotlin.reflect.KCallable
+
+import java.util.ArrayDeque as Stack
 
 /**
  * Rule that checks indentation. The following general rules are checked:
@@ -183,6 +187,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkIndentation(node: ASTNode) =
         with(IndentContext(configuration)) {
+            @Suppress("Deprecation")
             node.visit { astNode ->
                 checkAndReset(astNode)
                 val indentationIncrement = astNode.getIndentationIncrement()
@@ -197,21 +202,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
-
-    private fun isCloseAndOpenQuoterOffset(nodeWhiteSpace: ASTNode, expectedIndent: Int): Boolean {
-        val nextNode = nodeWhiteSpace.treeNext
-        if (nextNode.elementType == VALUE_ARGUMENT) {
-            val nextNodeDot = getNextDotExpression(nextNode)
-            nextNodeDot?.getFirstChildWithType(STRING_TEMPLATE)?.let {
-                if (it.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).size > 1) {
-                    val closingQuote = it.getFirstChildWithType(CLOSING_QUOTE)?.treePrev?.text
-                        ?.length ?: -1
-                    return expectedIndent == closingQuote
-                }
-            }
-        }
-        return true
-    }
 
     @Suppress("ForbiddenComment")
     private fun IndentContext.visitWhiteSpace(astNode: ASTNode) {
@@ -242,10 +232,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
         }
 
-        val difOffsetCloseAndOpenQuote = isCloseAndOpenQuoterOffset(astNode, indentError.actual)
+        val alignedOpeningAndClosingQuotes = hasAlignedOpeningAndClosingQuotes(astNode, indentError.actual)
 
-        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !difOffsetCloseAndOpenQuote) {
-            val warnText = if (!difOffsetCloseAndOpenQuote) {
+        if ((checkResult?.isCorrect != true && expectedIndent != indentError.actual) || !alignedOpeningAndClosingQuotes) {
+            val warnText = if (!alignedOpeningAndClosingQuotes) {
                 "the same number of indents to the opening and closing quotes was expected"
             } else {
                 "expected $expectedIndent but was ${indentError.actual}"
@@ -268,7 +258,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         expectedIndent: Int,
         actualIndent: Int
     ) {
-        val nextNodeDot = getNextDotExpression(whiteSpace.node.treeNext)
+        val nextNodeDot = whiteSpace.node.treeNext.getNextDotExpression()
         if (nextNodeDot != null &&
                 nextNodeDot.elementType == DOT_QUALIFIED_EXPRESSION &&
                 nextNodeDot.firstChildNode.elementType == STRING_TEMPLATE &&
@@ -359,12 +349,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
-    }
-
-    private fun getNextDotExpression(node: ASTNode) = if (node.elementType == DOT_QUALIFIED_EXPRESSION) {
-        node
-    } else {
-        node.getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
     }
 
     /**
@@ -734,11 +718,30 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private fun ASTNode.isMultilineWhitespace(): Boolean =
             elementType == WHITE_SPACE && textContains(NEWLINE)
 
+        @OptIn(ExperimentalContracts::class)
+        private fun ASTNode?.isMultilineStringTemplate(): Boolean {
+            contract {
+                returns(true) implies (this@isMultilineStringTemplate != null)
+            }
+
+            this ?: return false
+
+            return elementType == STRING_TEMPLATE &&
+                    getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY).any { entry ->
+                        entry.textContains(NEWLINE)
+                    }
+        }
+
         /**
          * @return `true` if this is a [String.trimIndent] or [String.trimMargin]
          * call, `false` otherwise.
          */
+        @OptIn(ExperimentalContracts::class)
         private fun ASTNode?.isTrimIndentOrMarginCall(): Boolean {
+            contract {
+                returns(true) implies (this@isTrimIndentOrMarginCall != null)
+            }
+
             this ?: return false
 
             require(elementType == CALL_EXPRESSION) {
@@ -757,6 +760,12 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
             return identifier.text in knownTrimFunctionPatterns
         }
+
+        private fun ASTNode.getNextDotExpression(): ASTNode? =
+            when (elementType) {
+                DOT_QUALIFIED_EXPRESSION -> this
+                else -> getFirstChildWithType(DOT_QUALIFIED_EXPRESSION)
+            }
 
         /**
          * @return the matching closing brace type for this opening brace type,
@@ -784,14 +793,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         /**
-         * @return the number of leading space characters in this string.
-         */
-        private fun String.leadingSpaceCount(): Int =
-            asSequence()
-                .takeWhile(::isSpaceCharacter)
-                .count()
-
-        /**
          * @return this very integer if non-negative, 0 otherwise.
          */
         private fun Int.zeroIfNegative(): Int =
@@ -799,5 +800,64 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 this > 0 -> this
                 else -> 0
             }
+
+        /**
+         * Processes fragments like:
+         *
+         * ```kotlin
+         * f(
+         *     """
+         *     |foobar
+         *     """.trimMargin()
+         * )
+         * ```
+         *
+         * @param whitespace the whitespace node between an [LPAR] and the
+         *   `trimIndent()`- or `trimMargin()`- terminated string template, which is
+         *   an effective argument of a function call. The string template is
+         *   expected to begin on a separate line (otherwise, there'll be no
+         *   whitespace in-between).
+         * @return `true` if the opening and the closing quotes of the string
+         *   template are aligned, `false` otherwise.
+         */
+        private fun hasAlignedOpeningAndClosingQuotes(whitespace: ASTNode, expectedIndent: Int): Boolean {
+            require(whitespace.isMultilineWhitespace()) {
+                "The node is $whitespace while a multi-line $WHITE_SPACE expected"
+            }
+
+            /*
+             * Here, we expect that `nextNode` is a VALUE_ARGUMENT which contains
+             * the dot-qualified expression (`STRING_TEMPLATE.trimIndent()` or
+             * `STRING_TEMPLATE.trimMargin()`).
+             */
+            val nextFunctionArgument = whitespace.treeNext
+            if (nextFunctionArgument.elementType == VALUE_ARGUMENT) {
+                val memberOrExtensionCall = nextFunctionArgument.getNextDotExpression()
+
+                /*
+                 * Limit allowed member or extension calls to `trimIndent()` and
+                 * `trimMargin()`.
+                 */
+                if (memberOrExtensionCall != null &&
+                        memberOrExtensionCall.getFirstChildWithType(CALL_EXPRESSION).isTrimIndentOrMarginCall()) {
+                    val stringTemplate = memberOrExtensionCall.getFirstChildWithType(STRING_TEMPLATE)
+
+                    /*
+                     * Limit the logic to multi-line string templates only (the
+                     * opening and closing quotes of a single-line template are,
+                     * obviously, always mis-aligned).
+                     */
+                    if (stringTemplate != null && stringTemplate.isMultilineStringTemplate()) {
+                        val closingQuoteIndent = stringTemplate.getFirstChildWithType(CLOSING_QUOTE)
+                            ?.treePrev
+                            ?.text
+                            ?.length ?: -1
+                        return expectedIndent == closingQuoteIndent
+                    }
+                }
+            }
+
+            return true
+        }
     }
 }

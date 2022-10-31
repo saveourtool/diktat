@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-serialization-json-jvm</artifactId>
+            <artifactId>kotlinx-serialization-json</artifactId>
         </dependency>
         <dependency>
             <groupId>com.charleskorn.kaml</groupId>
@@ -37,20 +37,6 @@
         <dependency>
             <groupId>com.pinterest.ktlint</groupId>
             <artifactId>ktlint-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -94,8 +80,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <apiVersion>1.6</apiVersion>
-                    <languageVersion>1.6</languageVersion>
                     <compilerPlugins>
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>
