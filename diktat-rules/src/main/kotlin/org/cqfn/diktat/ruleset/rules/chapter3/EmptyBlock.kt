@@ -39,7 +39,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun searchNode(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         val newNode = node.findLBrace()?.treeParent ?: return
-        if (!isAllowedEmptyBlock(node) && node.isBlockEmpty()) {
+        if (!isAllowedEmptyBlock(newNode) && newNode.isBlockEmpty()) {
             checkEmptyBlock(newNode, configuration)
         }
     }
