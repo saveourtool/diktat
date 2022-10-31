@@ -58,10 +58,10 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         assertSoftly { softly ->
             softly.assertThat(configFilePath).isRegularFile
 
-            val configFile = (baseDirectory / "diktat-analysis.yml").apply {
+            val configFile = (baseDirectoryPath / "diktat-analysis.yml").apply {
                 parent.createDirectories()
             }
-            val saveLog = (baseDirectory / "tmpSave.txt").apply {
+            val saveLog = (baseDirectoryPath / "tmpSave.txt").apply {
                 parent.createDirectories()
                 deleteIfExistsSilently()
             }
@@ -88,7 +88,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                      * sub-directory of the project root.
                      */
                     if (System.getProperty("os.name").startsWith("Windows")) {
-                        val tempDirectory = baseDirectory / ".save-cli"
+                        val tempDirectory = baseDirectoryPath / ".save-cli"
                         tempDirectory.createDirectories()
                         val tempDirectoryPath = tempDirectory.absolutePathString()
                         environment()["TMP"] = tempDirectoryPath
@@ -121,14 +121,13 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
      * @return ProcessBuilder
      */
     private fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
-        val filesDir = "src/test/resources/test/smoke"
-        val savePath = "$filesDir/${getSaveForCurrentOs()}"
+        val savePath = "$BASE_DIRECTORY/${getSaveForCurrentOs()}"
 
         val systemName = System.getProperty("os.name")
         val result = when {
             systemName.startsWith("Linux", ignoreCase = true) || systemName.startsWith("Mac", ignoreCase = true) ->
-                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $filesDir/src/main/kotlin $testPath --log all")
-            else -> ProcessBuilder(savePath, "$filesDir/src/main/kotlin", testPath, "--log", "all")
+                ProcessBuilder("sh", "-c", "chmod 777 $savePath ; ./$savePath $BASE_DIRECTORY/src/main/kotlin $testPath --log all")
+            else -> ProcessBuilder(savePath, "$BASE_DIRECTORY/src/main/kotlin", testPath, "--log", "all")
         }
         return result
     }
@@ -136,11 +135,12 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val logger = KotlinLogging.loggerWithKtlintConfig { }
+        private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
         private const val BUILD_DIRECTORY = "target"
         private const val FAT_JAR_GLOB = "diktat-*.jar"
         private const val KTLINT_VERSION = "0.47.1"
         private const val SAVE_VERSION: String = "0.3.4"
-        private val baseDirectory = Path("src/test/resources/test/smoke").absolute()
+        private val baseDirectoryPath = Path(BASE_DIRECTORY).absolute()
 
         private fun getSaveForCurrentOs(): String {
             val osName = System.getProperty("os.name")
@@ -156,7 +156,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         @Suppress("FLOAT_IN_ACCURATE_CALCULATIONS")
         private fun downloadFile(from: URL, to: Path) {
             logger.info {
-                "Downloading $from to ${to.relativeTo(baseDirectory)}..."
+                "Downloading $from to ${to.relativeTo(baseDirectoryPath)}..."
             }
 
             val attempts = 5
@@ -198,7 +198,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             }
 
             logger.info {
-                "The base directory for the smoke test is $baseDirectory."
+                "The base directory for the smoke test is $baseDirectoryPath."
             }
 
             /*
@@ -215,9 +215,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 .isNotNull
                 .isRegularFile
 
-            val diktat = baseDirectory / "diktat.jar"
-            val save = baseDirectory / getSaveForCurrentOs()
-            val ktlint = baseDirectory / "ktlint"
+            val diktat = baseDirectoryPath / "diktat.jar"
+            val save = baseDirectoryPath / getSaveForCurrentOs()
+            val ktlint = baseDirectoryPath / "ktlint"
 
             downloadFile(URL("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}"), save)
             downloadFile(URL("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint"), ktlint)
@@ -228,10 +228,10 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         @AfterAll
         @JvmStatic
         internal fun afterAll() {
-            val diktat = baseDirectory / "diktat.jar"
-            val save = baseDirectory / getSaveForCurrentOs()
-            val ktlint = baseDirectory / "ktlint"
-            val tempDirectory = baseDirectory / ".save-cli"
+            val diktat = baseDirectoryPath / "diktat.jar"
+            val save = baseDirectoryPath / getSaveForCurrentOs()
+            val ktlint = baseDirectoryPath / "ktlint"
+            val tempDirectory = baseDirectoryPath / ".save-cli"
 
             diktat.deleteIfExistsSilently()
             ktlint.deleteIfExistsSilently()
