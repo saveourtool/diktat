@@ -76,17 +76,9 @@ jobs:
 
       - name: Run diKTat from cli
         continue-on-error: true
-        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/maven/src/main/kotlin/Test.kt' &>out.txt
         shell: bash
-
-      - name: Run diKTat from cli on windows
-        continue-on-error: true
-        if: runner.os == 'Windows'
-        run: |
-          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
-        shell: cmd
 
       - name: Check output
         run: |
@@ -99,20 +91,73 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &>out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows (absolute paths)
         continue-on-error: true
         if: runner.os == 'Windows'
         run: |
-          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
         shell: cmd
 
       - name: Check output (absolute paths)
         run: |
           cat out.txt
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 1 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/maven/src/main/kotlin/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 1 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 2 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/**/main/kotlin/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 2 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 3 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard 'examples/**/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 3 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (glob paths, 4 of 4)
+        continue-on-error: true
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard '**/*.kt' &>out.txt
+        shell: bash
+
+      - name: Check output (glob paths, 4 of 4)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
         shell: bash
 
   build_and_test:
