@@ -20,10 +20,14 @@ class LocalCommandExecutor internal constructor(private val command: String) {
             val process = Runtime.getRuntime().exec(command)
             process.outputStream.close()
             val inputStream = process.inputStream
-            val outputGobbler = StreamGobbler(inputStream, "OUTPUT")
+            val outputGobbler = StreamGobbler(inputStream, "OUTPUT") { msg, ex ->
+                log.error(ex, msg)
+            }
             outputGobbler.start()
             val errorStream = process.errorStream
-            val errorGobbler = StreamGobbler(errorStream, "ERROR")
+            val errorGobbler = StreamGobbler(errorStream, "ERROR") { msg, ex ->
+                log.error(ex, msg)
+            }
             errorGobbler.start()
             return ExecutionResult(outputGobbler.content, errorGobbler.content)
         } catch (ex: IOException) {
@@ -33,7 +37,6 @@ class LocalCommandExecutor internal constructor(private val command: String) {
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val log = KotlinLogging.loggerWithKtlintConfig {}
     }
 }

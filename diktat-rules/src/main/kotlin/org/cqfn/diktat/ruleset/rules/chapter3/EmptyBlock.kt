@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
@@ -46,7 +47,10 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.isOverridden() || isAnonymousSamClass(node) || isLambdaUsedAsFunction(node)) {
+        if (node.treeParent.isOverridden() ||
+            isAnonymousSamClass(node) ||
+            isLambdaUsedAsFunction(node) ||
+            isKotlinLogging(node)) {
             return
         }
         if (node.isBlockEmpty()) {
@@ -117,6 +121,13 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
             else -> false
         }
     }
+
+    private fun isKotlinLogging(node: ASTNode): Boolean = node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)
+        ?.text
+        ?.replace(" ", "")
+        .let {
+            it == "KotlinLogging.logger{}"
+        }
 
     /**
      * [RuleConfiguration] for empty blocks formatting

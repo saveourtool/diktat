@@ -95,7 +95,6 @@ class TestArgumentsReader(
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val log = KotlinLogging.loggerWithKtlintConfig {}
     }
 }

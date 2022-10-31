@@ -8,7 +8,6 @@ import mu.KotlinLogging
 
 import java.util.Locale
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 /**

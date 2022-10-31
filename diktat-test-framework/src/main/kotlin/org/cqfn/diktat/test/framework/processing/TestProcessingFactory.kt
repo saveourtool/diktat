@@ -90,7 +90,6 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val log = KotlinLogging.loggerWithKtlintConfig {}
         private const val STATUS_FIVE = 5
         private const val STATUS_THREE = 3
