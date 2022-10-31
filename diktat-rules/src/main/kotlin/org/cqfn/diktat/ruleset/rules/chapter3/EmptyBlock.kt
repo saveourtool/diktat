@@ -48,9 +48,9 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
         node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: false
 
     private fun isAllowedEmptyBlock(node: ASTNode) = node.treeParent.isOverridden() ||
-        isAnonymousSamClass(node) ||
-        isLambdaUsedAsFunction(node) ||
-        isKotlinLogging(node)
+            isAnonymousSamClass(node) ||
+            isLambdaUsedAsFunction(node) ||
+            isKotlinLogging(node)
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
