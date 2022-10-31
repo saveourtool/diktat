@@ -792,10 +792,9 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
                                     private val maxLevel: Int,
                                     private val expected: String
 ) : Rule("print-ast") {
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType
+    override fun beforeVisitChildNodes(node: ASTNode,
+                                       autoCorrect: Boolean,
+                                       emit: EmitType
     ) {
         if (node.elementType == elementType) {
             Assertions.assertEquals(
