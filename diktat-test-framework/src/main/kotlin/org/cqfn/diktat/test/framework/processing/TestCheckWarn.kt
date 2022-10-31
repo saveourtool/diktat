@@ -9,7 +9,8 @@ import mu.KotlinLogging
  * [TestCompare] that uses stderr as tests output stream
  */
 class TestCheckWarn : TestCompare() {
-    @Suppress("MISSING_KDOC_CLASS_ELEMENTS") override val log: KLogger = KotlinLogging.loggerWithKtlintConfig {}
+    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR", "MISSING_KDOC_CLASS_ELEMENTS")
+    override val log: KLogger = KotlinLogging.loggerWithKtlintConfig {}
 
     @Suppress(
         "UnusedPrivateMember",
