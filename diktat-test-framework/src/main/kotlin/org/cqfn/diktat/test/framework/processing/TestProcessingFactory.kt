@@ -1,12 +1,12 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.common.TestBase
 import org.cqfn.diktat.test.framework.config.TestArgumentsReader
 import org.cqfn.diktat.test.framework.config.TestConfig
 import org.cqfn.diktat.test.framework.config.TestConfig.ExecutionType
 import org.cqfn.diktat.test.framework.config.TestConfigReader
-
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 
 import java.io.File
 import java.io.IOException
@@ -90,7 +90,8 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(TestProcessingFactory::class.java)
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        private val log = KotlinLogging.loggerWithKtlintConfig {}
         private const val STATUS_FIVE = 5
         private const val STATUS_THREE = 3
     }

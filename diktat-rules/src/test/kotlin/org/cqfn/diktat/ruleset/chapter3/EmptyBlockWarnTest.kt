@@ -238,4 +238,19 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `should not trigger on KotlinLogging logger`() {
+        lintMethod(
+            """
+                |import mu.KotlinLogging
+                |
+                |fun some() {
+                |    val log = KotlinLogging.logger {}
+                |    log.info { "test" }
+                |}
+            """.trimMargin(),
+        )
+    }
 }
