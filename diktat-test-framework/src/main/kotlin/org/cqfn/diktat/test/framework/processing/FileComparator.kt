@@ -1,9 +1,10 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import io.github.petertrr.diffutils.diff
 import io.github.petertrr.diffutils.patch.ChangeDelta
 import io.github.petertrr.diffutils.text.DiffRowGenerator
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 
 import java.io.File
 import java.io.IOException
@@ -96,7 +97,7 @@ class FileComparator(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(FileComparator::class.java)
+        private val log = KotlinLogging.loggerWithKtlintConfig {}
 
         /**
          * @param file file where to write these list to, separated with newlines.

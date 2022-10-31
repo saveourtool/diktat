@@ -1,8 +1,8 @@
 package org.cqfn.diktat.common.config.reader
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
+import mu.KLogger
 import mu.KotlinLogging
-import org.slf4j.Logger
 
 import java.io.BufferedReader
 import java.io.IOException
@@ -61,6 +61,6 @@ abstract class JsonResourceConfigReader<T> {
         /**
          * A [Logger] that can be used
          */
-        val log: Logger = KotlinLogging.loggerWithKtlintConfig(JsonResourceConfigReader::class)
+        val log: KLogger = KotlinLogging.loggerWithKtlintConfig(JsonResourceConfigReader::class)
     }
 }

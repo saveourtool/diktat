@@ -51,7 +51,6 @@
         <junit.platform.version>1.9.1</junit.platform.version>
         <surefire.junit5.tree-reporter.version>1.1.0</surefire.junit5.tree-reporter.version>
         <guava.version>31.1-jre</guava.version>
-        <slf4j.version>1.7.36</slf4j.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <diktat-check.version>1.2.3</diktat-check.version>
         <kotlinpoet.version>1.12.0</kotlinpoet.version>
@@ -60,6 +59,7 @@
         <jacoco.version>0.8.8</jacoco.version>
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
+        <mu-logging.version>3.0.3</mu-logging.version>
         <log4j.version>2.19.0</log4j.version>
     </properties>
 
@@ -196,17 +196,7 @@
             <dependency>
                 <groupId>io.github.microutils</groupId>
                 <artifactId>kotlin-logging-jvm</artifactId>
-                <version>3.0.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
+                <version>${mu-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>

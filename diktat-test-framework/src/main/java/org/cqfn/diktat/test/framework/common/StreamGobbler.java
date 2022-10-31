@@ -1,7 +1,7 @@
 package org.cqfn.diktat.test.framework.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import mu.KLogger;
+import mu.KotlinLogging;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StreamGobbler extends Thread {
-    private static final Logger log = LoggerFactory.getLogger(StreamGobbler.class);
+    private static final KLogger log = KotlinLogging.INSTANCE.logger(StreamGobbler.class.getName());
     private final InputStream inputStream;
     private final String streamType;
     private final ArrayList<String> result;

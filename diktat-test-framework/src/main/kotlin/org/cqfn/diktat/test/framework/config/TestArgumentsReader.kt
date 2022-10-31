@@ -2,6 +2,8 @@ package org.cqfn.diktat.test.framework.config
 
 import org.cqfn.diktat.common.cli.CliArgument
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
+import mu.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
@@ -9,7 +11,6 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
-import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.IOException
@@ -94,6 +95,6 @@ class TestArgumentsReader(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(TestArgumentsReader::class.java)
+        private val log = KotlinLogging.loggerWithKtlintConfig {}
     }
 }

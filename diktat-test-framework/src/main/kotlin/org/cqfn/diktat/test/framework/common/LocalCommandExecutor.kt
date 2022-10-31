@@ -1,6 +1,8 @@
 package org.cqfn.diktat.test.framework.common
 
-import org.slf4j.LoggerFactory
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
+import mu.KLogger
+import mu.KotlinLogging
 
 import java.io.IOException
 
@@ -15,7 +17,7 @@ class LocalCommandExecutor internal constructor(private val command: String) {
      */
     fun executeCommand(): ExecutionResult {
         try {
-            log.info("Executing command: {}", command)
+            log.info { "Executing command: $command" }
             val process = Runtime.getRuntime().exec(command)
             process.outputStream.close()
             val inputStream = process.inputStream
@@ -32,6 +34,6 @@ class LocalCommandExecutor internal constructor(private val command: String) {
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(LocalCommandExecutor::class.java)
+        private val log: KLogger = KotlinLogging.loggerWithKtlintConfig {}
     }
 }

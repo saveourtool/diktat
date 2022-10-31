@@ -1,14 +1,15 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.config.TestConfig
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import mu.KLogger
+import mu.KotlinLogging
 
 /**
  * [TestCompare] that uses stderr as tests output stream
  */
 class TestCheckWarn : TestCompare() {
-    @Suppress("MISSING_KDOC_CLASS_ELEMENTS") override val log: Logger = LoggerFactory.getLogger(TestCheckWarn::class.java)
+    @Suppress("MISSING_KDOC_CLASS_ELEMENTS") override val log: KLogger = KotlinLogging.loggerWithKtlintConfig {}
 
     @Suppress(
         "UnusedPrivateMember",
