@@ -45,10 +45,10 @@
         <kotlin.version>1.7.20</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlinx.serialization.version>1.4.0</kotlinx.serialization.version>
+        <kotlinx.serialization.version>1.4.1</kotlinx.serialization.version>
         <ktlint.version>0.47.1</ktlint.version>
-        <junit.version>5.9.0</junit.version>
-        <junit.platform.version>1.9.0</junit.platform.version>
+        <junit.version>5.9.1</junit.version>
+        <junit.platform.version>1.9.1</junit.platform.version>
         <surefire.junit5.tree-reporter.version>1.1.0</surefire.junit5.tree-reporter.version>
         <guava.version>31.1-jre</guava.version>
         <slf4j.version>1.7.36</slf4j.version>
@@ -56,11 +56,11 @@
         <diktat-check.version>1.2.3</diktat-check.version>
         <kotlinpoet.version>1.12.0</kotlinpoet.version>
         <detekt.version>1.21.0.1</detekt.version>
-        <dokka.version>1.7.10</dokka.version>
+        <dokka.version>1.7.20</dokka.version>
         <jacoco.version>0.8.8</jacoco.version>
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
-        <log4j.version>2.18.0</log4j.version>
+        <log4j.version>2.19.0</log4j.version>
     </properties>
 
     <modules>
@@ -111,6 +111,21 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-compiler-embeddable</artifactId>
                 <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-core</artifactId>
+                <version>${kotlinx.serialization.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-core-jvm</artifactId>
+                <version>${kotlinx.serialization.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-json</artifactId>
+                <version>${kotlinx.serialization.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
@@ -255,7 +270,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -345,7 +360,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.11.0</version>
+                    <version>2.13.0</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
