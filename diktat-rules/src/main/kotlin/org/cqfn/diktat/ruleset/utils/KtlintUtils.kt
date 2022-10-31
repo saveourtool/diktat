@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 
+@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 @Suppress("TYPE_ALIAS")

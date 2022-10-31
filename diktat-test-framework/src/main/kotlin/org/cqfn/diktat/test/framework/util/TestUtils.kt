@@ -21,6 +21,7 @@ import kotlin.io.path.absolute
 import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
 
+@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 /**
