@@ -55,7 +55,7 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
                     .singleOrNull()
                     ?.let { it.getArgumentExpression() as? KtCallExpression }
                     ?.isAbsOfFloat()
-                    ?: false ||
+                ?: false ||
                         (receiverExpression as? KtCallExpression).isAbsOfFloat()
             }
             ?: false
