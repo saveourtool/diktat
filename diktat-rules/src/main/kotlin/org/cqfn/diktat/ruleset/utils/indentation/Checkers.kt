@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.SINGLE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isBooleanExpression
 import org.cqfn.diktat.ruleset.utils.isDotBeforeCallOrReference
 import org.cqfn.diktat.ruleset.utils.isElvisOperationReference
 import org.cqfn.diktat.ruleset.utils.isLongStringTemplateEntry
@@ -217,6 +218,10 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
         return false
     }
 
+    private fun ASTNode.isElvisReferenceOrCommentBeforeElvis(): Boolean =
+        isElvisOperationReference() ||
+                isCommentBefore(ASTNode::isElvisOperationReference)
+
     private fun ASTNode.isFromStringTemplate(): Boolean =
         hasParent(LONG_STRING_TEMPLATE_ENTRY)
 
@@ -245,6 +250,55 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                             indentIncrement, true)
                 }
 
+                /*-
+                 * The list of immediate parents of this whitespace node,
+                 * nearest-to-farthest order
+                 * (the farthest parent is the file node).
+                 */
+                val parentExpressions = whiteSpace.parents.takeWhile { parent ->
+                    val parentType = parent.node.elementType
+
+                    when {
+                        /*
+                         * #1532, 1.2.4+: if this is an Elvis operator
+                         * (OPERATION_REFERENCE -> ELVIS), or an EOL or a
+                         * block comment which immediately precedes this
+                         * Elvis operator, then the indent of the parent
+                         * binary expression should be used as a base for
+                         * the increment.
+                         */
+                        node.isElvisReferenceOrCommentBeforeElvis() -> parentType == BINARY_EXPRESSION
+
+                        /*
+                         * Pre-1.2.4 behaviour, all other cases: the indent
+                         * of the parent dot-qualified or safe-access
+                         * expression should be used as a base for the
+                         * increment.
+                         */
+                        else -> parentType in sequenceOf(
+                            DOT_QUALIFIED_EXPRESSION,
+                            SAFE_ACCESS_EXPRESSION,
+                        )
+                    }
+                }.toList()
+
+                /*
+                 * Selects from the matching parent nodes.
+                 */
+                val matchOrNull: Iterable<PsiElement>.() -> PsiElement? = {
+                    when {
+                        /*
+                         * Selects nearest.
+                         */
+                        node.isElvisReferenceOrCommentBeforeElvis() -> firstOrNull()
+
+                        /*
+                         * Selects farthest.
+                         */
+                        else -> lastOrNull()
+                    }
+                }
+
                 // we need to get indent before the first expression in calls chain
                 /*-
                  * If the parent indent (the one before a `DOT_QUALIFIED_EXPRESSION`
@@ -261,41 +315,38 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                  *     .third()
                  * ```
                  */
-                val parentIndent = whiteSpace.run {
+                val parentIndent = (parentExpressions.matchOrNull() ?: whiteSpace).parentIndent()
+                    ?: 0
+
+                val expectedIndent = when {
                     /*-
-                     * The list of parents of this whitespace node,
-                     * nearest-to-farthest order
-                     * (the farthest parent is the file node).
+                     * Don't indent Elvis expressions (and the corresponding comments)
+                     * which are nested inside boolean expressions:
+                     *
+                     * ```kotlin
+                     * val x = true &&
+                     *         ""
+                     *             ?.isEmpty()
+                     *         ?: true
+                     * ```
+                     *
+                     * This is a special case, and this is how IDEA formats source code.
                      */
-                    parents.takeWhile { parent ->
-                        val parentType = parent.node.elementType
+                    node.isElvisReferenceOrCommentBeforeElvis() &&
+                            parentExpressions.any { it.node.isBooleanExpression() } -> parentIndent
 
-                        when {
-                            /*
-                             * #1532, 1.2.4+: if this is an Elvis operator
-                             * (OPERATION_REFERENCE -> ELVIS), or an EOL or a
-                             * block comment which immediately precedes this
-                             * Elvis operator, then the indent of the parent
-                             * binary expression should be used as a base for
-                             * the increment.
-                             */
-                            node.isElvisOperationReference() -> parentType == BINARY_EXPRESSION
-                            node.isCommentBefore(ASTNode::isElvisOperationReference) -> parentType == BINARY_EXPRESSION
+                    /*-
+                     * All other cases (dot-qualified, safe-access, Elvis).
+                     * Expression parts are indented regularly, e.g.:
+                     *
+                     * ```kotlin
+                     * val a = null as Boolean?
+                     *     ?: true
+                     * ```
+                     */
+                    else -> parentIndent + indentIncrement
+                }
 
-                            /*
-                             * Pre-1.2.4 behaviour, all other cases: the indent
-                             * of the parent dot-qualified or safe-access
-                             * expression should be used as a base for the
-                             * increment.
-                             */
-                            else -> parentType in sequenceOf(
-                                DOT_QUALIFIED_EXPRESSION,
-                                SAFE_ACCESS_EXPRESSION,
-                            )
-                        }
-                    }.lastOrNull() ?: this
-                }.parentIndent() ?: 0
-                val expectedIndent = parentIndent + indentIncrement
                 return CheckResult.from(indentError.actual, expectedIndent, true)
             }
         return null
