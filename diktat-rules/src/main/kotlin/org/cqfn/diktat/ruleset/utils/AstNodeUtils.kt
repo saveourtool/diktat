@@ -874,6 +874,10 @@ fun ASTNode.isWhiteSpaceOrComment(): Boolean =
  * @see OROR
  * @since 1.2.4
  */
+@Suppress(
+    "MAGIC_NUMBER",
+    "MagicNumber",
+)
 fun ASTNode.isBooleanExpression(): Boolean =
     elementType == BINARY_EXPRESSION && run {
         val operationAndArgs = children().filterNot(ASTNode::isWhiteSpaceOrComment).toList()

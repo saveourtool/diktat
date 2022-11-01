@@ -225,7 +225,10 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     private fun ASTNode.isFromStringTemplate(): Boolean =
         hasParent(LONG_STRING_TEMPLATE_ENTRY)
 
-    @Suppress("ComplexMethod")
+    @Suppress(
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION",
+    )
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling
             .node
