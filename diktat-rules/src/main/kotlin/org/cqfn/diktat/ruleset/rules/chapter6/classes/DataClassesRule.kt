@@ -97,14 +97,14 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
                 .none { it.elementType in badModifiers } &&
                     classBody?.getAllChildrenWithType(FUN)
                         ?.isEmpty()
-                        ?: false &&
+                    ?: false &&
                     getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getFirstChildWithType(FUN) == null &&
                 getFirstChildWithType(SUPER_TYPE_LIST) == null &&
                 // if there is any prop with logic in accessor then don't recommend to convert class to data class
                 classBody?.let(::areGoodProps)
-                    ?: true
+                ?: true
     }
 
     /**

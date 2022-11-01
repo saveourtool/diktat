@@ -107,7 +107,7 @@ abstract class VariablesSearch(val node: ASTNode,
                         .let { it as? KtFunctionLiteral }
                         ?.valueParameters
                         ?.any { it.nameAsName == property.nameAsName }
-                        ?: false
+                    ?: false
             // FixMe: also see very strange behavior of Kotlin in tests (disabled)
         }
 }
