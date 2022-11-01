@@ -2133,4 +2133,151 @@ class IndentationRuleTest {
                 extendedIndentBeforeDot = TRUE))
         fun `case 2`() = Unit
     }
+
+    @Nested
+    @TestMethodOrder(NaturalDisplayName::class)
+    inner class `Comments inside binary expressions` {
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = functionCall()
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 1`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = functionCall() as Int?
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 2`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = null as Int?
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 3`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = 42 as Int?
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 4`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = functionCall()
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 5`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = functionCall() as Boolean?
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 6`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = null as Boolean?
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 7`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = true as Boolean?
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 8`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return functionCall()
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 9`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return functionCall() as String?
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 10`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return null as String?
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 11`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return "return value" as String?
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "unreachable code"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 12`() = Unit
+    }
 }
