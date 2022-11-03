@@ -3,13 +3,13 @@ package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -100,7 +100,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val kdocBeforeClass = node
             ?.parent({ it.elementType == CLASS })
             ?.findChildByType(KDOC) ?: return
-        checkDuplicateProperties(kdocBeforeClass)
+        hasDuplicateProperties(kdocBeforeClass)
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY }
@@ -271,16 +271,16 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
     }
 
-    private fun checkDuplicateProperties(kdoc: ASTNode): Boolean {
+    private fun hasDuplicateProperties(kdoc: ASTNode): Boolean {
         val propertiesAndParams = kdoc.kDocTags()
-            .filter { it.knownTag == KDocKnownTag.PROPERTY ||  it.knownTag == KDocKnownTag.PARAM}
-        val traversedNodes = mutableSetOf<String?>()
+            .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
+        val traversedNodes: MutableSet<String?> = mutableSetOf()
         propertiesAndParams.forEach { property ->
             if (!traversedNodes.add(property.getSubjectName())) {
                 KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, kdoc)
             }
         }
-        return propertiesAndParams.size != propertiesAndParams.distinct().count();
+        return propertiesAndParams.size != propertiesAndParams.distinct().count()
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -355,7 +355,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // children of modifier list
         val kdoc = node.getFirstChildWithType(KDOC) ?: node.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(KDOC)
         kdoc?.let {
-            checkDuplicateProperties(kdoc)
+            hasDuplicateProperties(kdoc)
         }
         val name = node.getIdentifierName()
         val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
