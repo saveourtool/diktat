@@ -634,7 +634,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    //
                 |}
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} field2"),
+            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
 
