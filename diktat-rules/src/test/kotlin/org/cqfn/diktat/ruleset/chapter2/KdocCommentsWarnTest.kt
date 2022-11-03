@@ -634,7 +634,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    //
                 |}
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} field2"),
+            LintError(4, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} field2"),
         )
     }
 
@@ -654,7 +654,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} field2"),
+            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field2"),
         )
     }
 
@@ -673,7 +673,29 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} field2"),
+            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
+        )
+    }
+
+
+    @Test
+    fun `should warn if there are duplicate tags 4`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1
+                | * @property field1
+                | * @property field2
+                | * @param field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(3, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field1"),
+            LintError(5, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
 }

@@ -100,6 +100,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val kdocBeforeClass = node
             ?.parent({ it.elementType == CLASS })
             ?.findChildByType(KDOC) ?: return
+        checkDuplicateProperties(kdocBeforeClass)
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY }
@@ -268,6 +269,18 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 insertTextInKdoc(kdocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
             }
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
+    }
+
+    private fun checkDuplicateProperties(kdoc: ASTNode): Boolean {
+        val propertiesAndParams = kdoc.kDocTags()
+            .filter { it.knownTag == KDocKnownTag.PROPERTY ||  it.knownTag == KDocKnownTag.PARAM}
+        val traversedNodes = mutableSetOf<String?>()
+        propertiesAndParams.forEach { property ->
+            if (!traversedNodes.add(property.getSubjectName())) {
+                KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, kdoc)
+            }
+        }
+        return propertiesAndParams.size != propertiesAndParams.distinct().count();
     }
 
     @Suppress("UnsafeCallOnNullableType")
