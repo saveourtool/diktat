@@ -100,7 +100,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val kdocBeforeClass = node
             ?.parent({ it.elementType == CLASS })
             ?.findChildByType(KDOC) ?: return
-        hasDuplicateProperties(kdocBeforeClass)
+
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY }
