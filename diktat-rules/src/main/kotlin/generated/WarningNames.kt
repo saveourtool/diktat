@@ -90,6 +90,8 @@ public object WarningNames {
 
     public const val KDOC_EXTRA_PROPERTY: String = "KDOC_EXTRA_PROPERTY"
 
+    public const val KDOC_DUPLICATE_PROPERTY: String = "KDOC_DUPLICATE_PROPERTY"
+
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
             "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
 
