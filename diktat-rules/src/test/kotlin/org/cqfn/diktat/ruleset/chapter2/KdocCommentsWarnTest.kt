@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
 
