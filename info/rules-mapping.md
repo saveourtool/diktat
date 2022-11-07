@@ -28,6 +28,7 @@
 | KDOC_NO_CONSTRUCTOR_PROPERTY | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes | Comments |
 | KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes | Comments |
 | KDOC_EXTRA_PROPERTY | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | no | Comments |
+| KDOC_DUPLICATE_PROPERTY | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | no | Comments |
 | KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes | Comments |
 | KDOC_WITHOUT_PARAM_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes | Comments |
 | KDOC_WITHOUT_RETURN_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes | Comments |
