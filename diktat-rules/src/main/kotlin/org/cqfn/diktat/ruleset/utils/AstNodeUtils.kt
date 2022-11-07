@@ -20,11 +20,15 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.DOT
+import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -36,13 +40,17 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.OROR
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
@@ -50,6 +58,7 @@ import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -823,6 +832,70 @@ fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
     }
     return node
 }
+
+/**
+ * @return whether this node is a dot (`.`, `.?`) before a function call or a
+ *   property reference.
+ * @since 1.2.4
+ */
+fun ASTNode.isDotBeforeCallOrReference(): Boolean =
+    elementType in sequenceOf(DOT, SAFE_ACCESS) &&
+            treeNext.elementType in sequenceOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
+
+/**
+ * @return whether this node is an _Elvis_ operation reference (i.e. an
+ *   [OPERATION_REFERENCE] which holds [ELVIS] is its only child).
+ * @see OPERATION_REFERENCE
+ * @see ELVIS
+ * @since 1.2.4
+ */
+fun ASTNode.isElvisOperationReference(): Boolean =
+    treeParent.elementType == BINARY_EXPRESSION &&
+            elementType == OPERATION_REFERENCE &&
+            run {
+                val children = children().toList()
+                children.size == 1 && children[0].elementType == ELVIS
+            }
+
+/**
+ * @return whether this node is a whitespace or a comment.
+ * @since 1.2.4
+ */
+fun ASTNode.isWhiteSpaceOrComment(): Boolean =
+    isWhiteSpace() || elementType in commentType
+
+/**
+ * @return whether this node is a boolean expression (i.e. a [BINARY_EXPRESSION]
+ *   holding an [OPERATION_REFERENCE] which, in turn, holds either [ANDAND] or
+ *   [OROR] is its only child).
+ * @see BINARY_EXPRESSION
+ * @see OPERATION_REFERENCE
+ * @see ANDAND
+ * @see OROR
+ * @since 1.2.4
+ */
+@Suppress(
+    "MAGIC_NUMBER",
+    "MagicNumber",
+)
+fun ASTNode.isBooleanExpression(): Boolean =
+    elementType == BINARY_EXPRESSION && run {
+        val operationAndArgs = children().filterNot(ASTNode::isWhiteSpaceOrComment).toList()
+        operationAndArgs.size == 3 && run {
+            val operationReference = operationAndArgs[1]
+            operationReference.elementType == OPERATION_REFERENCE && run {
+                val operations = operationReference.children().toList()
+                operations.size == 1 && operations[0].elementType in sequenceOf(ANDAND, OROR)
+            }
+        }
+    }
+
+/**
+ * @return whether this PSI element is a long string template entry.
+ * @since 1.2.4
+ */
+fun PsiElement.isLongStringTemplateEntry(): Boolean =
+    node.elementType == LONG_STRING_TEMPLATE_ENTRY
 
 private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
     var shouldContinue = true
