@@ -225,7 +225,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
                     it.isLocal &&
                             it.hasInitializer() &&
                             it.name?.equals(getReferencedName())
-                                ?: false
+                            ?: false
                 }
         }
 
