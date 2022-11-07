@@ -109,12 +109,15 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         yield(resolveConfigFileFromSystemProperty())
     }
 
-    @Suppress(
-        "LongMethod",
-        "TOO_LONG_FUNCTION",
-        "OVERRIDE_DEPRECATION",
-    )
-    override fun get(): RuleSet {
+    /**
+     * As of _KtLint_ **0.47**, each rule is expected to have a state and is executed
+     * twice per file, and a new `Rule` instance is created per each file checked.
+     *
+     * Diktat rules have no mutable state yet and use the deprecated _KtLint_
+     * API, so we initialize them only _once_ for performance reasons and also
+     * to avoid redundant logging.
+     */
+    private val ruleSet: RuleSet by lazy {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
                 " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
@@ -226,11 +229,17 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             .map {
                 it.invoke(configRules)
             }
-        return RuleSet(
+        RuleSet(
             DIKTAT_RULE_SET_ID,
             rules = rules.toTypedArray()
         ).ordered()
     }
+
+    @Deprecated(
+        "Marked for removal in KtLint 0.48. See changelog or KDoc for more information.",
+    )
+    override fun get(): RuleSet =
+        ruleSet
 
     private fun validate(config: RulesConfig) =
         require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
