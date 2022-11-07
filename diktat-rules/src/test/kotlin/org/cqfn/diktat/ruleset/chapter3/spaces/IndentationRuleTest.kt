@@ -2133,4 +2133,349 @@ class IndentationRuleTest {
                 extendedIndentBeforeDot = TRUE))
         fun `case 2`() = Unit
     }
+
+    @Nested
+    @TestMethodOrder(NaturalDisplayName::class)
+    inner class `Comments inside binary expressions` {
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = functionCall()
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 1`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = functionCall() as Int?
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 2`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = null as Int?
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 3`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Int = 42 as Int?
+                    // This is a comment
+                    ?: 42
+                """),
+            singleConfiguration = true)
+        fun `case 4`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = functionCall()
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 5`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = functionCall() as Boolean?
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 6`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = null as Boolean?
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 7`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val x: Boolean = true as Boolean?
+                    /*
+                     * This is a block comment
+                     */
+                    ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 8`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return functionCall()
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 9`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return functionCall() as String?
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 10`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return null as String?
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 11`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): String {
+                    return "return value" as String?
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "default value"
+                        // This is a comment
+                        // This is the 2nd line of the comment
+                        ?: "unreachable code"
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 12`() = Unit
+    }
+
+    @Nested
+    @TestMethodOrder(NaturalDisplayName::class)
+    inner class `Multi-line Elvis expressions` {
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisExpressionInsideBinaryExpressionA = true &&
+                        ""
+                            ?.trim()
+                            ?.trim()
+                            ?.trim()
+                            ?.isEmpty()
+                        ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 1`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisExpressionInsideBinaryExpressionB = false ||
+                        ""
+                            .trim()
+                            .trim()
+                            .trim()
+                            .isEmpty()
+                        ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 2`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisExpressionInsideBinaryExpressionC = true &&
+                        null as Boolean?
+                        ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 3`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisExpressionInsideBinaryExpressionD = false ||
+                        (null as Boolean?)
+                        ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 4`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisExpressionInsideBinaryExpressionE = true &&
+                        (42 as? Boolean)
+                        ?: true
+                """),
+            singleConfiguration = true)
+        fun `case 5`() = Unit
+
+        /**
+         * _Elvis_ after a _safe-access_ expression should have the same
+         * indentation level as the previous function calls.
+         */
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisAfterSafeAccess = ""
+                    ?.trim()
+                    ?.trim()
+                    ?.trim()
+                    ?.isEmpty()
+                    ?: ""
+                """),
+            singleConfiguration = true)
+        fun `case 6`() = Unit
+
+        /**
+         * _Elvis_ after a _dot-qualified_ expression should have the same
+         * indentation level as the previous function calls.
+         */
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                val elvisAfterDotQualified = ""
+                    .trim()
+                    .trim()
+                    .trim()
+                    .isEmpty()
+                    ?: ""
+                """),
+            singleConfiguration = true)
+        fun `case 7`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): Boolean {
+                    return list.getChildren(null)
+                        .none { it.elementType in badModifiers } &&
+                            classBody?.getAllChildrenWithType(FUN)
+                                ?.isEmpty()
+                            ?: false &&
+                            getFirstChildWithType(SUPER_TYPE_LIST) == null
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 8`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): Boolean {
+                    return classBody?.getFirstChildWithType(FUN) == null &&
+                            getFirstChildWithType(SUPER_TYPE_LIST) == null &&
+                            // if there is any prop with logic in accessor then don't recommend to convert class to data class
+                            classBody?.let(::areGoodProps)
+                            ?: true
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 9`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): Boolean {
+                    return block.getChildrenOfType<KtProperty>()
+                        .any { it.nameAsName == property.nameAsName && expression.node.isGoingAfter(it.node) } ||
+                            block.parent
+                                .let { it as? KtFunctionLiteral }
+                                ?.valueParameters
+                                ?.any { it.nameAsName == property.nameAsName }
+                            ?: false
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 10`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): Boolean {
+                    return blockExpression
+                        .statements
+                        .takeWhile { !it.isAncestor(this, true) }
+                        .mapNotNull { it as? KtProperty }
+                        .find {
+                            it.isLocal &&
+                                    it.hasInitializer() &&
+                                    it.name?.equals(getReferencedName())
+                                    ?: false
+                        }
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 11`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): Any {
+                    return siblings(forward = true, withItself = false)
+                        .filterNot { it.node.isPartOfComment() || it is PsiWhiteSpace }
+                        .takeWhile {
+                            // statements like `name.field = value` where name == propertyName
+                            it is KtBinaryExpression && it.node.findChildByType(OPERATION_REFERENCE)?.findChildByType(EQ) != null &&
+                                    (it.left as? KtDotQualifiedExpression)?.run {
+                                        (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
+                                    }
+                                    ?: false
+                        }
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 12`() = Unit
+
+        @IndentationTest(
+            IndentedSourceCode(
+                """
+                fun f(): Any {
+                    return blockExpression
+                        .statements
+                        .takeWhile { !it.isAncestor(this, true) }
+                        .mapNotNull { it as? KtProperty }
+                        .find {
+                            it.isLocal &&
+                                    it.hasInitializer() &&
+                                    it.name?.equals(getReferencedName())
+                                    ?: false
+                        }
+                }
+                """),
+            singleConfiguration = true)
+        fun `case 13`() = Unit
+    }
 }
