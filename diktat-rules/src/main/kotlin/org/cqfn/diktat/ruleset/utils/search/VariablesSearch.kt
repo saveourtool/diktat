@@ -65,9 +65,9 @@ abstract class VariablesSearch(val node: ASTNode,
         .let { declarationScope ->
             // searching in the scope with declaration (in the context)
             declarationScope?.getAllSearchResults(this)
-                // searching on the class level in class body
+            // searching on the class level in class body
                 ?: (this.getParentOfType<KtClassBody>(true)?.getAllSearchResults(this))
-                // searching on the file level
+            // searching on the file level
                 ?: (this.getParentOfType<KtFile>(true)!!.getAllSearchResults(this))
         }
 

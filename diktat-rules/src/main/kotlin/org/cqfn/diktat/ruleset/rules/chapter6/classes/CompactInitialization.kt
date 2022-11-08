@@ -72,7 +72,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                             (it.left as? KtDotQualifiedExpression)?.run {
                                 (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
                             }
-                            ?: false
+                                ?: false
                 }
                 .map {
                     // collect as an assignment associated with assigned field name

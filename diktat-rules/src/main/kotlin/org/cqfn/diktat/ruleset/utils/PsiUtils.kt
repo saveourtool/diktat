@@ -67,7 +67,7 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
                 it.isLocal &&
                         it.hasInitializer() &&
                         it.name?.equals(getReferencedName())
-                        ?: false
+                            ?: false
             }
     }
     .firstOrNull()
