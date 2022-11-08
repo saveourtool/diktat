@@ -271,7 +271,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
     }
 
-    private fun hasDuplicateProperties(kdoc: ASTNode): Boolean {
+    private fun checkDuplicateProperties(kdoc: ASTNode) {
         val propertiesAndParams = kdoc.kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
         val traversedNodes: MutableSet<String?> = mutableSetOf()
@@ -280,7 +280,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, kdoc)
             }
         }
-        return propertiesAndParams.size != propertiesAndParams.distinct().count()
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -355,7 +354,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // children of modifier list
         val kdoc = node.getFirstChildWithType(KDOC) ?: node.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(KDOC)
         kdoc?.let {
-            hasDuplicateProperties(kdoc)
+            checkDuplicateProperties(kdoc)
         }
         val name = node.getIdentifierName()
         val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {

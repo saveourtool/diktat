@@ -452,7 +452,7 @@
   enabled: true
 # There's a property in KDoc which is already present
 - name: KDOC_DUPLICATE_PROPERTY
-  enabled: false
+  enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
   enabled: true
