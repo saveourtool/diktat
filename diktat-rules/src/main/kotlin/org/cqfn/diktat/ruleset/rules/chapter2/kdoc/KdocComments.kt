@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
@@ -54,7 +55,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL,
+        KDOC_DUPLICATE_PROPERTY
+    )
 ) {
     private val config by lazy { configRules.getCommonConfiguration() }
 
@@ -97,6 +100,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val kdocBeforeClass = node
             ?.parent({ it.elementType == CLASS })
             ?.findChildByType(KDOC) ?: return
+
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY }
@@ -267,6 +271,17 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
     }
 
+    private fun checkDuplicateProperties(kdoc: ASTNode) {
+        val propertiesAndParams = kdoc.kDocTags()
+            .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
+        val traversedNodes: MutableSet<String?> = mutableSetOf()
+        propertiesAndParams.forEach { property ->
+            if (!traversedNodes.add(property.getSubjectName())) {
+                KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, kdoc)
+            }
+        }
+    }
+
     @Suppress("UnsafeCallOnNullableType")
     private fun insertTextInKdoc(kdocBeforeClass: ASTNode, insertText: String) {
         val allKdocText = kdocBeforeClass.text
@@ -338,7 +353,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // if there is an annotation before function, AST is a bit more complex, so we need to look for Kdoc among
         // children of modifier list
         val kdoc = node.getFirstChildWithType(KDOC) ?: node.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(KDOC)
-
+        kdoc?.let {
+            checkDuplicateProperties(kdoc)
+        }
         val name = node.getIdentifierName()
         val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
             isAccessibleOutside() && this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) != true

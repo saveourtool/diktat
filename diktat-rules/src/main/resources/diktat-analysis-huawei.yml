@@ -449,6 +449,9 @@
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true
+# There's a property in KDoc which is already present
+- name: KDOC_DUPLICATE_PROPERTY
+  enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
   enabled: true

@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
 
@@ -617,6 +619,82 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 | */
                 |actual fun foo() { }
             """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should warn if there are duplicate tags 1`() {
+        lintMethod(
+            """
+                |/**
+                | * @param field1 description1
+                | * @param field2 description2
+                | * @param field2
+                | */
+                |fun foo(field1: Long, field2: Int) {
+                |    //
+                |}
+            """.trimMargin(),
+            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
+        )
+    }
+
+    @Test
+    fun `should warn if there are duplicate tags 2`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1
+                | * @property field2
+                | * @property field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field2"),
+        )
+    }
+
+    @Test
+    fun `should warn if there are duplicate tags 3`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1
+                | * @property field2
+                | * @param field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
+        )
+    }
+
+    @Test
+    fun `should warn if there are duplicate tags 4`() {
+        lintMethod(
+            """
+                |/**
+                | * @property field1
+                | * @property field1
+                | * @property field2
+                | * @param field2
+                | */
+                |@Serializable
+                |data class DataClass(
+                |    val field1: String,
+                |    val field2: String,
+                |)
+            """.trimMargin(),
+            LintError(3, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field1"),
+            LintError(5, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
 }
