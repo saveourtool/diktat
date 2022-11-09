@@ -108,16 +108,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         yield(resolveConfigFileFromJarLocation())
         yield(resolveConfigFileFromSystemProperty())
     }
-
-    /**
-     * As of _KtLint_ **0.47**, each rule is expected to have a state and is executed
-     * twice per file, and a new `Rule` instance is created per each file checked.
-     *
-     * Diktat rules have no mutable state yet and use the deprecated _KtLint_
-     * API, so we initialize them only _once_ for performance reasons and also
-     * to avoid redundant logging.
-     */
-    private val ruleSet: RuleSet by lazy {
+    private val configRules: List<RulesConfig> by lazy {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
                 " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
@@ -137,10 +128,20 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 diktatConfigFile
             }
 
-        val configRules = RulesConfigReader(javaClass.classLoader)
+        RulesConfigReader(javaClass.classLoader)
             .readResource(diktatConfigFile)
             ?.onEach(::validate)
             ?: emptyList()
+    }
+
+    @Suppress(
+        "LongMethod",
+        "TOO_LONG_FUNCTION",
+    )
+    @Deprecated(
+        "Marked for removal in KtLint 0.48. See changelog or KDoc for more information.",
+    )
+    override fun get(): RuleSet {
         // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
@@ -229,17 +230,11 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             .map {
                 it.invoke(configRules)
             }
-        RuleSet(
+        return RuleSet(
             DIKTAT_RULE_SET_ID,
             rules = rules.toTypedArray()
         ).ordered()
     }
-
-    @Deprecated(
-        "Marked for removal in KtLint 0.48. See changelog or KDoc for more information.",
-    )
-    override fun get(): RuleSet =
-        ruleSet
 
     private fun validate(config: RulesConfig) =
         require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {

@@ -18,7 +18,6 @@ import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 
@@ -84,7 +83,6 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    @OptIn(ExperimentalSerializationApi::class)
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
         yamlSerializer.decodeFromString<List<RulesConfig>>(stream.readLines().joinToString(separator = "\n")).reversed().distinctBy { it.name }
     }
@@ -99,19 +97,16 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     override fun getConfigFile(resourceFileName: String): BufferedReader? {
         val resourceFile = File(resourceFileName)
         return if (resourceFile.exists()) {
-            log.debug("Using diktat-analysis.yml file from the following path: ${resourceFile.absolutePath}")
+            log.debug("Using $DIKTAT_ANALYSIS_CONF file from the following path: ${resourceFile.absolutePath}")
             File(resourceFileName).bufferedReader()
         } else {
-            log.debug("Using the default diktat-analysis.yml file from the class path")
+            log.debug("Using the default $DIKTAT_ANALYSIS_CONF file from the class path")
             classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
         }
     }
 
     companion object {
-        /**
-         * A [Logger] that can be used
-         */
-        val log: KLogger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
+        internal val log: KLogger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
     }
 }
 
