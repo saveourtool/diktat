@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
 /**
- * This is a wrapper around Ktlint Rule
+ * This is a wrapper around _KtLint_ `Rule`.
  *
  * @param id id of the rule
  * @property configRules all rules from configuration
@@ -33,7 +33,17 @@ abstract class DiktatRule(
     var isFixMode: Boolean = false
 
     /**
-     * Will be initialized in visit
+     * The **file-specific** error emitter, initialized in
+     * [beforeVisitChildNodes] and used in [logic] implementations.
+     *
+     * Since the file is indirectly a part of the state of a `Rule`, the same
+     * `Rule` instance should **never be re-used** to check more than a single
+     * file, or confusing effects (incl. race conditions) will occur.
+     * See the documentation of the [Rule] class for more details.
+     *
+     * @see Rule
+     * @see beforeVisitChildNodes
+     * @see logic
      */
     lateinit var emitWarn: EmitType
 
