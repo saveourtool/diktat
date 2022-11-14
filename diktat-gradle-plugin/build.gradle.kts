@@ -34,7 +34,7 @@ val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as S
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation("io.github.detekt.sarif4k:sarif4k:0.0.1")
+    implementation("io.github.detekt.sarif4k:sarif4k:0.2.0")
 
     implementation("org.cqfn.diktat:diktat-common:$diktatVersion") {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
