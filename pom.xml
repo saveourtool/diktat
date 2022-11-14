@@ -57,7 +57,7 @@
         <detekt.version>1.21.0.1</detekt.version>
         <dokka.version>1.7.20</dokka.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
+        <maven-plugin-tools.version>3.7.0</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
         <mu-logging.version>3.0.4</mu-logging.version>
         <log4j.version>2.19.0</log4j.version>
@@ -171,7 +171,7 @@
             <dependency>
                 <groupId>com.charleskorn.kaml</groupId>
                 <artifactId>kaml-jvm</artifactId>
-                <version>0.47.0</version>
+                <version>0.49.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
