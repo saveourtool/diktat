@@ -51,7 +51,7 @@ internal fun applyToCode(code: String,
             text = code,
             ruleSets = listOf(
                 RuleSet("test", object : Rule("astnode-utils-test") {
-                    override fun beforeVisitChildNodes(node: ASTNode,
+                    override fun visit(node: ASTNode,
                                                        autoCorrect: Boolean,
                                                        emit: EmitType
                     ) {
