@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>diktat</artifactId>
-    <description>This module builds jar that can be used to run diktat using ktlint -R via command line</description>
+    <description>This module builds jar that can be used to run diktat using java -jar via command line</description>
 
     <parent>
         <groupId>org.cqfn.diktat</groupId>

@@ -8,7 +8,7 @@
     <version>1.2.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>diktat</name>
+    <name>diktat-parent</name>
     <description>diKTat kotlin formatter and fixer</description>
     <url>https://www.cqfn.org/diKTat/</url>
 
@@ -67,7 +67,7 @@
         <module>diktat-common</module>
         <module>diktat-rules</module>
         <module>diktat-test-framework</module>
-        <module>diktat-ruleset</module>
+        <module>diktat</module>
         <module>diktat-maven-plugin</module>
         <module>diktat-gradle-plugin</module>
     </modules>
