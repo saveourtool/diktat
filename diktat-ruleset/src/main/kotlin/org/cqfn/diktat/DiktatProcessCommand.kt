@@ -65,11 +65,33 @@ class DiktatProcessCommand private constructor(
         var callback: DiktatCallback? = null,
         var isScript: Boolean? = null,
     ) {
+        /**
+         * @param file
+         * @return updated builder
+         */
         fun file(file: File) = apply { this.file = file }
+
+        /**
+         * @param fileContent
+         * @return updated builder
+         */
         fun fileContent(fileContent: String) = apply { this.fileContent = fileContent }
+
+        /**
+         * @param callback
+         * @return updated builder
+         */
         fun callback(callback: DiktatCallback) = apply { this.callback = callback }
+
+        /**
+         * @param isScript
+         * @return updated builder
+         */
         fun isScript(isScript: Boolean) = apply { this.isScript = isScript }
 
+        /**
+         * @return built [DiktatProcessCommand]
+         */
         fun build() = DiktatProcessCommand(
             requireNotNull(file),
             requireNotNull(fileContent),
