@@ -4,13 +4,13 @@
 
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.DiktatProcessCommand
+import org.cqfn.diktat.api.DiktatError
+import org.cqfn.diktat.ktlint.unwrap
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
-import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.api.Baseline
 import com.pinterest.ktlint.core.api.Baseline.Status.VALID
 import com.pinterest.ktlint.core.api.containsLintError
@@ -98,9 +98,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private lateinit var mavenSession: MavenSession
 
     /**
-     * @param params instance of [KtLint.ExperimentalParams] used in analysis
+     * @param command instance of [DiktatProcessCommand] used in analysis
      */
-    abstract fun runAction(params: KtLint.ExperimentalParams)
+    abstract fun runAction(command: DiktatProcessCommand)
 
     /**
      * Perform code check using diktat ruleset
@@ -117,9 +117,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
-        val ruleSets by lazy {
-            listOf(DiktatRuleSetProvider(configFile).get())
-        }
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: Baseline(status = VALID)
         reporterImpl = resolveReporter(baselineResults)
@@ -129,7 +126,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         inputs
             .map(::File)
             .forEach {
-                checkDirectory(it, lintErrors, baselineResults.lintErrorsPerFile, ruleSets)
+                checkDirectory(it, lintErrors, baselineResults.lintErrorsPerFile)
             }
 
         reporterImpl.afterAll()
@@ -201,8 +198,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private fun checkDirectory(
         directory: File,
         lintErrors: MutableList<LintError>,
-        baselineRules: Map<String, List<LintError>>,
-        ruleSets: Iterable<RuleSet>
+        baselineRules: Map<String, List<LintError>>
     ) {
         val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
         directory
@@ -222,8 +218,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                         baselineRules.getOrDefault(
                             file.relativeTo(mavenProject.basedir.parentFile).invariantSeparatorsPath,
                             emptyList()
-                        ),
-                        ruleSets
+                        )
                     )
                     reporterImpl.after(file.absolutePath)
                 } catch (e: RuleExecutionException) {
@@ -233,26 +228,23 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
     }
 
-    private fun checkFile(file: File,
-                          lintErrors: MutableList<LintError>,
-                          baselineErrors: List<LintError>,
-                          ruleSets: Iterable<RuleSet>
+    private fun checkFile(
+        file: File,
+        lintErrors: MutableList<LintError>,
+        baselineErrors: List<LintError>
     ) {
-        val text = file.readText()
-        val params =
-            KtLint.ExperimentalParams(
-                fileName = file.absolutePath,
-                text = text,
-                ruleSets = ruleSets,
-                script = file.extension.equals("kts", ignoreCase = true),
-                cb = { lintError, isCorrected ->
-                    if (!baselineErrors.containsLintError(lintError)) {
-                        reporterImpl.onLintError(file.absolutePath, lintError, isCorrected)
-                        lintErrors.add(lintError)
-                    }
-                },
-                debug = debug
-            )
-        runAction(params)
+        val command = DiktatProcessCommand.Builder()
+            .file(file)
+            .fileContent(file.readText(Charsets.UTF_8))
+            .isScript(file.extension.equals("kts", ignoreCase = true))
+            .callback { error: DiktatError, isCorrected: Boolean ->
+                val ktlintError = error.unwrap()
+                if (!baselineErrors.containsLintError(ktlintError)) {
+                    reporterImpl.onLintError(file.absolutePath, ktlintError, isCorrected)
+                    lintErrors.add(ktlintError)
+                }
+            }
+            .build()
+        runAction(command)
     }
 }
