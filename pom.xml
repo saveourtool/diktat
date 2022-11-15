@@ -369,16 +369,51 @@
                     <version>${kotlin.version}</version>
                     <configuration>
                         <jvmTarget>1.8</jvmTarget>
-                        <sourceDirs>
-                            <source>src/main/kotlin</source>
-                            <source>src/main/resources</source>
-                        </sourceDirs>
                         <args>
                             <arg>-Werror</arg>
                             <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>
                     <inherited>true</inherited>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <source>src/main/kotlin</source>
+                                    <source>src/main/resources</source>
+                                    <source>src/main/resources</source>
+                                </sourceDirs>
+                                <compilerPlugins>
+                                    <plugin>kotlinx-serialization</plugin>
+                                </compilerPlugins>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <phase>process-test-sources</phase>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <source>src/test/java</source>
+                                    <source>src/test/kotlin</source>
+                                </sourceDirs>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-serialization</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
