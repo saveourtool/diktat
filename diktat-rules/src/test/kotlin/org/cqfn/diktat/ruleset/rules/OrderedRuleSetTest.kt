@@ -135,16 +135,11 @@ class OrderedRuleSetTest {
          *            V
          * C(File) -> C(Node) -> C(Leaf)
          */
-        val expectedRuleInvocationOrder = rules.asSequence()
-            .map(Rule::id)
-            .let { ruleIds ->
-                generateSequence { ruleIds.toList() }
-                    .take(astNodeCount)
-                    .flatMap { it }
-            }
-//            .flatMap { ruleId ->
-//                generateSequence { ruleId }.take(astNodeCount)
-//            }
+        val expectedRuleInvocationOrder = generateSequence {
+            rules.map(Rule::id)
+        }
+            .take(astNodeCount)
+            .flatten()
             .toList()
 
         assertThat(actualRuleInvocationOrder)
