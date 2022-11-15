@@ -34,7 +34,7 @@ class DiktatFixMojo : DiktatBaseMojo() {
      * @param command instance of [DiktatProcessCommand] used in analysis
      */
     override fun runAction(command: DiktatProcessCommand) {
-        val fileName = command.file.name
+        val fileName = command.file.absolutePath
         val fileContent = command.fileContent
         val formattedText = command.fix()
         if (fileContent != formattedText) {
