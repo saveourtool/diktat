@@ -33,6 +33,7 @@ class DiktatProcessCommand private constructor(
         KtLint.lint(ktLintParams())
     }
 
+    @Suppress("DEPRECATION")
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
         fileName = file.absolutePath,
         text = fileContent,
