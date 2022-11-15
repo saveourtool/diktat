@@ -51,9 +51,10 @@ internal fun applyToCode(code: String,
             text = code,
             ruleSets = listOf(
                 RuleSet("test", object : Rule("astnode-utils-test") {
-                    override fun visit(node: ASTNode,
-                                                       autoCorrect: Boolean,
-                                                       emit: EmitType
+                    override fun visit(
+                        node: ASTNode,
+                        autoCorrect: Boolean,
+                        emit: EmitType
                     ) {
                         applyToNode(node, counter)
                     }
