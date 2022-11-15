@@ -110,9 +110,6 @@
                                 <source>src/main/kotlin</source>
                                 <source>src/main/resources</source>
                             </sourceDirs>
-                            <compilerPlugins>
-                                <plugin>kotlinx-serialization</plugin>
-                            </compilerPlugins>
                         </configuration>
                     </execution>
                     <execution>
