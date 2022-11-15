@@ -92,6 +92,17 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             project.logger.info("Setting system property for diktat config to $it")
         })
         args = additionalFlags.toMutableList().apply {
+            /*
+             * Disable the standard rules via the command line.
+             */
+            run {
+                val ktlintRuleSetIds = sequenceOf("standard", "experimental", "test", "custom")
+                ktlintRuleSetIds.joinToString(
+                    prefix = "--disabled_rules=",
+                    separator = ","
+                )
+            }.let(::add)
+
             if (diktatExtension.debug) {
                 add("--debug")
             }
