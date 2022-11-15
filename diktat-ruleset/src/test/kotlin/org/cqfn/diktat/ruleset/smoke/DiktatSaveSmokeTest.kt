@@ -138,7 +138,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
         private const val BUILD_DIRECTORY = "target"
         private const val FAT_JAR_GLOB = "diktat-*.jar"
-        private const val KTLINT_VERSION = "0.47.1"
+        private const val KTLINT_VERSION = "0.46.1"
         private const val SAVE_VERSION: String = "0.3.4"
         private val baseDirectoryPath = Path(BASE_DIRECTORY).absolute()
 
