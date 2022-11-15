@@ -19,6 +19,7 @@
             <version>${project.version}</version>
             <exclusions>
                 <!-- Kotlin runtime & libraries will be provided by ktlint executable -->
+                <!-- FIXME: should be removed after making diktat.jar as executable -->
                 <exclusion>
                     <groupId>org.jetbrains.kotlin</groupId>
                     <artifactId>kotlin-stdlib-common</artifactId>
@@ -47,27 +48,27 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-common</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk7</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-compiler-embeddable</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
