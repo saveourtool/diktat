@@ -8,7 +8,6 @@ import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.api.EditorConfigProperties
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -81,16 +80,6 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
             val rule: Rule,
             prevRule: Rule
         ) : Rule(rule.id.qualifiedWithRuleSetId(ruleSetId), adjustVisitorModifiers(ruleSetId, rule, prevRule)) {
-            override fun beforeFirstNode(editorConfigProperties: EditorConfigProperties) =
-                rule.beforeFirstNode(editorConfigProperties)
-
-            override fun beforeVisitChildNodes(
-                node: ASTNode,
-                autoCorrect: Boolean,
-                emit: EmitType,
-            ) =
-                rule.beforeVisitChildNodes(node, autoCorrect, emit)
-
             @Deprecated(
                 "Marked for deletion in ktlint 0.48.0",
                 replaceWith = ReplaceWith("beforeVisitChildNodes(node, autoCorrect, emit)"),
@@ -101,16 +90,6 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
                 emit: EmitType,
             ) =
                 rule.visit(node, autoCorrect, emit)
-
-            override fun afterVisitChildNodes(
-                node: ASTNode,
-                autoCorrect: Boolean,
-                emit: EmitType,
-            ) =
-                rule.afterVisitChildNodes(node, autoCorrect, emit)
-
-            override fun afterLastNode() =
-                rule.afterLastNode()
         }
     }
 }

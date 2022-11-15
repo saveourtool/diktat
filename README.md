@@ -53,7 +53,7 @@ Main features of diktat are the following:
    ```shell
    # another option is "brew install ktlint"
 
-   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.47.1/ktlint && chmod a+x ktlint
+   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint && chmod a+x ktlint
    ```
 
 1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.4/diktat-1.2.4.jar)
