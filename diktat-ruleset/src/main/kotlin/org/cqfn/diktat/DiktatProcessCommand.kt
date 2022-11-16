@@ -12,6 +12,9 @@ import kotlin.io.path.absolutePathString
 
 /**
  * Command to run `diktat`
+ *
+ * @property file
+ * @property fileContent
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
@@ -25,9 +28,7 @@ class DiktatProcessCommand private constructor(
      *
      * @return result of `diktat fix`
      */
-    fun fix(): String {
-        return KtLint.format(ktLintParams())
-    }
+    fun fix(): String = KtLint.format(ktLintParams())
 
     /**
      * Run `diktat check` using parameters from current command
@@ -59,6 +60,7 @@ class DiktatProcessCommand private constructor(
      * @property fileContent
      * @property callback
      * @property isScript
+     * @property logLevel
      */
     data class Builder(
         var file: Path? = null,

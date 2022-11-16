@@ -20,7 +20,7 @@ interface DiktatError {
     fun getRuleId(): String
 
     /**
-     * error message
+     * @return error message
      */
     fun getDetail(): String
 
