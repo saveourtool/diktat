@@ -98,11 +98,16 @@ import java.io.File
 /**
  * [RuleSetProvider] that provides diKTat ruleset.
  * By default, it is expected to have diktat-analysis.yml configuration in the root folder where 'ktlint' is run
- * otherwise it will use default configuration where some rules are disabled
+ * otherwise it will use default configuration where some rules are disabled.
+ *
+ * The no-argument constructor is used by the Java SPI interface; that's why
+ * it's explicitly annotated with [JvmOverloads].
  *
  * @param diktatConfigFile - configuration file where all configurations for inspections and rules are stored
  */
-class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleSetProvider {
+class DiktatRuleSetProvider
+@JvmOverloads
+constructor(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleSetProvider {
     private val possibleConfigs: Sequence<String?> = sequence {
         yield(resolveDefaultConfig())
         yield(resolveConfigFileFromJarLocation())

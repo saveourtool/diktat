@@ -17,6 +17,7 @@ class DiktatGradlePlugin : Plugin<Project> {
     /**
      * @param project a gradle [Project] that the plugin is applied to
      */
+    @Suppress("TOO_LONG_FUNCTION")
     override fun apply(project: Project) {
         val patternSet = PatternSet()
         val diktatExtension = project.extensions.create(
@@ -31,12 +32,25 @@ class DiktatGradlePlugin : Plugin<Project> {
         val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
             configuration.isVisible = false
             configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
-                exclude(
-                    mutableMapOf(
-                        "group" to "com.pinterest.ktlint",
-                        "module" to "ktlint-ruleset-standard"
-                    )
+                /*
+                 * Prevent the discovery of standard rules by excluding them as
+                 * dependencies.
+                 */
+                val ktlintRuleSets = sequenceOf(
+                    "standard",
+                    "experimental",
+                    "test",
+                    "template"
                 )
+                ktlintRuleSets.forEach { ktlintRuleSet ->
+                    exclude(
+                        mutableMapOf(
+                            "group" to "com.pinterest.ktlint",
+                            "module" to "ktlint-ruleset-$ktlintRuleSet"
+                        )
+                    )
+                }
+
                 attributes {
                     it.attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling::class.java, Bundling.EXTERNAL))
                 }

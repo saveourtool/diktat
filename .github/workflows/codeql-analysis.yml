@@ -7,10 +7,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [master]
+    branches: [ master, feature/ktlint-wrapper ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [master]
+    branches: [ master, feature/ktlint-wrapper ]
   schedule:
     - cron: '0 20 * * 5'
 

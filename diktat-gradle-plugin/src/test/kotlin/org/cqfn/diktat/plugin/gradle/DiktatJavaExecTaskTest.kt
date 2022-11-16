@@ -33,7 +33,12 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line for various inputs`() {
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "main", "kotlin", "Test.kt"), "--reporter=plain")
+            listOf(
+                null,
+                DISABLED_RULES,
+                combinePathParts("src", "main", "kotlin", "Test.kt"),
+                "--reporter=plain"
+            )
         ) {
             inputs { include("src/**/*.kt") }
         }
@@ -42,7 +47,13 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line in debug mode`() {
         assertCommandLineEquals(
-            listOf(null, "--debug", combinePathParts("src", "main", "kotlin", "Test.kt"), "--reporter=plain")
+            listOf(
+                null,
+                DISABLED_RULES,
+                "--debug",
+                combinePathParts("src", "main", "kotlin", "Test.kt"),
+                "--reporter=plain"
+            )
         ) {
             inputs { include("src/**/*.kt") }
             debug = true
@@ -54,7 +65,12 @@ class DiktatJavaExecTaskTest {
         project.file("src/main/kotlin/generated").mkdirs()
         project.file("src/main/kotlin/generated/Generated.kt").createNewFile()
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "main", "kotlin", "Test.kt"), "--reporter=plain")
+            listOf(
+                null,
+                DISABLED_RULES,
+                combinePathParts("src", "main", "kotlin", "Test.kt"),
+                "--reporter=plain"
+            )
         ) {
             inputs {
                 include("src/**/*.kt")
@@ -91,7 +107,11 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line has reporter type and output`() {
         assertCommandLineEquals(
-            listOf(null, "--reporter=json,output=${project.projectDir.resolve("some.txt")}")
+            listOf(
+                null,
+                DISABLED_RULES,
+                "--reporter=json,output=${project.projectDir.resolve("some.txt")}"
+            )
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -103,7 +123,11 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line has reporter type without output`() {
         assertCommandLineEquals(
-            listOf(null, "--reporter=json")
+            listOf(
+                null,
+                DISABLED_RULES,
+                "--reporter=json"
+            )
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -115,7 +139,11 @@ class DiktatJavaExecTaskTest {
     fun `check command line in githubActions mode`() {
         val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
         assertCommandLineEquals(
-            listOf(null, "--reporter=sarif,output=$path")
+            listOf(
+                null,
+                DISABLED_RULES,
+                "--reporter=sarif,output=$path"
+            )
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -132,7 +160,11 @@ class DiktatJavaExecTaskTest {
     fun `githubActions mode should have higher precedence over explicit reporter`() {
         val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
         assertCommandLineEquals(
-            listOf(null, "--reporter=sarif,output=$path")
+            listOf(
+                null,
+                DISABLED_RULES,
+                "--reporter=sarif,output=$path"
+            )
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -145,7 +177,11 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `should set system property with SARIF reporter`() {
         assertCommandLineEquals(
-            listOf(null, "--reporter=sarif")
+            listOf(
+                null,
+                DISABLED_RULES,
+                "--reporter=sarif"
+            )
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -232,5 +268,6 @@ class DiktatJavaExecTaskTest {
 
     companion object {
         private const val DIKTAT_CHECK_TASK = "diktatCheck"
+        private const val DISABLED_RULES = "--disabled_rules=standard,experimental,test,custom"
     }
 }
