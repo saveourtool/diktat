@@ -46,6 +46,7 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlinx.serialization.version>1.4.1</kotlinx.serialization.version>
+        <kotlinx-cli.version>0.3.5</kotlinx-cli.version>
         <ktlint.version>0.47.1</ktlint.version>
         <junit.version>5.9.1</junit.version>
         <junit.platform.version>1.9.1</junit.platform.version>
@@ -131,6 +132,16 @@
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kotlinx-serialization-json-jvm</artifactId>
                 <version>${kotlinx.serialization.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-cli</artifactId>
+                <version>${kotlinx-cli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-cli-jvm</artifactId>
+                <version>${kotlinx-cli.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.pinterest.ktlint</groupId>

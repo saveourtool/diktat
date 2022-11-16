@@ -18,6 +18,10 @@
             <artifactId>diktat-rules</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-cli-jvm</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
