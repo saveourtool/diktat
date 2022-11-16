@@ -8,6 +8,8 @@ import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 
 import org.apache.maven.plugins.annotations.Mojo
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.writeText
 
 /**
  * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
@@ -34,7 +36,7 @@ class DiktatFixMojo : DiktatBaseMojo() {
      * @param command instance of [DiktatProcessCommand] used in analysis
      */
     override fun runAction(command: DiktatProcessCommand) {
-        val fileName = command.file.absolutePath
+        val fileName = command.file.absolutePathString()
         val fileContent = command.fileContent
         val formattedText = command.fix()
         if (fileContent != formattedText) {

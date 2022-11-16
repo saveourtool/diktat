@@ -5,7 +5,7 @@
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.api.DiktatError
+import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.unwrap
 
 import com.pinterest.ktlint.core.LintError
@@ -234,16 +234,19 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         baselineErrors: List<LintError>
     ) {
         val command = DiktatProcessCommand.Builder()
-            .file(file)
+            .file(file.toPath())
             .fileContent(file.readText(Charsets.UTF_8))
             .isScript(file.extension.equals("kts", ignoreCase = true))
-            .callback { error: DiktatError, isCorrected: Boolean ->
-                val ktlintError = error.unwrap()
-                if (!baselineErrors.containsLintError(ktlintError)) {
-                    reporterImpl.onLintError(file.absolutePath, ktlintError, isCorrected)
-                    lintErrors.add(ktlintError)
+            .callback { error, isCorrected ->
+                val ktLintError = error.unwrap()
+                if (!baselineErrors.containsLintError(ktLintError)) {
+                    reporterImpl.onLintError(file.absolutePath, ktLintError, isCorrected)
+                    lintErrors.add(ktLintError)
                 }
             }
+            .logLevel(
+                if (debug) DiktatLogLevel.DEBUG else DiktatLogLevel.INFO
+            )
             .build()
         runAction(command)
     }

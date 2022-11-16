@@ -1,21 +1,24 @@
 package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
-import org.cqfn.diktat.ktlint.wrap
+import org.cqfn.diktat.api.DiktatLogLevel
+import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigDefaults
 import com.pinterest.ktlint.core.api.EditorConfigOverride
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 
 /**
  * Command to run `diktat`
  */
 class DiktatProcessCommand private constructor(
-    val file: File,
+    val file: Path,
     val fileContent: String,
     private val callback: DiktatCallback,
     private val isScript: Boolean,
+    private val logLevel: DiktatLogLevel,
 ) {
     /**
      * Run `diktat fix` using parameters from current command
@@ -35,17 +38,15 @@ class DiktatProcessCommand private constructor(
 
     @Suppress("DEPRECATION")
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
-        fileName = file.absolutePath,
+        fileName = file.absolutePathString(),
         text = fileContent,
         ruleSets = setOf(DiktatRuleSetProvider().get()),
         ruleProviders = emptySet(),
         userData = emptyMap(),
-        cb = { e, corrected ->
-            callback.accept(e.wrap(), corrected)
-        },
+        cb = callback.unwrap(),
         script = isScript,
         editorConfigPath = null,
-        debug = false,
+        debug = logLevel == DiktatLogLevel.DEBUG,
         editorConfigDefaults = EditorConfigDefaults.emptyEditorConfigDefaults,
         editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
         isInvokedFromCli = false
@@ -60,16 +61,17 @@ class DiktatProcessCommand private constructor(
      * @property isScript
      */
     data class Builder(
-        var file: File? = null,
+        var file: Path? = null,
         var fileContent: String? = null,
         var callback: DiktatCallback? = null,
         var isScript: Boolean? = null,
+        var logLevel: DiktatLogLevel = DiktatLogLevel.INFO,
     ) {
         /**
          * @param file
          * @return updated builder
          */
-        fun file(file: File) = apply { this.file = file }
+        fun file(file: Path) = apply { this.file = file }
 
         /**
          * @param fileContent
@@ -90,13 +92,28 @@ class DiktatProcessCommand private constructor(
         fun isScript(isScript: Boolean) = apply { this.isScript = isScript }
 
         /**
+         * @param logLevel
+         * @return updated builder
+         */
+        fun logLevel(logLevel: DiktatLogLevel) = apply { this.logLevel = logLevel }
+
+        /**
          * @return built [DiktatProcessCommand]
          */
         fun build() = DiktatProcessCommand(
-            requireNotNull(file),
-            requireNotNull(fileContent),
-            requireNotNull(callback),
-            requireNotNull(isScript),
+            requireNotNull(file) {
+                "file is required"
+            },
+            requireNotNull(fileContent) {
+                "fileContent is required"
+            },
+            requireNotNull(callback) {
+                "callback is required"
+            },
+            requireNotNull(isScript) {
+                "isScript is required"
+            },
+            logLevel,
         )
     }
 }

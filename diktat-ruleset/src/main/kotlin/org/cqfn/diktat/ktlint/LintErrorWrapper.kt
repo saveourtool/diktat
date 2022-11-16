@@ -30,4 +30,5 @@ fun LintError.wrap(): DiktatError = LintErrorWrapper(this)
 /**
  * @return KtLint [LintError] from [DiktatError] or exception
  */
-fun DiktatError.unwrap(): LintError = (this as? LintErrorWrapper)?.lintError ?: error("Unsupported wrapper for ${DiktatError::class.java.simpleName}")
+fun DiktatError.unwrap(): LintError = (this as? LintErrorWrapper)?.lintError
+    ?: error("Unsupported wrapper of ${DiktatError::class.java.simpleName}: ${this::class.java.canonicalName}")
