@@ -74,14 +74,13 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val actualFileName = fileName ?: TEST_FILE_NAME
         val lintErrors: MutableList<LintError> = mutableListOf()
 
-        @Suppress("DEPRECATION")
         KtLint.lint(
             KtLint.ExperimentalParams(
                 fileName = actualFileName,
                 script = actualFileName.endsWith("kts"),
                 text = code,
-                ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
-                    rulesConfigList ?: this.rulesConfigList).get()),
+                ruleProviders = DiktatRuleSetProvider4Test(ruleSupplier,
+                    rulesConfigList ?: this.rulesConfigList).getRuleProviders(),
                 cb = { lintError, _ -> lintErrors += lintError },
             )
         )

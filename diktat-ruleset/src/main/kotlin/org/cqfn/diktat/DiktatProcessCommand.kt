@@ -3,10 +3,11 @@ package org.cqfn.diktat
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.unwrap
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigDefaults
 import com.pinterest.ktlint.core.api.EditorConfigOverride
+import org.intellij.lang.annotations.Language
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
@@ -18,7 +19,7 @@ import kotlin.io.path.absolutePathString
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
-    val fileContent: String,
+    @Language("kotlin") val fileContent: String,
     private val callback: DiktatCallback,
     private val isScript: Boolean,
     private val logLevel: DiktatLogLevel,
@@ -37,12 +38,10 @@ class DiktatProcessCommand private constructor(
         KtLint.lint(ktLintParams())
     }
 
-    @Suppress("DEPRECATION")
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
         fileName = file.absolutePathString(),
         text = fileContent,
-        ruleSets = setOf(DiktatRuleSetProvider().get()),
-        ruleProviders = emptySet(),
+        ruleProviders = DiktatRuleSetProviderV2().getRuleProviders(),
         userData = emptyMap(),
         cb = callback.unwrap(),
         script = isScript,
@@ -64,7 +63,7 @@ class DiktatProcessCommand private constructor(
      */
     data class Builder(
         var file: Path? = null,
-        var fileContent: String? = null,
+        @Language("kotlin") var fileContent: String? = null,
         var callback: DiktatCallback? = null,
         var isScript: Boolean? = null,
         var logLevel: DiktatLogLevel = DiktatLogLevel.INFO,
@@ -79,7 +78,7 @@ class DiktatProcessCommand private constructor(
          * @param fileContent
          * @return updated builder
          */
-        fun fileContent(fileContent: String) = apply { this.fileContent = fileContent }
+        fun fileContent(@Language("kotlin") fileContent: String) = apply { this.fileContent = fileContent }
 
         /**
          * @param callback

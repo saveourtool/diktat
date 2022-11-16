@@ -3,9 +3,9 @@ package org.cqfn.diktat.ruleset.smoke
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.util.deleteIfExistsRecursively
 import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
+import org.cqfn.diktat.test.framework.util.isSameJavaHomeAs
+import org.cqfn.diktat.test.framework.util.prependPath
 import org.cqfn.diktat.test.framework.util.retry
-import org.cqfn.diktat.util.isSameJavaHomeAs
-import org.cqfn.diktat.util.prependPath
 import com.pinterest.ktlint.core.LintError
 
 import mu.KotlinLogging

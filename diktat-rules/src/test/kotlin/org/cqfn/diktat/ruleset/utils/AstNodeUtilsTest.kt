@@ -2,7 +2,6 @@
     "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE",
     "LOCAL_VARIABLE_EARLY_DECLARATION",
     "AVOID_NULL_CHECKS",
-    "Deprecation",
 )
 
 package org.cqfn.diktat.ruleset.utils
@@ -12,7 +11,7 @@ import org.cqfn.diktat.util.applyToCode
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.RuleProvider
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -31,6 +30,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.nextSibling
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -791,7 +791,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
                                     private val level: Int,
                                     private val maxLevel: Int,
                                     private val expected: String
-) : Rule("print-ast") {
+) : Rule("test:print-ast") {
     override fun beforeVisitChildNodes(node: ASTNode,
                                        autoCorrect: Boolean,
                                        emit: EmitType
@@ -807,7 +807,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
     companion object {
         fun assertStringRepr(
             elementType: IElementType,
-            code: String,
+            @Language("kotlin") code: String,
             level: Int = 0,
             maxLevel: Int = -1,
             expected: String
@@ -815,7 +815,9 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             KtLint.lint(
                 KtLint.ExperimentalParams(
                     text = code,
-                    ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
+                    ruleProviders = setOf(RuleProvider {
+                        PrettyPrintingVisitor(elementType, level, maxLevel, expected)
+                    }),
                     cb = { _, _ -> }
                 )
             )

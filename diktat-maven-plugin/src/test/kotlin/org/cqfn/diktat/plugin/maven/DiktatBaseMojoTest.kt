@@ -10,7 +10,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.Assertions
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.createTempFile
 import kotlin.io.path.div
@@ -18,7 +17,6 @@ import kotlin.io.path.div
 /**
  * Tests for mojo configuration. NB: this tests are using Junit4, because maven-plugin-testing-harness doesn't support 5.
  */
-@OptIn(ExperimentalPathApi::class)
 @Suppress("LongMethod", "TOO_LONG_FUNCTION")
 class DiktatBaseMojoTest {
     @get:Rule val mojoRule = MojoRule()

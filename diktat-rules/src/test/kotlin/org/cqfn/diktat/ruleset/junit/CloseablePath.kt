@@ -1,5 +1,7 @@
 package org.cqfn.diktat.ruleset.junit
 
+import org.cqfn.diktat.test.framework.util.resetPermissions
+import org.cqfn.diktat.test.framework.util.tryToDeleteOnExit
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource
 import java.io.IOException
 import java.nio.file.DirectoryNotEmptyException
@@ -15,6 +17,7 @@ import kotlin.io.path.absolute
 import kotlin.io.path.deleteExisting
 import kotlin.io.path.isDirectory
 import kotlin.io.path.notExists
+import kotlin.io.path.relativeToOrSelf
 
 /**
  * @property directory the temporary directory (will be recursively deleted once
@@ -102,48 +105,16 @@ data class CloseablePath(val directory: Path) : CloseableResource {
         @Suppress("WRONG_NEWLINES")  // False positives, see #1495.
         val joinedPaths = keys
             .asSequence()
+            .map(Path::tryToDeleteOnExit)
             .map { path ->
-                path.tryToDeleteOnExit()
-            }.map { path ->
-                path.relativizeSafely()
-            }.map(Any::toString)
+                path.relativeToOrSelf(directory)
+            }
+            .map(Any::toString)
             .joinToString()
 
         return IOException("Failed to delete temp directory ${directory.absolute()}. " +
                 "The following paths could not be deleted (see suppressed exceptions for details): $joinedPaths").apply {
             values.forEach(this::addSuppressed)
-        }
-    }
-
-    private fun Path.tryToDeleteOnExit(): Path {
-        try {
-            toFile().deleteOnExit()
-        } catch (_: UnsupportedOperationException) {
-            /*
-             * Ignore.
-             */
-        }
-
-        return this
-    }
-
-    private fun Path.relativizeSafely(): Path =
-        try {
-            directory.relativize(this)
-        } catch (_: IllegalArgumentException) {
-            this
-        }
-
-    private companion object {
-        private fun Path.resetPermissions() {
-            toFile().apply {
-                setReadable(true)
-                setWritable(true)
-
-                if (isDirectory) {
-                    setExecutable(true)
-                }
-            }
         }
     }
 }
