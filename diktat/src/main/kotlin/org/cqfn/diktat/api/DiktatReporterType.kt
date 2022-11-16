@@ -10,8 +10,6 @@ import kotlinx.serialization.Serializable
 enum class DiktatReporterType {
     @SerialName("plain")
     PLAIN,
-    @SerialName("plain_group_by_file")
-    PLAIN_GROUP_BY_FILE,
     @SerialName("json")
     JSON,
     @SerialName("sarif")

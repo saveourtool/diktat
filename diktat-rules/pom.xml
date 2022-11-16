@@ -127,20 +127,35 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>generate-constants</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.cqfn.diktat.ruleset.generation.GenerationConstantsKt</mainClass>
+                            <arguments>
+                                <argument>${project.build.outputDirectory}</argument>
+                                <argument>${project.version}</argument>
+                                <argument>${project.basedir}/../LICENSE</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>generate-warnings</id>
                         <phase>generate-test-sources</phase>
                         <goals>
                             <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <mainClass>org.cqfn.diktat.ruleset.generation.GenerationKt</mainClass>
+                            <arguments>
+                                <argument>${project.build.sourceDirectory}</argument>
+                                <argument>${project.basedir}/src/test/resources</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <mainClass>org.cqfn.diktat.ruleset.generation.GenerationKt</mainClass>
-                    <arguments>
-                        <argument>${project.build.sourceDirectory}</argument>
-                        <argument>${project.basedir}/src/test/resources</argument>
-                    </arguments>
-                </configuration>
             </plugin>
 
             <plugin>

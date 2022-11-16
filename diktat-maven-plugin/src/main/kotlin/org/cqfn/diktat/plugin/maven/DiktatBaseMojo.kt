@@ -5,6 +5,7 @@
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
+import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.unwrap
 
 import com.pinterest.ktlint.core.LintError

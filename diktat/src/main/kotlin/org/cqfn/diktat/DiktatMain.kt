@@ -1,5 +1,6 @@
 package org.cqfn.diktat
 
+import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.api.DiktatReporterType
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
@@ -9,6 +10,7 @@ import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
 import kotlinx.cli.multiple
+import kotlinx.cli.vararg
 
 fun main(args: Array<String>) {
     val parser = ArgParser(DIKTAT)
@@ -48,13 +50,18 @@ fun main(args: Array<String>) {
         shortName = "l",
         description = "Enable the output with specific level",
     ).default(DiktatLogLevel.INFO)
+    val patterns: List<String> by parser.argument(
+        type = ArgType.String,
+        description = ""
+    )
+        .vararg()
 
     parser.parse(args)
 
     val diktatRuleSetProvider = DiktatRuleSetProvider(config)
 
 }
-
-private fun loadReporter(): Reporter {
-
-}
+//
+//private fun loadReporter(): Reporter {
+//
+//}
