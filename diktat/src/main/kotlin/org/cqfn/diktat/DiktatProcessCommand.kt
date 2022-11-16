@@ -1,7 +1,6 @@
 package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
-import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import com.pinterest.ktlint.core.KtLint

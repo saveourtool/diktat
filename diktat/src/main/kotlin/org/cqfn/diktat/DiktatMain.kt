@@ -1,14 +1,14 @@
 package org.cqfn.diktat
 
-import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.api.DiktatReporterType
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import com.pinterest.ktlint.core.Reporter
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
+import kotlinx.cli.multiple
 
 fun main(args: Array<String>) {
     val parser = ArgParser(DIKTAT)
@@ -22,18 +22,20 @@ fun main(args: Array<String>) {
             directory is used.
         """.trimIndent(),
     ).default(DIKTAT_ANALYSIS_CONF)
-    val format: Boolean by parser.option(
+    val doFormat: Boolean by parser.option(
         type = ArgType.Boolean,
         fullName = "format",
         shortName = "F",
         description = "Fix any deviations from the code style."
     ).default(false)
-    val reporter: DiktatReporterType by parser.option(
+    val reporters: List<DiktatReporterType> by parser.option(
         type = ArgType.Choice<DiktatReporterType>(),
         fullName = "reporter",
         shortName = "r",
         description = "The reporter to use",
-    ).default(DiktatReporterType.PLAIN)
+    )
+        .default(DiktatReporterType.PLAIN)
+        .multiple()
     val output: String? by parser.option(
         type = ArgType.String,
         fullName = "output",
@@ -50,4 +52,9 @@ fun main(args: Array<String>) {
     parser.parse(args)
 
     val diktatRuleSetProvider = DiktatRuleSetProvider(config)
+
+}
+
+private fun loadReporter(): Reporter {
+
 }

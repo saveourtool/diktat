@@ -66,6 +66,9 @@
                     <finalName>diktat-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
+                        <manifest>
+                            <mainClass>org.cqfn.diktat.DiktatMainKt</mainClass>
+                        </manifest>
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>
