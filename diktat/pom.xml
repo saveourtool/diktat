@@ -18,6 +18,28 @@
             <artifactId>diktat-rules</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- start: reporters -->
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-plain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-sarif</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-checkstyle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-html</artifactId>
+        </dependency>
+        <!-- end: reporters -->
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-cli-jvm</artifactId>

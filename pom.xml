@@ -162,12 +162,17 @@
             </dependency>
             <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-json</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
                 <artifactId>ktlint-reporter-sarif</artifactId>
                 <version>${ktlint.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
-                <artifactId>ktlint-reporter-json</artifactId>
+                <artifactId>ktlint-reporter-checkstyle</artifactId>
                 <version>${ktlint.version}</version>
             </dependency>
             <dependency>
