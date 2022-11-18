@@ -79,6 +79,12 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Make sure logger implementation is available when running integration tests. -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -142,7 +148,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/DiktatSaveSmokeTest.*</exclude>
+                        <exclude>**/Diktat?*SmokeTest.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -151,7 +157,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <includes>
-                        <include>**/DiktatSaveSmokeTest.*</include>
+                        <include>**/Diktat?*SmokeTest.*</include>
                     </includes>
                 </configuration>
                 <executions>

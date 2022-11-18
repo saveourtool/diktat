@@ -18,16 +18,22 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
+import kotlin.io.path.Path
 import kotlin.io.path.absolute
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.bufferedReader
+import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
+import kotlin.io.path.div
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
+private val logger = KotlinLogging.loggerWithKtlintConfig {}
 
 /**
  * Deletes the file if it exists, retrying as necessary if the file is
@@ -54,7 +60,7 @@ fun Path.deleteIfExistsSilently() {
     }
 
     if (!deleted) {
-        log.warn {
+        logger.warn {
             "File \"${absolute()}\" not deleted after $attempts attempt(s)."
         }
     }
@@ -202,7 +208,7 @@ fun ProcessBuilder.prependPath(pathEntry: Path) {
          * Keys of the Java interface to the environment are not ("PATH" != "Path").
          * This is an attempt to work around the inconsistency.
          */
-        System.getProperty("os.name").startsWith("Windows") -> environment.keys.firstOrNull { key ->
+        System.getProperty("os.name").isWindows() -> environment.keys.firstOrNull { key ->
             key.equals(defaultPathKey, ignoreCase = true)
         } ?: defaultWindowsPathKey
 
@@ -218,6 +224,55 @@ fun ProcessBuilder.prependPath(pathEntry: Path) {
     }
 
     environment[pathKey] = newPath
+}
+
+/**
+ * Inherits the home of the current JVM (by setting `JAVA_HOME` and adding it to
+ * the `PATH`) for the children of this process builder.
+ */
+fun ProcessBuilder.inheritJavaHome() {
+    val javaHome = System.getProperty("java.home")
+    environment()["JAVA_HOME"] = javaHome
+    prependPath(Path(javaHome) / "bin")
+}
+
+/**
+ * Changes the temporary directory for the children of this process builder.
+ *
+ * @param temporaryDirectory the new temporary directory (created automatically,
+ *   scheduled for removal at JVM exit).
+ */
+fun ProcessBuilder.temporaryDirectory(temporaryDirectory: Path) {
+    temporaryDirectory.createDirectories().tryToDeleteOnExit()
+
+    /*
+     * On UNIX, TMPDIR is the canonical name
+     */
+    val environmentVariables: Sequence<String> = when {
+        System.getProperty("os.name").isWindows() -> sequenceOf("TMP", "TEMP")
+        else -> sequenceOf("TMPDIR")
+    }
+
+    val environment = environment()
+
+    val value = temporaryDirectory.absolutePathString()
+    environmentVariables.forEach { name ->
+        environment[name] = value
+    }
+}
+
+/**
+ * @receiver the value of `os.name` system property.
+ * @return `true` if the value of `os.name` system property starts with
+ *   "Windows", `false` otherwise.
+ */
+@OptIn(ExperimentalContracts::class)
+fun String?.isWindows(): Boolean {
+    contract {
+        returns(true) implies (this@isWindows != null)
+    }
+
+    return this != null && startsWith("Windows")
 }
 
 /**
@@ -257,4 +312,24 @@ fun <T> retry(
     }
 
     return lazyDefault(lastError ?: Exception("The block was never executed"))
+}
+
+/**
+ * Checks whether the current JVM's home matches the `JAVA_HOME` environment
+ * variable.
+ */
+@Suppress("AVOID_NULL_CHECKS")
+fun checkForkedJavaHome() {
+    val forkedJavaHome = System.getenv("JAVA_HOME")
+    if (forkedJavaHome != null) {
+        val javaHome = System.getProperty("java.home")
+        if (javaHome != null && !Path(javaHome).isSameJavaHomeAs(Path(forkedJavaHome))) {
+            logger.warn {
+                "Current JDK home is $javaHome. Forked tests may use a different JDK at $forkedJavaHome."
+            }
+        }
+        logger.warn {
+            "Make sure JAVA_HOME ($forkedJavaHome) points to a Java 8 or Java 11 home. Java 17 is not yet supported."
+        }
+    }
 }
