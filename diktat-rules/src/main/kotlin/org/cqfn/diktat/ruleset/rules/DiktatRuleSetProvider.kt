@@ -1,7 +1,3 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
@@ -12,7 +8,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.ordered
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
@@ -88,26 +83,19 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
-import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.RuleSetProvider
 import mu.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 
 import java.io.File
 
 /**
- * [RuleSetProvider] that provides diKTat ruleset.
- * By default, it is expected to have diktat-analysis.yml configuration in the root folder where 'ktlint' is run
+ * By default, it is expected to have `diktat-analysis.yml` configuration in the root folder where 'ktlint' is run
  * otherwise it will use default configuration where some rules are disabled.
  *
- * The no-argument constructor is used by the Java SPI interface; that's why
- * it's explicitly annotated with [JvmOverloads].
- *
- * @param diktatConfigFile - configuration file where all configurations for inspections and rules are stored
+ * @param diktatConfigFile the configuration file where all configurations for
+ *   inspections and rules are stored.
  */
-class DiktatRuleSetProvider
-@JvmOverloads
-constructor(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleSetProvider {
+internal class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : DiktatRuleSetFactory {
     private val possibleConfigs: Sequence<String?> = sequence {
         yield(resolveDefaultConfig())
         yield(resolveConfigFileFromJarLocation())
@@ -143,14 +131,11 @@ constructor(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleS
         "LongMethod",
         "TOO_LONG_FUNCTION",
     )
-    @Deprecated(
-        "Marked for removal in KtLint 0.48. See changelog or KDoc for more information.",
-    )
-    override fun get(): RuleSet {
+    override fun invoke(): DiktatRuleSet {
         // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
-        val rules = listOf(
+        val rules = sequenceOf(
             // comments & documentation
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
@@ -233,12 +218,13 @@ constructor(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleS
 
         )
             .map {
-                it.invoke(configRules)
+                it(configRules)
             }
-        return RuleSet(
+            .toList()
+        return OrderedRuleSet(
             DIKTAT_RULE_SET_ID,
-            rules = rules.toTypedArray()
-        ).ordered()
+            rules
+        )
     }
 
     private fun validate(config: RulesConfig) =
@@ -253,8 +239,7 @@ constructor(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleS
         // for some aggregators of static analyzers we need to provide configuration for cli
         // in this case diktat would take the configuration from the directory where jar file is stored
         val ruleSetProviderPath =
-            DiktatRuleSetProvider::class
-                .java
+            javaClass
                 .protectionDomain
                 .codeSource
                 .location

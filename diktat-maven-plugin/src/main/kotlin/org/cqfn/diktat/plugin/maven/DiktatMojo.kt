@@ -5,14 +5,14 @@
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
 
 import org.apache.maven.plugins.annotations.Mojo
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.writeText
 
 /**
- * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
+ * Main [Mojo] that call [DiktatRuleSetProviderV2]'s rules on [inputs] files
  */
 @Mojo(name = "check")
 @Suppress("unused")
@@ -26,7 +26,7 @@ class DiktatCheckMojo : DiktatBaseMojo() {
 }
 
 /**
- * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
+ * Main [Mojo] that call [DiktatRuleSetProviderV2]'s rules on [inputs] files
  * and fixes discovered errors
  */
 @Mojo(name = "fix")

@@ -222,6 +222,11 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     )
                     reporterImpl.after(file.absolutePath)
                 } catch (e: RuleExecutionException) {
+                    /*
+                     * https://github.com/pinterest/ktlint/issues/1710:
+                     * no alternative in KtLint 0.47;
+                     * may get changed to `KtLintRuleExecutionException` in KtLint 0.48.
+                     */
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
                 }

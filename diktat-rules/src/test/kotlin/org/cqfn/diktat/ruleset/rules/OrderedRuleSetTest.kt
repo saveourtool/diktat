@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -39,9 +40,9 @@ class OrderedRuleSetTest {
 
         val orderedRuleSet = OrderedRuleSet(ruleSetId, rule1, rule2)
 
-        val orderedRuleSetIterator = orderedRuleSet.iterator()
-        val orderedRule1 = orderedRuleSetIterator.next()
-        val orderedRule2 = orderedRuleSetIterator.next()
+        val orderedRuleSetIterator = orderedRuleSet.ruleProviders.iterator()
+        val orderedRule1 = orderedRuleSetIterator.next().createNewRuleInstance()
+        val orderedRule2 = orderedRuleSetIterator.next().createNewRuleInstance()
         Assertions.assertFalse(orderedRuleSetIterator.hasNext(), "Extra elements after ordering")
 
         Assertions.assertEquals(rule1, orderedRule1, "First rule is modified")
@@ -85,8 +86,8 @@ class OrderedRuleSetTest {
         /*
          * Make sure OrderedRuleSet preserves the order.
          */
-        val ruleSet = OrderedRuleSet(ruleSetId, *rules.toTypedArray())
-        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(Rule::id))
+        val ruleSet = OrderedRuleSet(ruleSetId, rules)
+        assertThat(ruleSet.ruleProviders.map(RuleProvider::createNewRuleInstance).map(Rule::id)).containsExactlyElementsOf(rules.map(Rule::id))
 
         @Language("kotlin")
         val code = "fun foo() { }"
@@ -95,7 +96,7 @@ class OrderedRuleSetTest {
             KtLint.ExperimentalParams(
                 fileName = TEST_FILE_NAME,
                 text = code,
-                ruleSets = listOf(ruleSet),
+                ruleProviders = ruleSet.ruleProviders,
                 cb = { _, _ -> },
             )
         )

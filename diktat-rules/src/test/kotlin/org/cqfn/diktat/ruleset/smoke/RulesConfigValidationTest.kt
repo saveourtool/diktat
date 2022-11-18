@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
 import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.InvalidPropertyValueException
@@ -39,8 +39,7 @@ class RulesConfigValidationTest {
             """.trimMargin()
         )
         val exception = assertThrows<IllegalArgumentException> {
-            @Suppress("DEPRECATION")
-            DiktatRuleSetProvider(file.absolutePath).get()
+            DiktatRuleSetProviderV2(file.absolutePath).getRuleProviders()
         }
         Assertions.assertEquals("Warning name <MISSING_DOC_TOP_LEVEL> in configuration file is invalid, did you mean <MISSING_KDOC_TOP_LEVEL>?", exception.message)
     }
@@ -55,8 +54,7 @@ class RulesConfigValidationTest {
             """.trimMargin()
         )
         assertThrows<InvalidPropertyValueException> {
-            @Suppress("DEPRECATION")
-            DiktatRuleSetProvider(file.absolutePath).get()
+            DiktatRuleSetProviderV2(file.absolutePath).getRuleProviders()
         }
     }
 
@@ -72,7 +70,6 @@ class RulesConfigValidationTest {
                 |    isIncludeHeader: Fslse
             """.trimMargin()
         )
-        @Suppress("DEPRECATION")
-        DiktatRuleSetProvider(file.absolutePath).get()
+        DiktatRuleSetProviderV2(file.absolutePath).getRuleProviders()
     }
 }

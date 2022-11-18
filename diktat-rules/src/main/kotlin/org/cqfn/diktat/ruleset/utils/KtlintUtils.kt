@@ -1,6 +1,5 @@
 @file:Suppress(
     "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE",
-    "Deprecation",
 )
 
 package org.cqfn.diktat.ruleset.utils
@@ -9,7 +8,7 @@ import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.KtLint.ExperimentalParams
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.RuleSetProvider
+import com.pinterest.ktlint.core.RuleSetProviderV2
 import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 
@@ -54,16 +53,16 @@ fun ExperimentalParams.ignoreCorrectedErrors(): ExperimentalParams =
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 fun format(
-    ruleSetProviderRef: () -> RuleSetProvider,
+    ruleSetProviderRef: () -> RuleSetProviderV2,
     @Language("kotlin") text: String,
     fileName: String,
     cb: LintErrorCallback = defaultCallback
 ): String {
-    val ruleSets = listOf(ruleSetProviderRef().get())
+    val ruleProviders = ruleSetProviderRef().getRuleProviders()
     return KtLint.format(
         ExperimentalParams(
             text = text,
-            ruleSets = ruleSets,
+            ruleProviders = ruleProviders,
             fileName = fileName.removeSuffix("_copy"),
             script = fileName.removeSuffix("_copy").endsWith("kts"),
             cb = cb,

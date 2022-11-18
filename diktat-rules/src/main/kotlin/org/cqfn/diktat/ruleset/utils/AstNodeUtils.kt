@@ -75,6 +75,16 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 import java.util.Locale
 
 /**
+ * AST node visitor which accepts the node and, optionally, returns a value.
+ */
+typealias AstNodeVisitor<T> = (node: ASTNode) -> T
+
+/**
+ * The predicate which accepts a node and returns a `boolean` value.
+ */
+typealias AstNodePredicate = AstNodeVisitor<Boolean>
+
+/**
  * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
  *
  * @property oldNodes nodes that were to be moved
@@ -449,8 +459,8 @@ fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSe
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
-                                      excludeChildrenCondition: ((ASTNode) -> Boolean) = { false },
-                                      condition: (ASTNode) -> Boolean,
+                                      excludeChildrenCondition: AstNodePredicate = { false },
+                                      condition: AstNodePredicate,
 ): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null)
@@ -481,7 +491,7 @@ fun ASTNode.findChildrenMatching(elementType: IElementType? = null,
  * Check if this node has any children of optional type matching the predicate
  */
 fun ASTNode.hasChildMatching(elementType: IElementType? = null,
-                             predicate: (ASTNode) -> Boolean): Boolean =
+                             predicate: AstNodePredicate): Boolean =
     findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
@@ -776,7 +786,7 @@ fun ASTNode.findAllNodesOnLine(
  */
 fun ASTNode.findAllNodesWithConditionOnLine(
     line: Int,
-    condition: (ASTNode) -> Boolean
+    condition: AstNodePredicate
 ): List<ASTNode>? = this.findAllNodesOnLine(line)?.filter(condition)
 
 /**
@@ -889,6 +899,35 @@ fun ASTNode.isBooleanExpression(): Boolean =
             }
         }
     }
+
+/**
+ * Before _KtLint_ **0.48**, this extension used to reside in the
+ * `com.pinterest.ktlint.core.ast` package.
+ * Because _KtLint_ **0.47** has changed the way syntax nodes are traversed (see
+ * the diagrams [here](https://github.com/saveourtool/diktat/issues/1538)), the
+ * codebase of _KtLint_ no longer needs it: in most cases, it's sufficient to
+ * invoke
+ *
+ * ```kotlin
+ * visitor(this)
+ * ```
+ *
+ * and rely on _KtLint_ to invoke the same visitor (which is usually a `Rule`)
+ * on this node's children.
+ * Still, _Diktat_ sometimes needs exactly this old behaviour.
+ *
+ * @param visitor the visitor to recursively traverse this node as well as its
+ *   children.
+ * @since 1.2.5
+ */
+fun ASTNode.visit(visitor: AstNodeVisitor<Unit>) {
+    visitor(this)
+    @Suppress("NULLABLE_PROPERTY_TYPE")
+    val filter: TokenSet? = null
+    getChildren(filter).forEach { child ->
+        child.visit(visitor)
+    }
+}
 
 /**
  * @return whether this PSI element is a long string template entry.
