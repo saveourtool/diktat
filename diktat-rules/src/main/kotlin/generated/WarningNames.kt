@@ -1,5 +1,5 @@
-// | This document was auto generated, please don't modify it.
-// | This document contains all enum properties from Warnings.kt as Strings.
+// This document was auto generated, please don't modify it.
+// This document contains all enum properties from Warnings.kt as Strings.
 package generated
 
 import kotlin.String

@@ -3,6 +3,7 @@ package org.cqfn.diktat.cli
 import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
+import org.cqfn.diktat.ktlint.isPlain
 import org.cqfn.diktat.ktlint.reporterProvider
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.ReporterProvider
@@ -26,6 +27,7 @@ import kotlinx.cli.vararg
  * @property output
  * @property logLevel
  */
+@Suppress("DEPRECATION")
 data class DiktatProperties(
     val config: String,
     val mode: DiktatMode,
@@ -49,13 +51,21 @@ data class DiktatProperties(
                 ?: System.out,
             opt = buildMap<String, Any> {
                 colorInPlain?.let {
+                    require(reporterProvider.isPlain()) {
+                        "colorization is applicable only for plain reporter"
+                    }
                     put("color", true)
                     put("color_name", it)
                 } ?: run {
                     put("color", false)
                 }
                 put("format", (mode == DiktatMode.FIX))
-                put("group_by_file", groupByFileInPlain)
+                if (groupByFileInPlain) {
+                    require(reporterProvider.isPlain()) {
+                        "groupByFile is applicable only for plain reporter"
+                    }
+                    put("group_by_file", true)
+                }
             }.mapValues { it.toString() },
         )
     }

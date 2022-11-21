@@ -25,11 +25,15 @@ import kotlin.io.path.writeLines
 /**
  * The comment that will be added to the generated sources file.
  */
-internal const val autoGenerationComment = "This document was auto generated, please don't modify it."
+private val autoGenerationComment =
+    """
+        | This document was auto generated, please don't modify it.
+        | This document contains all enum properties from Warnings.kt as Strings.
+    """.trimMargin()
 
 fun main(args: Array<String>) {
     require(args.size == 2) {
-        "Only four arguments are expected: <source root> <test resource root>"
+        "Only two arguments are expected: <source root> <test resource root>"
     }
     generateWarningNames(args[0])
     validateYear(args[1])
@@ -55,10 +59,7 @@ private fun generateWarningNames(sourceDirectory: String) {
         .builder("generated", "WarningNames")
         .addType(fileBody)
         .indent("    ")
-        .addFileComment("""
-            | $autoGenerationComment
-            | This document contains all enum properties from Warnings.kt as Strings.
-        """.trimIndent())
+        .addFileComment(autoGenerationComment)
         .build()
 
     kotlinFile.writeTo(Paths.get(sourceDirectory))
