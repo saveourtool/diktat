@@ -5,7 +5,6 @@
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.unwrap
 
 import com.pinterest.ktlint.core.LintError
@@ -27,6 +26,7 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
+import org.slf4j.event.Level
 
 import java.io.File
 import java.io.FileOutputStream
@@ -245,7 +245,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 }
             }
             .logLevel(
-                if (debug) DiktatLogLevel.DEBUG else DiktatLogLevel.INFO
+                if (debug) Level.DEBUG else Level.INFO
             )
             .build()
         runAction(command)

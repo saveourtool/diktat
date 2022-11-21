@@ -18,6 +18,15 @@
             <artifactId>diktat-rules</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.19.0</version>
+        </dependency>
         <!-- start: reporters -->
         <dependency>
             <groupId>com.pinterest.ktlint</groupId>
@@ -76,6 +85,23 @@
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources/META-INF</directory>
+                <includes>
+                    <include>version</include>
+                </includes>
+                <targetPath>/META-INF/diktat</targetPath>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/..</directory>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+                <targetPath>/META-INF/diktat</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <!-- Build fat jar, overriding the primary jar -->

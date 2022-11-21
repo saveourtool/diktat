@@ -1,12 +1,13 @@
 package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
-import org.cqfn.diktat.api.DiktatLogLevel
+import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigDefaults
 import com.pinterest.ktlint.core.api.EditorConfigOverride
+import org.slf4j.event.Level
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 
@@ -19,9 +20,10 @@ import kotlin.io.path.absolutePathString
 class DiktatProcessCommand private constructor(
     val file: Path,
     val fileContent: String,
+    private val config: String,
     private val callback: DiktatCallback,
     private val isScript: Boolean,
-    private val logLevel: DiktatLogLevel,
+    private val logLevel: Level,
 ) {
     /**
      * Run `diktat fix` using parameters from current command
@@ -41,13 +43,13 @@ class DiktatProcessCommand private constructor(
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
         fileName = file.absolutePathString(),
         text = fileContent,
-        ruleSets = setOf(DiktatRuleSetProvider().get()),
+        ruleSets = setOf(DiktatRuleSetProvider(config).get()),
         ruleProviders = emptySet(),
         userData = emptyMap(),
         cb = callback.unwrap(),
         script = isScript,
         editorConfigPath = null,
-        debug = logLevel == DiktatLogLevel.DEBUG,
+        debug = logLevel == Level.DEBUG,
         editorConfigDefaults = EditorConfigDefaults.emptyEditorConfigDefaults,
         editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
         isInvokedFromCli = false
@@ -58,6 +60,7 @@ class DiktatProcessCommand private constructor(
      *
      * @property file
      * @property fileContent
+     * @property config
      * @property callback
      * @property isScript
      * @property logLevel
@@ -65,9 +68,10 @@ class DiktatProcessCommand private constructor(
     data class Builder(
         var file: Path? = null,
         var fileContent: String? = null,
+        var config: String = DIKTAT_ANALYSIS_CONF,
         var callback: DiktatCallback? = null,
         var isScript: Boolean? = null,
-        var logLevel: DiktatLogLevel = DiktatLogLevel.INFO,
+        var logLevel: Level = Level.INFO,
     ) {
         /**
          * @param file
@@ -80,6 +84,12 @@ class DiktatProcessCommand private constructor(
          * @return updated builder
          */
         fun fileContent(fileContent: String) = apply { this.fileContent = fileContent }
+
+        /**
+         * @param config
+         * @return updated builder
+         */
+        fun config(config: String) = apply { this.config = config }
 
         /**
          * @param callback
@@ -97,7 +107,7 @@ class DiktatProcessCommand private constructor(
          * @param logLevel
          * @return updated builder
          */
-        fun logLevel(logLevel: DiktatLogLevel) = apply { this.logLevel = logLevel }
+        fun logLevel(logLevel: Level) = apply { this.logLevel = logLevel }
 
         /**
          * @return built [DiktatProcessCommand]
@@ -109,6 +119,7 @@ class DiktatProcessCommand private constructor(
             requireNotNull(fileContent) {
                 "fileContent is required"
             },
+            config,
             requireNotNull(callback) {
                 "callback is required"
             },
