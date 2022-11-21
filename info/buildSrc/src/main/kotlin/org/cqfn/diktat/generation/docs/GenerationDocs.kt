@@ -15,7 +15,6 @@ import java.io.PrintWriter
         "MagicNumber",
         "ComplexMethod",
         "NestedBlockDepth",
-        "WRONG_INDENTATION",
         "TOO_LONG_FUNCTION")
 fun generateCodeStyle(guideDir: File, wpDir: File) {
     val file = File(guideDir, "diktat-coding-convention.md")
@@ -207,7 +206,6 @@ private fun handleHyperlinks(line: String): String {
     return correctedString
 }
 
-@Suppress("WRONG_INDENTATION")
 private fun findBoldOrItalicText(regex: Regex,
                                  line: String,
                                  type: FindType): String {

@@ -1,13 +1,9 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.RuleProvider
 import com.pinterest.ktlint.core.api.EditorConfigProperties
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
@@ -15,14 +11,42 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * This is a wrapper around Ktlint RuleSet which adjusts visitorModifiers for all rules to keep order with prevRule
  * Added as a workaround after introducing a new logic for sorting KtLint Rules: https://github.com/pinterest/ktlint/issues/1478
  *
- * @param id ID of RuleSet
- * @param rules rules which belongs to current RuleSet
+ * @param rules the rules which belong to the current [DiktatRuleSet].
  */
-class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjustRules(id, rules = rules)) {
+class OrderedRuleSet private constructor(
+    private val rules: List<Rule>
+) : DiktatRuleSet {
+    @Suppress("CUSTOM_GETTERS_SETTERS")
+    override val ruleProviders: Set<RuleProvider>
+        get() =
+            rules.map { rule ->
+                RuleProvider {
+                    rule
+                }
+            }.toSet()
+
+    /**
+     * @param id the ID of the [DiktatRuleSet].
+     * @param rules the rules which belong to the current [DiktatRuleSet].
+     */
+    constructor(
+        id: String,
+        rules: List<Rule>
+    ) : this(id, rules = rules.toTypedArray())
+
+    /**
+     * @param id the ID of the [DiktatRuleSet].
+     * @param rules the rules which belong to the current [DiktatRuleSet].
+     */
+    constructor(
+        id: String,
+        vararg rules: Rule
+    ) : this(adjustRules(id, rules))
+
     companion object {
-        private fun adjustRules(ruleSetId: String, vararg rules: Rule): Array<out Rule> {
+        private fun adjustRules(ruleSetId: String, rules: Array<out Rule>): List<Rule> {
             if (rules.isEmpty()) {
-                return emptyArray()
+                return emptyList()
             }
             return rules.mapIndexed { index, rule ->
                 if (index == 0) {
@@ -31,7 +55,7 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
                 } else {
                     OrderedRule(ruleSetId, rule, rules[index - 1])
                 }
-            }.toTypedArray()
+            }.toList()
         }
 
         private fun adjustVisitorModifiers(
@@ -65,15 +89,6 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
         internal fun Rule.delegatee(): Rule = if (this is OrderedRule) this.rule else this
 
         /**
-         * @return RuleSet with ordered rules
-         */
-        fun RuleSet.ordered(): RuleSet =
-            when (this) {
-                is OrderedRuleSet -> this
-                else -> OrderedRuleSet(id = id, rules = rules)
-            }
-
-        /**
          * @property rule wraps this rule to keep order
          */
         private class OrderedRule(
@@ -90,17 +105,6 @@ class OrderedRuleSet(id: String, vararg rules: Rule) : RuleSet(id, rules = adjus
                 emit: EmitType,
             ) =
                 rule.beforeVisitChildNodes(node, autoCorrect, emit)
-
-            @Deprecated(
-                "Marked for deletion in ktlint 0.48.0",
-                replaceWith = ReplaceWith("beforeVisitChildNodes(node, autoCorrect, emit)"),
-            )
-            override fun visit(
-                node: ASTNode,
-                autoCorrect: Boolean,
-                emit: EmitType,
-            ) =
-                rule.visit(node, autoCorrect, emit)
 
             override fun afterVisitChildNodes(
                 node: ASTNode,

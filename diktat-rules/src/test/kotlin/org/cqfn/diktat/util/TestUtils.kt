@@ -2,19 +2,16 @@
  * Utility classes and methods for tests
  */
 
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.ruleset.constants.EmitType
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -41,7 +38,7 @@ internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expectin
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
 @Suppress("TYPE_ALIAS")
-internal fun applyToCode(code: String,
+internal fun applyToCode(@Language("kotlin") code: String,
                          expectedAsserts: Int,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
 ) {
@@ -49,16 +46,16 @@ internal fun applyToCode(code: String,
     KtLint.lint(
         KtLint.ExperimentalParams(
             text = code,
-            ruleSets = listOf(
-                RuleSet("test", object : Rule("astnode-utils-test") {
+            ruleProviders = setOf(RuleProvider {
+                object : Rule("test:astnode-utils-test") {
                     override fun beforeVisitChildNodes(node: ASTNode,
                                                        autoCorrect: Boolean,
                                                        emit: EmitType
                     ) {
                         applyToNode(node, counter)
                     }
-                })
-            ),
+                }
+            }),
             cb = { _, _ -> }
         )
     )
