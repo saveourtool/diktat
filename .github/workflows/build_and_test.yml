@@ -34,8 +34,8 @@ jobs:
       - name: Upload diktat jar
         uses: actions/upload-artifact@v3
         with:
-          name: diktat-ruleset
-          path: diktat-ruleset/target/diktat-*.jar
+          name: diktat
+          path: diktat/target/diktat-*.jar
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
       - name: Upload gradle reports
@@ -72,7 +72,7 @@ jobs:
       - name: Download diktat jar
         uses: actions/download-artifact@v3
         with:
-          name: diktat-ruleset
+          name: diktat
 
       - name: Run diKTat from cli
         continue-on-error: true

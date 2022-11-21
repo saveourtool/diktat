@@ -50,9 +50,9 @@ jobs:
               { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
             ]
       - name: Deploy artifacts
-        run: mvn -B -Dstyle.color=always clean deploy -Prelease --projects '!diktat-ruleset'
+        run: mvn -B -Dstyle.color=always clean deploy -Prelease --projects '!diktat'
       - name: Build diktat.jar
-        run: mvn -B -Dstyle.color=always package --projects diktat-ruleset
+        run: mvn -B -Dstyle.color=always package --projects diktat
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-ruleset/target/diktat-${{ env.RELEASE_VERSION }}.jar
+          asset_path: ./diktat/target/diktat-${{ env.RELEASE_VERSION }}.jar
           asset_name: diktat-${{ env.RELEASE_VERSION }}.jar
           asset_content_type: application/zip
       - name: Update versions in pom.xml and documentation, update examples
