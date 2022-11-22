@@ -69,7 +69,7 @@
         <module>diktat-common</module>
         <module>diktat-rules</module>
         <module>diktat-test-framework</module>
-        <module>diktat</module>
+        <module>diktat-ruleset</module>
         <module>diktat-maven-plugin</module>
         <module>diktat-gradle-plugin</module>
     </modules>
