@@ -37,8 +37,8 @@
         </dependency>
         <dependency>
             <groupId>io.github.detekt.sarif4k</groupId>
-            <artifactId>sarif4k</artifactId>
-            <version>0.0.1</version>
+            <artifactId>sarif4k-jvm</artifactId>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 
