@@ -8,9 +8,13 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigDefaults
 import com.pinterest.ktlint.core.api.EditorConfigOverride
 import org.intellij.lang.annotations.Language
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.extension
+import kotlin.io.path.readText
 
 /**
  * Command to run `diktat`
@@ -42,18 +46,22 @@ class DiktatProcessCommand private constructor(
 
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
         fileName = file.absolutePathString(),
-        text = fileContent,
+        text = file.readText(Charsets.UTF_8),
         ruleSets = emptySet(),
         ruleProviders = DiktatRuleSetProviderV2(config).getRuleProviders(),
         userData = emptyMap(),
         cb = callback.unwrap(),
-        script = isScript,
+        script = file.extension.endsWith("kts"),
         editorConfigPath = null,
-        debug = logLevel == Level.DEBUG,
+        debug = isDebug,
         editorConfigDefaults = EditorConfigDefaults.emptyEditorConfigDefaults,
         editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
         isInvokedFromCli = false
     )
+
+    private val isDebug: Boolean by lazy {
+        LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).isDebugEnabled
+    }
 
     /**
      * Builder for [DiktatProcessCommand]

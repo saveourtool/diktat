@@ -3,18 +3,13 @@ package org.cqfn.diktat.cli
 import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import org.cqfn.diktat.ktlint.isPlain
-import org.cqfn.diktat.ktlint.reporterProvider
+import org.cqfn.diktat.ktlint.buildReporter
+import org.cqfn.diktat.ktlint.colorName
+import org.cqfn.diktat.ktlint.reporterProviderId
 import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.ReporterProvider
-import com.pinterest.ktlint.reporter.plain.internal.Color
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
-import java.io.PrintStream
-import java.nio.file.Paths
-import kotlin.io.path.createDirectories
-import kotlin.io.path.outputStream
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
@@ -27,48 +22,22 @@ import kotlinx.cli.vararg
  * @property output
  * @property logLevel
  */
-@Suppress("DEPRECATION")
 data class DiktatProperties(
     val config: String,
     val mode: DiktatMode,
-    val reporterProvider: ReporterProvider<*>,
+    val reporterProviderId: String,
     val output: String?,
-    val groupByFileInPlain: Boolean,
-    val colorInPlain: Color?,
+    private val groupByFileInPlain: Boolean,
+    private val colorNameInPlain: String?,
     val logLevel: Level,
     val patterns: List<String>,
 ) {
     /**
      * @return a configured [Reporter]
      */
-    fun reporter(): Reporter {
-        return reporterProvider.get(
-            out = output
-                ?.let { Paths.get(it) }
-                ?.also { it.parent.createDirectories() }
-                ?.outputStream()
-                ?.let { PrintStream(it) }
-                ?: System.out,
-            opt = buildMap<String, Any> {
-                colorInPlain?.let {
-                    require(reporterProvider.isPlain()) {
-                        "colorization is applicable only for plain reporter"
-                    }
-                    put("color", true)
-                    put("color_name", it)
-                } ?: run {
-                    put("color", false)
-                }
-                put("format", (mode == DiktatMode.FIX))
-                if (groupByFileInPlain) {
-                    require(reporterProvider.isPlain()) {
-                        "groupByFile is applicable only for plain reporter"
-                    }
-                    put("group_by_file", true)
-                }
-            }.mapValues { it.toString() },
-        )
-    }
+    fun reporter(): Reporter = buildReporter(
+        reporterProviderId, output, colorNameInPlain, groupByFileInPlain, mode
+    )
 
     /**
      * Configure logger level using [logLevel]
@@ -100,11 +69,7 @@ data class DiktatProperties(
                 type = ArgType.String,
                 fullName = "config",
                 shortName = "c",
-                description = """
-            Specify the location of the YAML configuration file.
-            By default, $DIKTAT_ANALYSIS_CONF in the current
-            directory is used.
-        """.trimIndent(),
+                description = "Specify the location of the YAML configuration file. By default, $DIKTAT_ANALYSIS_CONF in the current directory is used.",
             ).default(DIKTAT_ANALYSIS_CONF)
             val mode: DiktatMode by parser.option(
                 type = ArgType.Choice<DiktatMode>(),
@@ -112,7 +77,7 @@ data class DiktatProperties(
                 shortName = "m",
                 description = "Mode of `diktat` controls that `diktat` fixes or only finds any deviations from the code style."
             ).default(DiktatMode.CHECK)
-            val reporterProvider: ReporterProvider<*> = parser.reporterProvider()
+            val reporterProviderId: String by parser.reporterProviderId()
             val output: String? by parser.option(
                 type = ArgType.String,
                 fullName = "output",
@@ -125,12 +90,7 @@ data class DiktatProperties(
                 shortName = null,
                 description = "A flag for plain reporter"
             ).default(false)
-            val color: Color? by parser.option(
-                type = ArgType.Choice(),
-                fullName = "plain-color",
-                shortName = null,
-                description = "Colorize the output."
-            )
+            val colorName: String? by parser.colorName()
             val logLevel: Level by parser.option(
                 type = ArgType.Choice<Level>(),
                 fullName = "log-level",
@@ -139,7 +99,7 @@ data class DiktatProperties(
             ).default(Level.INFO)
             val patterns: List<String> by parser.argument(
                 type = ArgType.String,
-                description = ""
+                description = "A list of files to process by diktat"
             )
                 .vararg()
 
@@ -147,10 +107,10 @@ data class DiktatProperties(
             return DiktatProperties(
                 config = config,
                 mode = mode,
-                reporterProvider = reporterProvider,
+                reporterProviderId = reporterProviderId,
                 output = output,
                 groupByFileInPlain = groupByFileInPlain,
-                colorInPlain = color,
+                colorNameInPlain = colorName,
                 logLevel = logLevel,
                 patterns = patterns,
             )

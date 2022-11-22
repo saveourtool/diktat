@@ -84,6 +84,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.squareup</groupId>
                 <artifactId>kotlinpoet</artifactId>
                 <version>${kotlinpoet.version}</version>

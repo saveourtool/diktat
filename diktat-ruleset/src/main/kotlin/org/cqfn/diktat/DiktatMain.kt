@@ -8,6 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.extension
+import kotlin.io.path.writeText
 
 fun main(args: Array<String>) {
     val properties = DiktatProperties.parse(args)
@@ -36,7 +37,10 @@ fun main(args: Array<String>) {
                 .let { command ->
                     when (properties.mode) {
                         DiktatMode.CHECK -> command.check()
-                        DiktatMode.FIX -> command.check()
+                        DiktatMode.FIX -> {
+                            val formattedFileContent = command.fix()
+                            file.writeText(formattedFileContent, Charsets.UTF_8)
+                        }
                     }
                 }
             file to result
