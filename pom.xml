@@ -47,7 +47,6 @@
         <kotlin.code.style>official</kotlin.code.style>
         <kotlinx.serialization.version>1.4.1</kotlinx.serialization.version>
         <kotlinx-cli.version>0.3.5</kotlinx-cli.version>
-        <ksp.version>${kotlin.version}-1.0.8</ksp.version>
         <ktlint.version>0.47.1</ktlint.version>
         <junit.version>5.9.1</junit.version>
         <junit.platform.version>1.9.1</junit.platform.version>
@@ -407,7 +406,6 @@
                             <configuration>
                                 <sourceDirs>
                                     <source>src/main/kotlin</source>
-                                    <source>src/main/resources</source>
                                     <source>src/main/resources</source>
                                 </sourceDirs>
                                 <compilerPlugins>
