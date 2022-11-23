@@ -14,10 +14,12 @@ import mu.KotlinLogging
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.PathWalkOption
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 import kotlin.io.path.extension
-import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.walk
 import kotlin.io.path.writeText
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
@@ -31,6 +33,7 @@ private fun String.tryToPath(): Path? = try {
     null
 }
 
+@OptIn(ExperimentalPathApi::class)
 @Suppress(
     "LongMethod",
     "TOO_LONG_FUNCTION"
@@ -54,10 +57,16 @@ fun main(args: Array<String>) {
         .asSequence()
         .flatMap { pattern ->
             pattern.tryToPath()?.let { sequenceOf(it) }
-                ?: currentFolder.listDirectoryEntries(pattern).asSequence()
+                ?: run {
+                    // create a matcher and return a filter that uses it.
+                    val matcher = currentFolder.fileSystem.getPathMatcher("glob:$pattern")
+                    currentFolder.walk(PathWalkOption.INCLUDE_DIRECTORIES)
+                        .filter { matcher.matches(it) }
+                }
         }
         .filter { file -> file.extension in setOf("kt", "kts") }
         .distinct()
+        .map { it.normalize() }
         .map { file ->
             log.debug {
                 "Start processing the file: $file"
