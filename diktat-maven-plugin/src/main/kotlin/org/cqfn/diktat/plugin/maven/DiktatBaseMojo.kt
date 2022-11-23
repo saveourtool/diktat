@@ -36,13 +36,6 @@ import java.io.PrintStream
  */
 abstract class DiktatBaseMojo : AbstractMojo() {
     /**
-     * Flag that indicates whether to turn debug logging on
-     */
-    @Parameter(property = "diktat.debug")
-    // TODO: need to check that debug is enabled in log is detected by SLF4J in diktat
-    var debug = false
-
-    /**
      * Property that will be used if you need to publish the report to GitHub
      */
     @Parameter(property = "diktat.githubActions")
