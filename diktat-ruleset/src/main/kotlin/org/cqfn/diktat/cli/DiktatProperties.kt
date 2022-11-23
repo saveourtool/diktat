@@ -10,9 +10,13 @@ import com.pinterest.ktlint.core.Reporter
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
+import kotlin.system.exitProcess
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
+import kotlinx.cli.ExperimentalCli
+import kotlinx.cli.Subcommand
 import kotlinx.cli.default
+import kotlinx.cli.optional
 import kotlinx.cli.vararg
 
 /**
@@ -63,6 +67,7 @@ data class DiktatProperties(
          * @param args cli arguments
          * @return parsed [DiktatProperties]
          */
+        @OptIn(ExperimentalCli::class)
         @Suppress(
             "LongMethod",
             "TOO_LONG_FUNCTION"
@@ -107,6 +112,33 @@ data class DiktatProperties(
             )
                 .vararg()
 
+            parser.subcommands(
+                object : Subcommand("version", "Output version information and exit.") {
+                    override fun execute() {
+                        println(readFromResource("META-INF/diktat/version"))
+                        exitProcess(0)
+                    }
+                },
+                object : Subcommand("license", "Display the license and exit.") {
+                    override fun execute() {
+                        println(readFromResource("META-INF/diktat/LICENSE"))
+                        exitProcess(0)
+                    }
+                },
+            )
+//            val showVersion: Boolean? by parser.option(
+//                type = ArgType.Boolean,
+//                fullName = "version",
+//                shortName = "V",
+//                description = "Output version information and exit."
+//            )
+//            val showLicense: Boolean? by parser.option(
+//                type = ArgType.Boolean,
+//                fullName = "license",
+//                shortName = null,
+//                description = "Display the license and exit."
+//            )
+
             parser.parse(args)
             return DiktatProperties(
                 config = config,
@@ -119,5 +151,11 @@ data class DiktatProperties(
                 patterns = patterns,
             )
         }
+
+        private fun readFromResource(resourceName: String): String = DiktatProperties::class.java
+            .classLoader
+            .getResource(resourceName)
+            ?.readText()
+            ?: error("Resource $resourceName not found")
     }
 }
