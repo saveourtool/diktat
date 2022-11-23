@@ -1,3 +1,7 @@
+/**
+ * File contains util methods to create ktlint's [Reporter]
+ */
+
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatMode
@@ -16,6 +20,8 @@ import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
 
+private const val DEFAULT_COLOR_NAME = "DARK_GRAY"
+
 private val plainReporterProvider = PlainReporterProvider()
 
 private val reporterProviders = setOf(
@@ -27,8 +33,6 @@ private val reporterProviders = setOf(
 )
     .associateBy { it.id }
 
-private const val defaultColorName = "DARK_GRAY"
-
 // supported color names in KtLint
 private val colorNames = listOf(
     "BLACK",
@@ -39,7 +43,7 @@ private val colorNames = listOf(
     "MAGENTA",
     "CYAN",
     "LIGHT_GRAY",
-    defaultColorName,
+    DEFAULT_COLOR_NAME,
     "LIGHT_RED",
     "LIGHT_GREEN",
     "LIGHT_YELLOW",
@@ -81,11 +85,14 @@ internal fun ArgParser.colorName() = this.option(
 /**
  * @return true if receiver is [PlainReporterProvider]
  */
-internal fun ReporterProvider<*>.isPlain(): Boolean {
-    return id == plainReporterProvider.id
-}
+internal fun ReporterProvider<*>.isPlain(): Boolean = id == plainReporterProvider.id
 
 /**
+ * @param reporterProviderId
+ * @param output
+ * @param colorNameInPlain
+ * @param groupByFileInPlain
+ * @param mode
  * @return a configured [Reporter]
  */
 internal fun buildReporter(
@@ -112,7 +119,7 @@ internal fun buildReporter(
                 put("color_name", it)
             } ?: run {
                 put("color", false)
-                put("color_name", defaultColorName)
+                put("color_name", DEFAULT_COLOR_NAME)
             }
             put("format", (mode == DiktatMode.FIX))
             if (groupByFileInPlain) {

@@ -12,4 +12,5 @@ enum class DiktatMode {
     CHECK,
     @SerialName("fix")
     FIX,
+    ;
 }

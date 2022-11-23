@@ -1,3 +1,7 @@
+/**
+ * The file contains main method
+ */
+
 package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatError
@@ -13,6 +17,18 @@ import kotlin.io.path.extension
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.writeText
 
+typealias DiktatErrorWithCorrectionInfo = Pair<DiktatError, Boolean>
+
+private fun String.tryToPath(): Path? = try {
+    Paths.get(this).takeIf { it.exists() }
+} catch (e: InvalidPathException) {
+    null
+}
+
+@Suppress(
+    "LongMethod",
+    "TOO_LONG_FUNCTION"
+)
 fun main(args: Array<String>) {
     val properties = DiktatProperties.parse(args)
     properties.configureLogger()
@@ -30,7 +46,7 @@ fun main(args: Array<String>) {
         .filter { file -> file.extension in setOf("kt", "kts") }
         .distinct()
         .map { file ->
-            val result = mutableListOf<Pair<DiktatError, Boolean>>()
+            val result: MutableList<DiktatErrorWithCorrectionInfo> = mutableListOf()
             DiktatProcessCommand.Builder()
                 .file(file)
                 .config(properties.config)
@@ -57,10 +73,4 @@ fun main(args: Array<String>) {
             reporter.after(file.absolutePathString())
         }
     reporter.afterAll()
-}
-
-private fun String.tryToPath(): Path? = try {
-    Paths.get(this).takeIf { it.exists() }
-} catch (e: InvalidPathException) {
-    null
 }

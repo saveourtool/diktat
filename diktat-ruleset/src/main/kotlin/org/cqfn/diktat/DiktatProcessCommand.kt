@@ -20,13 +20,16 @@ import kotlin.io.path.readText
  * Command to run `diktat`
  *
  * @property file
- * @property fileContent
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
     private val config: String,
     private val callback: DiktatCallback,
 ) {
+    private val isDebug: Boolean by lazy {
+        LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).isDebugEnabled
+    }
+
     /**
      * Run `diktat fix` using parameters from current command
      *
@@ -56,16 +59,15 @@ class DiktatProcessCommand private constructor(
         isInvokedFromCli = false
     )
 
-    private val isDebug: Boolean by lazy {
-        LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).isDebugEnabled
-    }
-
     /**
      * Builder for [DiktatProcessCommand]
      *
      * @property file
      * @property config
      * @property callback
+     * @property fileContent
+     * @property isScript
+     * @property logLevel
      */
     data class Builder(
         var file: Path? = null,

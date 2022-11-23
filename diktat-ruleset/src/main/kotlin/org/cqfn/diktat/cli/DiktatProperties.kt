@@ -18,9 +18,9 @@ import kotlinx.cli.vararg
 /**
  * @property config path to `diktat-analysis.yml`
  * @property mode mode of `diktat`
- * @property reporter
+ * @property reporterProviderId
  * @property output
- * @property logLevel
+ * @property patterns
  */
 data class DiktatProperties(
     val config: String,
@@ -29,7 +29,7 @@ data class DiktatProperties(
     val output: String?,
     private val groupByFileInPlain: Boolean,
     private val colorNameInPlain: String?,
-    val logLevel: Level,
+    private val logLevel: Level,
     val patterns: List<String>,
 ) {
     /**
@@ -63,6 +63,10 @@ data class DiktatProperties(
          * @param args cli arguments
          * @return parsed [DiktatProperties]
          */
+        @Suppress(
+            "LongMethod",
+            "TOO_LONG_FUNCTION"
+        )
         fun parse(args: Array<String>): DiktatProperties {
             val parser = ArgParser(DIKTAT)
             val config: String by parser.option(
@@ -117,4 +121,3 @@ data class DiktatProperties(
         }
     }
 }
-
