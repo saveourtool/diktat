@@ -20,6 +20,7 @@ import kotlin.io.path.extension
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.writeText
 
+@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 typealias DiktatErrorWithCorrectionInfo = Pair<DiktatError, Boolean>
@@ -39,14 +40,14 @@ fun main(args: Array<String>) {
     properties.configureLogger()
 
     log.debug {
-        "Load diktatRuleSet using config ${properties.config}"
+        "Loading diktatRuleSet using config ${properties.config}"
     }
     val diktatRuleSetFactory = DiktatRuleSetFactory(properties.config)
     val reporter = properties.reporter()
     reporter.beforeAll()
 
     log.debug {
-        "Resole files by patterns: ${properties.patterns}"
+        "Resolving files by patterns: ${properties.patterns}"
     }
     val currentFolder = Paths.get(".")
     properties.patterns
