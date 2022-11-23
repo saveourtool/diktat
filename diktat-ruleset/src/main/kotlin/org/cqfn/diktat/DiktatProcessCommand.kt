@@ -3,14 +3,13 @@ package org.cqfn.diktat
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigDefaults
 import com.pinterest.ktlint.core.api.EditorConfigOverride
-import org.intellij.lang.annotations.Language
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.extension
@@ -23,7 +22,7 @@ import kotlin.io.path.readText
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
-    private val config: String,
+    private val diktatRuleSetFactory: DiktatRuleSetFactory,
     private val callback: DiktatCallback,
 ) {
     private val isDebug: Boolean by lazy {
@@ -48,7 +47,7 @@ class DiktatProcessCommand private constructor(
         fileName = file.absolutePathString(),
         text = file.readText(Charsets.UTF_8),
         ruleSets = emptySet(),
-        ruleProviders = DiktatRuleSetProviderV2(config).getRuleProviders(),
+        ruleProviders = DiktatRuleSetProviderV2(diktatRuleSetFactory).getRuleProviders(),
         userData = emptyMap(),
         cb = callback.unwrap(),
         script = file.extension.endsWith("kts", ignoreCase = true),
@@ -63,19 +62,15 @@ class DiktatProcessCommand private constructor(
      * Builder for [DiktatProcessCommand]
      *
      * @property file
+     * @property diktatRuleSetFactory
      * @property config
      * @property callback
-     * @property fileContent
-     * @property isScript
-     * @property logLevel
      */
     data class Builder(
         var file: Path? = null,
-        @Language("kotlin") var fileContent: String? = null,
-        var config: String = DIKTAT_ANALYSIS_CONF,
+        var diktatRuleSetFactory: DiktatRuleSetFactory? = null,
+        var config: String? = null,
         var callback: DiktatCallback? = null,
-        var isScript: Boolean? = null,
-        var logLevel: Level = Level.INFO,
     ) {
         /**
          * @param file
@@ -84,10 +79,24 @@ class DiktatProcessCommand private constructor(
         fun file(file: Path) = apply { this.file = file }
 
         /**
+         * @param diktatRuleSetFactory
+         * @return updated builder
+         */
+        fun diktatRuleSetFactory(diktatRuleSetFactory: DiktatRuleSetFactory) = require(config == null) {
+            "diktatRuleSetFactory is set already via config"
+        }.let {
+            apply { this.diktatRuleSetFactory = diktatRuleSetFactory }
+        }
+
+        /**
          * @param config
          * @return updated builder
          */
-        fun config(config: String) = apply { this.config = config }
+        fun config(config: String) = require(diktatRuleSetFactory == null) {
+            "diktatRuleSetFactory is already provided directly"
+        }.let {
+            apply { this.config = config }
+        }
 
         /**
          * @param callback
@@ -102,7 +111,7 @@ class DiktatProcessCommand private constructor(
             requireNotNull(file) {
                 "file is required"
             },
-            config,
+            diktatRuleSetFactory ?: DiktatRuleSetFactory(config ?: DIKTAT_ANALYSIS_CONF),
             requireNotNull(callback) {
                 "callback is required"
             },

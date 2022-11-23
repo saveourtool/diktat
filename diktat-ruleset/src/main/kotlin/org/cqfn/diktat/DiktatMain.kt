@@ -7,7 +7,10 @@ package org.cqfn.diktat
 import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.cli.DiktatProperties
+import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
+import mu.KotlinLogging
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -16,6 +19,8 @@ import kotlin.io.path.exists
 import kotlin.io.path.extension
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.writeText
+
+private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 typealias DiktatErrorWithCorrectionInfo = Pair<DiktatError, Boolean>
 
@@ -33,9 +38,16 @@ fun main(args: Array<String>) {
     val properties = DiktatProperties.parse(args)
     properties.configureLogger()
 
+    log.debug {
+        "Load diktatRuleSet using config ${properties.config}"
+    }
+    val diktatRuleSetFactory = DiktatRuleSetFactory(properties.config)
     val reporter = properties.reporter()
     reporter.beforeAll()
 
+    log.debug {
+        "Resole files by patterns: ${properties.patterns}"
+    }
     val currentFolder = Paths.get(".")
     properties.patterns
         .asSequence()
@@ -46,10 +58,13 @@ fun main(args: Array<String>) {
         .filter { file -> file.extension in setOf("kt", "kts") }
         .distinct()
         .map { file ->
+            log.debug {
+                "Start processing the file: $file"
+            }
             val result: MutableList<DiktatErrorWithCorrectionInfo> = mutableListOf()
             DiktatProcessCommand.Builder()
                 .file(file)
-                .config(properties.config)
+                .diktatRuleSetFactory(diktatRuleSetFactory)
                 .callback { error, isCorrected ->
                     result.add(error to isCorrected)
                 }
