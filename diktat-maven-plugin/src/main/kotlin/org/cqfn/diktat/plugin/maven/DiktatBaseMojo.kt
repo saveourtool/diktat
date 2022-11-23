@@ -26,7 +26,6 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-import org.slf4j.event.Level
 
 import java.io.File
 import java.io.FileOutputStream
@@ -40,6 +39,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * Flag that indicates whether to turn debug logging on
      */
     @Parameter(property = "diktat.debug")
+    // TODO: need to check that debug is enabled in log is detected by SLF4J in diktat
     var debug = false
 
     /**
@@ -240,8 +240,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     ) {
         val command = DiktatProcessCommand.Builder()
             .file(file.toPath())
-            .fileContent(file.readText(Charsets.UTF_8))
-            .isScript(file.extension.equals("kts", ignoreCase = true))
             .callback { error, isCorrected ->
                 val ktLintError = error.unwrap()
                 if (!baselineErrors.containsLintError(ktLintError)) {
@@ -249,9 +247,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     lintErrors.add(ktLintError)
                 }
             }
-            .logLevel(
-                if (debug) Level.DEBUG else Level.INFO
-            )
             .build()
         runAction(command)
     }

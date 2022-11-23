@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
 
 import org.apache.maven.plugins.annotations.Mojo
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 /**
@@ -37,7 +38,7 @@ class DiktatFixMojo : DiktatBaseMojo() {
      */
     override fun runAction(command: DiktatProcessCommand) {
         val fileName = command.file.absolutePathString()
-        val fileContent = command.fileContent
+        val fileContent = command.file.readText(Charsets.UTF_8)
         val formattedText = command.fix()
         if (fileContent != formattedText) {
             log.info("Original and formatted content differ, writing to $fileName...")

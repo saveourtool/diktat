@@ -4,10 +4,13 @@ import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.ktlint.unwrap
-import java.nio.file.Files
+import java.nio.file.InvalidPathException
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.exists
 import kotlin.io.path.extension
+import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.writeText
 
 fun main(args: Array<String>) {
@@ -21,8 +24,11 @@ fun main(args: Array<String>) {
     properties.patterns
         .asSequence()
         .flatMap { pattern ->
-            Files.newDirectoryStream(currentFolder, pattern).asSequence()
+            pattern.tryToPath()?.let { sequenceOf(it) }
+                ?: currentFolder.listDirectoryEntries(pattern).asSequence()
         }
+        .filter { file -> file.extension in setOf("kt", "kts") }
+        .distinct()
         .map { file ->
             val result = mutableListOf<Pair<DiktatError, Boolean>>()
             DiktatProcessCommand.Builder()
@@ -31,8 +37,6 @@ fun main(args: Array<String>) {
                 .callback { error, isCorrected ->
                     result.add(error to isCorrected)
                 }
-                .isScript(!file.extension.endsWith(".kt", ignoreCase = true))
-                .logLevel(properties.logLevel)
                 .build()
                 .let { command ->
                     when (properties.mode) {
@@ -53,4 +57,10 @@ fun main(args: Array<String>) {
             reporter.after(file.absolutePathString())
         }
     reporter.afterAll()
+}
+
+private fun String.tryToPath(): Path? = try {
+    Paths.get(this).takeIf { it.exists() }
+} catch (e: InvalidPathException) {
+    null
 }

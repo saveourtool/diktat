@@ -24,11 +24,8 @@ import kotlin.io.path.readText
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
-    @Language("kotlin") val fileContent: String,
     private val config: String,
     private val callback: DiktatCallback,
-    private val isScript: Boolean,
-    private val logLevel: Level,
 ) {
     /**
      * Run `diktat fix` using parameters from current command
@@ -51,7 +48,7 @@ class DiktatProcessCommand private constructor(
         ruleProviders = DiktatRuleSetProviderV2(config).getRuleProviders(),
         userData = emptyMap(),
         cb = callback.unwrap(),
-        script = file.extension.endsWith("kts"),
+        script = file.extension.endsWith("kts", ignoreCase = true),
         editorConfigPath = null,
         debug = isDebug,
         editorConfigDefaults = EditorConfigDefaults.emptyEditorConfigDefaults,
@@ -67,11 +64,8 @@ class DiktatProcessCommand private constructor(
      * Builder for [DiktatProcessCommand]
      *
      * @property file
-     * @property fileContent
      * @property config
      * @property callback
-     * @property isScript
-     * @property logLevel
      */
     data class Builder(
         var file: Path? = null,
@@ -88,12 +82,6 @@ class DiktatProcessCommand private constructor(
         fun file(file: Path) = apply { this.file = file }
 
         /**
-         * @param fileContent
-         * @return updated builder
-         */
-        fun fileContent(@Language("kotlin") fileContent: String) = apply { this.fileContent = fileContent }
-
-        /**
          * @param config
          * @return updated builder
          */
@@ -106,35 +94,16 @@ class DiktatProcessCommand private constructor(
         fun callback(callback: DiktatCallback) = apply { this.callback = callback }
 
         /**
-         * @param isScript
-         * @return updated builder
-         */
-        fun isScript(isScript: Boolean) = apply { this.isScript = isScript }
-
-        /**
-         * @param logLevel
-         * @return updated builder
-         */
-        fun logLevel(logLevel: Level) = apply { this.logLevel = logLevel }
-
-        /**
          * @return built [DiktatProcessCommand]
          */
         fun build() = DiktatProcessCommand(
             requireNotNull(file) {
                 "file is required"
             },
-            requireNotNull(fileContent) {
-                "fileContent is required"
-            },
             config,
             requireNotNull(callback) {
                 "callback is required"
             },
-            requireNotNull(isScript) {
-                "isScript is required"
-            },
-            logLevel,
         )
     }
 }

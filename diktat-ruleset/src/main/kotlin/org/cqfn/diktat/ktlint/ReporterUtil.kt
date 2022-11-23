@@ -121,6 +121,6 @@ internal fun buildReporter(
                 }
                 put("group_by_file", true)
             }
-        }.mapValues { it.toString() },
+        }.mapValues { it.value.toString() },
     )
 }
