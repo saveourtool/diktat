@@ -13,15 +13,9 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.util.tryToPath
 import org.cqfn.diktat.util.walkByGlob
 import mu.KotlinLogging
-import java.nio.file.InvalidPathException
-import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.PathWalkOption
 import kotlin.io.path.absolutePathString
-import kotlin.io.path.exists
 import kotlin.io.path.extension
-import kotlin.io.path.walk
 import kotlin.io.path.writeText
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")

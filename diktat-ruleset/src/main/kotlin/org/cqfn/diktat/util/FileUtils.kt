@@ -1,6 +1,7 @@
 /**
  * This class contains util methods to operate with java.nio.file.Path
  */
+
 package org.cqfn.diktat.util
 
 import java.nio.file.InvalidPathException
