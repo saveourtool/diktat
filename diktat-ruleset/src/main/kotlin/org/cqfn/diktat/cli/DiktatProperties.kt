@@ -150,7 +150,8 @@ data class DiktatProperties(
                 description = description
             )
             if (args.contains("--$fullName") || shortName?.let { args.contains("-$it") } == true) {
-                println(readFromResource(resourceName))
+                @Suppress("DEBUG_PRINT", "ForbiddenMethodCall")
+                print(readFromResource(resourceName))
                 exitProcess(0)
             }
         }

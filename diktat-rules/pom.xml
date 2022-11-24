@@ -96,29 +96,6 @@
                             </sourceDirs>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>process-test-sources</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <!-- For some weird reason if main sourceset is removed from here, syntax highlighting in idea an ability to launch tests is broken -->
-                                <source>src/main/kotlin</source>
-                                <source>src/test/kotlin</source>
-                                <source>${project.basedir}/src/main/kotlin</source>
-                                <source>${project.basedir}/src/test/kotlin</source>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 

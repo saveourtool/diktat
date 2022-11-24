@@ -10,6 +10,8 @@ import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
+import org.cqfn.diktat.util.tryToPath
+import org.cqfn.diktat.util.walkByGlob
 import mu.KotlinLogging
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -27,13 +29,6 @@ private val log = KotlinLogging.loggerWithKtlintConfig {}
 
 typealias DiktatErrorWithCorrectionInfo = Pair<DiktatError, Boolean>
 
-private fun String.tryToPath(): Path? = try {
-    Paths.get(this).takeIf { it.exists() }
-} catch (e: InvalidPathException) {
-    null
-}
-
-@OptIn(ExperimentalPathApi::class)
 @Suppress(
     "LongMethod",
     "TOO_LONG_FUNCTION"
@@ -58,10 +53,7 @@ fun main(args: Array<String>) {
         .flatMap { pattern ->
             pattern.tryToPath()?.let { sequenceOf(it) }
                 ?: run {
-                    // create a matcher and return a filter that uses it.
-                    val matcher = currentFolder.fileSystem.getPathMatcher("glob:$pattern")
-                    currentFolder.walk(PathWalkOption.INCLUDE_DIRECTORIES)
-                        .filter { matcher.matches(it) }
+                    currentFolder.walkByGlob(pattern)
                 }
         }
         .filter { file -> file.extension in setOf("kt", "kts") }
