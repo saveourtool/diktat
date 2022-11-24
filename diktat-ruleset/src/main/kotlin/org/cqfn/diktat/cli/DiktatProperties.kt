@@ -13,10 +13,7 @@ import org.slf4j.event.Level
 import kotlin.system.exitProcess
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
-import kotlinx.cli.ExperimentalCli
-import kotlinx.cli.Subcommand
 import kotlinx.cli.default
-import kotlinx.cli.optional
 import kotlinx.cli.vararg
 
 /**
@@ -67,7 +64,6 @@ data class DiktatProperties(
          * @param args cli arguments
          * @return parsed [DiktatProperties]
          */
-        @OptIn(ExperimentalCli::class)
         @Suppress(
             "LongMethod",
             "TOO_LONG_FUNCTION"
@@ -109,35 +105,22 @@ data class DiktatProperties(
             val patterns: List<String> by parser.argument(
                 type = ArgType.String,
                 description = "A list of files to process by diktat"
-            )
-                .vararg()
+            ).vararg()
 
-            parser.subcommands(
-                object : Subcommand("version", "Output version information and exit.") {
-                    override fun execute() {
-                        println(readFromResource("META-INF/diktat/version"))
-                        exitProcess(0)
-                    }
-                },
-                object : Subcommand("license", "Display the license and exit.") {
-                    override fun execute() {
-                        println(readFromResource("META-INF/diktat/LICENSE"))
-                        exitProcess(0)
-                    }
-                },
+            parser.addOptionAndShowResourceWithExit(
+                fullName = "version",
+                shortName = "V",
+                description = "Output version information and exit.",
+                args = args,
+                resourceName = "META-INF/diktat/version"
             )
-//            val showVersion: Boolean? by parser.option(
-//                type = ArgType.Boolean,
-//                fullName = "version",
-//                shortName = "V",
-//                description = "Output version information and exit."
-//            )
-//            val showLicense: Boolean? by parser.option(
-//                type = ArgType.Boolean,
-//                fullName = "license",
-//                shortName = null,
-//                description = "Display the license and exit."
-//            )
+            parser.addOptionAndShowResourceWithExit(
+                fullName = "license",
+                shortName = null,
+                description = "Display the license and exit.",
+                args = args,
+                resourceName = "META-INF/diktat/LICENSE",
+            )
 
             parser.parse(args)
             return DiktatProperties(
@@ -150,6 +133,26 @@ data class DiktatProperties(
                 logLevel = logLevel,
                 patterns = patterns,
             )
+        }
+
+        private fun ArgParser.addOptionAndShowResourceWithExit(
+            fullName: String,
+            shortName: String?,
+            description: String,
+            args: Array<String>,
+            resourceName: String,
+        ) {
+            // add here to print in help
+            option(
+                type = ArgType.Boolean,
+                fullName = fullName,
+                shortName = shortName,
+                description = description
+            )
+            if (args.contains("--$fullName") || shortName?.let { args.contains("-$it") } == true) {
+                println(readFromResource(resourceName))
+                exitProcess(0)
+            }
         }
 
         private fun readFromResource(resourceName: String): String = DiktatProperties::class.java
