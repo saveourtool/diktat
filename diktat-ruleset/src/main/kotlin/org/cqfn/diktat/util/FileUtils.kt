@@ -14,6 +14,7 @@ import kotlin.io.path.walk
 
 /**
  * Create a matcher and return a filter that uses it.
+ *
  * @param glob glob pattern to filter files
  * @return a sequence of files which matches to [glob]
  */
