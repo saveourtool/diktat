@@ -24,7 +24,7 @@ internal fun createExampleProject(testProjectDir: TemporaryFolder,
                 plugins {
                     id("org.cqfn.diktat.diktat-gradle-plugin")
                 }
-                
+
                 repositories {
                     mavenLocal()
                     mavenCentral()
@@ -75,11 +75,17 @@ private fun GradleRunner.withJaCoCo(number: Int) = apply {
         }
 }
 
-fun assertDiktatExecuted(result: BuildResult) {
+fun assertDiktatExecuted(
+    result: BuildResult,
+    taskOutcome: TaskOutcome = TaskOutcome.FAILED,
+    errorMessage: () -> String? = { null }
+) {
     val diktatCheckBuildResult = result.task(":${DiktatGradlePlugin.DIKTAT_CHECK_TASK}")
     requireNotNull(diktatCheckBuildResult)
-    Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+    Assertions.assertEquals(taskOutcome, diktatCheckBuildResult.outcome, errorMessage)
     Assertions.assertTrue(
         result.output.contains("[FILE_NAME_MATCH_CLASS]")
-    )
+    ) {
+        "Task ${DiktatGradlePlugin.DIKTAT_CHECK_TASK} wasn't run"
+    }
 }
