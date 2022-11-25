@@ -72,6 +72,7 @@
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>test</argument>
+                                <argument>functionalTest</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-Pdescription=${project.description}</argument>
