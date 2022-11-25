@@ -59,8 +59,8 @@
         <jacoco.version>0.8.8</jacoco.version>
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
-        <mu-logging.version>3.0.4</mu-logging.version>
-        <log4j.version>2.19.0</log4j.version>
+        <!-- downgraded to be compliance with ktlint -->
+        <mu-logging.version>2.1.23</mu-logging.version>
     </properties>
 
     <modules>
@@ -197,11 +197,6 @@
                 <groupId>io.github.microutils</groupId>
                 <artifactId>kotlin-logging-jvm</artifactId>
                 <version>${mu-logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.petertrr</groupId>
