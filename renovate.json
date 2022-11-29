@@ -57,6 +57,13 @@
       "allowedVersions": "<= 2.1.23"
     },
     {
+      "managers": ["maven"],
+      "matchPackageNames": [
+          "com.charleskorn.kaml:kaml-jvm"
+      ],
+      "allowedVersions": "<= 0.47.0"
+    },
+    {
       "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"
