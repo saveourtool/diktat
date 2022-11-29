@@ -54,10 +54,10 @@
         <commons-cli.version>1.5.0</commons-cli.version>
         <diktat-check.version>1.2.4.2</diktat-check.version>
         <kotlinpoet.version>1.12.0</kotlinpoet.version>
-        <detekt.version>1.21.0.1</detekt.version>
+        <detekt.version>1.22.0</detekt.version>
         <dokka.version>1.7.20</dokka.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
+        <maven-plugin-tools.version>3.7.0</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
         <!-- downgraded to be compliance with ktlint -->
         <mu-logging.version>2.1.23</mu-logging.version>
