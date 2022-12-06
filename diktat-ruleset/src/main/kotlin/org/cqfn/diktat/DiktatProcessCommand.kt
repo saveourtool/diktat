@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
+import org.cqfn.diktat.ruleset.utils.isKotlinScript
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigDefaults
 import com.pinterest.ktlint.core.api.EditorConfigOverride
@@ -12,7 +13,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
-import kotlin.io.path.extension
 import kotlin.io.path.readText
 
 /**
@@ -50,7 +50,7 @@ class DiktatProcessCommand private constructor(
         ruleProviders = DiktatRuleSetProviderV2(diktatRuleSetFactory).getRuleProviders(),
         userData = emptyMap(),
         cb = callback.unwrap(),
-        script = file.extension.endsWith("kts", ignoreCase = true),
+        script = file.isKotlinScript(),
         editorConfigPath = null,
         debug = isDebug,
         editorConfigDefaults = EditorConfigDefaults.emptyEditorConfigDefaults,

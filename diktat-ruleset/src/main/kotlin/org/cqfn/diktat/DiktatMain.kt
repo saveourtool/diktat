@@ -10,12 +10,12 @@ import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
-import org.cqfn.diktat.util.tryToPath
+import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
+import org.cqfn.diktat.util.tryToPathIfExists
 import org.cqfn.diktat.util.walkByGlob
 import mu.KotlinLogging
 import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
-import kotlin.io.path.extension
 import kotlin.io.path.writeText
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
@@ -45,12 +45,10 @@ fun main(args: Array<String>) {
     properties.patterns
         .asSequence()
         .flatMap { pattern ->
-            pattern.tryToPath()?.let { sequenceOf(it) }
-                ?: run {
-                    currentFolder.walkByGlob(pattern)
-                }
+            pattern.tryToPathIfExists()?.let { sequenceOf(it) }
+                ?: currentFolder.walkByGlob(pattern)
         }
-        .filter { file -> file.extension in setOf("kt", "kts") }
+        .filter { file -> file.isKotlinCodeOrScript() }
         .distinct()
         .map { it.normalize() }
         .map { file ->

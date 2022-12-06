@@ -29,7 +29,7 @@ fun Path.walkByGlob(glob: String): Sequence<Path> =
 /**
  * @return path or null if path is invalid or doesn't exist
  */
-fun String.tryToPath(): Path? = try {
+fun String.tryToPathIfExists(): Path? = try {
     Paths.get(this).takeIf { it.exists() }
 } catch (e: InvalidPathException) {
     null

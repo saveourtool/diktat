@@ -6,6 +6,7 @@ package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
@@ -197,7 +198,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         directory
             .walk()
             .filter { file ->
-                file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
+                file.isDirectory || file.toPath().isKotlinCodeOrScript()
             }
             .filter { it.isFile }
             .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
