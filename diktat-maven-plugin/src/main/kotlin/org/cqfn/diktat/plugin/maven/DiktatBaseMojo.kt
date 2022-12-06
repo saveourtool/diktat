@@ -5,8 +5,8 @@
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
@@ -36,12 +36,6 @@ import java.io.PrintStream
  * Base [Mojo] for checking and fixing code using diktat
  */
 abstract class DiktatBaseMojo : AbstractMojo() {
-    /**
-     * Flag that indicates whether to turn debug logging on
-     */
-    @Parameter(property = "diktat.debug")
-    var debug = false
-
     /**
      * Property that will be used if you need to publish the report to GitHub
      */
@@ -204,7 +198,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         directory
             .walk()
             .filter { file ->
-                file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
+                file.isDirectory || file.toPath().isKotlinCodeOrScript()
             }
             .filter { it.isFile }
             .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
@@ -240,8 +234,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     ) {
         val command = DiktatProcessCommand.Builder()
             .file(file.toPath())
-            .fileContent(file.readText(Charsets.UTF_8))
-            .isScript(file.extension.equals("kts", ignoreCase = true))
             .callback { error, isCorrected ->
                 val ktLintError = error.unwrap()
                 if (!baselineErrors.containsLintError(ktLintError)) {
@@ -249,9 +241,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     lintErrors.add(ktLintError)
                 }
             }
-            .logLevel(
-                if (debug) DiktatLogLevel.DEBUG else DiktatLogLevel.INFO
-            )
             .build()
         runAction(command)
     }

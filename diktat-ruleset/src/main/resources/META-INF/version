@@ -1,0 +1,2 @@
+diktat: ${project.version}
+ktlint: ${ktlint.version}

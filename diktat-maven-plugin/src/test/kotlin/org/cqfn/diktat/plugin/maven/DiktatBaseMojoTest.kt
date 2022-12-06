@@ -44,11 +44,11 @@ class DiktatBaseMojoTest {
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <modelVersion>4.0.0</modelVersion>
-                    
+
                     <groupId>org.cqfn.diktat</groupId>
                     <artifactId>diktat-test</artifactId>
                     <version>1.0.0-SNAPSHOT</version>
-                    
+
                     <build>
                         <plugins>
                             <plugin>
@@ -70,7 +70,6 @@ class DiktatBaseMojoTest {
         val mavenProject = projectBuilder.build(pom, buildingRequest).project
 
         val diktatCheckMojo = mojoRule.lookupConfiguredMojo(mavenProject, "check") as DiktatCheckMojo
-        Assertions.assertFalse(diktatCheckMojo.debug)
         Assertions.assertEquals("diktat-analysis.yml", diktatCheckMojo.diktatConfigFile)
         Assertions.assertIterableEquals(listOf(pom.parentFile.toPath() / "src"), diktatCheckMojo.inputs.map { Path(it) })
         Assertions.assertTrue(diktatCheckMojo.excludes.isEmpty())
@@ -85,18 +84,17 @@ class DiktatBaseMojoTest {
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <modelVersion>4.0.0</modelVersion>
-                    
+
                     <groupId>org.cqfn.diktat</groupId>
                     <artifactId>diktat-test</artifactId>
                     <version>1.0.0-SNAPSHOT</version>
-                    
+
                     <build>
                         <plugins>
                             <plugin>
                                 <groupId>org.cqfn.diktat</groupId>
                                 <artifactId>diktat-maven-plugin</artifactId>
                                 <configuration>
-                                    <debug>true</debug>
                                     <diktatConfigFile>my-diktat-config.yml</diktatConfigFile>
                                     <inputs>
                                         <input>${'$'}{project.basedir}/src/main/kotlin</input>
@@ -122,7 +120,6 @@ class DiktatBaseMojoTest {
         val mavenProject = projectBuilder.build(pom, buildingRequest).project
 
         val diktatCheckMojo = mojoRule.lookupConfiguredMojo(mavenProject, "check") as DiktatCheckMojo
-        Assertions.assertTrue(diktatCheckMojo.debug)
         Assertions.assertEquals("my-diktat-config.yml", diktatCheckMojo.diktatConfigFile)
         Assertions.assertIterableEquals(
             listOf(pom.parentFile.toPath() / "src/main/kotlin", pom.parentFile.toPath() / "src/test/kotlin"),

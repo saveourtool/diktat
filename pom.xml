@@ -8,7 +8,7 @@
     <version>1.2.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>diktat</name>
+    <name>diktat-parent</name>
     <description>diKTat kotlin formatter and fixer</description>
     <url>https://www.cqfn.org/diKTat/</url>
 
@@ -46,6 +46,7 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlinx.serialization.version>1.4.1</kotlinx.serialization.version>
+        <kotlinx-cli.version>0.3.5</kotlinx-cli.version>
         <ktlint.version>0.47.1</ktlint.version>
         <junit.version>5.9.1</junit.version>
         <junit.platform.version>1.9.1</junit.platform.version>
@@ -82,6 +83,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.squareup</groupId>
                 <artifactId>kotlinpoet</artifactId>
@@ -133,6 +139,16 @@
                 <version>${kotlinx.serialization.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-cli</artifactId>
+                <version>${kotlinx-cli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-cli-jvm</artifactId>
+                <version>${kotlinx-cli.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
                 <artifactId>ktlint-core</artifactId>
                 <version>${ktlint.version}</version>
@@ -150,12 +166,17 @@
             </dependency>
             <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
+                <artifactId>ktlint-reporter-json</artifactId>
+                <version>${ktlint.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pinterest.ktlint</groupId>
                 <artifactId>ktlint-reporter-sarif</artifactId>
                 <version>${ktlint.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
-                <artifactId>ktlint-reporter-json</artifactId>
+                <artifactId>ktlint-reporter-checkstyle</artifactId>
                 <version>${ktlint.version}</version>
             </dependency>
             <dependency>
@@ -201,6 +222,11 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
             <dependency>
@@ -369,16 +395,51 @@
                     <version>${kotlin.version}</version>
                     <configuration>
                         <jvmTarget>1.8</jvmTarget>
-                        <sourceDirs>
-                            <source>src/main/kotlin</source>
-                            <source>src/main/resources</source>
-                        </sourceDirs>
                         <args>
                             <arg>-Werror</arg>
                             <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>
                     <inherited>true</inherited>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <source>src/main/java</source>
+                                    <source>src/main/kotlin</source>
+                                    <source>src/main/resources</source>
+                                </sourceDirs>
+                                <compilerPlugins>
+                                    <plugin>kotlinx-serialization</plugin>
+                                </compilerPlugins>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <phase>process-test-sources</phase>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <source>src/test/java</source>
+                                    <source>src/test/kotlin</source>
+                                </sourceDirs>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-serialization</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
