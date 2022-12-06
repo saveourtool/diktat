@@ -475,7 +475,6 @@
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
                 <artifactId>diktat-maven-plugin</artifactId>
-                <version>${diktat-check.version}</version>
                 <executions>
                     <execution>
                         <id>diktat</id>
