@@ -381,6 +381,21 @@
                     <version>3.1.0</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.cqfn.diktat</groupId>
+                    <artifactId>diktat-maven-plugin</artifactId>
+                    <version>${diktat-check.version}</version>
+                    <configuration>
+                        <inputs>
+                            <input>${project.basedir}/src/main/kotlin</input>
+                            <input>${project.basedir}/src/test/kotlin</input>
+                        </inputs>
+                        <excludes>
+                            <exclude>${project.basedir}/src/main/kotlin/generated</exclude>
+                        </excludes>
+                        <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
@@ -460,7 +475,6 @@
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
                 <artifactId>diktat-maven-plugin</artifactId>
-                <version>${diktat-check.version}</version>
                 <executions>
                     <execution>
                         <id>diktat</id>
@@ -469,16 +483,6 @@
                             <goal>check</goal>
                             <goal>fix</goal>
                         </goals>
-                        <configuration>
-                            <inputs>
-                                <input>${project.basedir}/src/main/kotlin</input>
-                                <input>${project.basedir}/src/test/kotlin</input>
-                            </inputs>
-                            <excludes>
-                                <exclude>${project.basedir}/src/main/kotlin/generated</exclude>
-                            </excludes>
-                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
