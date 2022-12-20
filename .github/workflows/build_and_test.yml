@@ -2,7 +2,10 @@
 name: Build and test
 
 on:
-  pull_request
+  pull_request:
+  push:
+    branches:
+      - 'master'
 
 jobs:
   build_and_test_with_code_coverage:
