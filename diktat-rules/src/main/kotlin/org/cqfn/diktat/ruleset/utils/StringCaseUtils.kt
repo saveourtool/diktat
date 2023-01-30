@@ -40,7 +40,7 @@ fun String.isLowerCamelCase(): Boolean = this.matches("[a-z]([a-z0-9])*([A-Z][a-
  *
  * @return boolean result
  */
-fun String.isUpperSnakeCase(): Boolean = this.matches("(([A-Z]+)_*)+[A-Z0-9]*".toRegex())
+fun String.isUpperSnakeCase(): Boolean = this.matches("(([A-Z0-9]+)_*)+[A-Z0-9]*".toRegex())
 
 /**
  * checking that string looks like: lower_case_for_script_names
