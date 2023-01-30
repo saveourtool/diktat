@@ -3,8 +3,10 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -54,7 +56,7 @@ class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
     private fun isSamInterfaces(parent: ASTNode, node: ASTNode): Boolean {
         val parentPsi = parent.treeParent.psi
         return if (parentPsi is KtClass) {
-            (parentPsi.isInterface()) && node.elementType == FUN_KEYWORD
+            (parentPsi.isInterface()) && node.elementType == FUN_KEYWORD && parent.treeParent.findAllDescendantsWithSpecificType(FUN).size == 1
         } else {
             false
         }
