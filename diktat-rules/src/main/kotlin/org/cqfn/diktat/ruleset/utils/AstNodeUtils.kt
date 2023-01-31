@@ -246,15 +246,12 @@ fun ASTNode.hasParent(type: IElementType) = parent(type) != null
  * check text because some nodes have empty BLOCK element inside (lambda)
  */
 fun ASTNode?.isBlockEmpty() = this?.let {
-    this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
-} ?: true
-
-/**
- * check if WHEN element node text is empty (contains only left and right braces)
- */
-fun ASTNode?.isWhenBlockEmpty() = this?.let {
-    val firstIndex = this.text.indexOf("{")
-    this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    if (this.elementType == ElementType.WHEN) {
+        val firstIndex = this.text.indexOf("{")
+        this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    } else {
+        this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    }
 } ?: true
 
 /**
