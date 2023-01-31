@@ -250,6 +250,14 @@ fun ASTNode?.isBlockEmpty() = this?.let {
 } ?: true
 
 /**
+ * check if WHEN element node text is empty (contains only left and right braces)
+ */
+fun ASTNode?.isWhenBlockEmpty() = this?.let {
+    val firstIndex = this.text.indexOf("{")
+    this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+} ?: true
+
+/**
  * Method that is trying to find and return child of this node, which
  * 1) stands before the node with type @beforeThisNodeType
  * 2) has type @childNodeType

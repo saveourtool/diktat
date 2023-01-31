@@ -41,6 +41,19 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
 
     @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `check if WHEN element node text is empty`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |    when (a) {
+                    |    }
+                    |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block with config`() {
         lintMethod(
             """
