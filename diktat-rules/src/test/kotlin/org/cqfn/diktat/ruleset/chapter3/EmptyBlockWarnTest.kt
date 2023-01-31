@@ -48,7 +48,8 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    when (a) {
                     |    }
                     |}
-            """.trimMargin()
+            """.trimMargin(),
+            LintError(2, 5, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
