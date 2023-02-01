@@ -51,6 +51,23 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
 
     @Test
     @Tag(CUSTOM_GETTERS_SETTERS)
+    fun `override getter`() {
+        lintMethod(
+            """
+                    |interface A {
+                    |    val a: Int
+                    |}
+                    |
+                    |object B: A {
+                    |    override val a: int
+                    |        get() = 0
+                    |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(CUSTOM_GETTERS_SETTERS)
     fun `exception case with private setter`() {
         lintMethod(
             """
