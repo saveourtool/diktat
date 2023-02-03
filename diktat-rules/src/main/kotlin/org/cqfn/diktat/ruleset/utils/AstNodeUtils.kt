@@ -185,8 +185,11 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  */
 fun ASTNode.isFollowedByNewline() =
     parent({ it.treeNext != null }, strict = false)?.let {
+        val probablyWhitespace = it.treeNext
         it.isFollowedByNewlineCheck() ||
-                (it.treeNext.elementType == WHITE_SPACE && it.treeNext.treeNext.elementType == EOL_COMMENT && it.treeNext.treeNext.isFollowedByNewlineCheck())
+                (probablyWhitespace.elementType == WHITE_SPACE && probablyWhitespace.treeNext.run {
+                    elementType == EOL_COMMENT && isFollowedByNewlineCheck()
+                })
     } ?: false
 
 /**
