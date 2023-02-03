@@ -32,7 +32,7 @@ fun ASTNode.kDocTags(): List<KDocTag> {
  * @return whether this tag is present
  */
 fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
-    this.find { it.knownTag == knownTag } != null
+    this.any { it.knownTag == knownTag }
 
 /**
  * Checks for trailing newlines in tag's body. Handles cases, when there is no leading asterisk on an empty line:
@@ -46,10 +46,10 @@ fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
  * @return true if there is a trailing newline
  */
 fun KDocTag.hasTrailingNewlineInTagBody() = node.lastChildNode.isWhiteSpaceWithNewline() ||
-    node.reversedChildren()
-        .takeWhile { it.elementType == WHITE_SPACE || it.elementType == ElementType.KDOC_LEADING_ASTERISK }
-        .firstOrNull { it.elementType == ElementType.KDOC_LEADING_ASTERISK }
-        ?.takeIf { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE } != null
+        node.reversedChildren()
+            .takeWhile { it.elementType == WHITE_SPACE || it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            .firstOrNull { it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            ?.takeIf { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE } != null
 
 /**
  * This method inserts a new tag into KDoc before specified another tag, aligning it with the rest of this KDoc

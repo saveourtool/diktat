@@ -3,6 +3,7 @@
   configuration:
     domainName: org.cqfn.diktat
     kotlinVersion: 1.4.21
+    testDirs: "test, androidUnitTest"
 - name: CLASS_NAME_INCORRECT
   enabled: true
 - name: CONSTANT_UPPERCASE
@@ -127,7 +128,8 @@
     newlineAtEnd: true
     extendedIndentOfParameters: false
     alignedParameters: true
-    extendedIndentAfterOperators: false
+    extendedIndentForExpressionBodies: false
+    extendedIndentAfterOperators: true
     indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true

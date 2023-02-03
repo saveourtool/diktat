@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.4.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -173,8 +173,6 @@
                     <includes>
                         <include>**/*IntegrationTest*</include>
                     </includes>
-                    <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
-                    <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
                 </configuration>
                 <executions>
                     <execution>

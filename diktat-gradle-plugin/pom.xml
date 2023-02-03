@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.4.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,13 +14,12 @@
     <packaging>pom</packaging>
 
     <properties>
-        <gradle.executable>${project.basedir}/gradlew</gradle.executable>
+        <gradle.workingDir>${project.basedir}</gradle.workingDir>
+        <gradle.executable>gradlew</gradle.executable>
         <gradle.task>build</gradle.task>
         <gradle.builddir>build</gradle.builddir>
         <skip.gradle.build>false</skip.gradle.build>
         <skip.gradle.test>false</skip.gradle.test>
-        <!-- This property is set to excluded task in the specific build profile -->
-        <gradle.exclude.check></gradle.exclude.check>
     </properties>
 
     <dependencies>
@@ -35,6 +34,11 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.github.detekt.sarif4k</groupId>
+            <artifactId>sarif4k-jvm</artifactId>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 
@@ -56,15 +60,19 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <inherited>false</inherited>
+                <configuration>
+                    <workingDirectory>${gradle.workingDir}</workingDirectory>
+                    <executable>${gradle.workingDir}/${gradle.executable}</executable>
+                </configuration>
                 <executions>
                     <execution>
                         <id>gradle-test</id>
                         <phase>test</phase>
                         <configuration>
-                            <executable>${gradle.executable}</executable>
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>test</argument>
+                                <argument>functionalTest</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-Pdescription=${project.description}</argument>
@@ -83,7 +91,6 @@
                         <id>gradle</id>
                         <phase>prepare-package</phase>
                         <configuration>
-                            <executable>${gradle.executable}</executable>
                             <arguments>
                                 <argument>${gradle.task}</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
@@ -93,7 +100,8 @@
                                 <argument>-PjunitVersion=${junit.version}</argument>
                                 <argument>-PjacocoVersion=${jacoco.version}</argument>
                                 <argument>-S</argument>
-                                <argument>${gradle.exclude.check}</argument>
+                                <!-- This argument can be set to excluded task in the specific build profile -->
+<!--                                <argument></argument>-->
                             </arguments>
                             <skip>${skip.gradle.build}</skip>
                         </configuration>
@@ -180,7 +188,7 @@
                 </os>
             </activation>
             <properties>
-                <gradle.executable>${project.basedir}/gradlew.bat</gradle.executable>
+                <gradle.executable>gradlew.bat</gradle.executable>
             </properties>
         </profile>
         <profile>

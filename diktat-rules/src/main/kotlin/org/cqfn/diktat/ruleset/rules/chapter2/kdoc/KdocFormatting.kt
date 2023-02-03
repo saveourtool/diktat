@@ -67,7 +67,30 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,
         KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER),
 ) {
-    private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
+    /**
+     * The reasoning behind the tag ordering:
+     *
+     * 1. `@receiver` documents `this` instance which is the 1st function call
+     *    parameter (ordered before `@param`).
+     * 1. `@param` followed by `@return`, then followed by `@throws` or
+     *    `@exception` is the conventional order inherited from _JavaDoc_.
+     * 1. `@param` tags can also be used to document generic type parameters.
+     * 1. `@property` tags are placed after `@param` tags in the official
+     *    [example](https://kotlinlang.org/docs/kotlin-doc.html#kdoc-syntax). Looking at the
+     *    [code](https://github.com/JetBrains/kotlin/blob/master/libraries/stdlib/src/kotlin/util/Tuples.kt#L22),
+     *    this is also the style _JetBrains_ use themselves.
+     * 1. looking at the examples, `@constructor` tags are placed last in
+     *    constructor descriptions.
+     */
+    private val basicTagsList = listOf(
+        KDocKnownTag.RECEIVER,
+        KDocKnownTag.PARAM,
+        KDocKnownTag.PROPERTY,
+        KDocKnownTag.RETURN,
+        KDocKnownTag.THROWS,
+        KDocKnownTag.EXCEPTION,
+        KDocKnownTag.CONSTRUCTOR,
+    )
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
     private var versionRegex: Regex? = null
 
@@ -162,11 +185,11 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun findBeforeAndAfterSpaces(tag: KDocTag) = Pair(tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE).let {
         it?.text != " " &&
-            !(it?.isWhiteSpaceWithNewline() ?: false)
+                !(it?.isWhiteSpaceWithNewline() ?: false)
     },
         tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE).let {
             it?.text != " " &&
-                !(it?.isWhiteSpaceWithNewline() ?: false)
+                    !(it?.isWhiteSpaceWithNewline() ?: false)
         }
     )
 
@@ -175,7 +198,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         val kdocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
         val basicTagsOrdered = basicTagsList.filter { basicTag ->
-            kdocTags.find { it.knownTag == basicTag } != null
+            kdocTags.any { it.knownTag == basicTag }
         }
         // all basic tags from current KDoc
         val basicTags = kdocTags.filter { basicTagsOrdered.contains(it.knownTag) }
@@ -196,7 +219,6 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     .first()
                     .node
                     .startOffset, basicTags.first().node) {
-                val kdocSection = node.getFirstChildWithType(KDOC_SECTION)!!
                 val basicTagChildren = kdocTags
                     .filter { basicTagsOrdered.contains(it.knownTag) }
                     .map { it.node }
@@ -206,6 +228,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     .map { it.node }
 
                 basicTagChildren.mapIndexed { index, astNode ->
+                    val kdocSection = astNode.treeParent
                     kdocSection.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode)
                     kdocSection.removeChild(astNode)
                 }
@@ -290,11 +313,11 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         val poorlyFormattedTagNodes = presentSpecialTagNodes?.filterNot { specialTagNode ->
             // empty line with just * followed by white space or end of block
             specialTagNode.lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
-                (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
-                    specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
-                // and with no empty line before
-                specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
-                specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
+                    (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
+                            specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
+                    // and with no empty line before
+                    specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
+                    specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
         }
 
         if (poorlyFormattedTagNodes != null && poorlyFormattedTagNodes.isNotEmpty()) {
@@ -324,7 +347,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         node.kDocTags()
             .filter {
                 it.knownTag == KDocKnownTag.AUTHOR ||
-                    it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
+                        it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
             }
             .forEach {
                 KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
@@ -335,7 +358,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.hasEmptyLineAfter(): Boolean {
         require(this.elementType == KDOC_TAG) { "This check is only for KDOC_TAG" }
         return lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
-            (treeNext == null || treeNext.elementType == WHITE_SPACE && treeNext.text.count { it == '\n' } == 1)
+                (treeNext == null || treeNext.elementType == WHITE_SPACE && treeNext.text.count { it == '\n' } == 1)
     }
 
     private fun ASTNode.kDocBasicTags() = kDocTags().filter { basicTagsList.contains(it.knownTag) }

@@ -3,10 +3,10 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.8.0"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
-    id("org.gradle.test-retry") version "1.4.0"
+    id("org.gradle.test-retry") version "1.5.1"
 }
 
 repositories {
@@ -29,11 +29,12 @@ repositories {
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
 // To debug gradle plugin, please set `diktatVersion` manually to the current maven project version.
 val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.46.1") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.1"
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.3"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
+    implementation("io.github.detekt.sarif4k:sarif4k:0.3.0")
 
     implementation("org.cqfn.diktat:diktat-common:$diktatVersion") {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")

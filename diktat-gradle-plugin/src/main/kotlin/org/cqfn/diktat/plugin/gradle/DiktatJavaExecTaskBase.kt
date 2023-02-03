@@ -27,8 +27,6 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import javax.inject.Inject
 
 /**
@@ -119,7 +117,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                     addInput(it)
                 }
 
-            add(createReporterFlag(diktatExtension))
+            add(reporterFlag(diktatExtension))
         }
         project.logger.debug("Setting JavaExec args to $args")
     }
@@ -148,57 +146,21 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
 
-    private fun createReporterFlag(diktatExtension: DiktatExtension): String {
-        val flag: StringBuilder = StringBuilder()
-
-        // appending the flag with the reporter
-        setReporter(diktatExtension, flag)
-
-        val outFlag = when {
-            // githubActions should have higher priority than a custom input
-            diktatExtension.githubActions -> {
-                val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
-                outputs.dir(reportDir)
-                ",output=${reportDir.resolve("diktat.sarif")}"
-            }
-            diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
-            else -> ""
-        }
-
-        flag.append(outFlag)
-
-        return flag.toString()
-    }
-
-    private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
-        val name = diktatExtension.reporter.trim()
-        val validReporters = listOf("sarif", "plain", "json", "html")
-        val reporterFlag = when {
-            diktatExtension.githubActions -> {
-                if (diktatExtension.reporter.isNotEmpty()) {
-                    // githubActions should have higher priority than custom input
-                    project.logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
-                }
-                "--reporter=sarif"
-            }
-            name.isEmpty() -> {
-                project.logger.info("Reporter name was not set. Using 'plain' reporter")
-                "--reporter=plain"
-            }
-            name !in validReporters -> {
-                project.logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
-                "--reporter=plain"
-            }
-            else -> "--reporter=$name"
-        }
-
-        val isSarifReporterActive = reporterFlag.contains("sarif")
-        if (isSarifReporterActive) {
+    @Suppress("AVOID_NULL_CHECKS")
+    private fun reporterFlag(diktatExtension: DiktatExtension): String = buildString {
+        val reporterFlag = project.createReporterFlag(diktatExtension)
+        append(reporterFlag)
+        if (isSarifReporterActive(reporterFlag)) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
             systemProperty("user.home", project.rootDir.toString())
         }
 
-        flag.append(reporterFlag)
+        val outputFile = project.getOutputFile(diktatExtension)
+        if (outputFile != null) {
+            outputs.file(outputFile)
+            val outFlag = ",output=$outputFile"
+            append(outFlag)
+        }
     }
 
     @Suppress("MagicNumber")
@@ -236,7 +198,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     }
 
     private fun getJavaExecJvmVersion(): JavaVersion = if (GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.7") &&
-        javaLauncher.isPresent
+            javaLauncher.isPresent
     ) {
         // Java Launchers are available since 6.7, but may not always be configured
         javaLauncher.map { it.metadata.jvmVersion }.map(JavaVersion::toVersion).get()

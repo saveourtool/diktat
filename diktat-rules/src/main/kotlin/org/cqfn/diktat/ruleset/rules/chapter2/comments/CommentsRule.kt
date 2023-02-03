@@ -95,11 +95,11 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             .forEach { (offset, parsedNode) ->
                 val invalidNode = errorNodesWithText.find {
                     it.second.trim().contains(parsedNode.text, false) ||
-                        parsedNode.text.contains(it.second.trim(), false)
+                            parsedNode.text.contains(it.second.trim(), false)
                 }?.first
                 if (invalidNode == null) {
                     logger.warn("Text [${parsedNode.text}] is a piece of code, created from comment; " +
-                        "but no matching text in comments has been found in the file ${node.getFilePath()}")
+                            "but no matching text in comments has been found in the file ${node.getFilePath()}")
                 } else {
                     COMMENTED_OUT_CODE.warn(
                         configRules,
@@ -168,9 +168,9 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
      * are considered for this case.
      */
     private fun String.isPossibleImport(): Boolean = trimStart().startsWith(importKeywordWithSpace) &&
-        substringAfter(importKeywordWithSpace, "").run {
-            startsWith('`') && endsWith('`') || !contains(' ')
-        }
+            substringAfter(importKeywordWithSpace, "").run {
+                startsWith('`') && endsWith('`') || !contains(' ')
+            }
 
     @Suppress("MaxLineLength")
     companion object {

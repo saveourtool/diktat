@@ -41,7 +41,7 @@ jobs:
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
-        uses: whelk-io/maven-settings-xml-action@v20
+        uses: whelk-io/maven-settings-xml-action@v21
         with:
           servers: |
             [
@@ -50,9 +50,9 @@ jobs:
               { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
             ]
       - name: Deploy artifacts
-        run: mvn -B clean deploy -Prelease --projects '!diktat-ruleset'
+        run: mvn -B -Dstyle.color=always clean deploy -Prelease --projects '!diktat-ruleset'
       - name: Build diktat.jar
-        run: mvn -B package --projects diktat-ruleset
+        run: mvn -B -Dstyle.color=always package --projects diktat-ruleset
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
@@ -79,12 +79,18 @@ jobs:
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md || echo "File README.md hasn't been updated!"
-          for file in examples/maven/pom.xml examples/gradle-groovy-dsl/build.gradle examples/gradle-kotlin-dsl/build.gradle.kts
+          for file in examples/{maven/pom.xml,gradle-groovy-dsl/build.gradle,{gradle-kotlin-dsl,gradle-kotlin-dsl-multiproject}/build.gradle.kts}
           do
             sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file || echo "File $file hasn't been updated!"
             cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
           done
           next_snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          # Update the version in `examples/maven/pom.xml`
+          # (which is not a part of the multi-module project).
+          for file in examples/maven/pom.xml
+          do
+            sed -i "s|\(<version>\)[[:digit:]]\(\.[[:digit:]]\)\+-SNAPSHOT\(</version>\)|\1${next_snapshot_version}\3|g" "${file}" || echo "File ${file} hasn't been updated (2nd sed pass)"
+          done
           echo "version=$next_snapshot_version" > info/buildSrc/gradle.properties
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4

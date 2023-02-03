@@ -1,7 +1,8 @@
 @file:Suppress(
     "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE",
     "LOCAL_VARIABLE_EARLY_DECLARATION",
-    "AVOID_NULL_CHECKS"
+    "AVOID_NULL_CHECKS",
+    "Deprecation",
 )
 
 package org.cqfn.diktat.ruleset.utils
@@ -12,7 +13,6 @@ import org.cqfn.diktat.util.applyToCode
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -805,7 +805,6 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
     }
 
     companion object {
-        @OptIn(FeatureInAlphaState::class)
         fun assertStringRepr(
             elementType: IElementType,
             code: String,

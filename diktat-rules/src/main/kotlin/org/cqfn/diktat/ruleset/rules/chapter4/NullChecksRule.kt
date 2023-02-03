@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtPsiUtil
 import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
 
 /**
@@ -113,15 +114,16 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.let { it.findChildByType(BLOCK) ?: it }
             ?.let { astNode ->
                 astNode.hasChildOfType(BREAK) &&
-                    (astNode.psi as? KtBlockExpression)?.statements?.size != 1
+                        (astNode.psi as? KtBlockExpression)?.statements?.size != 1
             } ?: false
         return (!isBlockInIfWithBreak && !isOneLineBlockInIfWithBreak)
     }
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
-    private fun fixNullInIfCondition(condition: ASTNode,
-                                     binaryExpression: KtBinaryExpression,
-                                     isEqualToNull: Boolean
+    private fun fixNullInIfCondition(
+        condition: ASTNode,
+        binaryExpression: KtBinaryExpression,
+        isEqualToNull: Boolean
     ) {
         val variableName = binaryExpression.left!!.text
         val thenFromExistingCode = condition.extractLinesFromBlock(THEN)
@@ -138,26 +140,41 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             elseFromExistingCode
         }
-        val numberOfStatementsInElseBlock = if (isEqualToNull) {
-            (condition.treeParent.psi as KtIfExpression).then?.blockExpressionsOrSingle()?.count() ?: 0
-        } else {
-            (condition.treeParent.psi as KtIfExpression).`else`?.blockExpressionsOrSingle()?.count() ?: 0
-        }
 
-        val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines, numberOfStatementsInElseBlock)
+        val (numberOfStatementsInElseBlock, isAssignmentInNewElseBlock) = (condition.treeParent.psi as KtIfExpression)
+            .let {
+                if (isEqualToNull) {
+                    it.then
+                } else {
+                    it.`else`
+                }
+            }
+            ?.blockExpressionsOrSingle()
+            ?.let { elements ->
+                elements.count() to elements.any { element ->
+                    KtPsiUtil.isAssignment(element)
+                }
+            }
+            ?: Pair(0, false)
+
+        val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines, numberOfStatementsInElseBlock, isAssignmentInNewElseBlock)
         val thenEditedCodeLines = getEditedThenCodeLines(variableName, thenCodeLines, elseEditedCodeLines)
 
         val text = "$thenEditedCodeLines $elseEditedCodeLines"
         val tree = KotlinParser().createNode(text)
-        condition.treeParent.treeParent.addChild(tree, condition.treeParent)
-        condition.treeParent.treeParent.removeChild(condition.treeParent)
+        val ifNode = condition.treeParent
+        ifNode.treeParent.replaceChild(ifNode, tree)
     }
 
-    private fun getEditedElseCodeLines(elseCodeLines: List<String>?, numberOfStatementsInElseBlock: Int): String = when {
+    private fun getEditedElseCodeLines(
+        elseCodeLines: List<String>?,
+        numberOfStatementsInElseBlock: Int,
+        isAssignment: Boolean,
+    ): String = when {
         // else { "null"/empty } -> ""
         elseCodeLines == null || elseCodeLines.singleOrNull() == "null" -> ""
         // else { bar() } -> ?: bar()
-        numberOfStatementsInElseBlock == 1 -> "?: ${elseCodeLines.joinToString(postfix = "\n", separator = "\n")}"
+        numberOfStatementsInElseBlock == 1 && !isAssignment -> "?: ${elseCodeLines.joinToString(postfix = "\n", separator = "\n")}"
         // else { ... } -> ?: run { ... }
         else -> getDefaultCaseElseCodeLines(elseCodeLines)
     }
@@ -170,8 +187,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     ): String = when {
         // if (a != null) {  } -> a ?: editedElse
         (thenCodeLines.isNullOrEmpty() && elseEditedCodeLines.isNotEmpty()) ||
-            // if (a != null) { a } else { ... } -> a ?: editedElse
-            (thenCodeLines?.singleOrNull() == variableName && elseEditedCodeLines.isNotEmpty()) -> variableName
+                // if (a != null) { a } else { ... } -> a ?: editedElse
+                (thenCodeLines?.singleOrNull() == variableName && elseEditedCodeLines.isNotEmpty()) -> variableName
         // if (a != null) { a.foo() } -> a?.foo()
         thenCodeLines?.singleOrNull()?.startsWith("$variableName.") ?: false -> "$variableName?${thenCodeLines?.firstOrNull()!!.removePrefix(variableName)}"
         // if (a != null) { break } -> a?.let { ... }
@@ -239,12 +256,12 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
         // check that binary expression has `null` as right or left operand
         setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
-            // checks that it is the comparison condition
-            setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
-                .contains(condition.operationToken) &&
-            // no need to raise warning or fix null checks in complex expressions
-            !condition.isComplexCondition() &&
-            !condition.isInLambda()
+                // checks that it is the comparison condition
+                setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
+                    .contains(condition.operationToken) &&
+                // no need to raise warning or fix null checks in complex expressions
+                !condition.isComplexCondition() &&
+                !condition.isInLambda()
 
     /**
      * checks if condition is a complex expression. For example:

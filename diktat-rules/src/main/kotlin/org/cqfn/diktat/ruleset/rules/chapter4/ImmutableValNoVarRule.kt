@@ -43,7 +43,7 @@ class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
             usages.forEach { (property, usages) ->
                 val usedInAccumulators = usages.any {
                     it.getParentOfType<KtLoopExpression>(true) != null ||
-                        it.getParentOfType<KtLambdaExpression>(true) != null
+                            it.getParentOfType<KtLambdaExpression>(true) != null
                 }
 
                 if (!usedInAccumulators) {

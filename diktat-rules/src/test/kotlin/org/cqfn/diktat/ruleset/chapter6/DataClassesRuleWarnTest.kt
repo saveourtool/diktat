@@ -28,6 +28,18 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
 
     @Test
     @Tag(USE_DATA_CLASS)
+    fun `_regression_ trigger on default class without a body`() {
+        lintMethod(
+            """
+                    |class Some(val a: Int = 5)
+                    |
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `should trigger - dont forget to consider this class in fix`() {
         lintMethod(
             """
@@ -229,6 +241,20 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
 
     @Test
     @Tag(USE_DATA_CLASS)
+    fun `should not trigger on enums`() {
+        lintMethod(
+            """
+                |enum class Style(val str: String) {
+                |    PASCAL_CASE("PascalCase"),
+                |    SNAKE_CASE("UPPER_SNAKE_CASE"),
+                |    ;
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `should trigger on class with parameter in constructor`() {
         lintMethod(
             """
@@ -272,6 +298,58 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |       val a = auth
                 |   }
                 |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `annotation classes bug`() {
+        lintMethod(
+            """
+                |@Retention(AnnotationRetention.SOURCE)
+                |@Target(AnnotationTarget.CLASS)
+                |annotation class NavGraphDestination(
+                |    val name: String = Defaults.NULL,
+                |    val routePrefix: String = Defaults.NULL,
+                |    val deepLink: Boolean = false,
+                |) {
+                |    object Defaults {
+                |        const val NULL = "@null"
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `value or inline classes bug`() {
+        lintMethod(
+            """
+                |@JvmInline
+                |value class Password(private val s: String)
+                |val securePassword = Password("Don't try this in production")
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `sealed classes bug`() {
+        lintMethod(
+            """
+                |sealed class Password(private val s: String)
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `inner classes bug`() {
+        lintMethod(
+            """
+                |inner class Password(private val s: String)
             """.trimMargin()
         )
     }

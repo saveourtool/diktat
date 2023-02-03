@@ -94,7 +94,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isStringVar(firstChild: ASTNode, lastChild: ASTNode) = firstChild.elementType == STRING_TEMPLATE ||
-        ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION && lastChild.elementType == STRING_TEMPLATE)
+            ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION && lastChild.elementType == STRING_TEMPLATE)
 
     @Suppress("COMMENT_WHITE_SPACE")
     private fun isPlusBinaryExpression(node: ASTNode): Boolean {

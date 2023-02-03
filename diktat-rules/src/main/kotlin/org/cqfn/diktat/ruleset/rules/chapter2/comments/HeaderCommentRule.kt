@@ -61,7 +61,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkHeaderKdoc(node: ASTNode) {
         node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { headerKdoc ->
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE &&
-                headerKdoc.treeNext.text.count { it == '\n' } != 2) {
+                    headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                     "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
@@ -70,7 +70,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         }
             ?: run {
                 val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
-                    node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
+                        node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
                 if (numDeclaredClassesAndObjects != 1) {
                     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode,
                         "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
@@ -148,12 +148,12 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
         val isCopyrightMatchesPatternExceptFirstYear = isCopyRightTextMatchesPattern(headerComment, copyrightText) ||
-            isCopyRightTextMatchesPattern(headerComment, copyrightWithCorrectYear)
+                isCopyRightTextMatchesPattern(headerComment, copyrightWithCorrectYear)
 
         val isWrongCopyright = headerComment != null &&
-            !isCopyrightMatchesPatternExceptFirstYear &&
-            !isHeaderCommentContainText(headerComment, copyrightText) &&
-            !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
+                !isCopyrightMatchesPatternExceptFirstYear &&
+                !isHeaderCommentContainText(headerComment, copyrightText) &&
+                !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
 
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))

@@ -1,6 +1,6 @@
 <img src="/logo.svg" width="64px"/>
 
-![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg)
+![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg?branch=master)
 ![deteKT static analysis](https://github.com/saveourtool/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/saveourtool/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
@@ -20,13 +20,13 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process.
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.1). Thanks to the community for this support!
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.4.2). Thanks to the community for this support!
 
 ## See first
 
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
-|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://saveourtool.com/#/demo/diktat) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -56,11 +56,11 @@ Main features of diktat are the following:
    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint && chmod a+x ktlint
    ```
 
-1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.1/diktat-1.2.1.jar)
+1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.4.2/diktat-1.2.4.2.jar)
 
    **OR** use `curl`:
    ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.1/diktat-1.2.1.jar
+   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.4.2/diktat-1.2.4.2.jar
    ```
 
 ### Run diKTat
@@ -74,11 +74,11 @@ $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
 To **autofix** all code style violations, use `-F` option.
 
 ## Run with Maven using diktat-maven-plugin
-:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
+:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
 This can be done by setting `MAVEN_OPTS` variable:
 
 ```
-export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED"
+export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
 ```
 
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
@@ -182,7 +182,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.1"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.4.2"
 }
 ```
 
@@ -193,7 +193,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.1")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.4.2")
     }
 }
 
@@ -211,21 +211,15 @@ diktat {
 }
 ```
 
-Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter (it should be added as a dependency into `diktat` configuration):
+Also in `diktat` extension you can configure different reporters and their output. You can specify `json`, `html`, `sarif`, `plain` (default).
+If `output` is set, it should be a file path. If not set, results will be printed to stdout.
 ```kotlin
 diktat {
-    // since 1.2.1 to keep in line with maven properties
+    // since 1.2.4.2 to keep in line with maven properties
     reporter = "json" // "html", "json", "plain" (default), "sarif"
-    // before 1.2.1
+    // before 1.2.4.2
     // reporterType = "json" // "html", "json", "plain" (default), "sarif"
-}
-```
 
-You can also specify an output.
-```kotlin
-diktat {
-    // since 1.2.1 (reporterType for old versions)
-    reporter = "json"
     output = "someFile.json"
 }
 ```
@@ -265,7 +259,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.2.1").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.2.4.2").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -296,13 +290,13 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.2.1</version> <!-- optional -->
+  <version>1.2.4.2</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
 </details>
 
-## GitHub Native Integration
+## GitHub Integration
 We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporter` (`reporterType`)  in CI/CD.
 GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
 with SARIF format and provides you a native reporting of diktat issues in Pull Requests.
@@ -337,6 +331,18 @@ mvn -B diktat:check@diktat -Ddiktat.githubActions=true
         with:
           sarif_file: ${{ github.workspace }}
 ```
+
+*Note*: `codeql-action/upload-sarif` limits the number of uploaded files at 15. If your project has more than 15 subprojects,
+the limit will be exceeded and the step will fail. To solve this issue one can merge SARIF reports.
+
+`diktat-gradle-plugin` provides this capability with `mergeDiktatReports` task. This task aggregates reports of all diktat tasks
+of all Gradle project, which produce SARIF reports, and outputs the merged report into root project's build directory. Then this single
+file can be used as an input for Github action:
+```yaml
+with:
+    sarif_file: build/reports/diktat/diktat-merged.sarif
+```
+
 </details>
 
 ## <a name="config"></a> Customizations via `diktat-analysis.yml`
@@ -432,7 +438,7 @@ To allow gradual adoption, diktat and ktlint support baseline mode. When running
 the baseline file will be generated. It is a xml file with a complete list of findings by the tool. On later invocations,
 only the findings that are not in the baseline file will be reported. Baseline can be activated with CLI flag:
 ```bash
-java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
+java -jar ktlint -R diktat.jar --baseline=diktat-baseline.xml **/*.kt
 ```
 or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
 but it can be removed and re-generated later, if needed.

@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "dependencyDashboard": true,
   "schedule": [
     "before 4am on Monday"
   ],
@@ -26,7 +27,7 @@
       "groupSlug": "all-minor-patch"
     },
     {
-      "managers": ["maven"],
+      "managers": ["maven", "gradle"],
       "matchPackagePatterns": [
         "^org\\.jetbrains\\.kotlin[.:]"
       ],
@@ -49,9 +50,27 @@
       "allowedVersions": "<= 1.6.8 || > 1.6.13"
     },
     {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "io.github.microutils:kotlin-logging-jvm"
+      ],
+      "allowedVersions": "<= 2.1.23"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackageNames": [
+          "com.charleskorn.kaml:kaml-jvm"
+      ],
+      "allowedVersions": "<= 0.47.0"
+    },
+    {
       "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"
+      ],
+      "excludePackagePatterns": [
+        "^org\\.jetbrains\\.kotlin[.:]",
+        "^com\\.pinterest\\.ktlint[.:]"
       ],
       "matchUpdateTypes": [
         "minor",

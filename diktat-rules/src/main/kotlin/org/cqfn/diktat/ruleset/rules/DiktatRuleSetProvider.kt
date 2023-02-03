@@ -1,3 +1,7 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
@@ -104,14 +108,9 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         yield(resolveConfigFileFromJarLocation())
         yield(resolveConfigFileFromSystemProperty())
     }
-
-    @Suppress(
-        "LongMethod",
-        "TOO_LONG_FUNCTION",
-    )
-    override fun get(): RuleSet {
+    private val configRules: List<RulesConfig> by lazy {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
-            " (it can be placed to the run directory or the default file from resources will be used)")
+                " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
             .firstOrNull { it != null && File(it).exists() }
         diktatConfigFile = configPath
@@ -119,20 +118,30 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 val possibleConfigsList = possibleConfigs.toList()
                 log.warn(
                     "Configuration file not found in directory where diktat is run (${possibleConfigsList[0]}) " +
-                        "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
-                        "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
-                        "the default file included in jar will be used. " +
-                        "Some configuration options will be disabled or substituted with defaults. " +
-                        "Custom configuration file should be placed in diktat working directory if run from CLI " +
-                        "or provided as configuration options in plugins."
+                            "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
+                            "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
+                            "the default file included in jar will be used. " +
+                            "Some configuration options will be disabled or substituted with defaults. " +
+                            "Custom configuration file should be placed in diktat working directory if run from CLI " +
+                            "or provided as configuration options in plugins."
                 )
                 diktatConfigFile
             }
 
-        val configRules = RulesConfigReader(javaClass.classLoader)
+        RulesConfigReader(javaClass.classLoader)
             .readResource(diktatConfigFile)
             ?.onEach(::validate)
             ?: emptyList()
+    }
+
+    @Suppress(
+        "LongMethod",
+        "TOO_LONG_FUNCTION",
+    )
+    @Deprecated(
+        "Marked for removal in KtLint 0.48. See changelog or KDoc for more information.",
+    )
+    override fun get(): RuleSet {
         // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).

@@ -72,9 +72,9 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
             .allBlockFlattened()
             .map { astNode ->
                 listOf(astNode) +
-                    astNode.siblings(false)
-                        .takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }
-                        .toList()
+                        astNode.siblings(false)
+                            .takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }
+                            .toList()
             }
 
         node.checkAndReorderBlocks(blocks)
@@ -97,7 +97,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
             .annotationEntries
             .any { it.node.isFollowedByNewline() }
         val hasCustomAccessors = (node.psi as KtProperty).accessors.isNotEmpty() ||
-            (previousProperty.psi as KtProperty).accessors.isNotEmpty()
+                (previousProperty.psi as KtProperty).accessors.isNotEmpty()
 
         val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
         val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
@@ -105,7 +105,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
         // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
         if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
-            hasCustomAccessors && actualNewLines > numRequiredNewLines) {
+                hasCustomAccessors && actualNewLines > numRequiredNewLines) {
             BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()?.text ?: node.text, node.startOffset, node) {
                 whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
             }
@@ -137,6 +137,23 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.checkAndReorderBlocks(blocks: List<List<ASTNode>>) {
         val classChildren = this.children().filter { it.elementType in childrenTypes }.toList()
+
+        check(blocks.size == classChildren.size) {
+            StringBuilder().apply {
+                append("`classChildren` has a size of ${classChildren.size} while `blocks` has a size of ${blocks.size}$NEWLINE")
+
+                append("`blocks`:$NEWLINE")
+                blocks.forEachIndexed { index, block ->
+                    append("\t$index: ${block.firstOrNull()?.text}$NEWLINE")
+                }
+
+                append("`classChildren`:$NEWLINE")
+                classChildren.forEachIndexed { index, child ->
+                    append("\t$index: ${child.text}$NEWLINE")
+                }
+            }
+        }
+
         if (classChildren != blocks.map { it.first() }) {
             blocks.filterIndexed { index, pair -> classChildren[index] != pair.first() }
                 .forEach { listOfChildren ->
@@ -180,9 +197,22 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                 val allProperties = node.getAllChildrenWithType(PROPERTY)
                 val constProperties = allProperties.filterByModifier(CONST_KEYWORD)
                 val lateInitProperties = allProperties.filterByModifier(LATEINIT_KEYWORD)
-                val loggers = allProperties.filterByModifier(PRIVATE_KEYWORD).filter {
-                    it.getIdentifierName()!!.text.contains(loggerPropertyRegex)
-                }
+                val loggers = allProperties.filterByModifier(PRIVATE_KEYWORD)
+                    .filterNot { astNode ->
+                        /*
+                         * A `const` field named "logger" is unlikely to be a logger.
+                         */
+                        astNode in constProperties
+                    }
+                    .filterNot { astNode ->
+                        /*
+                         * A `lateinit` field named "logger" is unlikely to be a logger.
+                         */
+                        astNode in lateInitProperties
+                    }
+                    .filter { astNode ->
+                        astNode.getIdentifierName()?.text?.matches(loggerPropertyRegex) ?: false
+                    }
                 val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }
                 return AllProperties(loggers, constProperties, properties, lateInitProperties)
             }

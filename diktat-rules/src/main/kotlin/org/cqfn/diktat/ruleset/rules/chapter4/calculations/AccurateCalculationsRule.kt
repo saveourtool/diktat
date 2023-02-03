@@ -55,8 +55,8 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
                     .singleOrNull()
                     ?.let { it.getArgumentExpression() as? KtCallExpression }
                     ?.isAbsOfFloat()
-                    ?: false ||
-                    (receiverExpression as? KtCallExpression).isAbsOfFloat()
+                ?: false ||
+                        (receiverExpression as? KtCallExpression).isAbsOfFloat()
             }
             ?: false
 
@@ -137,13 +137,13 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
 @Suppress("UnsafeCallOnNullableType")
 private fun PsiElement.isFloatingPoint(): Boolean =
     node.elementType == ElementType.FLOAT_LITERAL ||
-        node.elementType == ElementType.FLOAT_CONSTANT ||
-        ((this as? KtNameReferenceExpression)
-            ?.findLocalDeclaration()
-            ?.initializer
-            ?.node
-            ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
-            ?: false) ||
-        ((this as? KtBinaryExpression)
-            ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
-            ?: false)
+            node.elementType == ElementType.FLOAT_CONSTANT ||
+            ((this as? KtNameReferenceExpression)
+                ?.findLocalDeclaration()
+                ?.initializer
+                ?.node
+                ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
+                ?: false) ||
+            ((this as? KtBinaryExpression)
+                ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
+                ?: false)

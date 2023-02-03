@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.getFilePath
@@ -13,7 +14,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
 /**
- * This is a wrapper around Ktlint Rule
+ * This is a wrapper around _KtLint_ `Rule`.
  *
  * @param id id of the rule
  * @property configRules all rules from configuration
@@ -25,19 +26,29 @@ abstract class DiktatRule(
     val configRules: List<RulesConfig>,
     private val inspections: List<DiktatConfigRule>,
     visitorModifiers: Set<VisitorModifier> = emptySet(),
-) : Rule(id, visitorModifiers) {
+) : Rule(id.qualifiedWithRuleSetId(), visitorModifiers) {
     /**
      * Default value is false
      */
     var isFixMode: Boolean = false
 
     /**
-     * Will be initialized in visit
+     * The **file-specific** error emitter, initialized in
+     * [visit] and used in [logic] implementations.
+     *
+     * Since the file is indirectly a part of the state of a `Rule`, the same
+     * `Rule` instance should **never be re-used** to check more than a single
+     * file, or confusing effects (incl. race conditions) will occur.
+     * See the documentation of the [Rule] class for more details.
+     *
+     * @see Rule
+     * @see visit
+     * @see logic
      */
     lateinit var emitWarn: EmitType
 
     @Suppress("TooGenericExceptionThrown")
-    override fun visit(
+    final override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType

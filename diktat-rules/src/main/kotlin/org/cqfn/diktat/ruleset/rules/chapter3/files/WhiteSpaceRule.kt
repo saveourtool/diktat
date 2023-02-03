@@ -153,7 +153,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.treeNext.numWhiteSpaces()?.let { it > 0 } == true) {
             // there is either whitespace or newline after constructor keyword
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should not be separated from " +
-                "'(' with a whitespace", node.startOffset, node) {
+                    "'(' with a whitespace", node.startOffset, node) {
                 node.treeParent.removeChild(node.treeNext)
             }
         }
@@ -169,7 +169,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
                 return
             }
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should be separated from " +
-                "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset, nextCodeLeaf) {
+                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset, nextCodeLeaf) {
                 node.leaveSingleWhiteSpace()
             }
         }
@@ -177,9 +177,9 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleRbrace(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL &&
-            !node.treePrev.isWhiteSpace() &&
-            node.treePrev.elementType == BLOCK &&
-            node.treePrev.text.isNotEmpty()) {
+                !node.treePrev.isWhiteSpace() &&
+                node.treePrev.elementType == BLOCK &&
+                node.treePrev.text.isNotEmpty()) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before }", node.startOffset, node) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node)
             }
@@ -200,10 +200,10 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             .takeIf { it.size == NUM_PARENTS_FOR_LAMBDA }
             ?.let {
                 it[0].elementType == FUNCTION_LITERAL &&
-                    it[1].elementType == LAMBDA_EXPRESSION &&
-                    it[2].elementType == VALUE_ARGUMENT &&
-                    // lambda is not passed as a named argument
-                    !it[2].hasChildOfType(EQ)
+                        it[1].elementType == LAMBDA_EXPRESSION &&
+                        it[2].elementType == VALUE_ARGUMENT &&
+                        // lambda is not passed as a named argument
+                        !it[2].hasChildOfType(EQ)
             }
             ?: false
 
@@ -228,7 +228,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             // Handling this case: `foo({ it.bar() }, 2, 3)`
             if (numWhiteSpace != 0 && isFirstArgument) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
-                    " inside argument list", node.startOffset, node) {
+                        " inside argument list", node.startOffset, node) {
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
                 }
             }
@@ -244,7 +244,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleWhiteSpaceAfterLeftBrace(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL && !node.treeNext.isWhiteSpace() &&
-            node.treeNext.elementType == BLOCK && node.treeNext.text.isNotEmpty()) {
+                node.treeNext.elementType == BLOCK && node.treeNext.text.isNotEmpty()) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace after {", node.startOffset, node) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node.treeNext)
             }
@@ -290,7 +290,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
         if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION || it == PROPERTY } ||
-            node.elementType != OPERATION_REFERENCE) {
+                node.elementType != OPERATION_REFERENCE) {
             val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
             handleToken(node, requiredNumSpaces, requiredNumSpaces)
         }
@@ -318,9 +318,9 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         val isErrorAfter = requiredSpacesAfter != null && spacesAfter != null && spacesAfter != requiredSpacesAfter
         if (isErrorBefore || isErrorAfter) {
             val freeText = "${node.text} should have" +
-                getDescription(requiredSpacesBefore != null, requiredSpacesAfter != null, requiredSpacesBefore, requiredSpacesAfter) +
-                ", but has" +
-                getDescription(isErrorBefore, isErrorAfter, spacesBefore, spacesAfter)
+                    getDescription(requiredSpacesBefore != null, requiredSpacesAfter != null, requiredSpacesBefore, requiredSpacesAfter) +
+                    ", but has" +
+                    getDescription(isErrorBefore, isErrorAfter, spacesBefore, spacesAfter)
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.fixSpaceAround(requiredSpacesBefore, requiredSpacesAfter)
             }

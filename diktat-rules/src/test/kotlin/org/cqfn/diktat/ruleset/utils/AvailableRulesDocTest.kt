@@ -19,7 +19,7 @@ class AvailableRulesDocTest {
             val ruleName = splitMarkDown[SPLIT_MARK].trim()
 
             if (!ruleName.startsWith(TABLE_DELIMITER) &&
-                !ruleName.startsWith(RULE_NAME_HEADER)) {
+                    !ruleName.startsWith(RULE_NAME_HEADER)) {
                 listWithRulesFromDoc.add(ruleName)
             }
         }
@@ -33,10 +33,10 @@ class AvailableRulesDocTest {
 
         allRulesFromCode.forEach { warning ->
             val ruleName = warning.ruleName()
-            val ruleFound = allRulesFromDoc.find { it.trim() == ruleName } != null
+            val ruleFound = allRulesFromDoc.any { it.trim() == ruleName }
             Assertions.assertTrue(ruleFound) {
                 val docs = "| | | $ruleName" +
-                    "|  |  |  | |"
+                        "|  |  |  | |"
                 """
                     Cannot find warning $ruleName in $AVAILABLE_RULES_FILE.
                     You can fix it by adding the following description below with more info to $AVAILABLE_RULES_FILE:
@@ -47,10 +47,10 @@ class AvailableRulesDocTest {
 
         allRulesFromDoc.forEach { warning ->
             val trimmedWarning = warning.trim()
-            val ruleFound = allRulesFromCode.find { it.ruleName() == trimmedWarning } != null
+            val ruleFound = allRulesFromCode.any { it.ruleName() == trimmedWarning }
             Assertions.assertTrue(ruleFound) {
                 """
-                    Found rule (warning) in documentation: <$trimmedWarning> that does not exist in the code. Misprint or configuration was renamed? 
+                    Found rule (warning) in documentation: <$trimmedWarning> that does not exist in the code. Misprint or configuration was renamed?
                 """.trimIndent()
             }
         }

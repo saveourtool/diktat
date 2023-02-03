@@ -6,7 +6,6 @@ package org.cqfn.diktat.common.utils
 
 import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
-import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 
 /**
@@ -25,4 +24,4 @@ fun KotlinLogging.loggerWithKtlintConfig(func: () -> Unit) =
  * @return a logger
  */
 fun KotlinLogging.loggerWithKtlintConfig(clazz: KClass<*>) =
-    logger(LoggerFactory.getLogger(clazz.java)).initKtLintKLogger()
+    logger(clazz.java.name).initKtLintKLogger()

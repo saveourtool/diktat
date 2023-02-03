@@ -1,79 +1,67 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.utils.LintErrorCallback
+import org.cqfn.diktat.ruleset.utils.defaultCallback
+import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSetProvider
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
-
 import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.div
 
 /**
- * @property resourceFilePath path to files which will be compared in tests
+ * Base class for FixTest
  */
-open class FixTestBase(protected val resourceFilePath: String,
-                       private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-                       private val cb: LintErrorCallback = defaultCallback,
-                       private val rulesConfigList: List<RulesConfig>? = null
+open class FixTestBase(
+    resourceFilePath: String,
+    ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+    defaultRulesConfigList: List<RulesConfig>? = null,
+    cb: LintErrorCallback = defaultCallback,
 ) {
-    private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-        format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
-    }
-
-    constructor(resourceFilePath: String,
-                ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
-                rulesConfigList: List<RulesConfig>? = null,
-                cb: LintErrorCallback = defaultCallback
-    ) : this(
-        resourceFilePath,
-        { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
-        cb,
-        rulesConfigList
-    )
-
     /**
-     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
-     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     * testComparatorUnit
      */
-    protected fun fixAndCompare(expectedPath: String, testPath: String) {
-        Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath)
+    private val testComparatorUnitSupplier = { overrideRulesConfigList: List<RulesConfig>? ->
+        TestComparatorUnit(
+            resourceFilePath = resourceFilePath,
+            function = { expectedText, testFilePath ->
+                format(
+                    ruleSetProviderRef = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
+                    text = expectedText,
+                    fileName = testFilePath,
+                    cb = cb,
+                )
+            },
         )
     }
 
     /**
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     */
-    protected fun fixAndCompareSmokeTest(expectedPath: String, testPath: String) {
-        Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath, true)
-        )
-    }
-
-    /**
-     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
-     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
-     * @param overrideRulesConfigList optional override to [rulesConfigList]
+     * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
+     * @param trimLastEmptyLine whether the last (empty) line should be
+     *   discarded when reading the content of [testPath].
      * @see fixAndCompareContent
      */
-    protected fun fixAndCompare(expectedPath: String,
-                                testPath: String,
-                                overrideRulesConfigList: List<RulesConfig>
+    protected fun fixAndCompare(
+        expectedPath: String,
+        testPath: String,
+        overrideRulesConfigList: List<RulesConfig>? = null,
+        trimLastEmptyLine: Boolean = false,
     ) {
-        val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-            format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
-        }
+        val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         Assertions.assertTrue(
             testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath)
+                .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
+                .isSuccessful
         )
     }
 
@@ -107,10 +95,8 @@ open class FixTestBase(protected val resourceFilePath: String,
             out.write(expectedContent)
         }
 
-        val testComparatorUnit = TestComparatorUnit(tempDir.toString()) { text, fileName ->
-            format(ruleSetProviderRef, text, fileName, overrideRulesConfigList ?: rulesConfigList, cb)
-        }
-
-        return testComparatorUnit.compareFilesFromFileSystem(expected, actual)
+        val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
+        return testComparatorUnit
+            .compareFilesFromFileSystem(expected, actual, false)
     }
 }

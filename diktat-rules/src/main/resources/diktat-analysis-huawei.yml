@@ -7,7 +7,7 @@
     # testDirs: test
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.7
+    kotlinVersion: 1.8
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -210,8 +210,14 @@
     extendedIndentOfParameters: false
     # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
+    # If true, expression bodies which begin on a separate line are indented
+    # using a continuation indent. The default is false.
+    #
+    # This flag is called CONTINUATION_INDENT_FOR_EXPRESSION_BODIES in IDEA and
+    # ij_kotlin_continuation_indent_for_expression_bodies in .editorconfig.
+    extendedIndentForExpressionBodies: false
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
-    extendedIndentAfterOperators: false
+    extendedIndentAfterOperators: true
     # If true: when dot qualified expression starts on a new line, this line will be indented with two indentations instead of one
     extendedIndentBeforeDot: false
     # The indentation size for each file
@@ -442,6 +448,9 @@
   enabled: true
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
+  enabled: true
+# There's a property in KDoc which is already present
+- name: KDOC_DUPLICATE_PROPERTY
   enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT

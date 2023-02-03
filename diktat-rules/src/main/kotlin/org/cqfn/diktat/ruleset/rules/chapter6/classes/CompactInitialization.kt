@@ -69,9 +69,9 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                 .takeWhile {
                     // statements like `name.field = value` where name == propertyName
                     it is KtBinaryExpression && it.node.findChildByType(OPERATION_REFERENCE)?.findChildByType(EQ) != null &&
-                        (it.left as? KtDotQualifiedExpression)?.run {
-                            (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
-                        }
+                            (it.left as? KtDotQualifiedExpression)?.run {
+                                (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
+                            }
                             ?: false
                 }
                 .map {

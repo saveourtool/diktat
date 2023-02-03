@@ -1,46 +1,51 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")// False positives, see #1494.
+
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.IndentationConfig
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asRulesConfigList
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.asSequenceWithConcatenation
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.assertNotNull
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.describe
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.extendedIndent
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestMixin.withCustomParameters
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionBodyFunctions
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.expressionsWrappedAfterOperator
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.parenthesesSurroundedInfixExpressions
-import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationRuleTestResources.whitespaceInStringLiterals
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.junit.NaturalDisplayName
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.ALIGNED_PARAMETERS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
+import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.assertj.core.api.SoftAssertions.assertSoftly
+import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.MethodOrderer.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.io.TempDir
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
-
 import java.nio.file.Path
 
-@TestMethodOrder(DisplayName::class)
+import org.cqfn.diktat.ruleset.chapter3.spaces.IndentationConfigFactory as IndentationConfig
+
+/**
+ * Legacy indentation tests.
+ *
+ * Consider adding new tests to [IndentationRuleTest] instead.
+ *
+ * @see IndentationRuleTest
+ */
+@TestMethodOrder(NaturalDisplayName::class)
 class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     ::IndentationRule,
     listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
             mapOf(
-                "newlineAtEnd" to "true",  // expected file should have two newlines at end in order to be read by BufferedReader correctly
-                "extendedIndentOfParameters" to "true",
-                "alignedParameters" to "true",
-                "extendedIndentAfterOperators" to "true",
-                "extendedIndentBeforeDot" to "true",
+                NEWLINE_AT_END to "true",  // expected file should have two newlines at end in order to be read by BufferedReader correctly
+                EXTENDED_INDENT_OF_PARAMETERS to "true",
+                ALIGNED_PARAMETERS to "true",
+                EXTENDED_INDENT_FOR_EXPRESSION_BODIES to "true",
+                EXTENDED_INDENT_AFTER_OPERATORS to "true",
+                EXTENDED_INDENT_BEFORE_DOT to "true",
             )
         )
     )
@@ -69,183 +74,167 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
         fixAndCompare("ConstructorExpected.kt", "ConstructorTest.kt")
     }
 
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `multiline string`() {
-        fixAndCompare("MultilionStringExpected.kt", "MultilionStringTest.kt")
-    }
-
-    /**
-     * @param actualContent the original file content (may well be modified as
-     *   fixes are applied).
-     * @param expectedContent the content the file is expected to have after the
-     *   fixes are applied.
-     */
-    private fun lintMultipleMethods(
-        @Language("kotlin") actualContent: Array<String>,
-        @Language("kotlin") expectedContent: Array<String> = actualContent,
-        tempDir: Path,
-        rulesConfigList: List<RulesConfig>? = null
-    ) {
-        require(actualContent.isNotEmpty()) {
-            "code fragments is an empty array"
-        }
-
-        require(actualContent.size == expectedContent.size) {
-            "The actual and expected code fragments are arrays of different size: ${actualContent.size} != ${expectedContent.size}"
-        }
-
-        assertSoftly { softly ->
-            (actualContent.asSequenceWithConcatenation() zip
-                expectedContent.asSequenceWithConcatenation()).forEach { (actual, expected) ->
-                val lintResult = fixAndCompareContent(
-                    actual,
-                    expected,
-                    tempDir,
-                    rulesConfigList)
-
-                if (!lintResult.isSuccessful) {
-                    softly.assertThat(lintResult.actualContent)
-                        .describedAs("lint result for ${actual.describe()}")
-                        .isEqualTo(lintResult.expectedContent)
-                }
-            }
-        }
-    }
-
-    /**
-     * See [#1330](https://github.com/saveourtool/diktat/issues/1330).
-     */
     @Nested
-    @TestMethodOrder(DisplayName::class)
-    inner class `Expression body functions` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
-        @ValueSource(booleans = [false, true])
-        @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should remain unchanged if properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
-
-            lintMultipleMethods(
-                expressionBodyFunctions[extendedIndentAfterOperators].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
-        }
-
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
-        @ValueSource(booleans = [false, true])
-        @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
-
-            lintMultipleMethods(
-                actualContent = expressionBodyFunctions[!extendedIndentAfterOperators].assertNotNull(),
-                expectedContent = expressionBodyFunctions[extendedIndentAfterOperators].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
-        }
-    }
-
-    /**
-     * See [#1347](https://github.com/saveourtool/diktat/issues/1347).
-     */
-    @Nested
-    @TestMethodOrder(DisplayName::class)
+    @TestMethodOrder(NaturalDisplayName::class)
     inner class `Multi-line string literals` {
-        @ParameterizedTest(name = "extendedIndent = {0}")
-        @ValueSource(booleans = [false, true])
+        /**
+         * Correctly-indented opening quotation mark, incorrectly-indented
+         * closing quotation mark.
+         */
+        @Test
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `no whitespace should be injected (code matches settings)`(extendedIndent: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
+        @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")  // False positives
+        fun `case 1 - mis-aligned opening and closing quotes`(@TempDir tempDir: Path) {
+            val actualCode = """
+            |fun f() {
+            |    g(
+            |        ""${'"'}
+            |            |val q = 1
+            |            |
+            |                    ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
 
-            lintMultipleMethods(
-                whitespaceInStringLiterals[extendedIndent].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
+            val expectedCode = """
+            |fun f() {
+            |    g(
+            |        ""${'"'}
+            |            |val q = 1
+            |            |
+            |        ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
+
+            val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
+            assertThat(lintResult.actualContent)
+                .describedAs("lint result for ${actualCode.describe()}")
+                .isEqualTo(lintResult.expectedContent)
         }
 
-        @ParameterizedTest(name = "extendedIndent = {0}")
-        @ValueSource(booleans = [false, true])
+        /**
+         * Both the opening and the closing quotation marks are incorrectly
+         * indented (indentation level is less than needed).
+         */
+        @Test
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `no whitespace should be injected (mis-indented code reformatted)`(extendedIndent: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters(*extendedIndent(enabled = extendedIndent))
+        @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")  // False positives
+        fun `case 2`(@TempDir tempDir: Path) {
+            val actualCode = """
+            |fun f() {
+            |    g(
+            |    ""${'"'}
+            |            |val q = 1
+            |            |
+            |    ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
 
-            lintMultipleMethods(
-                actualContent = whitespaceInStringLiterals[!extendedIndent].assertNotNull(),
-                expectedContent = whitespaceInStringLiterals[extendedIndent].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
-        }
-    }
+            val expectedCode = """
+            |fun f() {
+            |    g(
+            |        ""${'"'}
+            |                |val q = 1
+            |                |
+            |        ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
 
-    /**
-     * See [#1340](https://github.com/saveourtool/diktat/issues/1340).
-     */
-    @Nested
-    @TestMethodOrder(DisplayName::class)
-    inner class `Expressions wrapped after operator` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
-        @ValueSource(booleans = [false, true])
-        @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
-
-            lintMultipleMethods(
-                expressionsWrappedAfterOperator[extendedIndentAfterOperators].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
-        }
-
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
-        @ValueSource(booleans = [false, true])
-        @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
-
-            lintMultipleMethods(
-                actualContent = expressionsWrappedAfterOperator[!extendedIndentAfterOperators].assertNotNull(),
-                expectedContent = expressionsWrappedAfterOperator[extendedIndentAfterOperators].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
-        }
-    }
-
-    /**
-     * See [#1409](https://github.com/saveourtool/diktat/issues/1409).
-     */
-    @Nested
-    @TestMethodOrder(DisplayName::class)
-    inner class `Parentheses-surrounded infix expressions` {
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
-        @ValueSource(booleans = [false, true])
-        @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be properly indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
-
-            lintMultipleMethods(
-                parenthesesSurroundedInfixExpressions[extendedIndentAfterOperators].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
+            val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
+            assertThat(lintResult.actualContent)
+                .describedAs("lint result for ${actualCode.describe()}")
+                .isEqualTo(lintResult.expectedContent)
         }
 
-        @ParameterizedTest(name = "extendedIndentAfterOperators = {0}")
-        @ValueSource(booleans = [false, true])
+        /**
+         * Both the opening and the closing quotation marks are incorrectly
+         * indented (indentation level is greater than needed).
+         */
+        @Test
         @Tag(WarningNames.WRONG_INDENTATION)
-        fun `should be reformatted if mis-indented`(extendedIndentAfterOperators: Boolean, @TempDir tempDir: Path) {
-            val defaultConfig = IndentationConfig("newlineAtEnd" to false)
-            val customConfig = defaultConfig.withCustomParameters("extendedIndentAfterOperators" to extendedIndentAfterOperators)
+        @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")  // False positives
+        fun `case 3`(@TempDir tempDir: Path) {
+            val actualCode = """
+            |fun f() {
+            |    g(
+            |            ""${'"'}
+            |                    |val q = 1
+            |                    |
+            |            ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
 
-            lintMultipleMethods(
-                actualContent = parenthesesSurroundedInfixExpressions[!extendedIndentAfterOperators].assertNotNull(),
-                expectedContent = parenthesesSurroundedInfixExpressions[extendedIndentAfterOperators].assertNotNull(),
-                tempDir = tempDir,
-                rulesConfigList = customConfig.asRulesConfigList())
+            val expectedCode = """
+            |fun f() {
+            |    g(
+            |        ""${'"'}
+            |                |val q = 1
+            |                |
+            |        ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
+
+            val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
+            assertThat(lintResult.actualContent)
+                .describedAs("lint result for ${actualCode.describe()}")
+                .isEqualTo(lintResult.expectedContent)
+        }
+
+        /**
+         * Both the opening and the closing quotation marks are incorrectly
+         * indented and misaligned.
+         */
+        @Test
+        @Tag(WarningNames.WRONG_INDENTATION)
+        @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")  // False positives
+        fun `case 4 - mis-aligned opening and closing quotes`(@TempDir tempDir: Path) {
+            val actualCode = """
+            |fun f() {
+            |    g(
+            |            ""${'"'}
+            |                    |val q = 1
+            |                    |
+            |                            ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
+
+            val expectedCode = """
+            |fun f() {
+            |    g(
+            |        ""${'"'}
+            |                |val q = 1
+            |                |
+            |        ""${'"'}.trimMargin(),
+            |        arg1 = "arg1"
+            |    )
+            |}
+            """.trimMargin()
+
+            val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
+            assertThat(lintResult.actualContent)
+                .describedAs("lint result for ${actualCode.describe()}")
+                .isEqualTo(lintResult.expectedContent)
+        }
+
+        private fun fixAndCompareContent(@Language("kotlin") actualCode: String,
+                                         @Language("kotlin") expectedCode: String,
+                                         tempDir: Path
+        ): FileComparisonResult {
+            val config = IndentationConfig(NEWLINE_AT_END to false).withCustomParameters().asRulesConfigList()
+            return fixAndCompareContent(actualCode, expectedCode, tempDir, config)
         }
     }
 }

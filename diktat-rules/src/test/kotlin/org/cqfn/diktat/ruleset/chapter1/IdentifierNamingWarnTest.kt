@@ -136,6 +136,16 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
+    @Tag(WarningNames.CONSTANT_UPPERCASE)
+    fun `number in middle name`() {
+        lintMethod(
+            """
+                    const val NE04J_STARTUP_DELAY_MILLIS = 200L
+            """.trimIndent()
+        )
+    }
+
+    @Test
     @Tags(
         Tag(WarningNames.CLASS_NAME_INCORRECT),
         Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT),

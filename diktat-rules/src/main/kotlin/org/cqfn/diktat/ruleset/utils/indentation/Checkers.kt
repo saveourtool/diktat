@@ -4,19 +4,25 @@
 
 package org.cqfn.diktat.ruleset.utils.indentation
 
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationAmount.SINGLE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isBooleanExpression
+import org.cqfn.diktat.ruleset.utils.isDotBeforeCallOrReference
+import org.cqfn.diktat.ruleset.utils.isElvisOperationReference
+import org.cqfn.diktat.ruleset.utils.isLongStringTemplateEntry
 import org.cqfn.diktat.ruleset.utils.lastIndent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.AS_SAFE
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.BODY
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
-import com.pinterest.ktlint.core.ast.ElementType.DOT
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -28,8 +34,7 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -37,19 +42,18 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
-import org.jetbrains.kotlin.psi.KtSafeQualifiedExpression
 import org.jetbrains.kotlin.psi.KtWhenEntry
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
@@ -57,14 +61,14 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Performs the following check: assignment operator increases indent by one step for the expression after it.
- * If [IndentationConfig.extendedIndentAfterOperators] is set to true, indentation is increased by two steps instead.
+ * If [IndentationConfig.extendedIndentForExpressionBodies] is set to `true`, indentation is increased by two steps instead.
  */
 internal class AssignmentOperatorChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
+                ?: indentError.expected) + IndentationAmount.valueOf(configuration.extendedIndentForExpressionBodies), true)
         }
         return null
     }
@@ -87,11 +91,11 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
             .node
             .elementType
             .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
-            whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
-            // no need to trigger when there are no more parameters in the list
-            whiteSpace.siblings(forward = true, withItself = false).any {
-                it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
-            }
+                whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                // no need to trigger when there are no more parameters in the list
+                whiteSpace.siblings(forward = true, withItself = false).any {
+                    it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                }
 
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
@@ -102,8 +106,8 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 ?.treeNext
                 ?.takeIf {
                     it.elementType != WHITE_SPACE &&
-                        // there can be multiline arguments and in this case we don't align parameters with them
-                        !it.textContains('\n')
+                            // there can be multiline arguments and in this case we don't align parameters with them
+                            !it.textContains('\n')
                 }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
@@ -119,7 +123,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     }
                     .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
             } else if (configuration.extendedIndentOfParameters) {
-                indentError.expected + configuration.indentationSize
+                indentError.expected + SINGLE
             } else {
                 indentError.expected
             }
@@ -134,14 +138,26 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
  * Performs the following check: When breaking line after operators like +/-/`*` etc. new line can be indented with 8 space
  */
 internal class ExpressionIndentationChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
-    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
-            val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
-                (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
-            return CheckResult.from(indentError.actual, expectedIndent, true)
+    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? =
+        when {
+            whiteSpace.parent.node.elementType in sequenceOf(BINARY_EXPRESSION, BINARY_WITH_TYPE) &&
+                    whiteSpace.immediateSiblings().any { sibling ->
+                        /*
+                         * We're looking for an operation reference, including
+                         * `as` and `as?` (`AS_SAFE`), but excluding `?:` (`ELVIS`),
+                         * because there's a separate flag for Elvis expressions
+                         * in IDEA (`CONTINUATION_INDENT_IN_ELVIS`).
+                         */
+                        sibling.node.elementType == OPERATION_REFERENCE &&
+                                sibling.node.children().firstOrNull()?.elementType != ELVIS
+                    } -> {
+                val parentIndent = whiteSpace.parentIndent() ?: indentError.expected
+                val expectedIndent = parentIndent + IndentationAmount.valueOf(configuration.extendedIndentAfterOperators)
+                CheckResult.from(indentError.actual, expectedIndent, true)
+            }
+
+            else -> null
         }
-        return null
-    }
 }
 
 /**
@@ -170,10 +186,10 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
                 .treePrev
                 .takeIf { it.elementType == WHITE_SPACE }
                 ?.textContains('\n') ?: false
-            val expectedIndent = indentError.expected + (if (hasNewlineBeforeColon) 2 else 1) * configuration.indentationSize
+            val expectedIndent = indentError.expected + IndentationAmount.valueOf(extendedIndent = hasNewlineBeforeColon)
             return CheckResult.from(indentError.actual, expectedIndent)
         } else if (whiteSpace.parent.node.elementType == SUPER_TYPE_LIST) {
-            val expectedIndent = whiteSpace.parentIndent() ?: (indentError.expected + configuration.indentationSize)
+            val expectedIndent = whiteSpace.parentIndent() ?: (indentError.expected + SINGLE)
             return CheckResult.from(indentError.actual, expectedIndent)
         }
         return null
@@ -185,46 +201,156 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
  * Same is true for safe calls (`?.`) and elvis operator (`?:`).
  */
 internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
-    private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
-        treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
-
-    private fun ASTNode.isCommentBeforeDot(): Boolean {
-        if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
+    /**
+     * @param nextNodePredicate the predicate which the next non-comment
+     *   non-whitespace node should satisfy.
+     * @return `true` if this is a comment node which is immediately preceding
+     *   the node specified by [nextNodePredicate].
+     */
+    private fun ASTNode.isCommentBefore(nextNodePredicate: ASTNode.() -> Boolean): Boolean {
+        if (elementType in sequenceOf(EOL_COMMENT, BLOCK_COMMENT)) {
             var nextNode: ASTNode? = treeNext
-            while (nextNode != null && (nextNode.elementType == WHITE_SPACE || nextNode.elementType == EOL_COMMENT)) {
+            while (nextNode != null && nextNode.elementType in sequenceOf(WHITE_SPACE, EOL_COMMENT)) {
                 nextNode = nextNode.treeNext
             }
-            return nextNode?.isDotBeforeCallOrReference() ?: false
+            return nextNode?.nextNodePredicate() ?: false
         }
         return false
     }
 
+    private fun ASTNode.isElvisReferenceOrCommentBeforeElvis(): Boolean =
+        isElvisOperationReference() ||
+                isCommentBefore(ASTNode::isElvisOperationReference)
+
     private fun ASTNode.isFromStringTemplate(): Boolean =
         hasParent(LONG_STRING_TEMPLATE_ENTRY)
 
-    @Suppress("ComplexMethod")
+    @Suppress(
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION",
+    )
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling
             .node
             .takeIf { nextNode ->
                 (nextNode.isDotBeforeCallOrReference() ||
-                    nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
-                        type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
-                    } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
+                        nextNode.elementType == OPERATION_REFERENCE &&
+                                nextNode.firstChildNode.elementType in sequenceOf(ELVIS, IS_EXPRESSION, AS_KEYWORD, AS_SAFE) ||
+                        nextNode.isCommentBefore(ASTNode::isDotBeforeCallOrReference) ||
+                        nextNode.isCommentBefore(ASTNode::isElvisOperationReference)) &&
+                        whiteSpace.parents.none(PsiElement::isLongStringTemplateEntry)
             }
+            /*-
+             * Here, `node` is any of:
+             *
+             *  - a `DOT` or a `SAFE_ACCESS`,
+             *  - an `OPERATION_REFERENCE` with `ELVIS` as the only child, or
+             */
             ?.let { node ->
+                val indentIncrement = IndentationAmount.valueOf(configuration.extendedIndentBeforeDot)
                 if (node.isFromStringTemplate()) {
                     return CheckResult.from(indentError.actual, indentError.expected +
-                        (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                            indentIncrement, true)
+                }
+
+                /*-
+                 * The list of immediate parents of this whitespace node,
+                 * nearest-to-farthest order
+                 * (the farthest parent is the file node).
+                 */
+                val parentExpressions = whiteSpace.parents.takeWhile { parent ->
+                    val parentType = parent.node.elementType
+
+                    when {
+                        /*
+                         * #1532, 1.2.4+: if this is an Elvis operator
+                         * (OPERATION_REFERENCE -> ELVIS), or an EOL or a
+                         * block comment which immediately precedes this
+                         * Elvis operator, then the indent of the parent
+                         * binary expression should be used as a base for
+                         * the increment.
+                         */
+                        node.isElvisReferenceOrCommentBeforeElvis() -> parentType == BINARY_EXPRESSION
+
+                        /*
+                         * Pre-1.2.4 behaviour, all other cases: the indent
+                         * of the parent dot-qualified or safe-access
+                         * expression should be used as a base for the
+                         * increment.
+                         */
+                        else -> parentType in sequenceOf(
+                            DOT_QUALIFIED_EXPRESSION,
+                            SAFE_ACCESS_EXPRESSION,
+                        )
+                    }
+                }.toList()
+
+                /*
+                 * Selects from the matching parent nodes.
+                 */
+                val matchOrNull: Iterable<PsiElement>.() -> PsiElement? = {
+                    when {
+                        /*
+                         * Selects nearest.
+                         */
+                        node.isElvisReferenceOrCommentBeforeElvis() -> firstOrNull()
+
+                        /*
+                         * Selects farthest.
+                         */
+                        else -> lastOrNull()
+                    }
                 }
 
                 // we need to get indent before the first expression in calls chain
-                return CheckResult.from(indentError.actual, (whiteSpace.run {
-                    parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this
+                /*-
+                 * If the parent indent (the one before a `DOT_QUALIFIED_EXPRESSION`
+                 * or a `SAFE_ACCESS_EXPRESSION`) is `null`, then use 0 as the
+                 * fallback value.
+                 *
+                 * If `indentError.expected` is used as a fallback (pre-1.2.2
+                 * behaviour), this breaks chained dot-qualified or safe-access
+                 * expressions (see #1336), e.g.:
+                 *
+                 * ```kotlin
+                 * val a = first()
+                 *     .second()
+                 *     .third()
+                 * ```
+                 */
+                val parentIndent = (parentExpressions.matchOrNull() ?: whiteSpace).parentIndent()
+                    ?: 0
+
+                val expectedIndent = when {
+                    /*-
+                     * Don't indent Elvis expressions (and the corresponding comments)
+                     * which are nested inside boolean expressions:
+                     *
+                     * ```kotlin
+                     * val x = true &&
+                     *         ""
+                     *             ?.isEmpty()
+                     *         ?: true
+                     * ```
+                     *
+                     * This is a special case, and this is how IDEA formats source code.
+                     */
+                    node.isElvisReferenceOrCommentBeforeElvis() &&
+                            parentExpressions.any { it.node.isBooleanExpression() } -> parentIndent
+
+                    /*-
+                     * All other cases (dot-qualified, safe-access, Elvis).
+                     * Expression parts are indented regularly, e.g.:
+                     *
+                     * ```kotlin
+                     * val a = null as Boolean?
+                     *     ?: true
+                     * ```
+                     */
+                    else -> parentIndent + indentIncrement
                 }
-                    .parentIndent()
-                    ?: indentError.expected) +
-                    (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+
+                return CheckResult.from(indentError.actual, expectedIndent, true)
             }
         return null
     }
@@ -240,12 +366,12 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         return when (parent) {
             is KtLoopExpression -> nextNode?.elementType == BODY && parent.body !is KtBlockExpression
             is KtIfExpression -> nextNode?.elementType == THEN && parent.then !is KtBlockExpression ||
-                nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
+                    nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
             .takeIf { it }
             ?.let {
-                CheckResult.from(indentError.actual, indentError.expected + configuration.indentationSize, true)
+                CheckResult.from(indentError.actual, indentError.expected + SINGLE, true)
             }
     }
 }
@@ -258,7 +384,7 @@ internal class CustomGettersAndSettersChecker(config: IndentationConfig) : Custo
         val parent = whiteSpace.parent
         if (parent is KtProperty && whiteSpace.nextSibling is KtPropertyAccessor) {
             return CheckResult.from(indentError.actual, (parent.parentIndent()
-                ?: indentError.expected) + configuration.indentationSize, true)
+                ?: indentError.expected) + SINGLE, true)
         }
         return null
     }
@@ -272,7 +398,7 @@ internal class ArrowInWhenChecker(configuration: IndentationConfig) : CustomInde
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == ARROW && whiteSpace.parent is KtWhenEntry) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                ?: indentError.expected) + configuration.indentationSize, true)
+                ?: indentError.expected) + SINGLE, true)
         }
         return null
     }
@@ -289,3 +415,10 @@ internal fun PsiElement.parentIndent(): Int? = parentsWithSelf
     .firstOrNull()
     ?.text
     ?.lastIndent()
+
+/**
+ * @return the sequence of immediate siblings (the previous and the next one),
+ *   excluding `null`'s.
+ */
+private fun PsiElement.immediateSiblings(): Sequence<PsiElement> =
+    sequenceOf(prevSibling, nextSibling).filterNotNull()

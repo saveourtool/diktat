@@ -21,6 +21,7 @@ import com.pinterest.ktlint.reporter.plain.PlainReporter
 import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
+import org.apache.maven.plugin.Mojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
@@ -112,7 +113,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
-            if (excludes.isNotEmpty()) " and excluding $excludes" else ""
+                if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
         val ruleSets by lazy {

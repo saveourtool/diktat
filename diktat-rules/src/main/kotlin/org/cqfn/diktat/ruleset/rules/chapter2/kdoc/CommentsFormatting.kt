@@ -113,7 +113,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 return
             }
         } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF &&
-            node.treeParent.firstChildNode == node && node.treeParent.elementType != VALUE_ARGUMENT_LIST) {
+                node.treeParent.firstChildNode == node && node.treeParent.elementType != VALUE_ARGUMENT_LIST) {
             // Else it's a class comment
             checkClassComment(node)
         }
@@ -213,9 +213,14 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
             }
         } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
-            // if there are too many spaces before comment
+            // if there are too many or too few spaces before comment
+            val manyOrFew = when {
+                node.treePrev.text.length > configuration.maxSpacesBeforeComment -> "many"
+                else -> "few"
+            }
+            val message = "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too $manyOrFew in ${node.text}"
             COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
+                message, node.startOffset, node) {
                 (node.treePrev as LeafPsiElement).rawReplaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
             }
         }
@@ -224,40 +229,41 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
     private fun checkWhiteSpaceBeginInComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.elementType == EOL_COMMENT &&
-            node
-                .text
-                .trimStart('/')
-                .takeWhile { it == ' ' }
-                .length == configuration.maxSpacesInComment) {
+                node
+                    .text
+                    .trimStart('/')
+                    .takeWhile { it == ' ' }
+                    .length == configuration.maxSpacesInComment) {
             return
         }
 
         if (node.elementType == BLOCK_COMMENT &&
-            (node
-                .text
-                .trim('/', '*')
-                .takeWhile { it == ' ' }
-                .length == configuration.maxSpacesInComment ||
-                node
-                    .text
-                    .trim('/', '*')
-                    .takeWhile { it == '\n' }
-                    .isNotEmpty())) {
+                (node.isIndentStyleComment() ||
+                        node
+                            .text
+                            .trim('/', '*')
+                            .takeWhile { it == ' ' }
+                            .length == configuration.maxSpacesInComment ||
+                        node
+                            .text
+                            .trim('/', '*')
+                            .takeWhile { it == '\n' }
+                            .isNotEmpty())) {
             return
         }
 
         if (node.elementType == KDOC) {
             val section = node.getFirstChildWithType(KDOC_SECTION)
             if (section != null &&
-                section.findChildrenMatching(KDOC_TEXT) { (it.treePrev != null && it.treePrev.elementType == KDOC_LEADING_ASTERISK) || it.treePrev == null }
-                    .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
+                    section.findChildrenMatching(KDOC_TEXT) { (it.treePrev != null && it.treePrev.elementType == KDOC_LEADING_ASTERISK) || it.treePrev == null }
+                        .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
                 // it.treePrev == null if there is no \n at the beginning of KDoc
                 return
             }
 
             if (section != null &&
-                section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).isNotEmpty() &&
-                section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
+                    section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).isNotEmpty() &&
+                    section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
                 return
             }
         }
@@ -303,7 +309,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
         } else if (node.treeParent.elementType != FILE &&
-            (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2)) {
+                (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2)) {
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 (node.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n\n")
             }
@@ -312,7 +318,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkFirstCommentSpaces(node: ASTNode) {
         if (node.treePrev.isWhiteSpace() &&
-            (node.treePrev.numNewLines() > 1 || node.treePrev.numNewLines() == 0)) {
+                (node.treePrev.numNewLines() > 1 || node.treePrev.numNewLines() == 0)) {
             FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 (node.treePrev as LeafPsiElement).rawReplaceWithText("\n")
             }
@@ -331,7 +337,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         // `treeParent` is the first not-empty node in a file
         true
     } else if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&
-        node.treeParent.treePrev.treePrev != null) {
+            node.treeParent.treePrev.treePrev != null) {
         // When comment inside of a PROPERTY
         node.treeParent
             .treePrev
@@ -342,6 +348,30 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun ASTNode.isChildOfBlockOrClassBody(): Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
+
+    /**
+     * Returns whether this block comment is a `indent`-style comment.
+     *
+     * `indent(1)` is a source code formatting utility for C-like languages.
+     * Historically, source code formatters are permitted to reformat and reflow
+     * the content of block comments, except for those comments which start with
+     * "&#x2f;*-".
+     *
+     * See also:
+     * - [5.1.1 Block Comments](https://www.oracle.com/java/technologies/javase/codeconventions-comments.html)
+     * - [`indent(1)`](https://man.openbsd.org/indent.1)
+     * - [`style(9)`](https://www.freebsd.org/cgi/man.cgi?query=style&sektion=9)
+     *
+     * @return `true` if this block comment is a `indent`-style comment, `false`
+     *   otherwise.
+     */
+    private fun ASTNode.isIndentStyleComment(): Boolean {
+        require(elementType == BLOCK_COMMENT) {
+            "The elementType of this node is $elementType while $BLOCK_COMMENT expected"
+        }
+
+        return text.matches(indentCommentMarker)
+    }
 
     /**
      * [RuleConfiguration] for [CommentsFormatting] rule
@@ -361,5 +391,10 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
         const val NAME_ID = "kdoc-comments-codeblocks-formatting"
+
+        /**
+         * "&#x2f;*-" followed by anything but `*` or `-`.
+         */
+        private val indentCommentMarker = Regex("""(?s)^\Q/*-\E[^*-].*?""")
     }
 }

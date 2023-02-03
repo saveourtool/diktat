@@ -10,15 +10,14 @@ import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
+import mu.KLogger
 import mu.KotlinLogging
-import org.slf4j.Logger
 
 import java.io.BufferedReader
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 
@@ -84,7 +83,6 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    @OptIn(ExperimentalSerializationApi::class)
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
         yamlSerializer.decodeFromString<List<RulesConfig>>(stream.readLines().joinToString(separator = "\n")).reversed().distinctBy { it.name }
     }
@@ -99,19 +97,16 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     override fun getConfigFile(resourceFileName: String): BufferedReader? {
         val resourceFile = File(resourceFileName)
         return if (resourceFile.exists()) {
-            log.debug("Using diktat-analysis.yml file from the following path: ${resourceFile.absolutePath}")
+            log.debug("Using $DIKTAT_ANALYSIS_CONF file from the following path: ${resourceFile.absolutePath}")
             File(resourceFileName).bufferedReader()
         } else {
-            log.debug("Using the default diktat-analysis.yml file from the class path")
+            log.debug("Using the default $DIKTAT_ANALYSIS_CONF file from the class path")
             classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
         }
     }
 
     companion object {
-        /**
-         * A [Logger] that can be used
-         */
-        val log: Logger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
+        internal val log: KLogger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
     }
 }
 
@@ -125,7 +120,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * List of directory names which will be used to detect test sources
      */
     val testAnchors: List<String> by lazy {
-        val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
+        val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',').map { it.trim() }
         if (testDirs.any { !it.lowercase(Locale.getDefault()).endsWith("test") }) {
             log.error("test directory names should end with `test`")
         }
@@ -162,11 +157,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * Get source directories from configuration
      */
     val srcDirectories: List<String> by lazy {
-        val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
-        if (srcDirs.any { !it.lowercase(Locale.getDefault()).endsWith("main") }) {
-            log.error("source directory names should end with `main`")
-        }
-        srcDirs
+        configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
     }
 
     companion object {
@@ -234,6 +225,20 @@ fun String.kotlinVersion(): KotlinVersion {
         KotlinVersion(versions[0], versions[1], versions[2])
     }
 }
+
+/**
+ * Makes sure this _rule id_ is qualified with a _rule set id_.
+ *
+ * @param ruleSetId the _rule set id_; defaults to [DIKTAT_RULE_SET_ID].
+ * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId`.
+ * @see DIKTAT_RULE_SET_ID
+ * @since 1.2.4
+ */
+fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): String =
+    when {
+        this.contains(':') -> this
+        else -> "$ruleSetId:$this"
+    }
 
 /**
  * Get [RulesConfig] representing common configuration part that can be used in any rule

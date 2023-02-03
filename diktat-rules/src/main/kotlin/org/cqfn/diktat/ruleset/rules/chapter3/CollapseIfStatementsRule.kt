@@ -88,7 +88,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         val nestedIfNode = parentThenNode.findChildByType(IF) ?: return null
         // We won't collapse if-statements, if some of them have `else` node
         if ((parentNode.psi as KtIfExpression).`else` != null ||
-            (nestedIfNode.psi as KtIfExpression).`else` != null) {
+                (nestedIfNode.psi as KtIfExpression).`else` != null) {
             return null
         }
         // We monitor which types of nodes are followed before and after nested `if`
@@ -101,7 +101,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         val listOfNodesAfterNestedIf = parentThenNode.getChildren(null).takeLastWhile { it != parentThenNode.findChildByType(IF) }
         val allowedTypes = listOf(LBRACE, WHITE_SPACE, RBRACE, BLOCK_COMMENT, EOL_COMMENT)
         if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes } ||
-            listOfNodesAfterNestedIf.any { it.elementType !in allowedTypes }) {
+                listOfNodesAfterNestedIf.any { it.elementType !in allowedTypes }) {
             return null
         }
         return nestedIfNode
@@ -138,7 +138,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         // we need to put it to the brackets, according algebra of logic
         val mergeCondition =
             if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
-                nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
+                    nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
             ) {
                 "if ($parentConditionText &&$commentsText($nestedConditionText)) {}"
             } else {
@@ -171,7 +171,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         val comments = takeCommentsBeforeNestedIf(parentNode)
         comments.forEach {
             if (it.treeNext.elementType == WHITE_SPACE &&
-                it.treePrev.elementType == WHITE_SPACE) {
+                    it.treePrev.elementType == WHITE_SPACE) {
                 parentNode.removeChild(it.treePrev)
             }
             parentNode.removeChild(it)
@@ -183,12 +183,12 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         repeat(2) {
             val firstElType = nestedContent.first().elementType
             if (firstElType == WHITE_SPACE ||
-                firstElType == LBRACE) {
+                    firstElType == LBRACE) {
                 nestedContent.removeFirst()
             }
             val lastElType = nestedContent.last().elementType
             if (lastElType == WHITE_SPACE ||
-                lastElType == RBRACE) {
+                    lastElType == RBRACE) {
                 nestedContent.removeLast()
             }
         }

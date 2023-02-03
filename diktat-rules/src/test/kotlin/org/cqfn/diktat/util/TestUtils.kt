@@ -2,104 +2,34 @@
  * Utility classes and methods for tests
  */
 
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.RuleSetProvider
-import com.pinterest.ktlint.core.api.FeatureInAlphaState
-import mu.KotlinLogging
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.SoftAssertions
-import org.intellij.lang.annotations.Language
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.function.Consumer
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
-
-@Suppress("TYPE_ALIAS")
-internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
-    log.warn("Received linting error: $lintError")
-}
-
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
 /**
- * Compare [LintError]s from [this] with [expectedLintErrors]
+ * Casts a nullable value to a non-`null` one, similarly to the `!!`
+ * operator.
  *
- * @param expectedLintErrors expected [LintError]s
+ * @param lazyFailureMessage the message to evaluate in case of a failure.
+ * @return a non-`null` value.
  */
-internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) {
-    if (size == expectedLintErrors.size) {
-        Assertions.assertThat(this)
-            .allSatisfy(Consumer { actual ->
-                val expected = expectedLintErrors[this@assertEquals.indexOf(actual)]
-                SoftAssertions.assertSoftly { sa ->
-                    sa
-                        .assertThat(actual.line)
-                        .`as`("Line")
-                        .isEqualTo(expected.line)
-                    sa
-                        .assertThat(actual.col)
-                        .`as`("Column")
-                        .isEqualTo(expected.col)
-                    sa
-                        .assertThat(actual.ruleId)
-                        .`as`("Rule id")
-                        .isEqualTo(expected.ruleId)
-                    sa
-                        .assertThat(actual.detail)
-                        .`as`("Detailed message")
-                        .isEqualTo(expected.detail)
-                    sa
-                        .assertThat(actual.canBeAutoCorrected)
-                        .`as`("Can be autocorrected")
-                        .isEqualTo(expected.canBeAutoCorrected)
-                }
-            })
-    } else {
-        Assertions.assertThat(this).containsExactly(*expectedLintErrors)
-    }
-}
-
-/**
- * @param ruleSetProviderRef
- * @param text
- * @param fileName
- * @param rulesConfigList
- * @param cb callback to be called on unhandled [LintError]s
- * @return formatted code
- */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
-                    @Language("kotlin") text: String,
-                    fileName: String,
-                    rulesConfigList: List<RulesConfig>? = null,
-                    cb: LintErrorCallback = defaultCallback
-): String {
-    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get())
-    return KtLint.format(
-        KtLint.ExperimentalParams(
-            text = text,
-            ruleSets = ruleSets,
-            fileName = fileName.removeSuffix("_copy"),
-            script = fileName.removeSuffix("_copy").endsWith("kts"),
-            cb = cb,
-            debug = true,
-        )
-    )
-}
+internal fun <T> T?.assertNotNull(lazyFailureMessage: () -> String = { "Expecting actual not to be null" }): T =
+    this ?: fail(lazyFailureMessage())
 
 /**
  * This utility function lets you run arbitrary code on every node of given [code].
@@ -110,7 +40,6 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
  * @param expectedAsserts Number of expected times of assert invocation
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
-@OptIn(FeatureInAlphaState::class)
 @Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,
@@ -122,9 +51,10 @@ internal fun applyToCode(code: String,
             text = code,
             ruleSets = listOf(
                 RuleSet("test", object : Rule("astnode-utils-test") {
-                    override fun visit(node: ASTNode,
-                                       autoCorrect: Boolean,
-                                       emit: EmitType
+                    override fun visit(
+                        node: ASTNode,
+                        autoCorrect: Boolean,
+                        emit: EmitType
                     ) {
                         applyToNode(node, counter)
                     }
@@ -133,8 +63,7 @@ internal fun applyToCode(code: String,
             cb = { _, _ -> }
         )
     )
-    Assertions
-        .assertThat(counter.get())
+    assertThat(counter.get())
         .`as`("Number of expected asserts")
         .isEqualTo(expectedAsserts)
 }

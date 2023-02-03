@@ -2,6 +2,10 @@
  * Stub for diktat ruleset provide to be used in tests and other related utilities
  */
 
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
@@ -26,6 +30,7 @@ class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: Lis
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun get() = RuleSet(
         DIKTAT_RULE_SET_ID,
         ruleSupplier.invoke(rulesConfigList ?: emptyList())
@@ -40,6 +45,18 @@ class DiktatRuleSetProviderTest {
         val filesName = File(path)
             .walk()
             .filter { it.isFile }
+            .filter { file ->
+                /*
+                 * Include only those files which contain `Rule` or `DiktatRule`
+                 * descendants (any of the 1st 150 lines contains a superclass
+                 * constructor call).
+                 */
+                val constructorCall = Regex(""":\s*(?:Diktat)?Rule\s*\(""")
+                file.bufferedReader().lineSequence().take(150)
+                    .any { line ->
+                        line.contains(constructorCall)
+                    }
+            }
             .map { it.nameWithoutExtension }
             .filterNot { it in ignoreFile }
         val rulesName = DiktatRuleSetProvider().get()
@@ -61,9 +78,8 @@ class DiktatRuleSetProviderTest {
 
     companion object {
         private val ignoreFile = listOf(
-            "DiktatRuleSetProvider",
             "DiktatRule",
-            "IndentationError",
-            "OrderedRuleSet")
+            "OrderedRuleSet",
+        )
     }
 }

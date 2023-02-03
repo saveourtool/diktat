@@ -63,7 +63,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     private val configuration by lazy {
         if (trailingConfig.isEmpty()) {
             log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
-                " configuration options. See [available-rules.md] for possible configuration options.")
+                    " configuration options. See [available-rules.md] for possible configuration options.")
         }
         TrailingCommaConfiguration(trailingConfig)
     }
@@ -101,7 +101,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun ASTNode.checkTrailingComma(config: Boolean) {
         val shouldFix = this.siblings(true).toList().run {
-            !this.map { it.elementType }.contains(COMMA) && this.find { it.isWhiteSpaceWithNewline() || it.isPartOfComment() } != null
+            !this.map { it.elementType }.contains(COMMA) && this.any { it.isWhiteSpaceWithNewline() || it.isPartOfComment() }
         }
         if (shouldFix && config) {
             // we should write type of node in warning, to make it easier for user to find the parameter

@@ -59,9 +59,9 @@ class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
             val blockChildren = block.getChildren(null).filter { it.elementType !in excessChildrenTypes }
 
             if (blockChildren.size == 1 &&
-                blockChildren.first().elementType == BINARY_EXPRESSION &&
-                (blockChildren.first().psi as KtBinaryExpression).left?.text == "field" &&
-                (blockChildren.first().psi as KtBinaryExpression).right?.text == valueParamName
+                    blockChildren.first().elementType == BINARY_EXPRESSION &&
+                    (blockChildren.first().psi as KtBinaryExpression).left?.text == "field" &&
+                    (blockChildren.first().psi as KtBinaryExpression).right?.text == valueParamName
             ) {
                 raiseWarning(node)
             }

@@ -221,7 +221,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
             """
                 /*
-                 * Copyright (c) 2022 My Company, Ltd. All rights reserved.
+                 * Copyright (c) 2023 My Company, Ltd. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -244,7 +244,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
             """
                 /*
-                 * Copyright (c) My Company, Ltd. 2012-2022. All rights reserved.
+                 * Copyright (c) My Company, Ltd. 2012-2023. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -267,7 +267,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
             """
                 /*
-                   Copyright (c) My Company, Ltd. 2021-2022. All rights reserved.
+                   Copyright (c) My Company, Ltd. 2021-2023. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -290,7 +290,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
             """
                 /*
-                 *  Copyright (c) My Company, Ltd. 2002-2022. All rights reserved.
+                 *  Copyright (c) My Company, Ltd. 2002-2023. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes

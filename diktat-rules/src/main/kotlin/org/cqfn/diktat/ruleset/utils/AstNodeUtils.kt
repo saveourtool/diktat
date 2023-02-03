@@ -20,11 +20,15 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.DOT
+import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -36,13 +40,17 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.OROR
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
@@ -50,6 +58,7 @@ import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -176,7 +185,11 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  */
 fun ASTNode.isFollowedByNewline() =
     parent({ it.treeNext != null }, strict = false)?.let {
-        it.treeNext.elementType == WHITE_SPACE && it.treeNext.text.contains("\n")
+        val probablyWhitespace = it.treeNext
+        it.isFollowedByNewlineCheck() ||
+                (probablyWhitespace.elementType == WHITE_SPACE && probablyWhitespace.treeNext.run {
+                    elementType == EOL_COMMENT && isFollowedByNewlineCheck()
+                })
     } ?: false
 
 /**
@@ -190,9 +203,9 @@ fun ASTNode.isFollowedByNewlineWithComment() =
             EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
             else -> false
         } ||
-            parent({ it.treeNext != null }, strict = false)?.let {
-                it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
-            } ?: false
+                parent({ it.treeNext != null }, strict = false)?.let {
+                    it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
+                } ?: false
     } ?: false
 
 /**
@@ -202,7 +215,7 @@ fun ASTNode.isFollowedByNewlineWithComment() =
 fun ASTNode.isBeginByNewline() =
     parent({ it.treePrev != null }, strict = false)?.let {
         it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n") ||
-            (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
+                (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
     } ?: false
 
 /**
@@ -237,7 +250,12 @@ fun ASTNode.hasParent(type: IElementType) = parent(type) != null
  * check text because some nodes have empty BLOCK element inside (lambda)
  */
 fun ASTNode?.isBlockEmpty() = this?.let {
-    this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    if (this.elementType == ElementType.WHEN) {
+        val firstIndex = this.text.indexOf("{")
+        this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    } else {
+        this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    }
 } ?: true
 
 /**
@@ -489,7 +507,7 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
             this.getChildren(null).forEach { child ->
                 result.append(
                     "${"-".repeat(level + 1)} " +
-                        child.doPrettyPrint(level + 1, maxLevel - 1)
+                            child.doPrettyPrint(level + 1, maxLevel - 1)
                 )
             }
         }
@@ -506,7 +524,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
     this?.run {
         require(this.elementType == MODIFIER_LIST)
         this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
-            !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
+                !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
     }
         ?: true
 
@@ -688,7 +706,7 @@ fun List<ASTNode>.handleIncorrectOrder(
         val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
         val isPositionIncorrect =
             (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode)) ||
-                !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
+                    !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
 
         if (isPositionIncorrect) {
             incorrectPositionHandler(astNode, beforeThisNode)
@@ -702,12 +720,11 @@ fun List<ASTNode>.handleIncorrectOrder(
  */
 @Suppress("WRONG_NEWLINES")
 fun ASTNode.extractLineOfText(): String {
-    var text: MutableList<String> = mutableListOf()
+    val text: MutableList<String> = mutableListOf()
     siblings(false)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
-        .forEach { text.add(it.last()) }
-    text = text.asReversed()
+        .forEach { text.add(0, it.last()) }
     text.add(this.text)
     val nextNode = parent({ it.treeNext != null }, false) ?: this
     nextNode.siblings(true)
@@ -817,15 +834,80 @@ fun ASTNode.getLineNumber(): Int =
 fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
     var node: ASTNode? = this
     types.forEach {
-        node = node?.findChildByType(it) ?: run {
-            while (node?.hasChildOfType(PARENTHESIZED) == true) {
-                node = node?.findChildByType(PARENTHESIZED)
-            }
-            node?.findChildByType(it)
+        while (node?.hasChildOfType(PARENTHESIZED) == true) {
+            node = node?.findChildByType(PARENTHESIZED)
         }
+        node = node?.findChildByType(it)
     }
     return node
 }
+
+/**
+ * @return whether this node is a dot (`.`, `.?`) before a function call or a
+ *   property reference.
+ * @since 1.2.4
+ */
+fun ASTNode.isDotBeforeCallOrReference(): Boolean =
+    elementType in sequenceOf(DOT, SAFE_ACCESS) &&
+            treeNext.elementType in sequenceOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
+
+/**
+ * @return whether this node is an _Elvis_ operation reference (i.e. an
+ *   [OPERATION_REFERENCE] which holds [ELVIS] is its only child).
+ * @see OPERATION_REFERENCE
+ * @see ELVIS
+ * @since 1.2.4
+ */
+fun ASTNode.isElvisOperationReference(): Boolean =
+    treeParent.elementType == BINARY_EXPRESSION &&
+            elementType == OPERATION_REFERENCE &&
+            run {
+                val children = children().toList()
+                children.size == 1 && children[0].elementType == ELVIS
+            }
+
+/**
+ * @return whether this node is a whitespace or a comment.
+ * @since 1.2.4
+ */
+fun ASTNode.isWhiteSpaceOrComment(): Boolean =
+    isWhiteSpace() || elementType in commentType
+
+/**
+ * @return whether this node is a boolean expression (i.e. a [BINARY_EXPRESSION]
+ *   holding an [OPERATION_REFERENCE] which, in turn, holds either [ANDAND] or
+ *   [OROR] is its only child).
+ * @see BINARY_EXPRESSION
+ * @see OPERATION_REFERENCE
+ * @see ANDAND
+ * @see OROR
+ * @since 1.2.4
+ */
+@Suppress(
+    "MAGIC_NUMBER",
+    "MagicNumber",
+)
+fun ASTNode.isBooleanExpression(): Boolean =
+    elementType == BINARY_EXPRESSION && run {
+        val operationAndArgs = children().filterNot(ASTNode::isWhiteSpaceOrComment).toList()
+        operationAndArgs.size == 3 && run {
+            val operationReference = operationAndArgs[1]
+            operationReference.elementType == OPERATION_REFERENCE && run {
+                val operations = operationReference.children().toList()
+                operations.size == 1 && operations[0].elementType in sequenceOf(ANDAND, OROR)
+            }
+        }
+    }
+
+/**
+ * @return whether this PSI element is a long string template entry.
+ * @since 1.2.4
+ */
+fun PsiElement.isLongStringTemplateEntry(): Boolean =
+    node.elementType == LONG_STRING_TEMPLATE_ENTRY
+
+private fun ASTNode.isFollowedByNewlineCheck() =
+    this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 
 private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
     var shouldContinue = true
@@ -839,10 +921,10 @@ private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T
 private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
     this.any {
         it.shortName.toString() == (Suppress::class.simpleName) &&
-            (it.valueArgumentList
-                ?.arguments
-                ?.any { annotation -> annotation.text.trim('"') == name }
-                ?: false)
+                (it.valueArgumentList
+                    ?.arguments
+                    ?.any { annotation -> annotation.text.trim('"') == name }
+                    ?: false)
     }
 
 private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {
@@ -930,7 +1012,7 @@ private fun ASTNode.hasExplicitIt(): Boolean {
     val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
         ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
         ?.psi
-        as KtParameterList?
+            as KtParameterList?
     return parameterList?.parameters
         ?.any { it.name == "it" }
         ?: false

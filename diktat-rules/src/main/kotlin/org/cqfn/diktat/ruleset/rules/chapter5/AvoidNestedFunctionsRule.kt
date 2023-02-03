@@ -67,7 +67,7 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isNestedFunction(node: ASTNode): Boolean =
         node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST) &&
-            !node.isAnonymousFunction()
+                !node.isAnonymousFunction()
 
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
         parents()

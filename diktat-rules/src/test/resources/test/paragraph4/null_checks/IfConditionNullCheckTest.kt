@@ -111,3 +111,31 @@ fun reversedCheckSmartCases() {
     }
 }
 
+fun nullCheckWithAssumption() {
+    val a: Int? = 5
+    if (a != null) {
+        foo()
+    } else {
+        a = 5
+    }
+    if (a == null) {
+        a = 5
+    } else {
+        foo()
+    }
+    if (a != null) {
+        a = 5
+    } else {
+        foo()
+    }
+    if (a == null) {
+        foo()
+    } else {
+        a = 5
+    }
+    if (a != null) {
+        foo()
+    } else {
+        a == 5
+    }
+}
