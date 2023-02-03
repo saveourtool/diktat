@@ -26,7 +26,6 @@ import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW

@@ -26,8 +26,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             mapOf("maxCallsInOneLine" to "1"))
     )
     private val ruleId = "$DIKTAT_RULE_SET_ID:${NewlinesRule.NAME_ID}"
-    private fun dotQualifiedExpr(maxCallsInOneLine: Int = 3) = "${WRONG_NEWLINES.warnText()} " +
-            "Dot qualified expression chain (more than ${maxCallsInOneLine}) should be split with newlines"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} need to break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} need to break a line before and not after"
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} need to follow functional style at"
@@ -37,6 +35,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
+    private fun dotQualifiedExpr(maxCallsInOneLine: Int = 3) = "${WRONG_NEWLINES.warnText()} " +
+            "Dot qualified expression chain (more than $maxCallsInOneLine) should be split with newlines"
 
     @Test
     @Tag(WarningNames.REDUNDANT_SEMICOLON)
