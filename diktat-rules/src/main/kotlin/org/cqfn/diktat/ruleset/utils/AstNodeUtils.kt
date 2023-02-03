@@ -185,7 +185,11 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  */
 fun ASTNode.isFollowedByNewline() =
     parent({ it.treeNext != null }, strict = false)?.let {
-        it.treeNext.elementType == WHITE_SPACE && it.treeNext.text.contains("\n")
+        val probablyWhitespace = it.treeNext
+        it.isFollowedByNewlineCheck() ||
+                (probablyWhitespace.elementType == WHITE_SPACE && probablyWhitespace.treeNext.run {
+                    elementType == EOL_COMMENT && isFollowedByNewlineCheck()
+                })
     } ?: false
 
 /**
@@ -901,6 +905,9 @@ fun ASTNode.isBooleanExpression(): Boolean =
  */
 fun PsiElement.isLongStringTemplateEntry(): Boolean =
     node.elementType == LONG_STRING_TEMPLATE_ENTRY
+
+private fun ASTNode.isFollowedByNewlineCheck() =
+    this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 
 private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
     var shouldContinue = true
