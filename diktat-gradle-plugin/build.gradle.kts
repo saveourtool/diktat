@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.0"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
-    id("org.gradle.test-retry") version "1.5.1"
+    id("org.gradle.test-retry") version "1.5.2"
 }
 
 repositories {
