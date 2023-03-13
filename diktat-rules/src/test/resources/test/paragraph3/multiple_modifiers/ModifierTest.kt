@@ -11,3 +11,7 @@ data protected class Counter(val dayIndex: Int) {
 final public fun foo() {
     lateinit open protected var a: List<ASTNode>
 }
+
+internal public fun interface Factory {
+    public fun create(): List<Int>
+}

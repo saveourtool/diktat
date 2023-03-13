@@ -148,6 +148,20 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
 
     @Test
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `a single-line comment after annotation`() {
+        lintMethod(
+            """class Example {
+                    |   private val val0 = Regex(""${'"'}\d+""${'"'})
+                    |
+                    |    @Deprecated("Deprecation message") // Trailing comment
+                    |    private val val2 = ""
+                    |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should allow blank lines around properties with custom getters and setters - positive example`() {
         lintMethod(
             """

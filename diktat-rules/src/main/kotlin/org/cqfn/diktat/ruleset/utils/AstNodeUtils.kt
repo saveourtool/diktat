@@ -185,7 +185,11 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  */
 fun ASTNode.isFollowedByNewline() =
     parent({ it.treeNext != null }, strict = false)?.let {
-        it.treeNext.elementType == WHITE_SPACE && it.treeNext.text.contains("\n")
+        val probablyWhitespace = it.treeNext
+        it.isFollowedByNewlineCheck() ||
+                (probablyWhitespace.elementType == WHITE_SPACE && probablyWhitespace.treeNext.run {
+                    elementType == EOL_COMMENT && isFollowedByNewlineCheck()
+                })
     } ?: false
 
 /**
@@ -246,7 +250,12 @@ fun ASTNode.hasParent(type: IElementType) = parent(type) != null
  * check text because some nodes have empty BLOCK element inside (lambda)
  */
 fun ASTNode?.isBlockEmpty() = this?.let {
-    this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    if (this.elementType == ElementType.WHEN) {
+        val firstIndex = this.text.indexOf("{")
+        this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    } else {
+        this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
+    }
 } ?: true
 
 /**
@@ -896,6 +905,9 @@ fun ASTNode.isBooleanExpression(): Boolean =
  */
 fun PsiElement.isLongStringTemplateEntry(): Boolean =
     node.elementType == LONG_STRING_TEMPLATE_ENTRY
+
+private fun ASTNode.isFollowedByNewlineCheck() =
+    this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 
 private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
     var shouldContinue = true
