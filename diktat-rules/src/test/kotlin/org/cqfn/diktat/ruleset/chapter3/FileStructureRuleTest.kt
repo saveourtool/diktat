@@ -562,7 +562,6 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
         )
     }
 
-
     @Test
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
     fun `error in moving blocking at the first place`() {
