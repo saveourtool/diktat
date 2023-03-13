@@ -405,8 +405,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleReturnStatement(node: ASTNode) {
         val blockNode = node.treeParent.takeIf { it.elementType == BLOCK && it.treeParent.elementType == FUN }
         val returnsUnit = node.children().count() == 1  // the only child is RETURN_KEYWORD
-        if (blockNode == null || returnsUnit) {
+        val hasMultipleReturn = node.findAllDescendantsWithSpecificType(RETURN_KEYWORD).count() > 1
+        if (blockNode == null || returnsUnit || hasMultipleReturn) {
             // function is either already with expression body or definitely can't be converted to it
+            // or the function has more than one keyword `return` inside it
             return
         }
         blockNode
