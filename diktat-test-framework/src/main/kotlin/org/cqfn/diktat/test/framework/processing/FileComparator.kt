@@ -31,22 +31,6 @@ class FileComparator(
         newTag = { _, start -> if (start) "<" else ">" },
     )
 
-    constructor(
-        expectedResultFile: File,
-        actualResultList: List<String>
-    ) : this(
-        expectedResultFile.toPath(),
-        actualResultFile = Path("No file name.kt"),
-        actualResultList = actualResultList
-    )
-
-    constructor(
-        expectedResultFile: File,
-        actualResultFile: File
-    ) : this(
-        expectedResultFile.toPath(),
-        actualResultFile = actualResultFile.toPath())
-
     /**
      * delta in files
      */
@@ -78,6 +62,22 @@ class FileComparator(
             }
         }
     }
+
+    constructor(
+        expectedResultFile: File,
+        actualResultList: List<String>
+    ) : this(
+        expectedResultFile.toPath(),
+        actualResultFile = Path("No file name.kt"),
+        actualResultList = actualResultList
+    )
+
+    constructor(
+        expectedResultFile: File,
+        actualResultFile: File
+    ) : this(
+        expectedResultFile.toPath(),
+        actualResultFile = actualResultFile.toPath())
 
     /**
      * @return true in case files are different
