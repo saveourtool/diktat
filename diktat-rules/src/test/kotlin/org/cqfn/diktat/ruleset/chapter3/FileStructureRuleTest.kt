@@ -561,4 +561,22 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """.trimMargin(),
         )
     }
+
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `error in moving blocking at the first place`() {
+        lintMethod(
+            """
+                // Without suppressing these, version catalog usage in `plugins` is marked as an error in IntelliJ:
+                // https://youtrack.jetbrains.com/issue/KTIJ-19369
+                @file:Suppress("DSL_SCOPE_VIOLATION")
+                plugins {
+                    id(libs.plugins.kotlinJvm.get().pluginId)
+                }
+            """.trimIndent(),
+            expectedLintErrors = arrayOf(LintError(3, 1, ruleId, "${Warnings.FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Suppress(\"DSL_SCOPE_VIOLATION\")", true)),
+            fileName = "build.gradle.kts",
+        )
+    }
 }
