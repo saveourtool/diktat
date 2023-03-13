@@ -5,8 +5,8 @@
 package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.KtLint.ExperimentalParams
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSetProviderV2
 import mu.KotlinLogging
@@ -20,29 +20,8 @@ val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lint
     log.warn("Received linting error: $lintError")
 }
 
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
-/**
- * Enables ignoring autocorrected errors when in "fix" mode (i.e. when
- * [KtLint.format] is invoked).
- *
- * Before version 0.47, _Ktlint_ only reported non-corrected errors in "fix"
- * mode.
- * Now, this has changed.
- *
- * @receiver the instance of _Ktlint_ parameters.
- * @return the instance with the [callback][ExperimentalParams.cb] modified in
- *   such a way that it ignores corrected errors.
- * @see KtLint.format
- * @see ExperimentalParams.cb
- * @since 1.2.4
- */
-fun ExperimentalParams.ignoreCorrectedErrors(): ExperimentalParams =
-    copy(cb = { error: LintError, corrected: Boolean ->
-        if (!corrected) {
-            cb(error, false)
-        }
-    })
+typealias LintCallback = (LintError) -> Unit
+typealias FormatCallback = (LintError, Boolean) -> Unit
 
 /**
  * @param ruleSetProviderRef
@@ -56,17 +35,19 @@ fun format(
     ruleSetProviderRef: () -> RuleSetProviderV2,
     @Language("kotlin") text: String,
     fileName: String,
-    cb: LintErrorCallback = defaultCallback
+    cb: FormatCallback = defaultCallback
 ): String {
     val ruleProviders = ruleSetProviderRef().getRuleProviders()
-    return KtLint.format(
-        ExperimentalParams(
-            text = text,
-            ruleProviders = ruleProviders,
-            fileName = fileName.removeSuffix("_copy"),
-            script = fileName.removeSuffix("_copy").endsWith("kts"),
-            cb = cb,
-            debug = true,
-        ).ignoreCorrectedErrors()
+    val ktLintRuleEngine = KtLintRuleEngine(
+        ruleProviders = ruleProviders
     )
+    val code: Code = Code.CodeSnippet(
+        content = text,
+        script = fileName.removeSuffix("_copy").endsWith("kts")
+    )
+    return ktLintRuleEngine.format(code) { error: LintError, corrected: Boolean ->
+        if (!corrected) {
+            cb(error, false)
+        }
+    }
 }

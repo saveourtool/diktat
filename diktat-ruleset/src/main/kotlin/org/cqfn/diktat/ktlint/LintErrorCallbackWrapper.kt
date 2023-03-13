@@ -5,18 +5,26 @@
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatCallback
-import org.cqfn.diktat.ruleset.utils.LintErrorCallback
+import org.cqfn.diktat.ruleset.utils.FormatCallback
+import org.cqfn.diktat.ruleset.utils.LintCallback
 
 /**
- * @return [DiktatCallback] from KtLint [LintErrorCallback]
+ * @return [DiktatCallback] from KtLint [FormatCallback]
  */
-fun LintErrorCallback.wrap(): DiktatCallback = DiktatCallback { error, isCorrected ->
+fun FormatCallback.wrap(): DiktatCallback = DiktatCallback { error, isCorrected ->
     this(error.unwrap(), isCorrected)
 }
 
 /**
- * @return KtLint [LintErrorCallback] from [DiktatCallback] or exception
+ * @return KtLint [FormatCallback] from [DiktatCallback] or exception
  */
-fun DiktatCallback.unwrap(): LintErrorCallback = { error, isCorrected ->
+fun DiktatCallback.unwrap(): FormatCallback = { error, isCorrected ->
     this.accept(error.wrap(), isCorrected)
+}
+
+/**
+ * @return KtLint [FormatCallback] from [DiktatCallback] or exception
+ */
+fun DiktatCallback.unwrapForLint(): LintCallback = { error ->
+    this.accept(error.wrap(), false)
 }

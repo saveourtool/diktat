@@ -1,7 +1,7 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.utils.LintErrorCallback
+import org.cqfn.diktat.ruleset.utils.FormatCallback
 import org.cqfn.diktat.ruleset.utils.defaultCallback
 import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
@@ -20,7 +20,7 @@ open class FixTestBase(
     resourceFilePath: String,
     ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
     defaultRulesConfigList: List<RulesConfig>? = null,
-    cb: LintErrorCallback = defaultCallback,
+    cb: FormatCallback = defaultCallback,
 ) {
     /**
      * testComparatorUnit

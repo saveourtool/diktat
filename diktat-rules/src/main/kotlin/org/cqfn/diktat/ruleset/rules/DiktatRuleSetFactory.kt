@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.Rule
 import kotlin.Function0
 
@@ -14,13 +14,13 @@ fun interface DiktatRuleSetFactory : Function0<DiktatRuleSet> {
      * of the rules have state or are not thread-safe - a new [DiktatRuleSet] must
      * be created).
      *
-     * For each invocation of [KtLint.lint] and [KtLint.format] the [DiktatRuleSet]
+     * For each invocation of [KtLintRuleEngine.lint] and [KtLintRuleEngine.format] the [DiktatRuleSet]
      * is retrieved.
      * This results in new instances of each [Rule] for each file being
      * processed.
      * As of that a [Rule] does not need to be thread-safe.
      *
-     * However, [KtLint.format] requires the [Rule] to be executed twice on a
+     * However, [KtLintRuleEngine.format] requires the [Rule] to be executed twice on a
      * file in case at least one violation has been autocorrected.
      * As the same [Rule] instance is reused for the second execution of the
      * [Rule], the state of the [Rule] is shared.
