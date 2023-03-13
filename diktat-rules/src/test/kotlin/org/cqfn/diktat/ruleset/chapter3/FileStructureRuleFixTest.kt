@@ -90,4 +90,10 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     fun `should move other comments before package node`() {
         fixAndCompare("OtherCommentsExpected.kt", "OtherCommentsTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `invalid move in kts files`() {
+        fixAndCompare("ScriptPackageDirectiveExpected.kts", "ScriptPackageDirectiveTest.kts")
+    }
 }

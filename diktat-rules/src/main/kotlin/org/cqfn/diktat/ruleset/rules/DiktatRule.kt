@@ -71,7 +71,7 @@ abstract class DiktatRule(
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
                 // any existing Exception, as they will be caught in ktlint framework and the logging will be confusing:
                 // in this case it will incorrectly ask you to report issues in diktat to ktlint repository
-                throw Error("Internal error in diktat application")
+                throw Error("Internal error in diktat application", internalError)
             }
         }
     }
