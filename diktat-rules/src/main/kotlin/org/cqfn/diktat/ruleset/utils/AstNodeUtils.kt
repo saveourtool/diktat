@@ -595,8 +595,8 @@ fun ASTNode.moveChildBefore(
     beforeThisNode: ASTNode?,
     withNextNode: Boolean = false
 ): ReplacementResult {
-    require(childToMove in children()) { "can only move child of this node" }
-    require(beforeThisNode == null || beforeThisNode in children()) { "can only place node before another child of this node" }
+    require(childToMove in children()) { "can only move child ($childToMove) of this node $this" }
+    require(beforeThisNode == null || beforeThisNode in children()) { "can only place node before another child ($beforeThisNode) of this node $this" }
     val movedChild = childToMove.clone() as ASTNode
     val nextMovedChild = childToMove.treeNext?.takeIf { withNextNode }?.let { it.clone() as ASTNode }
     val nextOldChild = childToMove.treeNext.takeIf { withNextNode && it != null }
