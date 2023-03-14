@@ -37,7 +37,6 @@ import kotlin.io.path.readText
  * `JAVA_HOME` to the _run configuration_, so that the parent and the forked
  * JVMs have the same version.
  */
-@OptIn(ExperimentalPathApi::class)
 @MavenJupiterExtension
 class DiktatMavenPluginIntegrationTest {
     @BeforeEach
@@ -59,7 +58,7 @@ class DiktatMavenPluginIntegrationTest {
         assertThat(mavenLog).contains("[FILE_NAME_MATCH_CLASS]")
 
         val method = testInfo.testMethod.get()
-        File(result.mavenProjectResult.targetProjectDirectory, "target/jacoco-it.exec").copyTo(
+        File(result.mavenProjectResult.targetProjectDirectory.toFile(), "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-${method.name}.exec")
         )
     }
@@ -84,7 +83,7 @@ class DiktatMavenPluginIntegrationTest {
         }
 
         val method = testInfo.testMethod.get()
-        File(result.mavenProjectResult.targetProjectDirectory, "target/jacoco-it.exec").copyTo(
+        File(result.mavenProjectResult.targetProjectDirectory.toFile(), "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-${method.name}.exec")
         )
     }
