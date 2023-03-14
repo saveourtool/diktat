@@ -1,7 +1,11 @@
 package test.paragraph3.file_structure
 
 class Example {
-    private val log = LoggerFactory.getLogger(Example.javaClass)
+    private val loggerName = Example.javaClass
+    private val log = LoggerFactory.getLogger {
+        val right = 5
+        getName(loggerName).append(right)
+    }
 
     // lorem ipsum
     private val FOO = 42

@@ -180,10 +180,11 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
      * @property properties all other properties
      * @property lateInitProperties `lateinit var`s
      */
-    private data class AllProperties(val loggers: List<ASTNode>,
-                                     val constProperties: List<ASTNode>,
-                                     val properties: List<ASTNode>,
-                                     val lateInitProperties: List<ASTNode>
+    private data class AllProperties(
+        val loggers: List<ASTNode>,
+        val constProperties: List<ASTNode>,
+        val properties: List<ASTNode>,
+        val lateInitProperties: List<ASTNode>
     ) {
         companion object {
             /**
@@ -213,8 +214,31 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                     .filter { astNode ->
                         astNode.getIdentifierName()?.text?.matches(loggerPropertyRegex) ?: false
                     }
+                    .let {
+                        getLoggerNameVariables(it)
+                    }
+                    .filter { (astNode, dependencyReferences) ->
+                        val referencesFromSameScope = astNode.treeParent.getAllChildrenWithType(REFERENCE_EXPRESSION).map { it.text }
+                        dependencyReferences.all {
+                            it !in referencesFromSameScope
+                        }
+                    }
+                    .keys
+                    .toList()
+
+
+//                val loggerNames: List<ASTNode> = allProperties.filter { astNode ->
+//                    astNode.getIdentifierName()?.text?.equals(loggerNamesVariables) ?: false
+//                }
+
                 val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }
                 return AllProperties(loggers, constProperties, properties, lateInitProperties)
+            }
+
+            private fun getLoggerNameVariables(loggers: List<ASTNode>): Map<ASTNode, List<String>> = loggers.map { astNode ->
+                astNode to astNode.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION, false)
+            }.associate { (astNode, possibleDependencies) ->
+                astNode to possibleDependencies.map { it.text }
             }
         }
     }
