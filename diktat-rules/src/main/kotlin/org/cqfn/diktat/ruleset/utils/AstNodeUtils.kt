@@ -795,14 +795,14 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = getRootNode()
-    .also {
-        require(it.elementType == FILE) { "Root node type is not FILE, but only ${KtFile::class} has file name" }
+    .takeIf {
+        it.elementType == FILE
     }
-    .psi
-    .let { it as? KtFile }
+    ?.psi
+    ?.let { it as? KtFile }
     ?.name
     .let {
-        requireNotNull(it) { "File path is not present in user data" }
+        requireNotNull(it) { "Root node type is not FILE, but only ${KtFile::class} has file name" }
     }
 
 /**
