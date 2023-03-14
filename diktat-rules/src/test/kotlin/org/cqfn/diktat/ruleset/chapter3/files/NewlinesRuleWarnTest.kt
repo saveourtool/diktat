@@ -599,6 +599,18 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `shouldn't warn if function consists of a single return statement with a nested return`() {
+        lintMethod(
+            """
+                    |fun foo(): String {
+                    |    return Demo(string ?: return null)
+                    |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     @Suppress("TOO_LONG_FUNCTION")
     fun `should not trigger`() {
         lintMethod(
