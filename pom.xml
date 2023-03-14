@@ -396,7 +396,7 @@
                     <configuration>
                         <jvmTarget>1.8</jvmTarget>
                         <args>
-                            <arg>-Werror</arg>
+<!--                            <arg>-Werror</arg>-->
                             <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>

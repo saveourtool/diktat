@@ -1,7 +1,3 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
@@ -10,9 +6,10 @@ import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.api.Baseline
 import com.pinterest.ktlint.core.api.Baseline.Status.VALID
+import com.pinterest.ktlint.core.api.KtLintParseException
+import com.pinterest.ktlint.core.api.KtLintRuleException
 import com.pinterest.ktlint.core.api.containsLintError
 import com.pinterest.ktlint.core.api.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
@@ -215,14 +212,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                         )
                     )
                     reporterImpl.after(file.absolutePath)
-                } catch (e: RuleExecutionException) {
-                    /*
-                     * https://github.com/pinterest/ktlint/issues/1710:
-                     * no alternative in KtLint 0.47;
-                     * may get changed to `KtLintRuleExecutionException` in KtLint 0.48.
-                     */
+                } catch (e: KtLintRuleException) {
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
+                } catch (e: KtLintParseException) {
+                    log.error("Unhandled exception parsing a file: ", e)
+                    throw MojoExecutionException("Unhandled exception parsing a file", e)
                 }
             }
     }
