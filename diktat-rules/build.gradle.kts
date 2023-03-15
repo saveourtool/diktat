@@ -5,6 +5,7 @@ plugins {
     id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
 //    id("com.saveourtool.save.buildutils.code-quality-convention")
     id("com.google.devtools.ksp") version "1.8.0-1.0.8"
+    idea
 }
 
 dependencies {
@@ -25,12 +26,19 @@ dependencies {
     // generating
     implementation(projects.diktatDevKsp)
     ksp(projects.diktatDevKsp)
+    testImplementation(libs.kotlin.reflect)
 }
 
 ksp {
     arg("sourceEnumName", "org.cqfn.diktat.ruleset.constants.Warnings")
     arg("targetPackageName", "generated")
     arg("targetClassName", "WarningNames")
+}
+
+kotlin {
+    sourceSets.main {
+        kotlin.srcDir("build/generated/ksp/main/kotlin")
+    }
 }
 
 val updateCopyrightYearInTestTaskProvider = tasks.register("updateCopyrightYearInTest") {
@@ -58,7 +66,6 @@ val updateCopyrightYearInTestTaskProvider = tasks.register("updateCopyrightYearI
                     else -> line
                 }
             }
-            println("here")
             val tempFile = temporaryDir.toPath().resolve(file.fileName)
             Files.write(tempFile, updatedLines)
             Files.delete(file)
@@ -68,4 +75,13 @@ val updateCopyrightYearInTestTaskProvider = tasks.register("updateCopyrightYearI
 
 tasks.named("compileTestKotlin") {
     dependsOn(updateCopyrightYearInTestTaskProvider)
+}
+
+idea {
+    module {
+        // Not using += due to https://github.com/gradle/gradle/issues/8749
+        sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin") // or tasks["kspKotlin"].destination
+        testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
+        generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
+    }
 }
