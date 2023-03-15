@@ -6,8 +6,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
 import org.cqfn.diktat.util.FixTestBase
 
-import generated.WarningNames
-import generated.WarningNames.WRONG_COPYRIGHT_YEAR
+import org.cqfn.diktat.ruleset.constants.WarningsNames
+import org.cqfn.diktat.ruleset.constants.WarningsNames.WRONG_COPYRIGHT_YEAR
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test

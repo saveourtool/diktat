@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.SAY_NO_TO_VAR
+import org.cqfn.diktat.ruleset.constants.WarningsNames.SAY_NO_TO_VAR
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

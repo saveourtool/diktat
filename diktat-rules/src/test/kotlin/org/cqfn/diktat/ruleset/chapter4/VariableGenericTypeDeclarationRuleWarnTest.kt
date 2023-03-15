@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter4.VariableGenericTypeDeclarationRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.GENERIC_VARIABLE_WRONG_DECLARATION
+import org.cqfn.diktat.ruleset.constants.WarningsNames.GENERIC_VARIABLE_WRONG_DECLARATION
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

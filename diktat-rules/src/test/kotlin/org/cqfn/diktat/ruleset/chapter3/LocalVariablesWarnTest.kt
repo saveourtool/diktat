@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION
+import org.cqfn.diktat.ruleset.constants.WarningsNames.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

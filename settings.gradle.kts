@@ -24,6 +24,7 @@ include("diktat-maven-plugin")
 include("diktat-rules")
 include("diktat-ruleset")
 include("diktat-test-framework")
+include("diktat-dev-ksp")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

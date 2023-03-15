@@ -6,8 +6,8 @@ import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.STRING_TEMPLATE_CURLY_BRACES
-import generated.WarningNames.STRING_TEMPLATE_QUOTES
+import org.cqfn.diktat.ruleset.constants.WarningsNames.STRING_TEMPLATE_CURLY_BRACES
+import org.cqfn.diktat.ruleset.constants.WarningsNames.STRING_TEMPLATE_QUOTES
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

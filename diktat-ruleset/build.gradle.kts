@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.diktatRules) {
+    api(projects.diktatRules) {
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")

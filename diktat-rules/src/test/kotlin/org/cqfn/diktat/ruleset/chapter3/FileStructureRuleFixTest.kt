@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
 import org.cqfn.diktat.util.FixTestBase
 
-import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.WarningsNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

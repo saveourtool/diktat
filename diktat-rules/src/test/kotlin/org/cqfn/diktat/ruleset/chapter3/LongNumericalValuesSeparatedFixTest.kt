@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.LongNumericalValuesSeparatedRule
 import org.cqfn.diktat.util.FixTestBase
 
-import generated.WarningNames.LONG_NUMERICAL_VALUES_SEPARATED
+import org.cqfn.diktat.ruleset.constants.WarningsNames.LONG_NUMERICAL_VALUES_SEPARATED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

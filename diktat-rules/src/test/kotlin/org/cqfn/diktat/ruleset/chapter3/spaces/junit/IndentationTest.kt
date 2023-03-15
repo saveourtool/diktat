@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces.junit
 
-import generated.WarningNames.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.constants.WarningsNames.WRONG_INDENTATION
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith

@@ -8,7 +8,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.WarningsNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Tag

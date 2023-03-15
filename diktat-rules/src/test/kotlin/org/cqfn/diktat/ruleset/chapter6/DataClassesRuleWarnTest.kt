@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.DataClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.USE_DATA_CLASS
+import org.cqfn.diktat.ruleset.constants.WarningsNames.USE_DATA_CLASS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

@@ -7,9 +7,11 @@ plugins {
 dependencies {
     implementation(libs.maven.plugin.api)
     compileOnly(libs.maven.plugin.annotations)
+    implementation(libs.maven.core)
 
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(projects.diktatRules)
+    implementation(libs.ktlint.core)
     implementation(libs.ktlint.reporter.plain)
     implementation(libs.ktlint.reporter.sarif)
     implementation(libs.ktlint.reporter.json)

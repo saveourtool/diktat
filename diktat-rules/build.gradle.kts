@@ -1,12 +1,13 @@
 plugins {
     id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
 //    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("com.google.devtools.ksp") version "1.8.0-1.0.8"
 }
 
 dependencies {
-    implementation(projects.diktatCommon)
+    api(projects.diktatCommon)
     testImplementation(projects.diktatTestFramework)
-    implementation(libs.ktlint.core)
+    api(libs.ktlint.core)
     implementation(libs.kotlin.stdlib.jdk8)
     // guava is used for string case utils
     implementation(libs.guava)
@@ -17,4 +18,12 @@ dependencies {
     testImplementation(libs.mockito)
     // is used for simplifying boolean expressions
     implementation(libs.jbool.expressions)
+
+    // generating
+    implementation(projects.diktatDevKsp)
+    ksp(projects.diktatDevKsp)
+}
+
+ksp {
+    arg("enumName", "org.cqfn.diktat.ruleset.constants.Warnings")
 }

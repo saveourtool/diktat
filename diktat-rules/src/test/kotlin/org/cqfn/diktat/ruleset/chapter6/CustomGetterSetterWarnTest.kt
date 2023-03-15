@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.CUSTOM_GETTERS_SETTERS
+import org.cqfn.diktat.ruleset.constants.WarningsNames.CUSTOM_GETTERS_SETTERS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

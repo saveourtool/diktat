@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.EXTENSION_FUNCTION_SAME_SIGNATURE
+import org.cqfn.diktat.ruleset.constants.WarningsNames.EXTENSION_FUNCTION_SAME_SIGNATURE
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

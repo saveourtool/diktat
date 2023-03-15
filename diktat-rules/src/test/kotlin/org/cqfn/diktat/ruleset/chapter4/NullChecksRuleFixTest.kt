@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter4
 import org.cqfn.diktat.ruleset.rules.chapter4.NullChecksRule
 import org.cqfn.diktat.util.FixTestBase
 
-import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.WarningsNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
