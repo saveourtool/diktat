@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames.OBJECT_IS_PREFERRED
+import generated.WarningNames.OBJECT_IS_PREFERRED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

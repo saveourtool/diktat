@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter4.SmartCastRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames.SMART_CAST_NEEDED
+import generated.WarningNames.SMART_CAST_NEEDED
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

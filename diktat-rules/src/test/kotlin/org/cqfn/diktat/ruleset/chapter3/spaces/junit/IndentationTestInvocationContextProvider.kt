@@ -9,7 +9,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
 import org.cqfn.diktat.ruleset.utils.leadingSpaceCount
 import org.cqfn.diktat.util.assertNotNull
-import org.cqfn.diktat.ruleset.constants.WarningsNames.WRONG_INDENTATION
+import generated.WarningNames.WRONG_INDENTATION
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.intellij.lang.annotations.Language

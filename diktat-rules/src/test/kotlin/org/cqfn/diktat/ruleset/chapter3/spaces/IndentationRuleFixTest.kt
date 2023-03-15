@@ -15,7 +15,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEW
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.util.FixTestBase
 
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Nested

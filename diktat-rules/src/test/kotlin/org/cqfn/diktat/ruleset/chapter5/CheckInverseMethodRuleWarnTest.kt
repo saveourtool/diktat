@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter5.CheckInverseMethodRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames.INVERSE_FUNCTION_PREFERRED
+import generated.WarningNames.INVERSE_FUNCTION_PREFERRED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

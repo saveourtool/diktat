@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
 import org.cqfn.diktat.util.FixTestBase
 
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

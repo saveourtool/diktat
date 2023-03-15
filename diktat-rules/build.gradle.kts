@@ -25,5 +25,7 @@ dependencies {
 }
 
 ksp {
-    arg("enumName", "org.cqfn.diktat.ruleset.constants.Warnings")
+    arg("sourceEnumName", "org.cqfn.diktat.ruleset.constants.Warnings")
+    arg("targetPackageName", "generated")
+    arg("targetClassName", "WarningNames")
 }

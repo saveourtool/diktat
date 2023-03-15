@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter5
 import org.cqfn.diktat.ruleset.rules.chapter5.CheckInverseMethodRule
 import org.cqfn.diktat.util.FixTestBase
 
-import org.cqfn.diktat.ruleset.constants.WarningsNames.INVERSE_FUNCTION_PREFERRED
+import generated.WarningNames.INVERSE_FUNCTION_PREFERRED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

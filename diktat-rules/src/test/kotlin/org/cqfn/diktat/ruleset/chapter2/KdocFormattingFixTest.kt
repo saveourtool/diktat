@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter2
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.util.FixTestBase
 
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test

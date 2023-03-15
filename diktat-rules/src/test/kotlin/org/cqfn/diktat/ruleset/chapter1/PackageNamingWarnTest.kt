@@ -13,7 +13,7 @@ import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.TEST_FILE_NAME
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

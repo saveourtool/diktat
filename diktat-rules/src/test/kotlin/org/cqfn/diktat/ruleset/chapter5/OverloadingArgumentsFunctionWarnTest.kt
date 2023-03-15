@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

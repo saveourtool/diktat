@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.ImplicitBackingPropertyRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames.NO_CORRESPONDING_PROPERTY
+import generated.WarningNames.NO_CORRESPONDING_PROPERTY
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

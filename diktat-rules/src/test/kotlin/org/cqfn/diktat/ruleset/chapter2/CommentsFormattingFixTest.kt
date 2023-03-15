@@ -5,10 +5,10 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.describe
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.FixTestBase
 
-import org.cqfn.diktat.ruleset.constants.WarningsNames.COMMENT_WHITE_SPACE
-import org.cqfn.diktat.ruleset.constants.WarningsNames.FIRST_COMMENT_NO_BLANK_LINE
-import org.cqfn.diktat.ruleset.constants.WarningsNames.IF_ELSE_COMMENTS
-import org.cqfn.diktat.ruleset.constants.WarningsNames.WRONG_NEWLINES_AROUND_KDOC
+import generated.WarningNames.COMMENT_WHITE_SPACE
+import generated.WarningNames.FIRST_COMMENT_NO_BLANK_LINE
+import generated.WarningNames.IF_ELSE_COMMENTS
+import generated.WarningNames.WRONG_NEWLINES_AROUND_KDOC
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags

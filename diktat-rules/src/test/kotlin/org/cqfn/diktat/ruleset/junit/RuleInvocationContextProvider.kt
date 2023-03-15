@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.junit
 
 import org.cqfn.diktat.ruleset.utils.NEWLINE
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.TestTemplate

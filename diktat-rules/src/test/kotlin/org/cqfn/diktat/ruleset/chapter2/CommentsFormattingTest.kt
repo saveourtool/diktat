@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningsNames
+import generated.WarningNames
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
