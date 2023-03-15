@@ -19,10 +19,10 @@ plugins {
 
 includeBuild("gradle/plugins")
 include("diktat-common")
-//include("diktat-gradle-plugin")
-//include("diktat-maven-plugin")
+include("diktat-gradle-plugin")
+include("diktat-maven-plugin")
 include("diktat-rules")
-//include("diktat-ruleset")
+include("diktat-ruleset")
 include("diktat-test-framework")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

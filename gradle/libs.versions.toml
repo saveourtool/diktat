@@ -12,14 +12,22 @@ kotlinpoet = "1.12.0"
 detekt = "1.22.0"
 dokka = "1.7.20"
 jacoco = "0.8.8"
+# maven
+maven-api = "3.8.6"
 maven-plugin-tools = "3.7.0"
+maven-plugin-testing-harness = "3.3.0"
+plexus = "2.0"
+
 jbool = "1.24"
 # downgraded to be compliance with ktlint
 mu-logging = "2.1.23"
 kaml = "0.47.0"
 kotlin-multiplatform-diff = "0.4.0"
+sarif4k = "0.3.0"
+jupiter-itf-extension = "0.11.0"
 # FIXME: need to migrate to mockito
 mockito-all = "1.10.19"
+
 
 # copied from save-cloud
 jetbrains-annotations = "24.0.1"
@@ -78,6 +86,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlin-stdlib-common = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "kotlin" }
 kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
 # kotlinx serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
@@ -87,8 +96,14 @@ kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 #kotlin libs
 kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-diff", version.ref = "kotlin-multiplatform-diff" }
 
-# ktlint
+# ktlint & detekt
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
+ktlint-reporter-plain = { module = "com.pinterest.ktlint:ktlint-reporter-plain", version.ref = "ktlint" }
+ktlint-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-reporter-sarif", version.ref = "ktlint" }
+ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
+ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
+ktlint-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
+sarif4k = { module = "io.github.detekt.sarif4k:sarif4k", version.ref = "sarif4k" }
 
 # apache
 apache-commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons-cli" }
@@ -103,14 +118,21 @@ kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref =
 
 # testing
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-extension-itf = { module = "com.soebes.itf.jupiter.extension:itf-jupiter-extension", version.ref = "jupiter-itf-extension" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 junit-platform-suite = { module = "org.junit.platform:junit-platform-suite-engine", version.ref = "junit-platfrom" }
 mockito = { module = "org.mockito:mockito-all", version.ref = "mockito-all" }
 
-
-
-
-
+# maven
+maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
+maven-embedder = { module = "org.apache.maven:maven-embedder", version.ref = "maven-api" }
+maven-compat = { module = "org.apache.maven:maven-compat", version.ref = "maven-api" }
+maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "maven-api" }
+maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-plugin-tools" }
+maven-plugin-testing-harness = { module = "org.apache.maven.plugin-testing:maven-plugin-testing-harness", version.ref = "maven-plugin-testing-harness" }
+plexus-cipher = { module = "org.codehaus.plexus:plexus-cipher", version.ref = "plexus" }
 
 ######### copied from save-cloud
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -169,8 +191,6 @@ log4j = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" 
 log4j-slf4j-impl = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
 logback-core = { module = "ch.qos.logback:logback-core" }
 
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 
 diktat-gradle-plugin = { module = "org.cqfn.diktat:diktat-gradle-plugin", version.ref = "diktat" }

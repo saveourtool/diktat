@@ -14,5 +14,5 @@ dependencies {
     testImplementation(libs.assertj.core)
 
     // FIXME: it should come as transitive dependency from projects.diktatCommon
-//    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.json)
 }

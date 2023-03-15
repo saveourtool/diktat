@@ -3,22 +3,15 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm")
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.5.2"
 }
 
-// default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
-// To debug gradle plugin, please set `diktatVersion` manually to the current maven project version.
-val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.46.1") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.3"
-val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
-val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
-
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation("io.github.detekt.sarif4k:sarif4k:0.3.0")
+    implementation(libs.sarif4k)
 
     implementation(projects.diktatCommon) {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
@@ -29,15 +22,21 @@ dependencies {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+
+    // FIXME: it should come as transitive dependency from projects.diktatCommon
+    implementation(libs.kotlinx.serialization.json)
 }
 
 val generateVersionsFile by tasks.registering {
     val versionsFile = File("$buildDir/generated/src/generated/Versions.kt")
+    val diktatVersion = project.version.toString()
+    val ktlintVersion = libs.versions.ktlint.get()
 
     inputs.property("diktat version", diktatVersion)
     inputs.property("ktlint version", ktlintVersion)
+
     outputs.file(versionsFile)
 
     doFirst {
@@ -84,7 +83,7 @@ val functionalTestTask by tasks.register<Test>("functionalTest")
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-jacoco.toolVersion = jacocoVersion
+jacoco.toolVersion = libs.versions.jacoco.get()
 
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
