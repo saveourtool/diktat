@@ -88,29 +88,31 @@ internal fun Project.configurePublications() {
             this.pom {
                 name.set(project.name)
                 description.set(project.description ?: project.name)
-                url.set("https://github.com/saveourtool/save-cloud")
+                url.set("https://www.cqfn.org/diKTat/")
                 licenses {
                     license {
                         name.set("MIT License")
                         url.set("http://www.opensource.org/licenses/mit-license.php")
-                        distribution.set("repo")
                     }
                 }
                 developers {
                     developer {
-                        id.set("petertrr")
-                        name.set("Petr Trifanov")
-                        email.set("peter.trifanov@gmail.com")
-                    }
-                    developer {
                         id.set("akuleshov7")
                         name.set("Andrey Kuleshov")
                         email.set("andrewkuleshov7@gmail.com")
+                        url.set("https://github.com/akuleshov7")
+                    }
+                    developer {
+                        id.set("petertrr")
+                        name.set("Peter Trifanov")
+                        email.set("peter.trifanov@gmail.com")
+                        url.set("https://github.com/petertrr")
                     }
                 }
                 scm {
-                    url.set("https://github.com/saveourtool/save-cloud")
-                    connection.set("scm:git:git://github.com/saveourtool/save-cloud.git")
+                    connection.set("scm:git:git://github.com/saveourtool/diktat.git")
+                    developerConnection.set("scm:git:ssh://github.com:saveourtool/diktat.git")
+                    url.set("http://github.com/saveourtool/diktat/tree/master")
                 }
             }
         }

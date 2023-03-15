@@ -8,7 +8,7 @@ plugins {
 }
 
 detekt {
-    config = rootProject.files("detekt.yml")
+    config = rootProject.files("detekt-config.yml")
     basePath = rootDir.canonicalPath
     buildUponDefaultConfig = true
 }

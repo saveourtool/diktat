@@ -1,7 +1,9 @@
 plugins {
     id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-//    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("com.saveourtool.save.buildutils.code-quality-convention")
 }
+
+project.description = "Test framework for diktat"
 
 dependencies {
     implementation(projects.diktatCommon)

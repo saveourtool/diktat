@@ -3,7 +3,7 @@ import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTa
 
 plugins {
     id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-//    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("com.saveourtool.save.buildutils.code-quality-convention")
     id("de.benediktritter.maven-plugin-development") version "0.4.1"
     `maven-publish`
 }

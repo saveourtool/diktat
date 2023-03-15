@@ -37,7 +37,7 @@ okio = "3.3.0"
 kotlinx-datetime = "0.4.0"
 kotlinx-coroutines = "1.6.4"
 assertj = "3.24.2"
-diktat = "1.2.4.1"
+diktat = "1.2.4.2"
 jgit = "6.5.0.202303070854-r"
 mockito = "5.2.0"
 mockito-kotlin = "4.1.0"
@@ -106,6 +106,7 @@ ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", v
 ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
 ktlint-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
 sarif4k = { module = "io.github.detekt.sarif4k:sarif4k", version.ref = "sarif4k" }
+sarif4k-jvm = { module = "io.github.detekt.sarif4k:sarif4k-jvm", version.ref = "sarif4k" }
 
 # apache
 apache-commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons-cli" }

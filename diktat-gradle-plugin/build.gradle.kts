@@ -11,9 +11,9 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation(libs.sarif4k)
+    implementation(libs.sarif4k.jvm)
 
-    implementation(projects.diktatCommon) {
+    api(projects.diktatCommon) {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")

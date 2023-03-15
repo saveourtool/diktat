@@ -3,10 +3,12 @@ import java.nio.file.Files
 
 plugins {
     id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-//    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("com.saveourtool.save.buildutils.code-quality-convention")
     id("com.google.devtools.ksp") version "1.8.10-1.0.9"
     idea
 }
+
+project.description = "The main diktat ruleset"
 
 dependencies {
     api(projects.diktatCommon)
@@ -85,3 +87,4 @@ idea {
         generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
     }
 }
+
