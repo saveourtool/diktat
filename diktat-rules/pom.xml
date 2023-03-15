@@ -92,7 +92,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>${project.basedir}/src/generated/kotlin</source>
+                                <source>${project.basedir}/src/main/kotlin/generated</source>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -114,7 +114,7 @@
                 <configuration>
                     <mainClass>org.cqfn.diktat.ruleset.generation.GenerationKt</mainClass>
                     <arguments>
-                        <argument>${project.basedir}/src/generated/kotlin</argument>
+                        <argument>${project.build.sourceDirectory}</argument>
                         <argument>${project.basedir}/src/test/resources</argument>
                     </arguments>
                 </configuration>
