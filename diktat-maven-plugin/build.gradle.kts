@@ -5,9 +5,9 @@ plugins {
 }
 
 dependencies {
-    api(libs.maven.core)
-    api(libs.maven.plugin.api)
-    implementation(libs.maven.plugin.annotations)
+    implementation(libs.maven.plugin.api)
+    compileOnly(libs.maven.plugin.annotations)
+
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(projects.diktatRules)
     implementation(libs.ktlint.reporter.plain)
