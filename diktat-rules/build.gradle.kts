@@ -4,7 +4,7 @@ import java.nio.file.Files
 plugins {
     id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
 //    id("com.saveourtool.save.buildutils.code-quality-convention")
-    id("com.google.devtools.ksp") version "1.8.0-1.0.8"
+    id("com.google.devtools.ksp") version "1.8.10-1.0.9"
     idea
 }
 
