@@ -13,9 +13,9 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <maven.api.version>3.8.6</maven.api.version>
+        <maven.api.version>3.9.0</maven.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.itf.version>0.11.0</maven.itf.version>
+        <maven.itf.version>0.12.0</maven.itf.version>
     </properties>
 
     <dependencies>
