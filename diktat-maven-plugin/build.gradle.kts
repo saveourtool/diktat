@@ -1,9 +1,9 @@
-import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
 import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
+import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
 
 plugins {
-    id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
+    id("org.cqfn.diktat.buildutils.code-quality-convention")
     id("de.benediktritter.maven-plugin-development") version "0.4.1"
     `maven-publish`
 }

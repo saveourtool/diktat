@@ -2,7 +2,7 @@
  * Configuration for project versioning
  */
 
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import org.ajoberstar.grgit.gradle.GrgitServiceExtension
 import org.ajoberstar.grgit.gradle.GrgitServicePlugin
@@ -45,4 +45,3 @@ fun Project.configureVersioning() {
  * @return true if this string denotes a snapshot version
  */
 internal fun String.isSnapshot() = endsWith("SNAPSHOT")
-

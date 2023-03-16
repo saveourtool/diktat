@@ -1,4 +1,4 @@
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*

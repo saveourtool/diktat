@@ -1,9 +1,9 @@
-import java.time.LocalDate
 import java.nio.file.Files
+import java.time.LocalDate
 
 plugins {
-    id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
+    id("org.cqfn.diktat.buildutils.code-quality-convention")
     id("com.google.devtools.ksp") version "1.8.10-1.0.9"
     idea
 }
@@ -82,9 +82,8 @@ tasks.named("compileTestKotlin") {
 idea {
     module {
         // Not using += due to https://github.com/gradle/gradle/issues/8749
-        sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin") // or tasks["kspKotlin"].destination
+        sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin")  // or tasks["kspKotlin"].destination
         testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
         generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
     }
 }
-

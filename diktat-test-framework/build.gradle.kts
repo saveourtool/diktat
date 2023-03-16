@@ -1,6 +1,6 @@
 plugins {
-    id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
+    id("org.cqfn.diktat.buildutils.code-quality-convention")
 }
 
 project.description = "Test framework for diktat"

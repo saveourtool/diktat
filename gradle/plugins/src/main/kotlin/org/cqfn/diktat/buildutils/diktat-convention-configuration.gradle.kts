@@ -1,4 +1,4 @@
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import Versions
 import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase

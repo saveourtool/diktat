@@ -8,7 +8,6 @@ import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule.Compani
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule.Companion.curYear
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule.Companion.hyphenRegex
 
-
 import java.nio.file.Files
 import java.nio.file.Paths
 

@@ -2,7 +2,7 @@
  * Configuration for code coverage calculation via Jacoco
  */
 
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project

@@ -1,10 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-gradle-plugin`
-    id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
-    id("com.saveourtool.save.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
+    id("org.cqfn.diktat.buildutils.code-quality-convention")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.5.2"
 }

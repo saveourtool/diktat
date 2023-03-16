@@ -1,4 +1,4 @@
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin
 import org.gradle.kotlin.dsl.apply

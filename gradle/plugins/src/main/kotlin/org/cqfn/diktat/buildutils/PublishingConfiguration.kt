@@ -7,7 +7,7 @@
     "MISSING_KDOC_ON_FUNCTION",
 )
 
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.Named
@@ -155,7 +155,7 @@ private fun Project.configureSigningCommon(useKeys: SigningExtension.() -> Unit 
 }
 
 private fun Project.styledOut(logCategory: String): StyledTextOutput =
-        serviceOf<StyledTextOutputFactory>().create(logCategory)
+    serviceOf<StyledTextOutputFactory>().create(logCategory)
 
 /**
  * Determines if this project has all the given properties.
@@ -165,4 +165,4 @@ private fun Project.styledOut(logCategory: String): StyledTextOutput =
  * @see Project.hasProperty
  */
 private fun Project.hasProperties(vararg propertyNames: String): Boolean =
-        propertyNames.asSequence().all(this::hasProperty)
+    propertyNames.asSequence().all(this::hasProperty)

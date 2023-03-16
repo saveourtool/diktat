@@ -1,4 +1,4 @@
-package com.saveourtool.save.buildutils
+package org.cqfn.diktat.buildutils
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
