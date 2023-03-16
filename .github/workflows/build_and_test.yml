@@ -7,6 +7,9 @@ on:
     branches:
       - 'master'
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
 jobs:
   build_and_test_with_code_coverage:
     name: Build, test and upload code coverage
@@ -19,15 +22,16 @@ jobs:
         with:
           distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository
+      - name: Cache local Gradle repository
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: maven-build-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-build-
-      - name: Maven Install
-        run: mvn -B -Dstyle.color=always clean install
+          path: |
+            ~/.gradle/caches/
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-build-
+      - name: Gradle Build
+        run: gradlew build
       - name: Code coverage report
         uses: codecov/codecov-action@v3
         with:
@@ -46,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: gradle-test-report-${{ runner.os }}
-          path: 'diktat-gradle-plugin/build/reports/'
+          path: '**/build/reports/'
           retention-days: 1
 
   run_diktat_from_CLI:
@@ -171,7 +175,7 @@ jobs:
       # test failures may be OS-specific (or the tests themselves flaky).
       fail-fast: false
       matrix:
-        os: [ windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     # A possible workaround for <https://github.com/dorny/test-reporter/issues/168>.
     permissions:
@@ -187,24 +191,25 @@ jobs:
         with:
           distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository
+      - name: Cache local Gradle repository
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: maven-build-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-build-
+          path: |
+            ~/.gradle/caches/
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-build-
 
-      - name: Maven Install
+      - name: Gradle Build
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          mvn -B -Dstyle.color=always -T1C clean install
+          gradlew build
         shell: bash
 
-      - name: Maven Install on windows
+      - name: Gradle Build on windows
         if: runner.os == 'Windows'
         run: |
-          mvn -B -Dstyle.color=always -T1C clean install
+          gradlew.bat build
         shell: cmd
 
         # This step needs a Git repository, so it's impossible to extract it
