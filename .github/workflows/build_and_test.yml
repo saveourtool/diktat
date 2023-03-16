@@ -33,6 +33,7 @@ jobs:
         run: |
           kv=$(cat gradle/libs.versions.toml | grep '^kotlin =' | awk -F'[=]' '{print $2}' | tr -d '" ')
           echo KOTLIN_VERSION=$kv >> $GITHUB_ENV
+        shell: bash
       - name: Cache konan
         uses: actions/cache@v3
         with:
@@ -43,6 +44,10 @@ jobs:
         with:
           gradle-version: wrapper
           gradle-home-cache-cleanup: true
+          arguments: |
+            build
+            --scan
+            --build-cache
 
       - name: Upload gradle reports
         if: ${{ always() }}
@@ -215,6 +220,7 @@ jobs:
         run: |
           kv=$(cat gradle/libs.versions.toml | grep '^kotlin =' | awk -F'[=]' '{print $2}' | tr -d '" ')
           echo KOTLIN_VERSION=$kv >> $GITHUB_ENV
+        shell: bash
       - name: Cache konan
         uses: actions/cache@v3
         with:
@@ -226,6 +232,10 @@ jobs:
         with:
           gradle-version: wrapper
           gradle-home-cache-cleanup: true
+          arguments: |
+            build
+            --scan
+            --build-cache
 
         # This step needs a Git repository, so it's impossible to extract it
         # into a separate job (or, otherwise, we'd need to upload the content
