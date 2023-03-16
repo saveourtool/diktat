@@ -63,6 +63,36 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
 
     @Test
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `functions with override modifiers`() {
+        lintMethod(
+            """
+                    |fun list(projectCoordinates: ProjectCoordinates): Flux<FileKey> = list()
+                    |    .filter { it.projectCoordinates == projectCoordinates }
+                    |
+                    |override fun list(): Flux<FileKey> = newFileStorage.list()
+                    |    .map { fileDto ->
+                    |        FileKey(
+                    |            projectCoordinates = fileDto.projectCoordinates,
+                    |            name = fileDto.name,
+                    |            uploadedMillis = fileDto.uploadedTime.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                    |        )
+                    |    }
+            """.trimMargin(),
+        )
+    }
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `functions with override modifiers simple`() {
+        lintMethod(
+            """
+                    |fun foo(a: Int) {}
+                    |override fun foo() {}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
     fun `functions with unordered, but same modifiers`() {
         lintMethod(
             """
