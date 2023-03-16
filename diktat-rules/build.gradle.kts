@@ -31,12 +31,6 @@ dependencies {
     testImplementation(libs.kotlin.reflect)
 }
 
-ksp {
-    arg("sourceEnumName", "org.cqfn.diktat.ruleset.constants.Warnings")
-    arg("targetPackageName", "generated")
-    arg("targetClassName", "WarningNames")
-}
-
 kotlin {
     sourceSets.main {
         kotlin.srcDir("build/generated/ksp/main/kotlin")
