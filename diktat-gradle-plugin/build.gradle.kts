@@ -24,9 +24,6 @@ dependencies {
 
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-
-    // FIXME: it should come as transitive dependency from projects.diktatCommon
-    implementation(libs.kotlinx.serialization.json)
 }
 
 val generateVersionsFile by tasks.registering {

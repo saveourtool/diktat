@@ -17,7 +17,5 @@ fun Project.installGitHooks() {
         into(file("$rootDir/.git/hooks"))
     }
     // add git hooks installation to build by adding it as a dependency for some common task
-    tasks.named("build") {
-        dependsOn(installGitHooksTask)
-    }
+    tasks.findByName("build")?.dependsOn(installGitHooksTask)
 }

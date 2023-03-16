@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.kotlinx.serialization.json.jvm)
+    api(libs.kotlinx.serialization.json)
     api(libs.kaml)
     implementation(libs.apache.commons.cli)
     implementation(libs.kotlin.logging)
