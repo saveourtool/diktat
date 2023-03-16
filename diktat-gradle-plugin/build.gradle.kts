@@ -3,8 +3,8 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm")
-    jacoco
+    id("com.saveourtool.save.buildutils.kotlin-jvm-configuration")
+    id("com.saveourtool.save.buildutils.code-quality-convention")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.5.2"
 }
@@ -83,11 +83,10 @@ val functionalTestTask by tasks.register<Test>("functionalTest")
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-jacoco.toolVersion = libs.versions.jacoco.get()
 
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
-val functionalTest = sourceSets.create("functionalTest") {
+val functionalTest: SourceSet = sourceSets.create("functionalTest") {
     compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
     runtimeClasspath += output + compileClasspath
 }

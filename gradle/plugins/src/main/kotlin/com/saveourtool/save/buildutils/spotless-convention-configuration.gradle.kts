@@ -30,7 +30,10 @@ spotless {
             )
         } else {
             target("**/*.kts")
-            targetExclude("build/**/*.kts")
+            targetExclude(
+                "build/**/*.kts",
+                "src/test/**/*.kts",
+            )
         }
     }
 }

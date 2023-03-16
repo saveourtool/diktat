@@ -383,7 +383,7 @@ abstract class DiktatSmokeTestBase {
         @Suppress("AVOID_NULL_CHECKS")
         internal fun createTmpFiles() {
             listOf(
-                "$RESOURCE_FILE_PATH/../../../build.gradle_.kts" to "build.gradle.kts",
+                "$RESOURCE_FILE_PATH/../../../build.gradle.kts_" to "build.gradle.kts",
                 "$RESOURCE_FILE_PATH/Example1Test.kt" to "Example1-2Test.kt",
             )
                 .map { (resource, targetFileName) ->

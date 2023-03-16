@@ -9,7 +9,9 @@ import org.ajoberstar.grgit.gradle.GrgitServicePlugin
 import org.ajoberstar.reckon.gradle.ReckonExtension
 import org.ajoberstar.reckon.gradle.ReckonPlugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
 
 /**
  * Configures reckon plugin for [this] project, should be applied for root project only

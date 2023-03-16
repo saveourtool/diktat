@@ -40,7 +40,7 @@ tasks.withType<GenerateHelpMojoSourcesTask> {
 }
 
 mavenPlugin {
-//    goalPrefix.set("diktat")
+    goalPrefix.set("diktat")
 }
 
 publishing {
