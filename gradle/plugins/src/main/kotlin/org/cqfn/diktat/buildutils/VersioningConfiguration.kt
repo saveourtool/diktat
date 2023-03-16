@@ -19,29 +19,21 @@ import org.gradle.kotlin.dsl.getByType
 fun Project.configureVersioning() {
     apply<ReckonPlugin>()
     apply<GrgitServicePlugin>()
-    val grgitProvider = project.extensions.getByType<GrgitServiceExtension>()
-        .service
-        .map { it.grgit }
 
     // should be provided in the gradle.properties
     configure<ReckonExtension> {
-        scopeFromProp()
-        // this should be used during local development most of the time, so that constantly changing version
-        // on a dirty git tree doesn't cause other task updates
-        snapshotFromProp()
+        snapshots()
+        setScopeCalc(calcScopeFromProp())
+        setStageCalc(calcStageFromProp())
     }
 
-    val grgit = grgitProvider.get()
-    val status = grgit.repository.jgit.status()
-        .call()
+    val status = project.extensions.getByType<GrgitServiceExtension>()
+        .service
+        .map { it.grgit.repository.jgit.status().call() }
+        .get()
     if (!status.isClean) {
         logger.warn("git tree is not clean; " +
                 "Untracked files: ${status.untracked}, uncommitted changes: ${status.uncommittedChanges}"
         )
     }
 }
-
-/**
- * @return true if this string denotes a snapshot version
- */
-internal fun String.isSnapshot() = endsWith("SNAPSHOT")
