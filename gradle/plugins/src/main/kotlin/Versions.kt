@@ -4,5 +4,5 @@ object Versions {
     /**
      * JDK version which is used for building and running the project.
      */
-    const val jdk = "11"
+    const val jdk = "8"
 }

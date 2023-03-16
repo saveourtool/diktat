@@ -10,6 +10,7 @@ plugins {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
+        jvmTarget = "1.${Versions.jdk}"
         freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
     }
 }

@@ -18,15 +18,17 @@ jobs:
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository
+          distribution: temurin
+      - name: Retrieve Kotlin version
+        run: |
+          kv=$(cat gradle/libs.versions.toml | grep '^kotlin =' | awk -F'[=]' '{print $2}' | tr -d '" ')
+          echo KOTLIN_VERSION=$kv >> $GITHUB_ENV
+      - name: Cache konan
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: maven-diktat-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-diktat-
+          path: ~/.konan
+          key: ${{ runner.os }}-gradle-konan-${{ env.KOTLIN_VERSION }}
       - name: Substitute diktat config with the one from the latest release
         # fixme: can be done from the fetched repo without additional network request
         run: |
@@ -34,5 +36,12 @@ jobs:
           LATEST_TAG=$(git describe --tags --abbrev=0)
           DIKTAT_CONFIG=diktat-analysis.yml
           wget -O $DIKTAT_CONFIG https://raw.githubusercontent.com/saveourtool/diKTat/$LATEST_TAG/$DIKTAT_CONFIG
-      - name: Run diktat via maven plugin
-        run: mvn -B -Dstyle.color=always diktat:check@diktat -DskipPluginMarker
+      - name: Run diktat via gradle plugin
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          gradle-home-cache-cleanup: true
+          arguments: |
+            :diktatCheck
+            --scan
+            --build-cache
