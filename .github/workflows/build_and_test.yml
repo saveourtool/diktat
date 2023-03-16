@@ -30,7 +30,7 @@ jobs:
         with:
           files: '**/target/site/jacoco*/jacoco.xml,**/reports/jacoco/**/*.xml'
           flags: unittests
-          fail_ci_if_error: false # optional (default = false)
+          fail_ci_if_error: true # optional (default = false)
       - name: Upload diktat jar
         uses: actions/upload-artifact@v3
         with:
