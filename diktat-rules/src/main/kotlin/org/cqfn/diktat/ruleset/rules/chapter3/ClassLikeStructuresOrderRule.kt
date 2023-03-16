@@ -180,10 +180,11 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
      * @property properties all other properties
      * @property lateInitProperties `lateinit var`s
      */
-    private data class AllProperties(val loggers: List<ASTNode>,
-                                     val constProperties: List<ASTNode>,
-                                     val properties: List<ASTNode>,
-                                     val lateInitProperties: List<ASTNode>
+    private data class AllProperties(
+        val loggers: List<ASTNode>,
+        val constProperties: List<ASTNode>,
+        val properties: List<ASTNode>,
+        val lateInitProperties: List<ASTNode>
     ) {
         companion object {
             /**
@@ -197,6 +198,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                 val allProperties = node.getAllChildrenWithType(PROPERTY)
                 val constProperties = allProperties.filterByModifier(CONST_KEYWORD)
                 val lateInitProperties = allProperties.filterByModifier(LATEINIT_KEYWORD)
+                val referencesFromSameScope = allProperties.mapNotNull { it.getIdentifierName()?.text }
                 val loggers = allProperties.filterByModifier(PRIVATE_KEYWORD)
                     .filterNot { astNode ->
                         /*
@@ -213,8 +215,26 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                     .filter { astNode ->
                         astNode.getIdentifierName()?.text?.matches(loggerPropertyRegex) ?: false
                     }
+                    .let {
+                        getLoggerDependencyNames(it)
+                    }
+                    .filter { (_, dependencyReferences) ->
+                        dependencyReferences.all {
+                            it !in referencesFromSameScope
+                        }
+                    }
+                    .keys
+                    .toList()
+
                 val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }
                 return AllProperties(loggers, constProperties, properties, lateInitProperties)
+            }
+
+            @Suppress("TYPE_ALIAS")
+            private fun getLoggerDependencyNames(loggers: List<ASTNode>): Map<ASTNode, List<String>> = loggers.map { astNode ->
+                astNode to astNode.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION, false)
+            }.associate { (astNode, possibleDependencies) ->
+                astNode to possibleDependencies.map { it.text }
             }
         }
     }
