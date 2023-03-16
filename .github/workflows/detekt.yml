@@ -6,24 +6,34 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Running detekt
-    runs-on: ubuntu-18.04
+  detekt_check:
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
+          distribution: temurin
+      - uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.m2/repository
-          key: maven-detekt-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-detekt-
-      # when running detekt with type resolution, we need to have all project modules compiled too
-      - name: running deteKT
-        run: mvn -B compile dependency:build-classpath@detekt detekt:check@detekt -DskipPluginMarker
+          gradle-version: wrapper
+          arguments: |
+            detektAll
+            --build-cache
+            --continue
+            -PgprUser=${{ github.actor }}
+            -PgprKey=${{ secrets.GITHUB_TOKEN }}
+      - name: Upload SARIF to Github
+        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: build/detekt-sarif-reports/detekt-merged.sarif
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: sarif-reports
+          path: "**/build/detekt-sarif-reports/"
+          retention-days: 1

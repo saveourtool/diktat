@@ -234,6 +234,8 @@ jobs:
           gradle-home-cache-cleanup: true
           arguments: |
             build
+            -x detekt
+            -x spotlessCheck
             --scan
             --build-cache
 
