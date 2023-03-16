@@ -13,8 +13,7 @@ class Example {
     private lateinit var lateFoo: Int
     // lorem ipsum
     private val FOO = 42
-    private val loggerName = "${Example.javaClass}$FOO"
-    private val log = LoggerFactory.getLogger("$loggerName$BAR")
+    private val log = LoggerFactory.getLogger(Example.javaClass)
 
     class UnusedNested { }
 
