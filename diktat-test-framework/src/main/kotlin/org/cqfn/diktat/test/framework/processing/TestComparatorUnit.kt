@@ -99,7 +99,7 @@ class TestComparatorUnit(
         } else {
             // fixme: actualResult is separated by KtLint#determineLneSeparator, should be split by it here too
             actualResult.split("\n")
-        }.also { println(it.joinToString("\n")) }
+        }
 
         val expectedFileContent = readFile(expectedFile)
 

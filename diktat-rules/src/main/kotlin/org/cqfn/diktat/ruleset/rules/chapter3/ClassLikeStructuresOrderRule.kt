@@ -226,11 +226,11 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                     .keys
                     .toList()
 
-
                 val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }
                 return AllProperties(loggers, constProperties, properties, lateInitProperties)
             }
 
+            @Suppress("TYPE_ALIAS")
             private fun getLoggerDependencyNames(loggers: List<ASTNode>): Map<ASTNode, List<String>> = loggers.map { astNode ->
                 astNode to astNode.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION, false)
             }.associate { (astNode, possibleDependencies) ->
