@@ -45,7 +45,6 @@ mavenPlugin {
 
 publishing {
     publications {
-        // create a publication so that the plugin can be published to the local Maven repository
         create<MavenPublication>("mavenPlugin") {
             from(components["java"])
         }
