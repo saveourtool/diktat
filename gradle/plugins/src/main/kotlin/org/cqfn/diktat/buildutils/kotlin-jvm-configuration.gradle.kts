@@ -10,14 +10,19 @@ plugins {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.${Versions.jdk}"
         freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(Versions.jdk))
     }
 }
 
 kotlin {
     jvmToolchain {
-        this.languageVersion.set(JavaLanguageVersion.of(Versions.jdk))
+        languageVersion.set(JavaLanguageVersion.of(Versions.jdk))
     }
 }
 

@@ -19,6 +19,7 @@ spotless {
         }
     }
     kotlinGradle {
+        ktlint()
         diktat(diktatVersion).configFile(rootProject.file("diktat-analysis.yml"))
 
         // using `Project#path` here, because it must be unique in gradle's project hierarchy
