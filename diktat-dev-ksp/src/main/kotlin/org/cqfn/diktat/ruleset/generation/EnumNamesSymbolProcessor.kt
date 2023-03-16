@@ -26,11 +26,6 @@ class EnumNamesSymbolProcessor(
             "Provided class $sourceEnumName is not enum"
         }
 
-        resolver.getNewFiles()
-            .find { it.packageName.asString() == targetPackageName && it.fileName == "$targetClassName.kt" }
-            ?.run {
-                return emptyList()
-            }
         codeGenerator.createNewFile(
             dependencies = Dependencies.ALL_FILES,
             packageName = targetPackageName,

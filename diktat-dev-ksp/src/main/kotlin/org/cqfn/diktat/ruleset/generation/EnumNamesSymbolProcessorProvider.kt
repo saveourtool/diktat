@@ -24,13 +24,13 @@ class EnumNamesSymbolProcessorProvider : SymbolProcessorProvider {
         const val OPTION_NAME_SOURCE_ENUM_NAME = "sourceEnumName"
 
         /**
-         * Option name to specify `packageName` for target class
-         */
-        const val OPTION_NAME_TARGET_PACKAGE_NAME = "targetPackageName"
-
-        /**
          * Option name to specify `className` for target class
          */
         const val OPTION_NAME_TARGET_CLASS_NAME = "targetClassName"
+
+        /**
+         * Option name to specify `packageName` for target class
+         */
+        const val OPTION_NAME_TARGET_PACKAGE_NAME = "targetPackageName"
     }
 }
