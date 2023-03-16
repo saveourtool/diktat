@@ -132,7 +132,7 @@ fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
 /**
  * Generates a sequence of this ASTNode's children in reversed order
  *
- * @return a reevrsed sequence of children
+ * @return a reversed sequence of children
  */
 fun ASTNode.reversedChildren(): Sequence<ASTNode> = sequence {
     var node = lastChildNode
