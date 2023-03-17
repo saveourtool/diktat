@@ -281,16 +281,6 @@
         <profile>
             <!-- enable maven plugin documentation generation only for release builds to speed up ordinary builds -->
             <id>release</id>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>kotlin-maven-plugin-tools</id>
-                    <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/gantsign/kotlin-maven-plugin-tools</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </pluginRepository>
-            </pluginRepositories>
             <build>
                 <plugins>
                     <plugin>
@@ -322,7 +312,7 @@
                             <dependency>
                                 <groupId>com.github.gantsign.maven.plugin-tools</groupId>
                                 <artifactId>kotlin-maven-plugin-tools</artifactId>
-                                <version>0.9.26</version>
+                                <version>1.1.0</version>
                             </dependency>
                         </dependencies>
                     </plugin>
