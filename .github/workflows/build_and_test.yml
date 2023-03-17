@@ -47,7 +47,6 @@ jobs:
           arguments: |
             build
             -x detekt
-            -x spotlessKotlin
             --scan
             --build-cache
 
@@ -237,7 +236,6 @@ jobs:
           arguments: |
             build
             -x detekt
-            -x spotlessKotlin
             --scan
             --build-cache
 
