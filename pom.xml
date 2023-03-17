@@ -57,7 +57,10 @@
         <detekt.version>1.22.0</detekt.version>
         <dokka.version>1.8.10</dokka.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <maven-plugin-tools.version>3.8.1</maven-plugin-tools.version>
+        <!-- Don't upgrade before checking compatibility with `kotlin-maven-plugin-tools`.
+             See also `renovate.json`.
+             See https://github.com/saveourtool/diktat/issues/1632 for details. -->
+        <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.24</jbool.version>
         <!-- downgraded to be compliance with ktlint -->
         <mu-logging.version>2.1.23</mu-logging.version>
