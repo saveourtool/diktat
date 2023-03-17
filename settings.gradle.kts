@@ -8,6 +8,7 @@ dependencyResolutionManagement {
 
 pluginManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }

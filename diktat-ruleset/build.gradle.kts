@@ -36,10 +36,10 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("shadowJar").apply {
-            project.shadow.component(this)
-        }
-    }
-}
+//publishing {
+//    publications {
+//        create<MavenPublication>("shadowJar").apply {
+//            project.shadow.component(this)
+//        }
+//    }
+//}

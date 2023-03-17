@@ -11,25 +11,46 @@ env:
 
 jobs:
   diktat_snapshot_check:
-    runs-on: ubuntu-20.04
+    name: 'Check the project using diktat snapshot plugin'
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository (shared with regular CI build)
+
+      - name: 'Cache ~/.konan'
+        id: cache-konan
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: maven-build-${{ hashFiles('**/pom.xml') }}
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}-build-java${{ matrix.java-version }}
           restore-keys: |
-            maven-build
-      - name: Set version
-        # Set project version which will then be used to run diktat from local maven repo.
-        # Base version is stored in env variable for later usage.
-        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
+            ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}-
+            ${{ runner.os }}-konan-
+
+      - name: 'Publish a snapshot version to local repo'
+        id: generateLibsForDiktatSnapshot
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
+            :diktat-gradle-plugin:generateLibsForDiktatSnapshot
+            -x detekt
+            -x diktat
+            -x test
+
         run: |
           snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate 2>/dev/null | grep '^VERSION' | cut -d= -f2)
           base_version=${snapshot_version%-SNAPSHOT}

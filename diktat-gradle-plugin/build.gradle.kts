@@ -1,5 +1,6 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.nio.file.Files
 
 plugins {
     `java-gradle-plugin`
@@ -122,4 +123,23 @@ tasks.jacocoTestReport {
         // xml report is used by codecov
         xml.required.set(true)
     }
+}
+
+tasks.register("generateLibsForDiktatSnapshot") {
+    dependsOn(rootProject.tasks.named("publishToMavenLocal"))
+    val libsFile = rootProject.file("gradle/libs.versions.toml")
+    inputs.file(libsFile)
+    inputs.property("project-version", project.version)
+
+    Files.readAllLines(libsFile.toPath())
+        .map { line ->
+            when {
+                line.contains("diktat = ") -> "diktat = \"${project.version}\""
+                else -> line
+            }
+        }
+        .let {
+            val libsFileForDiktatSnapshot = rootProject.file("gradle/libs.versions.toml_snapshot")
+            Files.write(libsFileForDiktatSnapshot.toPath(), it)
+        }
 }
