@@ -9,15 +9,12 @@ val elem1 = firstArgumentDot()?.secondArgumentDot
 
 val elem2 = firstArgumentDot?.secondArgumentDot()
 ?.thirdArgumentDot
-    ?.fourthArgumentDot
-?.fifthArgumentDot
-?.sixthArgumentDot
+    ?.fourthArgumentDot?.fifthArgumentDot?.sixthArgumentDot
 
 
 val elem3 = firstArgumentDot?.secondArgumentDot?.thirdArgumentDot()
 ?.fourthArgumentDot
-    ?.fifthArgumentDot
-?.sixthArgumentDot
+    ?.fifthArgumentDot?.sixthArgumentDot
 
 
 val elem4 = firstArgumentDot?.secondArgumentDot?.thirdArgumentDot + firstArgumentDot?.secondArgumentDot?.thirdArgumentDot?.fourthArgumentDot
@@ -31,15 +28,12 @@ val elem5 = firstArgumentDot()!!.secondArgumentDot()!!
 
 
 val elem6 = firstArgumentDot!!.secondArgumentDot!!.thirdArgumentDot()!!
-    .fourthArgumentDot!!
-.fifthArgumentDot()!!
-.sixthArgumentDot
+    .fourthArgumentDot!!.fifthArgumentDot()!!.sixthArgumentDot
 
 
 val elem7 = firstArgumentDot!!.secondArgumentDot()!!
 .thirdArgumentDot!!
-.fourthArgumentDot()!!
-    .fifthArgumentDot!!
+.fourthArgumentDot()!!.fifthArgumentDot!!
 .sixthArgumentDot
 
 
@@ -55,15 +49,12 @@ val elem9 = firstArgumentDot().secondArgumentDot
 
 val elem10 = firstArgumentDot.secondArgumentDot()
 .thirdArgumentDot
-    .fourthArgumentDot
-.fifthArgumentDot()
-.sixthArgumentDot
+    .fourthArgumentDot.fifthArgumentDot().sixthArgumentDot
 
 
 val elem11 = firstArgumentDot.secondArgumentDot.thirdArgumentDot()
 .fourthArgumentDot
-    .fifthArgumentDot
-.sixthArgumentDot
+    .fifthArgumentDot.sixthArgumentDot
 
 
 val elem12 = firstArgumentDot.secondArgumentDot.thirdArgumentDot + firstArgumentDot.secondArgumentDot().thirdArgumentDot.fourthArgumentDot
