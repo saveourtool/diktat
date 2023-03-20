@@ -6,6 +6,7 @@ package org.cqfn.diktat.buildutils
 
 import org.ajoberstar.grgit.gradle.GrgitServiceExtension
 import org.ajoberstar.grgit.gradle.GrgitServicePlugin
+import org.ajoberstar.reckon.core.Scope
 import org.ajoberstar.reckon.gradle.ReckonExtension
 import org.ajoberstar.reckon.gradle.ReckonPlugin
 import org.gradle.api.Project

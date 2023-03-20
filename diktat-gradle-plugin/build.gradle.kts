@@ -88,7 +88,7 @@ val functionalTest: SourceSet = sourceSets.create("functionalTest") {
     compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
     runtimeClasspath += output + compileClasspath
 }
-tasks.getByName<Test>("functionalTest") {
+val functionalTestProvider: TaskProvider<Test> = tasks.named<Test>("functionalTest") {
     shouldRunAfter("test")
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
@@ -109,8 +109,10 @@ tasks.getByName<Test>("functionalTest") {
     finalizedBy(tasks.jacocoTestReport)
 }
 tasks.check { dependsOn(tasks.jacocoTestReport) }
+
 jacocoTestKit {
-    applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
+    @Suppress("UNCHECKED_CAST")
+    applyTo("functionalTestRuntimeOnly", functionalTestProvider as TaskProvider<Task>)
 }
 tasks.jacocoTestReport {
     shouldRunAfter(tasks.withType<Test>())
