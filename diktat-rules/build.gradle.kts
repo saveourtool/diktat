@@ -26,7 +26,7 @@ dependencies {
     implementation(libs.jbool.expressions)
 
     // generating
-    implementation(projects.diktatDevKsp)
+    compileOnly(projects.diktatDevKsp)
     ksp(projects.diktatDevKsp)
     testImplementation(libs.kotlin.reflect)
 }

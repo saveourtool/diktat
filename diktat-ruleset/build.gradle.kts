@@ -16,8 +16,6 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
-        // A new module, better to exclude
-        exclude("org.cqfn.diktat", "diktat-dev-ksp")
     }
     testImplementation(projects.diktatTestFramework)
     testImplementation(libs.kotlin.stdlib.common)
