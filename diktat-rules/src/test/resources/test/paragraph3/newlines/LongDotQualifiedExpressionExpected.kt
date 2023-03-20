@@ -33,8 +33,8 @@ val elem6 = firstArgumentDot!!.secondArgumentDot!!.thirdArgumentDot()!!
 
 val elem7 = firstArgumentDot!!.secondArgumentDot()!!
 .thirdArgumentDot!!
-.fourthArgumentDot()!!.fifthArgumentDot!!
-.sixthArgumentDot
+.fourthArgumentDot()!!
+    .fifthArgumentDot!!.sixthArgumentDot
 
 
 val elem8 = firstArgumentDot()!!.secondArgumentDot!!.thirdArgumentDot + firstArgumentDot!!.secondArgumentDot!!.thirdArgumentDot!!.fourthArgumentDot
