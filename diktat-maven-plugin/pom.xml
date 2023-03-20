@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>1.2.4.3-SNAPSHOT</version>
+        <version>1.2.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,9 +13,9 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <maven.api.version>3.8.6</maven.api.version>
+        <maven.api.version>3.9.1</maven.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.itf.version>0.11.0</maven.itf.version>
+        <maven.itf.version>0.12.0</maven.itf.version>
     </properties>
 
     <dependencies>
@@ -281,16 +281,6 @@
         <profile>
             <!-- enable maven plugin documentation generation only for release builds to speed up ordinary builds -->
             <id>release</id>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>kotlin-maven-plugin-tools</id>
-                    <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/gantsign/kotlin-maven-plugin-tools</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </pluginRepository>
-            </pluginRepositories>
             <build>
                 <plugins>
                     <plugin>
@@ -322,7 +312,7 @@
                             <dependency>
                                 <groupId>com.github.gantsign.maven.plugin-tools</groupId>
                                 <artifactId>kotlin-maven-plugin-tools</artifactId>
-                                <version>0.9.26</version>
+                                <version>1.1.0</version>
                             </dependency>
                         </dependencies>
                     </plugin>

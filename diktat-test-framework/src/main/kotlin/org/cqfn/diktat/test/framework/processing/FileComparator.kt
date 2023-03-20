@@ -31,6 +31,38 @@ class FileComparator(
         newTag = { _, start -> if (start) "<" else ">" },
     )
 
+    /**
+     * delta in files
+     */
+    val delta: String? by lazy {
+        if (expectedResultList.isEmpty()) {
+            return@lazy null
+        }
+        val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
+        val expectWithoutWarn = expectedResultList.filterNot { line ->
+            line.contains(regex)
+        }
+        val patch = diff(expectWithoutWarn, actualResultList)
+
+        if (patch.deltas.isEmpty()) {
+            return@lazy null
+        }
+        return@lazy patch.deltas.joinToString(System.lineSeparator()) { delta ->
+            when (delta) {
+                is ChangeDelta -> diffGenerator
+                    .generateDiffRows(delta.source.lines, delta.target.lines)
+                    .joinToString(prefix = "ChangeDelta, position ${delta.source.position}, lines:\n", separator = "\n\n") {
+                        """
+                            |-${it.oldLine}
+                            |+${it.newLine}
+                            |""".trimMargin()
+                    }
+                    .let { "ChangeDelta, position ${delta.source.position}, lines:\n$it" }
+                else -> delta.toString()
+            }
+        }
+    }
+
     constructor(
         expectedResultFile: File,
         actualResultList: List<String>
@@ -61,39 +93,18 @@ class FileComparator(
             if (expectedResultList.isEmpty()) {
                 return false
             }
-            val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
-            val expectWithoutWarn = expectedResultList.filterNot { line ->
-                line.contains(regex)
-            }
-            val patch = diff(expectWithoutWarn, actualResultList)
-
-            if (patch.deltas.isEmpty()) {
-                return true
-            }
-            val joinedDeltas = patch.deltas.joinToString(System.lineSeparator()) { delta ->
-                when (delta) {
-                    is ChangeDelta -> diffGenerator
-                        .generateDiffRows(delta.source.lines, delta.target.lines)
-                        .joinToString(prefix = "ChangeDelta, position ${delta.source.position}, lines:\n", separator = "\n\n") {
-                            """-${it.oldLine}
-                      |+${it.newLine}
-                      |""".trimMargin()
-                        }
-                        .let { "ChangeDelta, position ${delta.source.position}, lines:\n$it" }
-                    else -> delta.toString()
-                }
-            }
-
+            val joinedDeltas = delta ?: return true
             log.error("""
                 |Expected result from <${expectedResultFile.name}> and <${actualResultFile.name}> formatted are different.
                 |See difference below:
                 |$joinedDeltas
                 """.trimMargin()
             )
-        } catch (e: RuntimeException) {
+            return false
+        } catch (e: IllegalArgumentException) {
             log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultFile.name}>", e)
+            return false
         }
-        return false
     }
 
     companion object {

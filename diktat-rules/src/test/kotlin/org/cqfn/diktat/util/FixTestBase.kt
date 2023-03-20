@@ -58,11 +58,13 @@ open class FixTestBase(
         trimLastEmptyLine: Boolean = false,
     ) {
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
+        val result = testComparatorUnit
+            .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
         Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
-                .isSuccessful
-        )
+            result.isSuccessful
+        ) {
+            "Detected delta: ${result.delta}"
+        }
     }
 
     /**

@@ -48,6 +48,7 @@ class TestComparatorUnit(
             log.error("Not able to find files for running test: $expectedResult and $testFileStr")
             return FileComparisonResult(
                 isSuccessful = false,
+                delta = null,
                 actualContent = "// $resourceFilePath/$expectedResult is found: ${testPath != null}",
                 expectedContent = "// $resourceFilePath/$testFileStr is found: ${expectedPath != null}")
         }
@@ -80,6 +81,7 @@ class TestComparatorUnit(
             log.error("Not able to find files for running test: $expectedFile and $testFile")
             return FileComparisonResult(
                 isSuccessful = false,
+                delta = null,
                 actualContent = "// $testFile is a regular file: ${testFile.isRegularFile()}",
                 expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
         }
@@ -101,14 +103,15 @@ class TestComparatorUnit(
 
         val expectedFileContent = readFile(expectedFile)
 
-        val isSuccessful = FileComparator(
+        val comparator = FileComparator(
             expectedFile,
             expectedFileContent,
             testFile,
-            actualFileContent).compareFilesEqual()
+            actualFileContent)
 
         return FileComparisonResult(
-            isSuccessful,
+            comparator.compareFilesEqual(),
+            comparator.delta,
             actualFileContent.joinToString("\n"),
             expectedFileContent.joinToString("\n"))
     }

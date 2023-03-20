@@ -166,7 +166,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         val otherNodesBeforeCode = firstCodeNode.siblings(forward = false)
             .filterNot {
                 it.isWhiteSpace() ||
-                        it == copyrightComment || it == headerKdoc || it == fileAnnotations
+                        it == copyrightComment || it == headerKdoc || it == fileAnnotations ||
+                        it.elementType == PACKAGE_DIRECTIVE
             }
             .toList()
             .reversed()

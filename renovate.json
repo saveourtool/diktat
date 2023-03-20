@@ -64,6 +64,20 @@
       "allowedVersions": "<= 0.47.0"
     },
     {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "org.apache.maven.plugins:maven-plugin-plugin"
+      ],
+      "allowedVersions": "< 3.7.0"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "org.apache.maven.plugin-tools:maven-plugin-annotations"
+      ],
+      "allowedVersions": "< 3.7.0"
+    },
+    {
       "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"

@@ -14,8 +14,13 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
+import org.jetbrains.kotlin.lexer.KtTokens.EXTERNAL_KEYWORD
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.psiUtil.allChildren
 
 /**
  * This rule checks if there are any extension functions for the class in the same file, where it is defined
@@ -35,11 +40,29 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
-    private fun collectAllClassNames(node: ASTNode): List<String> {
-        val classes = node.findAllDescendantsWithSpecificType(CLASS)
+    /**
+     * Collects all class names in the [file], except those with modifiers from
+     * the [ignore list][ignoredModifierTypes].
+     *
+     * @throws IllegalArgumentException if [file] is not a
+     *   [FILE][ElementType.FILE] node.
+     */
+    private fun collectAllClassNames(file: ASTNode): List<String> {
+        require(file.elementType == ElementType.FILE)
 
-        return classes.map { (it.psi as KtClass).name!! }
+        val classes = file.findAllDescendantsWithSpecificType(CLASS)
+
+        return classes.asSequence()
+            .map(ASTNode::getPsi)
+            .filterIsInstance(KtClass::class.java)
+            .filter { clazz ->
+                clazz.modifierTypes().none { modifierType ->
+                    modifierType in ignoredModifierTypes
+                }
+            }
+            .map(KtClass::getName)
+            .filterNotNull()
+            .toList()
     }
 
     private fun fireWarning(node: ASTNode) {
@@ -55,5 +78,30 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val NAME_ID = "extension-functions-class-file"
+
+        /**
+         * Types of class/interface modifiers which, if present, don't trigger
+         * the warning.
+         *
+         * @since 1.2.5
+         */
+        private val ignoredModifierTypes: Array<out KtModifierKeywordToken> = arrayOf(
+            EXTERNAL_KEYWORD,
+        )
+
+        /**
+         * @since 1.2.5
+         */
+        private fun KtClass.modifiers(): Sequence<PsiElement> =
+            modifierList?.allChildren ?: emptySequence()
+
+        /**
+         * @since 1.2.5
+         */
+        private fun KtClass.modifierTypes(): Sequence<KtModifierKeywordToken> =
+            modifiers()
+                .filterIsInstance<LeafPsiElement>()
+                .map(LeafPsiElement::getElementType)
+                .filterIsInstance<KtModifierKeywordToken>()
     }
 }

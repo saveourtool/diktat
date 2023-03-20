@@ -130,4 +130,23 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
             """.trimMargin()
         )
     }
+
+    /**
+     * See [#1586](https://github.com/saveourtool/diktat/issues/1586).
+     *
+     * @since 1.2.5
+     */
+    @Test
+    @Tag(EXTENSION_FUNCTION_WITH_CLASS)
+    fun `should raise no warnings for external interfaces`() {
+        lintMethod(
+            """
+                |internal external interface External {
+                |    val a: Int
+                |}
+                |
+                |fun External.extension() = println(a)
+            """.trimMargin()
+        )
+    }
 }
