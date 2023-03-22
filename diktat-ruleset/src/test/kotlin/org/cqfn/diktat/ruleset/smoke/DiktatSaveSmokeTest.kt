@@ -27,6 +27,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 import kotlin.io.path.outputStream
 import kotlin.io.path.readText
 import kotlin.io.path.relativeTo
@@ -209,7 +210,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             val diktatFrom = Path(BUILD_DIRECTORY)
                 .takeIf(Path::exists)
                 ?.listDirectoryEntries(FAT_JAR_GLOB)
-                ?.singleOrNull()
+                ?.singleOrNull {
+                    !it.name.contains("ruleset")
+                }
             assertThat(diktatFrom)
                 .describedAs(diktatFrom?.toString() ?: "$BUILD_DIRECTORY/$FAT_JAR_GLOB")
                 .isNotNull

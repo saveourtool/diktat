@@ -10,7 +10,8 @@ plugins {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-Werror -opt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs = freeCompilerArgs +
+                "-opt-in=kotlin.RequiresOptIn" + "-Werror"
     }
 }
 

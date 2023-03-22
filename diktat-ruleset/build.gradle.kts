@@ -29,15 +29,7 @@ dependencies {
     testImplementation(libs.mockito)
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+val shadowJar: Provider<ShadowJar> = tasks.named<ShadowJar>("shadowJar") {
     archiveBaseName.set("diktat")
     archiveClassifier.set("")
 }
-
-//publishing {
-//    publications {
-//        create<MavenPublication>("shadowJar").apply {
-//            project.shadow.component(this)
-//        }
-//    }
-//}

@@ -1,3 +1,5 @@
+import org.cqfn.diktat.buildutils.configureSigning
+
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
     id("org.cqfn.diktat.buildutils.versioning-configuration")
@@ -20,3 +22,5 @@ talaiot {
 }
 
 project.description = "diKTat kotlin formatter and fixer"
+
+configureSigning()

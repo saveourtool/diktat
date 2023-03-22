@@ -3,11 +3,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 plugins {
-    `java-gradle-plugin`
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.diktat-version-file-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.5.2"
+    id("com.gradle.plugin-publish") version "1.1.0"
 }
 
 dependencies {
@@ -27,40 +28,14 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
 }
 
-val generateVersionsFile by tasks.registering {
-    val versionsFile = File("$buildDir/generated/src/generated/Versions.kt")
-    val diktatVersion = project.version.toString()
-    val ktlintVersion = libs.versions.ktlint.get()
-
-    inputs.property("diktat version", diktatVersion)
-    inputs.property("ktlint version", ktlintVersion)
-
-    outputs.file(versionsFile)
-
-    doFirst {
-        versionsFile.parentFile.mkdirs()
-        versionsFile.writeText(
-            """
-            package generated
-
-            internal const val DIKTAT_VERSION = "$diktatVersion"
-            internal const val KTLINT_VERSION = "$ktlintVersion"
-
-            """.trimIndent()
-        )
-    }
-}
-kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src")
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         // fixme: kotlin 1.3 is required for gradle <6.8
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
+        freeCompilerArgs = freeCompilerArgs - "-Werror"
     }
-
-    dependsOn.add(generateVersionsFile)
 }
 
 gradlePlugin {
@@ -70,10 +45,6 @@ gradlePlugin {
             implementationClass = "org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin"
         }
     }
-}
-
-java {
-    withSourcesJar()
 }
 
 // === testing & code coverage, jacoco is run independent from maven
@@ -131,12 +102,12 @@ tasks.register("generateLibsForDiktatSnapshot") {
     dependsOn(rootProject.tasks.named("publishToMavenLocal"))
     val libsFile = rootProject.file("gradle/libs.versions.toml")
     inputs.file(libsFile)
-    inputs.property("project-version", project.version)
+    inputs.property("project-version", version)
 
     Files.readAllLines(libsFile.toPath())
         .map { line ->
             when {
-                line.contains("diktat = ") -> "diktat = \"${project.version}\""
+                line.contains("diktat = ") -> "diktat = \"${version}\""
                 else -> line
             }
         }
