@@ -1,6 +1,3 @@
-import java.nio.file.Files
-import java.time.LocalDate
-
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
@@ -36,42 +33,6 @@ kotlin {
     sourceSets.main {
         kotlin.srcDir("build/generated/ksp/main/kotlin")
     }
-}
-
-val updateCopyrightYearInTestTaskProvider = tasks.register("updateCopyrightYearInTest") {
-    val headerDir = "$projectDir/src/test/resources/test/paragraph2/header"
-    inputs.dir(headerDir)
-    outputs.dir(headerDir)
-
-    val hyphenRegex = Regex("""\d+-\d+""")
-    val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
-    val curYear = LocalDate.now().year
-    fileTree(headerDir)
-        .filter { !it.name.contains("CopyrightDifferentYearTest.kt") }
-        .map { it.toPath() }
-        .forEach { file ->
-            val updatedLines = Files.readAllLines(file).map { line ->
-                when {
-                    line.contains(hyphenRegex) -> line.replace(hyphenRegex) {
-                        val years = it.value.split("-")
-                        "${years[0]}-$curYear"
-                    }
-                    line.contains(afterCopyrightRegex) -> line.replace(afterCopyrightRegex) {
-                        val copyrightYears = it.value.split("(c)", "(C)", "©")
-                        "${copyrightYears[0]}-$curYear"
-                    }
-                    else -> line
-                }
-            }
-            val tempFile = temporaryDir.toPath().resolve(file.fileName)
-            Files.write(tempFile, updatedLines)
-            Files.delete(file)
-            Files.move(tempFile, file)
-        }
-}
-
-tasks.named("compileTestKotlin") {
-    dependsOn(updateCopyrightYearInTestTaskProvider)
 }
 
 idea {
