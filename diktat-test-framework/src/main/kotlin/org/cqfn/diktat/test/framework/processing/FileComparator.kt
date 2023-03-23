@@ -9,18 +9,16 @@ import mu.KotlinLogging
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.name
 import kotlin.io.path.readLines
 
 /**
  * A class that is capable of comparing files content
  */
 class FileComparator(
-    private val expectedResultFile: Path,
-    private val expectedResultList: List<String> = readFile(expectedResultFile),
-    private val actualResultFile: Path,
-    private val actualResultList: List<String> = readFile(actualResultFile)
+    private val expectedResultFileName: String,
+    private val expectedResultList: List<String>,
+    private val actualResultFileName: String,
+    private val actualResultList: List<String>,
 ) {
     private val diffGenerator = DiffRowGenerator(
         columnWidth = Int.MAX_VALUE,
@@ -67,17 +65,21 @@ class FileComparator(
         expectedResultFile: File,
         actualResultList: List<String>
     ) : this(
-        expectedResultFile.toPath(),
-        actualResultFile = Path("No file name.kt"),
-        actualResultList = actualResultList
+        expectedResultFileName = expectedResultFile.name,
+        expectedResultList = readFile(expectedResultFile.toPath()),
+        actualResultFileName = "No file name.kt",
+        actualResultList = actualResultList,
     )
 
     constructor(
         expectedResultFile: File,
         actualResultFile: File
     ) : this(
-        expectedResultFile.toPath(),
-        actualResultFile = actualResultFile.toPath())
+        expectedResultFileName = expectedResultFile.name,
+        expectedResultList = readFile(expectedResultFile.toPath()),
+        actualResultFileName = actualResultFile.name,
+        actualResultList = readFile(actualResultFile.toPath()),
+    )
 
     /**
      * @return true in case files are different
@@ -95,14 +97,14 @@ class FileComparator(
             }
             val joinedDeltas = delta ?: return true
             log.error("""
-                |Expected result from <${expectedResultFile.name}> and <${actualResultFile.name}> formatted are different.
+                |Expected result from <$expectedResultFileName> and <$actualResultFileName> formatted are different.
                 |See difference below:
                 |$joinedDeltas
                 """.trimMargin()
             )
             return false
         } catch (e: IllegalArgumentException) {
-            log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultFile.name}>", e)
+            log.error("Not able to prepare diffs between <$expectedResultFileName> and <$actualResultFileName>", e)
             return false
         }
     }
