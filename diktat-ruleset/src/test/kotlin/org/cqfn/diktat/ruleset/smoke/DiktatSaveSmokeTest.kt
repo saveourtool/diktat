@@ -210,9 +210,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             val diktatFrom = Path(BUILD_DIRECTORY)
                 .takeIf(Path::exists)
                 ?.listDirectoryEntries(FAT_JAR_GLOB)
-                ?.singleOrNull {
-                    !it.name.contains("ruleset")
-                }
+                ?.singleOrNull()
             assertThat(diktatFrom)
                 .describedAs(diktatFrom?.toString() ?: "$BUILD_DIRECTORY/$FAT_JAR_GLOB")
                 .isNotNull

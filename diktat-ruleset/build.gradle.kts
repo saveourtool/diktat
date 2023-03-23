@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -29,7 +30,31 @@ dependencies {
     testImplementation(libs.mockito)
 }
 
-val shadowJar: Provider<ShadowJar> = tasks.named<ShadowJar>("shadowJar") {
+tasks.named<ShadowJar>("shadowJar") {
     archiveBaseName.set("diktat")
     archiveClassifier.set("")
+}
+
+// disable default jar
+tasks.named("jar") {
+    enabled = false
+}
+
+// it triggers shadowJar with default build
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+}
+
+// it creates a publication for shadowJar
+publishing {
+    publications {
+        create<MavenPublication>("shadow") {
+            // https://github.com/johnrengelman/shadow/issues/417#issuecomment-830668442
+            project.extensions.configure<ShadowExtension> {
+                component(this@create)
+            }
+        }
+    }
 }
