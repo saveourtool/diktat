@@ -18,20 +18,18 @@ internal fun createExampleProject(testProjectDir: TemporaryFolder,
     exampleProject.copyRecursively(testProjectDir.root)
     val buildFileName = buildInitDsl.fileNameFor("build")
     File(testProjectDir.root, buildFileName).delete()
-    testProjectDir.newFile(buildFileName).apply {
-        writeText(
-            """
-                plugins {
-                    id("org.cqfn.diktat.diktat-gradle-plugin")
-                }
+    testProjectDir.newFile(buildFileName).writeText(
+        """
+            plugins {
+                id("org.cqfn.diktat.diktat-gradle-plugin")
+            }
 
-                repositories {
-                    mavenLocal()
-                    mavenCentral()
-                }
-            """.trimIndent()
-        )
-    }
+            repositories {
+                mavenLocal()
+                mavenCentral()
+            }
+        """.trimIndent()
+    )
 }
 
 /**
@@ -57,7 +55,12 @@ internal fun runDiktat(testProjectDir: TemporaryFolder,
             "Running gradle returned exception $ex, cause: ${ex?.cause}"
         }
     }
-    .getOrNull()!!
+    .getOrNull()
+    .let {
+        requireNotNull(it) {
+            "Failed to get build result from running diktat"
+        }
+    }
 
 /**
  * This is support for jacoco reports in tests run with gradle TestKit

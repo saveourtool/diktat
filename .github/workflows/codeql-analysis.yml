@@ -24,7 +24,7 @@ jobs:
       matrix:
         # Override automatic language detection by changing the below list
         # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
-        language: ['java']
+        language: ['kotlin']
         # Learn more...
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
@@ -58,8 +58,24 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
 
-    - run: |
-       mvn clean install
+    - uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: wrapper
+        # The `--continue` flag is necessary so that Gradle keeps going after the 1st test failure.
+        # By default, when test for all MPP targets are executed, Kotlin Gradle Plugin generates a single aggregated HTML report.
+        # Property `kotlin.tests.individualTaskReports` enables individual Junit-style XML reports.
+        # See org.jetbrains.kotlin.gradle.testing.internal.KotlinTestReport.
+        arguments: |
+          build
+          --continue
+          -x detekt
+          -Pkotlin.tests.individualTaskReports=true
+          -Porg.gradle.caching=true
+          -Pdetekt.multiplatform.disabled=true
+          -PdisableRedundantTargets=true
+          -PenabledExecutables=debug
+          -PgprUser=${{ github.actor }}
+          -PgprKey=${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

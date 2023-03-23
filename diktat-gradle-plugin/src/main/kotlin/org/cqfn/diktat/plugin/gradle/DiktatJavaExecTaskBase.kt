@@ -78,6 +78,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             // `main` is deprecated and replaced with `mainClass` since gradle 6.4
             mainClass.set("com.pinterest.ktlint.Main")
         } else {
+            @Suppress("Deprecation")
             main = "com.pinterest.ktlint.Main"
         }
 

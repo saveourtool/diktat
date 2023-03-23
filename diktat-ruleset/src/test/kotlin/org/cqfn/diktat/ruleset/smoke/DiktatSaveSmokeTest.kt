@@ -27,6 +27,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 import kotlin.io.path.outputStream
 import kotlin.io.path.readText
 import kotlin.io.path.relativeTo
@@ -136,7 +137,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val logger = KotlinLogging.loggerWithKtlintConfig { }
         private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
-        private const val BUILD_DIRECTORY = "target"
+        private const val BUILD_DIRECTORY = "build/libs"
         private const val FAT_JAR_GLOB = "diktat-*.jar"
         private const val KTLINT_VERSION = "0.46.1"
         private const val SAVE_VERSION: String = "0.3.4"

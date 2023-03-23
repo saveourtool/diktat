@@ -14,6 +14,9 @@ ij_smart_tabs = false
 ij_visual_guides = 80,120,180
 ij_wrap_on_typing = false
 
+[{*.yaml,*.yml}]
+indent_size = 2
+
 [{*.kt,*.kts}]
 ij_kotlin_align_in_columns_case_branch = false
 ij_kotlin_align_multiline_binary_operation = false

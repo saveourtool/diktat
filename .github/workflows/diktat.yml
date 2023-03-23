@@ -8,31 +8,39 @@ on:
 
 jobs:
   diktat_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          # set this to 0 to fetch all tags too and be able to use them later
-          fetch-depth: 0
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
+          distribution: temurin
+      - uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.m2/repository
-          key: maven-diktat-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-diktat-
-      - name: Substitute diktat config with the one from the latest release
-        # fixme: can be done from the fetched repo without additional network request
-        run: |
-          git fetch --tags
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          DIKTAT_CONFIG=diktat-analysis.yml
-          wget -O $DIKTAT_CONFIG https://raw.githubusercontent.com/saveourtool/diKTat/$LATEST_TAG/$DIKTAT_CONFIG
-      - name: Run diktat via maven plugin
-        run: mvn -B -Dstyle.color=always diktat:check@diktat -DskipPluginMarker
+          gradle-version: wrapper
+          arguments: |
+            diktatCheck
+            mergeDiktatReports
+            -Pdiktat.githubActions=true
+            -Pdetekt.multiplatform.disabled=true
+            --build-cache
+            --continue
+            -PgprUser=${{ github.actor }}
+            -PgprKey=${{ secrets.GITHUB_TOKEN }}
+      - name: Upload SARIF report to Github
+        uses: github/codeql-action/upload-sarif@v2
+        if: ${{ always() }}
+        with:
+          sarif_file: build/reports/diktat/diktat-merged.sarif
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: sarif-reports
+          path: "**/build/reports/diktat"
+          retention-days: 1

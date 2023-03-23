@@ -1,42 +1,21 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.cqfn.diktat.buildutils.configureSigning
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    `java-gradle-plugin`
-    kotlin("jvm") version "1.8.10"
-    jacoco
+    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
+    id("org.cqfn.diktat.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.diktat-version-file-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.5.2"
+    id("com.gradle.plugin-publish") version "1.1.0"
 }
 
-repositories {
-    flatDir {
-        // to use snapshot diktat without necessary installing
-        dirs("../diktat-common/target")
-        content {
-            includeGroup("org.cqfn.diktat")
-        }
-    }
-    mavenCentral()
-    mavenLocal {
-        // to use snapshot diktat
-        content {
-            includeGroup("org.cqfn.diktat")
-        }
-    }
-}
-
-// default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
-// To debug gradle plugin, please set `diktatVersion` manually to the current maven project version.
-val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.46.1") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "1.2.3"
-val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
-val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation("io.github.detekt.sarif4k:sarif4k:0.3.0")
+    implementation(libs.sarif4k.jvm)
 
-    implementation("org.cqfn.diktat:diktat-common:$diktatVersion") {
+    api(projects.diktatCommon) {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
@@ -45,31 +24,9 @@ dependencies {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 }
-
-val generateVersionsFile by tasks.registering {
-    val versionsFile = File("$buildDir/generated/src/generated/Versions.kt")
-
-    inputs.property("diktat version", diktatVersion)
-    inputs.property("ktlint version", ktlintVersion)
-    outputs.file(versionsFile)
-
-    doFirst {
-        versionsFile.parentFile.mkdirs()
-        versionsFile.writeText(
-            """
-            package generated
-
-            internal const val DIKTAT_VERSION = "$diktatVersion"
-            internal const val KTLINT_VERSION = "$ktlintVersion"
-
-            """.trimIndent()
-        )
-    }
-}
-kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src")
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
@@ -77,9 +34,8 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
+        freeCompilerArgs = freeCompilerArgs - "-Werror"
     }
-
-    dependsOn.add(generateVersionsFile)
 }
 
 gradlePlugin {
@@ -91,24 +47,21 @@ gradlePlugin {
     }
 }
 
-java {
-    withSourcesJar()
-}
-
 // === testing & code coverage, jacoco is run independent from maven
 val functionalTestTask by tasks.register<Test>("functionalTest")
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-jacoco.toolVersion = jacocoVersion
 
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
-val functionalTest = sourceSets.create("functionalTest") {
+val functionalTest: SourceSet = sourceSets.create("functionalTest") {
     compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
     runtimeClasspath += output + compileClasspath
 }
-tasks.getByName<Test>("functionalTest") {
+
+@Suppress("GENERIC_VARIABLE_WRONG_DECLARATION", "MAGIC_NUMBER")
+val functionalTestProvider: TaskProvider<Test> = tasks.named<Test>("functionalTest") {
     shouldRunAfter("test")
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
@@ -129,8 +82,10 @@ tasks.getByName<Test>("functionalTest") {
     finalizedBy(tasks.jacocoTestReport)
 }
 tasks.check { dependsOn(tasks.jacocoTestReport) }
+
 jacocoTestKit {
-    applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
+    @Suppress("UNCHECKED_CAST")
+    applyTo("functionalTestRuntimeOnly", functionalTestProvider as TaskProvider<Task>)
 }
 tasks.jacocoTestReport {
     shouldRunAfter(tasks.withType<Test>())
@@ -144,3 +99,5 @@ tasks.jacocoTestReport {
         xml.required.set(true)
     }
 }
+
+configureSigning()

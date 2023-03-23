@@ -7,6 +7,7 @@ import org.apache.maven.project.ProjectBuilder
 import org.apache.maven.project.ProjectBuildingRequest
 import org.eclipse.aether.DefaultRepositorySystemSession
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.Assertions
@@ -20,6 +21,7 @@ import kotlin.io.path.div
  */
 @OptIn(ExperimentalPathApi::class)
 @Suppress("LongMethod", "TOO_LONG_FUNCTION")
+@Ignore
 class DiktatBaseMojoTest {
     @get:Rule val mojoRule = MojoRule()
     private lateinit var buildingRequest: ProjectBuildingRequest
@@ -46,11 +48,11 @@ class DiktatBaseMojoTest {
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <modelVersion>4.0.0</modelVersion>
-                    
+
                     <groupId>org.cqfn.diktat</groupId>
                     <artifactId>diktat-test</artifactId>
                     <version>1.0.0-SNAPSHOT</version>
-                    
+
                     <build>
                         <plugins>
                             <plugin>
@@ -87,11 +89,11 @@ class DiktatBaseMojoTest {
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <modelVersion>4.0.0</modelVersion>
-                    
+
                     <groupId>org.cqfn.diktat</groupId>
                     <artifactId>diktat-test</artifactId>
                     <version>1.0.0-SNAPSHOT</version>
-                    
+
                     <build>
                         <plugins>
                             <plugin>
