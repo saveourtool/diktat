@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: diktat-ruleset
-          path: diktat-ruleset/target/diktat-*.jar
+          path: diktat-ruleset/build/libs/diktat-*.jar
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
       - name: Code coverage report
