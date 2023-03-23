@@ -16,7 +16,12 @@ diktat {
             exclude("gradle/plugins/build/**")
         } else {
             include("src/**/*.kt", "**/*.kts")
-            exclude("src/test/**/*.kt", "src/*Test/**/*.kt")
+            exclude(
+                "src/test/**/*.kt",
+                "src/test/**/*.kts",
+                "src/*Test/**/*.kt",
+                "build/**/*.kts",
+            )
         }
     }
 }

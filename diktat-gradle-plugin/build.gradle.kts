@@ -1,6 +1,6 @@
+import org.cqfn.diktat.buildutils.configureSigning
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.cqfn.diktat.buildutils.configureSigning
 
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
@@ -60,7 +60,7 @@ val functionalTest: SourceSet = sourceSets.create("functionalTest") {
     runtimeClasspath += output + compileClasspath
 }
 
-@Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+@Suppress("GENERIC_VARIABLE_WRONG_DECLARATION", "MAGIC_NUMBER")
 val functionalTestProvider: TaskProvider<Test> = tasks.named<Test>("functionalTest") {
     shouldRunAfter("test")
     testClassesDirs = functionalTest.output.classesDirs
