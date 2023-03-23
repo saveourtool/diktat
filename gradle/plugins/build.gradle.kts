@@ -5,6 +5,13 @@ plugins {
 }
 
 repositories {
+    file("$rootDir/../../build/diktat-snapshot")
+        .takeIf { it.exists() }
+        ?.run {
+            maven {
+                url = this@run.toURI()
+            }
+        }
     mavenCentral()
     gradlePluginPortal()
 }

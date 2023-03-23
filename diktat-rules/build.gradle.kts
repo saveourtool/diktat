@@ -4,6 +4,7 @@ import java.time.LocalDate
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.publishing-signing-default-configuration")
     id("com.google.devtools.ksp") version "1.8.10-1.0.9"
     idea
 }

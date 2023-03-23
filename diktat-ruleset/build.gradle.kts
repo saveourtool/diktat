@@ -4,6 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
+    id("org.cqfn.diktat.buildutils.publishing-configuration")
     id("com.github.johnrengelman.shadow") version "7.1.2"
     `maven-publish`
 }

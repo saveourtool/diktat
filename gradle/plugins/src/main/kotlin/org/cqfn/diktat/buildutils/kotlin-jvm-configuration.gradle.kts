@@ -1,7 +1,6 @@
 package org.cqfn.diktat.buildutils
 
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {

@@ -2,13 +2,26 @@ rootProject.name = "diktat"
 
 dependencyResolutionManagement {
     repositories {
+        file("$rootDir/build/diktat-snapshot")
+            .takeIf { it.exists() }
+            ?.run {
+                maven {
+                    url = this@run.toURI()
+                }
+            }
         mavenCentral()
     }
 }
 
 pluginManagement {
     repositories {
-        mavenLocal()
+        file("$rootDir/build/diktat-snapshot")
+            .takeIf { it.exists() }
+            ?.run {
+                maven {
+                    url = this@run.toURI()
+                }
+            }
         mavenCentral()
         gradlePluginPortal()
     }

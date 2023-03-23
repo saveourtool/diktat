@@ -1,6 +1,6 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.nio.file.Files
+import org.cqfn.diktat.buildutils.configureSigning
 
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
@@ -59,6 +59,8 @@ val functionalTest: SourceSet = sourceSets.create("functionalTest") {
     compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
     runtimeClasspath += output + compileClasspath
 }
+
+@Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
 val functionalTestProvider: TaskProvider<Test> = tasks.named<Test>("functionalTest") {
     shouldRunAfter("test")
     testClassesDirs = functionalTest.output.classesDirs
@@ -98,21 +100,4 @@ tasks.jacocoTestReport {
     }
 }
 
-tasks.register("generateLibsForDiktatSnapshot") {
-    dependsOn(rootProject.tasks.named("publishToMavenLocal"))
-    val libsFile = rootProject.file("gradle/libs.versions.toml")
-    inputs.file(libsFile)
-    inputs.property("project-version", version)
-
-    Files.readAllLines(libsFile.toPath())
-        .map { line ->
-            when {
-                line.contains("diktat = ") -> "diktat = \"${version}\""
-                else -> line
-            }
-        }
-        .let {
-            val libsFileForDiktatSnapshot = rootProject.file("gradle/libs.versions.toml_snapshot")
-            Files.write(libsFileForDiktatSnapshot.toPath(), it)
-        }
-}
+configureSigning()

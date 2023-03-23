@@ -9,4 +9,6 @@ val installGitHooksTask = tasks.register("installGitHooks", Copy::class) {
 }
 
 // add git hooks installation to build by adding it as a dependency for some common task
-tasks.findByName("build")?.dependsOn(installGitHooksTask)
+run {
+    tasks.findByName("build")?.dependsOn(installGitHooksTask)
+}

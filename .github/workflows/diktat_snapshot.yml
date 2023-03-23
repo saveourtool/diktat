@@ -46,7 +46,10 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: |
-            :diktat-gradle-plugin:generateLibsForDiktatSnapshot
+            :diktat-common:publishToMavenLocal
+            :diktat-rules:publishToMavenLocal
+            :diktat-gradle-plugin:publishToMavenLocal
+            :generateLibsForDiktatSnapshot
             -x detekt
             -x diktatCheck
             -x test
@@ -54,7 +57,7 @@ jobs:
       - name: 'Override <gradle/libs.versions.toml>'
         run: |
           mv gradle/libs.versions.toml gradle/libs.versions.toml_current
-          mv gradle/libs.versions.toml_snapshot gradle/libs.versions.toml
+          mv build/diktat-snapshot/libs.versions.toml_snapshot gradle/libs.versions.toml
       # copied from .github/workflows/diktat.yml
       - uses: gradle/gradle-build-action@v2
         with:
