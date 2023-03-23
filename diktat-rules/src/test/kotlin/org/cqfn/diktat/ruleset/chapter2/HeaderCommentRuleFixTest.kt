@@ -51,7 +51,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 ),
                 RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())
             ),
-            replacements = currentYearReplacement
+            replacements = currentYearReplacement,
         )
     }
 
