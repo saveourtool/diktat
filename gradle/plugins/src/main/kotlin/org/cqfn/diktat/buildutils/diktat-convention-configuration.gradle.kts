@@ -1,6 +1,5 @@
 package org.cqfn.diktat.buildutils
 
-import Versions
 import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
 
 plugins {
@@ -24,6 +23,7 @@ diktat {
 
 tasks.withType<DiktatJavaExecTaskBase>().configureEach {
     javaLauncher.set(project.extensions.getByType<JavaToolchainService>().launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(Versions.jdk))
+        // a temporary workaround -- diktat-gradle-plugin doesn't detect java version of `javaLauncher`
+        languageVersion.set(JavaLanguageVersion.of(11))
     })
 }
