@@ -7,7 +7,10 @@ on:
 
 jobs:
   detekt_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
 
     steps:
       - uses: actions/checkout@v3
@@ -25,9 +28,9 @@ jobs:
             --continue
             -PgprUser=${{ github.actor }}
             -PgprKey=${{ secrets.GITHUB_TOKEN }}
-      - name: Upload SARIF to Github
-        if: ${{ always() }}
+      - name: Upload SARIF report to Github
         uses: github/codeql-action/upload-sarif@v2
+        if: ${{ always() }}
         with:
           sarif_file: build/detekt-sarif-reports/detekt-merged.sarif
       - name: Upload SARIF artifacts

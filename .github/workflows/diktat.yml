@@ -8,40 +8,39 @@ on:
 
 jobs:
   diktat_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          # set this to 0 to fetch all tags too and be able to use them later
-          fetch-depth: 0
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: temurin
-      - name: Retrieve Kotlin version
-        run: |
-          kv=$(cat gradle/libs.versions.toml | grep '^kotlin =' | awk -F'[=]' '{print $2}' | tr -d '" ')
-          echo KOTLIN_VERSION=$kv >> $GITHUB_ENV
-      - name: Cache konan
-        uses: actions/cache@v3
-        with:
-          path: ~/.konan
-          key: ${{ runner.os }}-gradle-konan-${{ env.KOTLIN_VERSION }}
-      - name: Substitute diktat config with the one from the latest release
-        # fixme: can be done from the fetched repo without additional network request
-        run: |
-          git fetch --tags
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          DIKTAT_CONFIG=diktat-analysis.yml
-          wget -O $DIKTAT_CONFIG https://raw.githubusercontent.com/saveourtool/diKTat/$LATEST_TAG/$DIKTAT_CONFIG
-      - name: Run diktat via gradle plugin
-        uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
           arguments: |
-            :diktatCheck
-            --scan
+            diktatCheck
+            mergeDiktatReports
+            -Pdiktat.githubActions=true
+            -Pdetekt.multiplatform.disabled=true
             --build-cache
+            --continue
+            -PgprUser=${{ github.actor }}
+            -PgprKey=${{ secrets.GITHUB_TOKEN }}
+      - name: Upload SARIF report to Github
+        uses: github/codeql-action/upload-sarif@v2
+        if: ${{ always() }}
+        with:
+          sarif_file: build/reports/diktat/diktat-merged.sarif
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: sarif-reports
+          path: "**/build/reports/diktat"
+          retention-days: 1
