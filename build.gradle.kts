@@ -72,6 +72,7 @@ tasks.create("generateLibsForDiktatSnapshot") {
 }
 
 /**
+ * @param projectDependency
  * @return resolved path to directory according to maven coordinate
  */
 fun File.pathToMavenArtifact(projectDependency: ProjectDependency): File = projectDependency.group.toString()
