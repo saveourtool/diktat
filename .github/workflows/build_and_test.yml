@@ -248,7 +248,7 @@ jobs:
         with:
           name: JUnit Tests (${{ runner.os }}, dorny/test-reporter@v1)
           # Comma-separated values.
-          path: "**/target/*-reports/TEST-*.xml, **/build/test-results/*/TEST-*.xml"
+          path: "**/build/test-results/*/TEST-*.xml"
           reporter: java-junit
         # Ignore the "Resource not accessible by integration" error when a PR
         # originates from a non-collaborator. This is
@@ -262,17 +262,20 @@ jobs:
         with:
           name: xml-test-reports-${{ runner.os }}
           path: |
-            **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
           retention-days: 1
 
       - name: Upload gradle reports
-        if: ${{ failure() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: gradle-test-report-${{ matrix.os }}
-          path: 'diktat-gradle-plugin/build/reports/'
+          path: '**/build/reports/'
           retention-days: 1
+      - name: Code coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: false
 
   report:
     name: Publish JUnit test results
