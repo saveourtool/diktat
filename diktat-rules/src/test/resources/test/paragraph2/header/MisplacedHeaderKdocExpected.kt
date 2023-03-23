@@ -1,5 +1,5 @@
 /*
-    Copyright (c) Huawei Technologies Co., Ltd. 2020-2023. All rights reserved.
+    Copyright (c) Huawei Technologies Co., Ltd. 2020-%%YEAR%%. All rights reserved.
 */
 /**
  * Lorem ipsum
