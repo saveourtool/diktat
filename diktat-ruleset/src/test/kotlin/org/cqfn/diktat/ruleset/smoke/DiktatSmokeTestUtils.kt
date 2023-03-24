@@ -12,11 +12,11 @@ import kotlin.io.path.outputStream
 import kotlin.io.path.relativeToOrSelf
 import kotlin.system.measureNanoTime
 
-internal const val BUILD_DIRECTORY = "target"
+internal const val BUILD_DIRECTORY = "build/libs"
 internal const val DIKTAT_FAT_JAR = "diktat.jar"
 internal const val DIKTAT_FAT_JAR_GLOB = "diktat-*.jar"
 internal const val KTLINT_FAT_JAR = "ktlint"
-internal const val KTLINT_VERSION = "0.47.1"
+internal const val KTLINT_VERSION = "0.46.1"
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val logger = KotlinLogging.loggerWithKtlintConfig { }
