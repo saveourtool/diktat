@@ -13,6 +13,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.delegatee
+import org.cqfn.diktat.test.framework.util.filterContentMatches
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
@@ -21,7 +22,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.walk
 
 /**
  * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
@@ -42,24 +47,14 @@ class DiktatRuleSetProviderTest {
     @Test
     fun `check DiktatRuleSetProviderTest contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
-        val filesName = File(path)
+        val fileNames = Path(path)
             .walk()
-            .filter { it.isFile }
-            .filter { file ->
-                /*
-                 * Include only those files which contain `Rule` or `DiktatRule`
-                 * descendants (any of the 1st 150 lines contains a superclass
-                 * constructor call).
-                 */
-                val constructorCall = Regex(""":\s*(?:Diktat)?Rule\s*\(""")
-                file.bufferedReader().lineSequence().take(150)
-                    .any { line ->
-                        line.contains(constructorCall)
-                    }
-            }
-            .map { it.nameWithoutExtension }
-            .filterNot { it in ignoreFile }
-        val rulesName = DiktatRuleSetProvider().get()
+            .filter(Path::isRegularFile)
+            .filterContentMatches(linesToRead = 150, Regex(""":\s*(?:Diktat)?Rule\s*\("""))
+            .map(Path::nameWithoutExtension)
+            .filterNot { it in ignoredFileNames }
+            .toList()
+        val ruleNames = DiktatRuleSetProvider().get()
             .asSequence()
             .onEachIndexed { index, rule ->
                 if (index != 0) {
@@ -70,16 +65,22 @@ class DiktatRuleSetProviderTest {
                 }
             }
             .map { it.delegatee() }
-            .map { it::class.simpleName!! }
-            .filterNot { it == "DummyWarning" }
+            .map { it::class.simpleName }
+            .filterNotNull()
+            .filterNot { it in ignoredRuleNames }
             .toList()
-        assertThat(rulesName.sorted()).containsExactlyElementsOf(filesName.sorted().toList())
+        assertThat(fileNames).isNotEmpty
+        assertThat(ruleNames).isNotEmpty
+        assertThat(ruleNames.sorted()).containsExactlyElementsOf(fileNames.sorted())
     }
 
     companion object {
-        private val ignoreFile = listOf(
+        private val ignoredFileNames = listOf(
             "DiktatRule",
             "OrderedRuleSet",
+        )
+        private val ignoredRuleNames = listOf(
+            "DummyWarning",
         )
     }
 }
