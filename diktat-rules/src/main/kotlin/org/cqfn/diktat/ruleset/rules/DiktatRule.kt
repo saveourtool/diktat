@@ -34,7 +34,7 @@ abstract class DiktatRule(
 
     /**
      * The **file-specific** error emitter, initialized in
-     * [beforeVisitChildNodes] and used in [logic] implementations.
+     * [visit] and used in [logic] implementations.
      *
      * Since the file is indirectly a part of the state of a `Rule`, the same
      * `Rule` instance should **never be re-used** to check more than a single
@@ -42,13 +42,13 @@ abstract class DiktatRule(
      * See the documentation of the [Rule] class for more details.
      *
      * @see Rule
-     * @see beforeVisitChildNodes
+     * @see visit
      * @see logic
      */
     lateinit var emitWarn: EmitType
 
     @Suppress("TooGenericExceptionThrown")
-    final override fun beforeVisitChildNodes(
+    final override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType
@@ -71,7 +71,7 @@ abstract class DiktatRule(
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
                 // any existing Exception, as they will be caught in ktlint framework and the logging will be confusing:
                 // in this case it will incorrectly ask you to report issues in diktat to ktlint repository
-                throw Error("Internal error in diktat application")
+                throw Error("Internal error in diktat application", internalError)
             }
         }
     }

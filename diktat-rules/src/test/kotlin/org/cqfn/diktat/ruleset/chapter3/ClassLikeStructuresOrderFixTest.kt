@@ -26,4 +26,10 @@ class ClassLikeStructuresOrderFixTest : FixTestBase("test/paragraph3/file_struct
     fun `regression - should not remove enum members`() {
         fixAndCompare("OrderWithEnumsExpected.kt", "OrderWithEnumsTest.kt")
     }
+
+    @Test
+    @Tags(Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES))
+    fun `regression - should not move loggers that depend on other variables from scope`() {
+        fixAndCompare("LoggerOrderExpected.kt", "LoggerOrderTest.kt")
+    }
 }

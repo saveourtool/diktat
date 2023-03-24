@@ -116,9 +116,10 @@ internal fun applyToCode(@Language("kotlin") code: String,
             text = code,
             ruleProviders = setOf(RuleProvider {
                 object : Rule("test:astnode-utils-test") {
-                    override fun beforeVisitChildNodes(node: ASTNode,
-                                                       autoCorrect: Boolean,
-                                                       emit: EmitType
+                    override fun visit(
+                        node: ASTNode,
+                        autoCorrect: Boolean,
+                        emit: EmitType
                     ) {
                         applyToNode(node, counter)
                     }

@@ -18,20 +18,18 @@ internal fun createExampleProject(testProjectDir: TemporaryFolder,
     exampleProject.copyRecursively(testProjectDir.root)
     val buildFileName = buildInitDsl.fileNameFor("build")
     File(testProjectDir.root, buildFileName).delete()
-    testProjectDir.newFile(buildFileName).apply {
-        writeText(
-            """
-                plugins {
-                    id("org.cqfn.diktat.diktat-gradle-plugin")
-                }
-                
-                repositories {
-                    mavenLocal()
-                    mavenCentral()
-                }
-            """.trimIndent()
-        )
-    }
+    testProjectDir.newFile(buildFileName).writeText(
+        """
+            plugins {
+                id("org.cqfn.diktat.diktat-gradle-plugin")
+            }
+
+            repositories {
+                mavenLocal()
+                mavenCentral()
+            }
+        """.trimIndent()
+    )
 }
 
 /**
@@ -57,7 +55,12 @@ internal fun runDiktat(testProjectDir: TemporaryFolder,
             "Running gradle returned exception $ex, cause: ${ex?.cause}"
         }
     }
-    .getOrNull()!!
+    .getOrNull()
+    .let {
+        requireNotNull(it) {
+            "Failed to get build result from running diktat"
+        }
+    }
 
 /**
  * This is support for jacoco reports in tests run with gradle TestKit
@@ -75,11 +78,17 @@ private fun GradleRunner.withJaCoCo(number: Int) = apply {
         }
 }
 
-fun assertDiktatExecuted(result: BuildResult) {
+fun assertDiktatExecuted(
+    result: BuildResult,
+    taskOutcome: TaskOutcome = TaskOutcome.FAILED,
+    errorMessage: () -> String? = { null }
+) {
     val diktatCheckBuildResult = result.task(":${DiktatGradlePlugin.DIKTAT_CHECK_TASK}")
     requireNotNull(diktatCheckBuildResult)
-    Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+    Assertions.assertEquals(taskOutcome, diktatCheckBuildResult.outcome, errorMessage)
     Assertions.assertTrue(
         result.output.contains("[FILE_NAME_MATCH_CLASS]")
-    )
+    ) {
+        "Task ${DiktatGradlePlugin.DIKTAT_CHECK_TASK} wasn't run"
+    }
 }

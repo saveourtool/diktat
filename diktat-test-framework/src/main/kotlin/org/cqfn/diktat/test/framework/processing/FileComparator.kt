@@ -9,18 +9,16 @@ import mu.KotlinLogging
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.name
 import kotlin.io.path.readLines
 
 /**
  * A class that is capable of comparing files content
  */
 class FileComparator(
-    private val expectedResultFile: Path,
-    private val expectedResultList: List<String> = readFile(expectedResultFile),
-    private val actualResultFile: Path,
-    private val actualResultList: List<String> = readFile(actualResultFile)
+    private val expectedResultFileName: String,
+    private val expectedResultList: List<String>,
+    private val actualResultFileName: String,
+    private val actualResultList: List<String>,
 ) {
     private val diffGenerator = DiffRowGenerator(
         columnWidth = Int.MAX_VALUE,
@@ -31,21 +29,57 @@ class FileComparator(
         newTag = { _, start -> if (start) "<" else ">" },
     )
 
+    /**
+     * delta in files
+     */
+    val delta: String? by lazy {
+        if (expectedResultList.isEmpty()) {
+            return@lazy null
+        }
+        val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
+        val expectWithoutWarn = expectedResultList.filterNot { line ->
+            line.contains(regex)
+        }
+        val patch = diff(expectWithoutWarn, actualResultList)
+
+        if (patch.deltas.isEmpty()) {
+            return@lazy null
+        }
+        return@lazy patch.deltas.joinToString(System.lineSeparator()) { delta ->
+            when (delta) {
+                is ChangeDelta -> diffGenerator
+                    .generateDiffRows(delta.source.lines, delta.target.lines)
+                    .joinToString(prefix = "ChangeDelta, position ${delta.source.position}, lines:\n", separator = "\n\n") {
+                        """
+                            |-${it.oldLine}
+                            |+${it.newLine}
+                            |""".trimMargin()
+                    }
+                    .let { "ChangeDelta, position ${delta.source.position}, lines:\n$it" }
+                else -> delta.toString()
+            }
+        }
+    }
+
     constructor(
         expectedResultFile: File,
         actualResultList: List<String>
     ) : this(
-        expectedResultFile.toPath(),
-        actualResultFile = Path("No file name.kt"),
-        actualResultList = actualResultList
+        expectedResultFileName = expectedResultFile.name,
+        expectedResultList = readFile(expectedResultFile.toPath()),
+        actualResultFileName = "No file name.kt",
+        actualResultList = actualResultList,
     )
 
     constructor(
         expectedResultFile: File,
         actualResultFile: File
     ) : this(
-        expectedResultFile.toPath(),
-        actualResultFile = actualResultFile.toPath())
+        expectedResultFileName = expectedResultFile.name,
+        expectedResultList = readFile(expectedResultFile.toPath()),
+        actualResultFileName = actualResultFile.name,
+        actualResultList = readFile(actualResultFile.toPath()),
+    )
 
     /**
      * @return true in case files are different
@@ -61,39 +95,18 @@ class FileComparator(
             if (expectedResultList.isEmpty()) {
                 return false
             }
-            val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
-            val expectWithoutWarn = expectedResultList.filterNot { line ->
-                line.contains(regex)
-            }
-            val patch = diff(expectWithoutWarn, actualResultList)
-
-            if (patch.deltas.isEmpty()) {
-                return true
-            }
-            val joinedDeltas = patch.deltas.joinToString(System.lineSeparator()) { delta ->
-                when (delta) {
-                    is ChangeDelta -> diffGenerator
-                        .generateDiffRows(delta.source.lines, delta.target.lines)
-                        .joinToString(prefix = "ChangeDelta, position ${delta.source.position}, lines:\n", separator = "\n\n") {
-                            """-${it.oldLine}
-                      |+${it.newLine}
-                      |""".trimMargin()
-                        }
-                        .let { "ChangeDelta, position ${delta.source.position}, lines:\n$it" }
-                    else -> delta.toString()
-                }
-            }
-
+            val joinedDeltas = delta ?: return true
             log.error("""
-                |Expected result from <${expectedResultFile.name}> and <${actualResultFile.name}> formatted are different.
+                |Expected result from <$expectedResultFileName> and <$actualResultFileName> formatted are different.
                 |See difference below:
                 |$joinedDeltas
                 """.trimMargin()
             )
-        } catch (e: RuntimeException) {
-            log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultFile.name}>", e)
+            return false
+        } catch (e: IllegalArgumentException) {
+            log.error("Not able to prepare diffs between <$expectedResultFileName> and <$actualResultFileName>", e)
+            return false
         }
-        return false
     }
 
     companion object {

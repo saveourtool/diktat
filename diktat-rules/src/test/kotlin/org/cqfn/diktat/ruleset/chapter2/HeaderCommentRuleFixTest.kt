@@ -20,7 +20,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf(
                 "isCopyrightMandatory" to "true",
-                "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-${LocalDate.now().year}. All rights reserved.")
+                "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-$currentYear. All rights reserved.")
         ),
         RulesConfig("HEADER_WRONG_FORMAT", true, emptyMap())
     )
@@ -28,25 +28,31 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.HEADER_WRONG_FORMAT)
     fun `new line should be inserted after header KDoc`() {
-        fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt")
+        fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt", replacements = currentYearReplacement)
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
     fun `if no copyright is present and mandatoryCopyright=true, it is added`() {
-        fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt")
+        fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt", replacements = currentYearReplacement)
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
     fun `if no copyright is present, added it and apply pattern for current year`() {
         fixAndCompare("AutoCopyrightApplyPatternExpected.kt", "AutoCopyrightApplyPatternTest.kt",
-            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
-                mapOf(
-                    "isCopyrightMandatory" to "true",
-                    "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-;@currYear;. All rights reserved.")
+            listOf(
+                RulesConfig(
+                    HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+                    mapOf(
+                        "isCopyrightMandatory" to "true",
+                        "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-;@currYear;. All rights reserved."
+                    )
+                ),
+                RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())
             ),
-                RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())))
+            replacements = currentYearReplacement,
+        )
     }
 
     /**
@@ -55,21 +61,22 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
     fun `header KDoc should be moved before package`() {
-        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt")
+        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt", replacements = currentYearReplacement)
     }
 
     @Test
     @Tags(Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT), Tag(WarningNames.HEADER_WRONG_FORMAT))
     fun `header KDoc should be moved before package - no copyright`() {
         fixAndCompare("MisplacedHeaderKdocNoCopyrightExpected.kt", "MisplacedHeaderKdocNoCopyrightTest.kt",
-            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, emptyMap()), RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap()))
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, emptyMap()), RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())),
+            replacements = currentYearReplacement,
         )
     }
 
     @Test
     @Tags(Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE), Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT))
     fun `header KDoc should be moved before package - appended copyright`() {
-        fixAndCompare("MisplacedHeaderKdocAppendedCopyrightExpected.kt", "MisplacedHeaderKdocAppendedCopyrightTest.kt")
+        fixAndCompare("MisplacedHeaderKdocAppendedCopyrightExpected.kt", "MisplacedHeaderKdocAppendedCopyrightTest.kt", replacements = currentYearReplacement)
     }
 
     @Test
@@ -79,7 +86,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
     }
 
@@ -90,7 +98,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2021. All rights reserved."
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
     }
 
@@ -101,7 +110,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
     }
 
@@ -112,7 +122,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
     }
 
@@ -123,7 +134,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2021. All rights reserved."
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
     }
 
@@ -134,7 +146,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to """
-                |    Copyright 2018-${LocalDate.now().year} John Doe.
+                |    Copyright 2018-$currentYear John Doe.
                 |
                 |    Licensed under the Apache License, Version 2.0 (the "License");
                 |    you may not use this file except in compliance with the License.
@@ -148,7 +160,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 |    See the License for the specific language governing permissions and
                 |    limitations under the License.
                 """.trimMargin()
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
     }
 
@@ -165,7 +178,14 @@ class HeaderCommentRuleFixTest : FixTestBase(
                     |   you may not use this file except in compliance with the License.
                     |   You may obtain a copy of the License at
             """.trimMargin()
-            )))
+            ))),
+            replacements = currentYearReplacement,
         )
+    }
+
+    companion object {
+        private const val PLACEHOLDER = "%%YEAR%%"
+        private val currentYear = LocalDate.now().year.toString()
+        private val currentYearReplacement = mapOf(PLACEHOLDER to currentYear)
     }
 }

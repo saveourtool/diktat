@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.GET_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.SET_KEYWORD
@@ -30,6 +31,7 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         val getter = node.getFirstChildWithType(GET_KEYWORD)
         val setter = node.getFirstChildWithType(SET_KEYWORD)
         val isPrivateSetter = node.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(PRIVATE_KEYWORD) ?: false
+        val isOverrideGetter = node.treeParent.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(OVERRIDE_KEYWORD) ?: false
 
         setter?.let {
             // only private custom setters are allowed
@@ -39,7 +41,10 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         getter?.let {
-            CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, isFixMode, getter.text, getter.startOffset, node)
+            // only override getter are allowed
+            if (!isOverrideGetter) {
+                CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, isFixMode, getter.text, getter.startOffset, node)
+            }
         }
     }
 
