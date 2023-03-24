@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.constants
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.ruleset.generation.EnumNames
 import org.cqfn.diktat.ruleset.utils.isSuppressed
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
@@ -26,6 +27,10 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
     "WRONG_DECLARATIONS_ORDER",
     "MaxLineLength",
     "WRONG_NEWLINES"
+)
+@EnumNames(
+    generatedPackageName = "generated",
+    generatedClassName = "WarningNames",
 )
 enum class Warnings(
     @Suppress("PRIVATE_MEMBER") val canBeAutoCorrected: Boolean,

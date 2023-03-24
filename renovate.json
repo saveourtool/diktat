@@ -50,6 +50,34 @@
       "allowedVersions": "<= 1.6.8 || > 1.6.13"
     },
     {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "io.github.microutils:kotlin-logging-jvm"
+      ],
+      "allowedVersions": "<= 2.1.23"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackageNames": [
+          "com.charleskorn.kaml:kaml-jvm"
+      ],
+      "allowedVersions": "<= 0.47.0"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "org.apache.maven.plugins:maven-plugin-plugin"
+      ],
+      "allowedVersions": "< 3.7.0"
+    },
+    {
+      "managers": ["maven"],
+      "matchPackageNames": [
+        "org.apache.maven.plugin-tools:maven-plugin-annotations"
+      ],
+      "allowedVersions": "< 3.7.0"
+    },
+    {
       "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"

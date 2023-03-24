@@ -1,7 +1,7 @@
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.8.10"
     id("org.cqfn.diktat.diktat-gradle-plugin")
 }
 

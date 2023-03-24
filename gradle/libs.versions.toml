@@ -1,0 +1,157 @@
+[versions]
+kotlin = "1.8.10"
+serialization = "1.5.0"
+ktlint = "0.46.1"
+junit = "5.9.1"
+junit-platfrom = "1.9.1"
+guava = "31.1-jre"
+commons-cli = "1.5.0"
+commons-io = "2.11.0"
+kotlinpoet = "1.12.0"
+detekt = "1.22.0"
+dokka = "1.7.20"
+jacoco = "0.8.8"
+# maven
+maven-api = "3.8.6"
+maven-plugin-tools = "3.7.0"
+maven-plugin-testing-harness = "3.3.0"
+plexus = "2.0"
+
+jbool = "1.24"
+# downgraded to be compliance with ktlint
+mu-logging = "2.1.23"
+kaml = "0.47.0"
+kotlin-multiplatform-diff = "0.4.0"
+sarif4k = "0.3.0"
+jupiter-itf-extension = "0.12.0"
+# FIXME: need to migrate to mockito
+mockito-all = "1.10.19"
+
+
+# copied from save-cloud
+jetbrains-annotations = "24.0.1"
+save-cli = "0.3.9"
+ktor = "2.2.4"
+okio = "3.3.0"
+kotlinx-datetime = "0.4.0"
+kotlinx-coroutines = "1.6.4"
+assertj = "3.24.2"
+diktat = "1.2.5"
+jgit = "6.5.0.202303070854-r"
+mockito = "5.2.0"
+mockito-kotlin = "4.1.0"
+# only in save-cli
+log4j = "2.20.0"
+testcontainers = "1.17.6"
+okhttp3 = "4.10.0"
+reckon = "0.16.1"
+commons-compress = "1.22"
+zip4j = "2.11.5"
+ktoml = "0.4.1"
+springdoc = "1.6.15"
+kotlinx-cli = "0.3.5"
+spotless = "6.17.0"
+arrow-kt = "1.1.5"
+publish = "1.3.0"
+download = "5.3.1"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-plugin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "1.5.3" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+spotless = { id = "com.diffplug.gradle.spotless", version.ref = "spotless" }
+download = { id = "de.undercouch.download", version.ref = "download" }
+
+[libraries]
+save-common = { module = "com.saveourtool.save:save-common", version.ref = "save-cli" }
+save-common-jvm = { module = "com.saveourtool.save:save-common-jvm", version.ref = "save-cli" }
+save-core = { module = "com.saveourtool.save:save-core", version.ref = "save-cli" }
+save-core-jvm = { module = "com.saveourtool.save:save-core-jvm", version.ref = "save-cli" }
+save-plugins-fix = { module = "com.saveourtool.save:fix-plugin", version.ref = "save-cli" }
+save-plugins-fix-jvm = { module = "com.saveourtool.save:fix-plugin-jvm", version.ref = "save-cli" }
+save-plugins-warn-jvm = { module = "com.saveourtool.save:warn-plugin-jvm", version.ref = "save-cli" }
+save-plugins-fixAndWarn-jvm = { module = "com.saveourtool.save:fix-and-warn-plugin-jvm", version.ref = "save-cli" }
+save-reporters = { module = "com.saveourtool.save:save-reporters", version.ref = "save-cli" }
+publish-gradle-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "publish"}
+download-plugin = { module = "de.undercouch:gradle-download-task", version.ref = "download" }
+
+# kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-stdlib-common = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "kotlin" }
+kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+
+# kotlinx serialization
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+kotlinx-serialization-json-jvm = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "serialization" }
+# another serialization
+kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
+
+#kotlin libs
+kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-diff", version.ref = "kotlin-multiplatform-diff" }
+
+# ktlint & detekt
+ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
+ktlint-reporter-plain = { module = "com.pinterest.ktlint:ktlint-reporter-plain", version.ref = "ktlint" }
+ktlint-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-reporter-sarif", version.ref = "ktlint" }
+ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
+ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
+ktlint-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
+sarif4k = { module = "io.github.detekt.sarif4k:sarif4k", version.ref = "sarif4k" }
+sarif4k-jvm = { module = "io.github.detekt.sarif4k:sarif4k-jvm", version.ref = "sarif4k" }
+
+# apache
+apache-commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons-cli" }
+apache-commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+
+# others
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref = "jbool" }
+
+# logging
+kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "mu-logging" }
+
+# testing
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
+junit-jupiter-extension-itf = { module = "com.soebes.itf.jupiter.extension:itf-jupiter-extension", version.ref = "jupiter-itf-extension" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+junit-platform-suite = { module = "org.junit.platform:junit-platform-suite-engine", version.ref = "junit-platfrom" }
+mockito = { module = "org.mockito:mockito-all", version.ref = "mockito-all" }
+
+# maven
+maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
+maven-embedder = { module = "org.apache.maven:maven-embedder", version.ref = "maven-api" }
+maven-compat = { module = "org.apache.maven:maven-compat", version.ref = "maven-api" }
+maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "maven-api" }
+maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-plugin-tools" }
+maven-plugin-testing-harness = { module = "org.apache.maven.plugin-testing:maven-plugin-testing-harness", version.ref = "maven-plugin-testing-harness" }
+plexus-cipher = { module = "org.codehaus.plexus:plexus-cipher", version.ref = "plexus" }
+
+######### copied from save-cloud
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-plugin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+
+
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+
+# java core libraries
+validation-api = { module = "jakarta.validation:jakarta.validation-api"}
+annotation-api = { module = "jakarta.annotation:jakarta.annotation-api"}
+
+# code quality
+diktat-gradle-plugin = { module = "org.cqfn.diktat:diktat-gradle-plugin", version.ref = "diktat" }
+detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+gradle-plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+reckon-gradle-plugin = { module = "org.ajoberstar.reckon:reckon-gradle", version.ref = "reckon" }

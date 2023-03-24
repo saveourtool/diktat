@@ -6,49 +6,83 @@ on:
   pull_request:
     branches: [ master, feature/ktlint-wrapper ]
 
-env:
-  GRADLE_OPTS: -Dorg.gradle.daemon=false
-
 jobs:
   diktat_snapshot_check:
-    runs-on: ubuntu-20.04
+    name: 'Check the project using diktat snapshot plugin'
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+
     steps:
       - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository (shared with regular CI build)
+          distribution: temurin
+
+      - name: 'Cache ~/.konan'
+        id: cache-konan
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: maven-build-${{ hashFiles('**/pom.xml') }}
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}-build-java${{ matrix.java-version }}
           restore-keys: |
-            maven-build
-      - name: Set version
-        # Set project version which will then be used to run diktat from local maven repo.
-        # Base version is stored in env variable for later usage.
-        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
+            ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}-
+            ${{ runner.os }}-konan-
+
+      - name: 'Publish a snapshot version to local repo'
+        id: generateLibsForDiktatSnapshot
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
+            :diktat-common:publishToMavenLocal
+            :diktat-rules:publishToMavenLocal
+            :diktat-gradle-plugin:publishToMavenLocal
+            :generateLibsForDiktatSnapshot
+            -x detekt
+            -x diktatCheck
+            -x test
+
+      - name: 'Override <gradle/libs.versions.toml>'
         run: |
-          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate 2>/dev/null | grep '^VERSION' | cut -d= -f2)
-          base_version=${snapshot_version%-SNAPSHOT}
-          echo "BASE_VERSION=$base_version" >> $GITHUB_ENV
-          mvn -B versions:set -DnewVersion=$base_version-pre
-      - name: Build and install
-        # install diktat with version 'base_version-pre' to local maven repo
-        run: mvn -B -Dstyle.color=always clean install -DskipTests=true --projects diktat-maven-plugin --also-make
-      - name: Revert project version and set proper version for diktat check
-        # revert project version to avoid cycle dependency
-        # set diktat version in plugin dependencies to the version which was built in the previous step
-        run: |
-          mvn -B versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
-          mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
-      - name: Run diktat snapshot via maven plugin
-        run: |
-          mvn -B -X -Dstyle.color=always diktat:check@diktat -Ddiktat.debug=true -Ddiktat.githubActions=true
-      - name: Upload SARIF to Github using the upload-sarif action
+          mv gradle/libs.versions.toml gradle/libs.versions.toml_current
+          mv build/diktat-snapshot/libs.versions.toml_snapshot gradle/libs.versions.toml
+
+      # copied from .github/workflows/diktat.yml
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
+            diktatCheck
+            mergeDiktatReports
+            -Pdiktat.githubActions=true
+            -Pdetekt.multiplatform.disabled=true
+            --build-cache
+            --continue
+            -PgprUser=${{ github.actor }}
+            -PgprKey=${{ secrets.GITHUB_TOKEN }}
+      - name: Upload SARIF report to Github
         uses: github/codeql-action/upload-sarif@v2
         if: ${{ always() }}
         with:
-          sarif_file: ${{ github.workspace }}
+          sarif_file: build/reports/diktat/diktat-merged.sarif
+          # override category to have a different with release version
+          category: diktat (snapshot)
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: sarif-reports
+          path: "**/build/reports/diktat"
+          retention-days: 1

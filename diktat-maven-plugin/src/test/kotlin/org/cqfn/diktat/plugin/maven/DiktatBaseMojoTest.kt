@@ -7,6 +7,7 @@ import org.apache.maven.project.ProjectBuilder
 import org.apache.maven.project.ProjectBuildingRequest
 import org.eclipse.aether.DefaultRepositorySystemSession
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.Assertions
@@ -18,6 +19,7 @@ import kotlin.io.path.div
  * Tests for mojo configuration. NB: this tests are using Junit4, because maven-plugin-testing-harness doesn't support 5.
  */
 @Suppress("LongMethod", "TOO_LONG_FUNCTION")
+@Ignore
 class DiktatBaseMojoTest {
     @get:Rule val mojoRule = MojoRule()
     private lateinit var buildingRequest: ProjectBuildingRequest

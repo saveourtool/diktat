@@ -1,5 +1,5 @@
 /*
-    Copyright (c) My Company., Ltd. 2012-2022. All rights reserved.
+    Copyright (c) My Company., Ltd. 2012-%%YEAR%%. All rights reserved.
 */
 /**
  * Lorem ipsum

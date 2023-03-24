@@ -135,12 +135,19 @@ class OrderedRuleSetTest {
          *            |
          *            V
          * C(File) -> C(Node) -> C(Leaf)
+         *
+         * val expectedRuleInvocationOrder = rules.asSequence()
+         *     .map(Rule::id)
+         *     .flatMap { ruleId ->
+         *         generateSequence { ruleId }.take(astNodeCount)
+         *     }
+         *     .toList()
          */
-        val expectedRuleInvocationOrder = rules.asSequence()
-            .map(Rule::id)
-            .flatMap { ruleId ->
-                generateSequence { ruleId }.take(astNodeCount)
-            }
+        val expectedRuleInvocationOrder = generateSequence {
+            rules.map(Rule::id)
+        }
+            .take(astNodeCount)
+            .flatten()
             .toList()
 
         assertThat(actualRuleInvocationOrder)
@@ -153,7 +160,7 @@ class OrderedRuleSetTest {
             visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
             onVisit: (Rule) -> Unit = { }
         ): Rule = object : Rule(id.qualifiedWithRuleSetId(), visitorModifiers) {
-            override fun beforeVisitChildNodes(
+            override fun visit(
                 node: ASTNode,
                 autoCorrect: Boolean,
                 emit: EmitType

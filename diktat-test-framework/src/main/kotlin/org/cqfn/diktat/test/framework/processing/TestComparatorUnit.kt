@@ -9,6 +9,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.copyTo
 import kotlin.io.path.isRegularFile
+import kotlin.io.path.name
 import kotlin.io.path.readLines
 
 /**
@@ -33,6 +34,7 @@ class TestComparatorUnit(
      * @param testFileStr the name of the resource which has the original content.
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testFileStr].
+     * @param replacements a map of replacements which will be applied to [expectedResult] and [testFileStr] before comparing.
      * @return the result of file comparison by their content.
      * @see compareFilesFromFileSystem
      */
@@ -40,7 +42,8 @@ class TestComparatorUnit(
     fun compareFilesFromResources(
         expectedResult: String,
         testFileStr: String,
-        trimLastEmptyLine: Boolean = false
+        trimLastEmptyLine: Boolean = false,
+        replacements: Map<String, String> = emptyMap(),
     ): FileComparisonResult {
         val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
         val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
@@ -48,6 +51,7 @@ class TestComparatorUnit(
             log.error("Not able to find files for running test: $expectedResult and $testFileStr")
             return FileComparisonResult(
                 isSuccessful = false,
+                delta = null,
                 actualContent = "// $resourceFilePath/$expectedResult is found: ${testPath != null}",
                 expectedContent = "// $resourceFilePath/$testFileStr is found: ${expectedPath != null}")
         }
@@ -55,7 +59,9 @@ class TestComparatorUnit(
         return compareFilesFromFileSystem(
             Paths.get(expectedPath.toURI()),
             Paths.get(testPath.toURI()),
-            trimLastEmptyLine)
+            trimLastEmptyLine,
+            replacements,
+        )
     }
 
     /**
@@ -67,6 +73,7 @@ class TestComparatorUnit(
      * @param testFile the file which has the original content.
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testFile].
+     * @param replacements a map of replacements which will be applied to [expectedFile] and [testFile] before comparing.
      * @return the result of file comparison by their content.
      * @see compareFilesFromResources
      */
@@ -74,12 +81,14 @@ class TestComparatorUnit(
     fun compareFilesFromFileSystem(
         expectedFile: Path,
         testFile: Path,
-        trimLastEmptyLine: Boolean = false
+        trimLastEmptyLine: Boolean = false,
+        replacements: Map<String, String> = emptyMap(),
     ): FileComparisonResult {
         if (!testFile.isRegularFile() || !expectedFile.isRegularFile()) {
             log.error("Not able to find files for running test: $expectedFile and $testFile")
             return FileComparisonResult(
                 isSuccessful = false,
+                delta = null,
                 actualContent = "// $testFile is a regular file: ${testFile.isRegularFile()}",
                 expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
         }
@@ -88,7 +97,7 @@ class TestComparatorUnit(
         testFile.copyTo(copyTestFile, overwrite = true)
 
         val actualResult = function(
-            readFile(copyTestFile).joinToString("\n"),
+            readFile(copyTestFile).replaceAll(replacements).joinToString("\n"),
             copyTestFile.absolutePathString()
         )
 
@@ -99,16 +108,18 @@ class TestComparatorUnit(
             actualResult.split("\n")
         }
 
-        val expectedFileContent = readFile(expectedFile)
+        val expectedFileContent = readFile(expectedFile).replaceAll(replacements)
 
-        val isSuccessful = FileComparator(
-            expectedFile,
+        val comparator = FileComparator(
+            expectedFile.name,
             expectedFileContent,
-            testFile,
-            actualFileContent).compareFilesEqual()
+            testFile.name,
+            actualFileContent,
+        )
 
         return FileComparisonResult(
-            isSuccessful,
+            comparator.compareFilesEqual(),
+            comparator.delta,
             actualFileContent.joinToString("\n"),
             expectedFileContent.joinToString("\n"))
     }
@@ -129,5 +140,12 @@ class TestComparatorUnit(
                 log.error("Not able to read file: $file")
                 emptyList()
             }
+
+        private fun List<String>.replaceAll(replacements: Map<String, String>): List<String> = map { line ->
+            replacements.entries
+                .fold(line) { result, replacement ->
+                    result.replace(replacement.key, replacement.value)
+                }
+        }
     }
 }

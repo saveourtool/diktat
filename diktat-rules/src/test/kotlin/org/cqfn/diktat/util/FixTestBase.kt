@@ -45,6 +45,7 @@ open class FixTestBase(
      * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testPath].
+     * @param replacements a map of replacements which will be applied to [expectedPath] and [testPath] before comparing.
      * @see fixAndCompareContent
      */
     protected fun fixAndCompare(
@@ -52,13 +53,16 @@ open class FixTestBase(
         testPath: String,
         overrideRulesConfigList: List<RulesConfig>? = null,
         trimLastEmptyLine: Boolean = false,
+        replacements: Map<String, String> = emptyMap(),
     ) {
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
+        val result = testComparatorUnit
+            .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine, replacements)
         Assertions.assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine)
-                .isSuccessful
-        )
+            result.isSuccessful
+        ) {
+            "Detected delta: ${result.delta}"
+        }
     }
 
     /**

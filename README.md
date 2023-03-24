@@ -1,6 +1,6 @@
 <img src="/logo.svg" width="64px"/>
 
-![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg)
+![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg?branch=master)
 ![deteKT static analysis](https://github.com/saveourtool/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/saveourtool/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
@@ -20,13 +20,13 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process.
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.4). Thanks to the community for this support!
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.5). Thanks to the community for this support!
 
 ## See first
 
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
-|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://saveourtool.com/#/demo/diktat) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -53,14 +53,14 @@ Main features of diktat are the following:
    ```shell
    # another option is "brew install ktlint"
 
-   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.47.1/ktlint && chmod a+x ktlint
+   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint && chmod a+x ktlint
    ```
 
-1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.4/diktat-1.2.4.jar)
+1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar)
 
    **OR** use `curl`:
    ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.4/diktat-1.2.4.jar
+   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar
    ```
 
 ### Run diKTat
@@ -74,11 +74,11 @@ $ ./ktlint -R diktat.jar --disabled_rules=standard,experimental,test,custom "dir
 To **autofix** all code style violations, use `-F` option.
 
 ## Run with Maven using diktat-maven-plugin
-:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
+:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
 This can be done by setting `MAVEN_OPTS` variable:
 
 ```
-export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED"
+export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
 ```
 
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
@@ -182,7 +182,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.4"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
 }
 ```
 
@@ -193,7 +193,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.4")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.5")
     }
 }
 
@@ -215,9 +215,9 @@ Also in `diktat` extension you can configure different reporters and their outpu
 If `output` is set, it should be a file path. If not set, results will be printed to stdout.
 ```kotlin
 diktat {
-    // since 1.2.4 to keep in line with maven properties
+    // since 1.2.5 to keep in line with maven properties
     reporter = "json" // "html", "json", "plain" (default), "sarif"
-    // before 1.2.4
+    // before 1.2.5
     // reporterType = "json" // "html", "json", "plain" (default), "sarif"
 
     output = "someFile.json"
@@ -259,7 +259,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.2.4").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.2.5").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -290,7 +290,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.2.4</version> <!-- optional -->
+  <version>1.2.5</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```

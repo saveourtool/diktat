@@ -109,7 +109,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
-            ?: Baseline(status = VALID)
+            ?: CurrentBaseline(emptyMap(), false)
         reporterImpl = resolveReporter(baselineResults)
         reporterImpl.beforeAll()
         val lintErrors: MutableList<LintError> = mutableListOf()
@@ -126,7 +126,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun resolveReporter(baselineResults: Baseline): Reporter {
+    private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
         val output = if (this.output.isBlank()) {
             if (this.githubActions) {
                 // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
@@ -154,7 +154,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
         }
 
-        return if (baselineResults.status != VALID) {
+        return if (baselineResults.baselineGenerationNeeded) {
             val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
             return Reporter.from(actualReporter, baselineReporter)
         } else {
