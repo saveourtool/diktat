@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 import java.nio.file.Path
+import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.nameWithoutExtension
@@ -43,6 +44,7 @@ class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: Lis
 }
 
 class DiktatRuleSetProviderTest {
+    @OptIn(ExperimentalPathApi::class)
     @Suppress("UnsafeCallOnNullableType")
     @Test
     fun `check DiktatRuleSetProviderTest contain all rules`() {
