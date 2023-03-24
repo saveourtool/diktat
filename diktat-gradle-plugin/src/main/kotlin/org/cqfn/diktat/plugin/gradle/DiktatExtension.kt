@@ -58,6 +58,6 @@ open class DiktatExtension(
      * @param action configuration lambda for `PatternFilterable`
      */
     fun inputs(action: PatternFilterable.() -> Unit) {
-        action.invoke(patternSet)
+        action(patternSet)
     }
 }
