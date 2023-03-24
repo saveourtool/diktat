@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.common.ktlint.ktlintDisabledRulesArgument
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -35,7 +36,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 combinePathParts("src", "main", "kotlin", "Test.kt"),
                 "--reporter=plain"
             )
@@ -49,7 +50,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 "--debug",
                 combinePathParts("src", "main", "kotlin", "Test.kt"),
                 "--reporter=plain"
@@ -67,7 +68,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 combinePathParts("src", "main", "kotlin", "Test.kt"),
                 "--reporter=plain"
             )
@@ -109,7 +110,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 "--reporter=json,output=${project.projectDir.resolve("some.txt")}"
             )
         ) {
@@ -125,7 +126,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 "--reporter=json"
             )
         ) {
@@ -141,7 +142,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 "--reporter=sarif,output=$path"
             )
         ) {
@@ -162,7 +163,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 "--reporter=sarif,output=$path"
             )
         ) {
@@ -179,7 +180,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(
                 null,
-                DISABLED_RULES,
+                ktlintDisabledRulesArgument,
                 "--reporter=sarif"
             )
         ) {
@@ -268,6 +269,5 @@ class DiktatJavaExecTaskTest {
 
     companion object {
         private const val DIKTAT_CHECK_TASK = "diktatCheck"
-        private const val DISABLED_RULES = "--disabled_rules=standard,experimental,test,custom"
     }
 }

@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.common.ktlint.ktlintDisabledRulesArgument
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MIN_JVM_REQUIRES_ADD_OPENS
@@ -99,13 +100,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
              * Classpath exclusion (see `DiktatGradlePlugin`) is enough, but
              * this is better left enabled as a safety net.
              */
-            run {
-                val ktlintRuleSetIds = sequenceOf("standard", "experimental", "test", "custom")
-                ktlintRuleSetIds.joinToString(
-                    prefix = "--disabled_rules=",
-                    separator = ","
-                )
-            }.let(::add)
+            add(ktlintDisabledRulesArgument)
 
             if (diktatExtension.debug) {
                 add("--debug")
