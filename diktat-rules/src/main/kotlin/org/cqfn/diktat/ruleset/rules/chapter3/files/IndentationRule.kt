@@ -121,7 +121,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 ::KdocIndentationChecker,
                 ::CustomGettersAndSettersChecker,
                 ::ArrowInWhenChecker
-            ).map { it.invoke(configuration) }
+            ).map { it(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {
                 checkIndentation(node)
