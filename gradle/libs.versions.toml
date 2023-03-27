@@ -20,7 +20,8 @@ plexus = "2.0"
 jbool = "1.24"
 # downgraded to be compliance with ktlint
 mu-logging = "2.1.23"
-kaml = "0.53.0"
+# downgraded to be compliance with ktlint
+kaml = "0.47.0"
 kotlin-multiplatform-diff = "0.4.0"
 sarif4k = "0.3.0"
 jupiter-itf-extension = "0.12.0"
