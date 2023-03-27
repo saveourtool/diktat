@@ -107,7 +107,7 @@ jobs:
       - name: Run diKTat from cli
         continue-on-error: true
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard 'examples/maven/src/main/kotlin/Test.kt' &>out.txt
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom 'examples/maven/src/main/kotlin/Test.kt' &>out.txt
         shell: bash
 
       - name: Check output
@@ -121,14 +121,14 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &>out.txt
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom "$PWD/examples/maven/src/main/kotlin/Test.kt" &>out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows (absolute paths)
         continue-on-error: true
         if: runner.os == 'Windows'
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
         shell: cmd
 
       - name: Check output (absolute paths)
@@ -141,7 +141,7 @@ jobs:
       - name: Run diKTat from cli (glob paths, 1 of 4)
         continue-on-error: true
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard 'examples/maven/src/main/kotlin/*.kt' &>out.txt
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom 'examples/maven/src/main/kotlin/*.kt' &>out.txt
         shell: bash
 
       - name: Check output (glob paths, 1 of 4)
@@ -154,7 +154,7 @@ jobs:
       - name: Run diKTat from cli (glob paths, 2 of 4)
         continue-on-error: true
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard 'examples/**/main/kotlin/*.kt' &>out.txt
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom 'examples/**/main/kotlin/*.kt' &>out.txt
         shell: bash
 
       - name: Check output (glob paths, 2 of 4)
@@ -167,7 +167,7 @@ jobs:
       - name: Run diKTat from cli (glob paths, 3 of 4)
         continue-on-error: true
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard 'examples/**/*.kt' &>out.txt
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom 'examples/**/*.kt' &>out.txt
         shell: bash
 
       - name: Check output (glob paths, 3 of 4)
@@ -180,7 +180,7 @@ jobs:
       - name: Run diKTat from cli (glob paths, 4 of 4)
         continue-on-error: true
         run: |
-          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard '**/*.kt' &>out.txt
+          java -jar ktlint -R ${{ env.DIKTAT_JAR }} --disabled_rules=standard,experimental,test,custom '**/*.kt' &>out.txt
         shell: bash
 
       - name: Check output (glob paths, 4 of 4)

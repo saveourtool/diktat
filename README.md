@@ -68,7 +68,7 @@ Main features of diktat are the following:
 Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
 
 ```console
-$ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
+$ ./ktlint -R diktat.jar --disabled_rules=standard,experimental,test,custom "dir/your/dir/**/*.kt"
 ```
 
 To **autofix** all code style violations, use `-F` option.
