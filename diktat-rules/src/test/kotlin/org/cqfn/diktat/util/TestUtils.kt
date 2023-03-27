@@ -114,7 +114,7 @@ internal fun applyToCode(@Language("kotlin") code: String,
     KtLintRuleEngine(
         ruleProviders = setOf(RuleProvider {
             object : Rule("test:astnode-utils-test") {
-                override fun visit(
+                override fun beforeVisitChildNodes(
                         node: ASTNode,
                         autoCorrect: Boolean,
                         emit: EmitType

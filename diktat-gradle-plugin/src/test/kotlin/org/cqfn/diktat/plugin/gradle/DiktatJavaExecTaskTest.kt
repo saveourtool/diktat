@@ -269,6 +269,5 @@ class DiktatJavaExecTaskTest {
 
     companion object {
         private const val DIKTAT_CHECK_TASK = "diktatCheck"
-        private const val DISABLED_RULES = "--disabled_rules=standard,experimental,test,custom"
     }
 }

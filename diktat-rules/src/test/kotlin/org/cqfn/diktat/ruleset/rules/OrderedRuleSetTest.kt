@@ -160,7 +160,7 @@ class OrderedRuleSetTest {
             visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
             onVisit: (Rule) -> Unit = { }
         ): Rule = object : Rule(id.qualifiedWithRuleSetId(), visitorModifiers) {
-            override fun visit(
+            override fun beforeVisitChildNodes(
                 node: ASTNode,
                 autoCorrect: Boolean,
                 emit: EmitType

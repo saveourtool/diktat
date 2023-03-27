@@ -2,11 +2,11 @@ package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.ktlint.unwrap
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
+import com.pinterest.ktlint.core.api.Baseline
 import com.pinterest.ktlint.core.api.KtLintParseException
 import com.pinterest.ktlint.core.api.KtLintRuleException
 import com.pinterest.ktlint.core.api.containsLintError
@@ -108,7 +108,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
-            ?: CurrentBaseline(emptyMap(), false)
+            ?: Baseline(emptyMap(), Baseline.Status.NOT_FOUND)
         reporterImpl = resolveReporter(baselineResults)
         reporterImpl.beforeAll()
         val lintErrors: MutableList<LintError> = mutableListOf()
@@ -125,7 +125,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
+    private fun resolveReporter(baselineResults: Baseline): Reporter {
         val output = if (this.output.isBlank()) {
             if (this.githubActions) {
                 // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
@@ -153,7 +153,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
         }
 
-        return if (baselineResults.baselineGenerationNeeded) {
+        return if (baselineResults.status == Baseline.Status.NOT_FOUND) {
             val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
             return Reporter.from(actualReporter, baselineReporter)
         } else {

@@ -11,6 +11,7 @@ plugins {
 
 dependencies {
     implementation(libs.maven.plugin.api)
+    implementation(projects.diktatRuleset)
     compileOnly(libs.maven.plugin.annotations)
     compileOnly(libs.maven.core)
 

@@ -48,7 +48,7 @@ abstract class DiktatRule(
     lateinit var emitWarn: EmitType
 
     @Suppress("TooGenericExceptionThrown")
-    final override fun visit(
+    final override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType
