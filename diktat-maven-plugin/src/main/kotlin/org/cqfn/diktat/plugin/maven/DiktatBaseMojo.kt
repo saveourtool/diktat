@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
 import com.pinterest.ktlint.core.LintError

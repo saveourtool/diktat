@@ -147,8 +147,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             }
         }
 
-        private fun downloadFile(from: URL, to: Path) =
-            downloadFile(from, to, baseDirectoryPath)
+        private fun downloadFile(from: URL, to: Path) = downloadFile(from, to, baseDirectoryPath)
 
         @BeforeAll
         @JvmStatic
