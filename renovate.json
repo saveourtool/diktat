@@ -11,7 +11,7 @@
       "groupSlug": "all-github-actions"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackagePatterns": [
         "*"
       ],
@@ -27,7 +27,7 @@
       "groupSlug": "all-minor-patch"
     },
     {
-      "managers": ["maven", "gradle"],
+      "managers": ["gradle"],
       "matchPackagePatterns": [
         "^org\\.jetbrains\\.kotlin[.:]"
       ],
@@ -35,7 +35,7 @@
       "groupSlug": "core-kotlin"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackagePatterns": [
         "^com\\.pinterest\\.ktlint[.:]"
       ],
@@ -43,55 +43,39 @@
       "groupSlug": "ktlint"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackageNames": [
         "org.sonatype.plugins:nexus-staging-maven-plugin"
       ],
       "allowedVersions": "<= 1.6.8 || > 1.6.13"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackageNames": [
         "io.github.microutils:kotlin-logging-jvm"
       ],
       "allowedVersions": "<= 2.1.23"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackageNames": [
           "com.charleskorn.kaml:kaml-jvm"
       ],
       "allowedVersions": "<= 0.47.0"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackageNames": [
         "org.apache.maven.plugins:maven-plugin-plugin"
       ],
       "allowedVersions": "< 3.7.0"
     },
     {
-      "managers": ["maven"],
+      "managers": ["gradle"],
       "matchPackageNames": [
         "org.apache.maven.plugin-tools:maven-plugin-annotations"
       ],
       "allowedVersions": "< 3.7.0"
-    },
-    {
-      "managers": ["gradle"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "excludePackagePatterns": [
-        "^org\\.jetbrains\\.kotlin[.:]",
-        "^com\\.pinterest\\.ktlint[.:]"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "groupName": "all dependencies in gradle scripts",
-      "groupSlug": "all-gradle-dependencies"
     }
   ]
 }
