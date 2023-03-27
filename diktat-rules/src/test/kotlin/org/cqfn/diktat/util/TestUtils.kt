@@ -5,8 +5,8 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.ruleset.constants.EmitType
-
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.KtLintRuleEngine
+import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
@@ -111,12 +111,10 @@ internal fun applyToCode(@Language("kotlin") code: String,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
 ) {
     val counter = AtomicInteger(0)
-    KtLint.lint(
-        KtLint.ExperimentalParams(
-            text = code,
-            ruleProviders = setOf(RuleProvider {
-                object : Rule("test:astnode-utils-test") {
-                    override fun visit(
+    KtLintRuleEngine(
+        ruleProviders = setOf(RuleProvider {
+            object : Rule("test:astnode-utils-test") {
+                override fun visit(
                         node: ASTNode,
                         autoCorrect: Boolean,
                         emit: EmitType
@@ -125,7 +123,9 @@ internal fun applyToCode(@Language("kotlin") code: String,
                     }
                 }
             }),
-            cb = { _, _ -> }
+            ).lint(
+        code = Code.CodeSnippet(
+            content = code
         )
     )
     assertThat(counter.get())

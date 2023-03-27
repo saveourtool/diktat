@@ -8,8 +8,9 @@ package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.util.applyToCode
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleProvider
 import com.pinterest.ktlint.core.ast.ElementType
@@ -812,13 +813,13 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             maxLevel: Int = -1,
             expected: String
         ) {
-            KtLint.lint(
-                KtLint.ExperimentalParams(
-                    text = code,
-                    ruleProviders = setOf(RuleProvider {
-                        PrettyPrintingVisitor(elementType, level, maxLevel, expected)
-                    }),
-                    cb = { _, _ -> }
+            KtLintRuleEngine(
+                setOf(RuleProvider {
+                    PrettyPrintingVisitor(elementType, level, maxLevel, expected)
+                })
+            ).lint(
+                Code.CodeSnippet(
+                    content = code
                 )
             )
         }

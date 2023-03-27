@@ -3,7 +3,8 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.util.TEST_FILE_NAME
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
@@ -92,12 +93,11 @@ class OrderedRuleSetTest {
         @Language("kotlin")
         val code = "fun foo() { }"
 
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                fileName = TEST_FILE_NAME,
-                text = code,
-                ruleProviders = ruleSet.ruleProviders,
-                cb = { _, _ -> },
+        KtLintRuleEngine(
+            ruleProviders = ruleSet.ruleProviders
+        ).lint(
+            code = Code.CodeSnippet(
+                content = code
             )
         )
 

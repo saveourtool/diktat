@@ -3,17 +3,14 @@ package org.cqfn.diktat
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.ktlint.unwrapForLint
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
-import org.cqfn.diktat.ruleset.utils.isKotlinScript
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.api.EditorConfigDefaults
-import com.pinterest.ktlint.core.api.EditorConfigOverride
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.readText
 
 /**
  * Command to run `diktat`
@@ -22,41 +19,34 @@ import kotlin.io.path.readText
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
-    private val diktatRuleSetFactory: DiktatRuleSetFactory,
+    diktatRuleSetFactory: DiktatRuleSetFactory,
     private val callback: DiktatCallback,
 ) {
     private val isDebug: Boolean by lazy {
         LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).isDebugEnabled
     }
 
+    private val ktLintRuleEngine: KtLintRuleEngine = KtLintRuleEngine(
+        ruleProviders = DiktatRuleSetProviderV2(diktatRuleSetFactory).getRuleProviders(),
+    )
+
+    private val code: Code = Code.CodeFile(
+        file = file.toFile()
+    )
+
     /**
      * Run `diktat fix` using parameters from current command
      *
      * @return result of `diktat fix`
      */
-    fun fix(): String = KtLint.format(ktLintParams())
+    fun fix(): String = ktLintRuleEngine.format(code, callback.unwrap())
 
     /**
      * Run `diktat check` using parameters from current command
      */
     fun check() {
-        KtLint.lint(ktLintParams())
+        ktLintRuleEngine.lint(code, callback.unwrapForLint())
     }
-
-    private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
-        fileName = file.absolutePathString(),
-        text = file.readText(Charsets.UTF_8),
-        ruleSets = emptySet(),
-        ruleProviders = DiktatRuleSetProviderV2(diktatRuleSetFactory).getRuleProviders(),
-        userData = emptyMap(),
-        cb = callback.unwrap(),
-        script = file.isKotlinScript(),
-        editorConfigPath = null,
-        debug = isDebug,
-        editorConfigDefaults = EditorConfigDefaults.emptyEditorConfigDefaults,
-        editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
-        isInvokedFromCli = false
-    )
 
     /**
      * Builder for [DiktatProcessCommand]

@@ -1,7 +1,8 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions.assertThat
@@ -74,16 +75,15 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val actualFileName = fileName ?: TEST_FILE_NAME
         val lintErrors: MutableList<LintError> = mutableListOf()
 
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                fileName = actualFileName,
+        KtLintRuleEngine(
+            ruleProviders = DiktatRuleSetProvider4Test(ruleSupplier,
+                rulesConfigList ?: this.rulesConfigList).getRuleProviders(),
+        ).lint(
+            code = Code.CodeSnippet(
+                content = code,
                 script = actualFileName.endsWith("kts"),
-                text = code,
-                ruleProviders = DiktatRuleSetProvider4Test(ruleSupplier,
-                    rulesConfigList ?: this.rulesConfigList).getRuleProviders(),
-                cb = { lintError, _ -> lintErrors += lintError },
             )
-        )
+        ) { lintError -> lintErrors += lintError }
 
         return lintErrors
     }

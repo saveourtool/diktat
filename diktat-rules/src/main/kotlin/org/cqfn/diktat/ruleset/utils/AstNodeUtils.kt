@@ -18,7 +18,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
@@ -66,6 +65,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.children
@@ -803,11 +803,16 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFilePath(): String = getRootNode().also {
-    require(it.elementType == FILE) { "Root node type is not FILE, but ${KtLint.FILE_PATH_USER_DATA_KEY} is present in user_data only in FILE nodes" }
-}.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
-    requireNotNull(it) { "File path is not present in user data" }
-}
+fun ASTNode.getFilePath(): String = getRootNode()
+    .takeIf {
+        it.elementType == FILE
+    }
+    ?.psi
+    ?.let { it as? KtFile }
+    ?.name
+    .let {
+        requireNotNull(it) { "Root node type is not FILE, but only ${KtFile::class} has file name" }
+    }
 
 /**
  * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
