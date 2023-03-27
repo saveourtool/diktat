@@ -31,6 +31,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.nextSibling
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -807,7 +808,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
     companion object {
         fun assertStringRepr(
             elementType: IElementType,
-            code: String,
+            @Language("kotlin") code: String,
             level: Int = 0,
             maxLevel: Int = -1,
             expected: String
