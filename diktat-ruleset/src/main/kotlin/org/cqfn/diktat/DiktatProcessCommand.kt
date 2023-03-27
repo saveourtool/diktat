@@ -25,11 +25,9 @@ class DiktatProcessCommand private constructor(
     private val isDebug: Boolean by lazy {
         LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).isDebugEnabled
     }
-
     private val ktLintRuleEngine: KtLintRuleEngine = KtLintRuleEngine(
         ruleProviders = DiktatRuleSetProviderV2(diktatRuleSetFactory).getRuleProviders(),
     )
-
     private val code: Code = Code.CodeFile(
         file = file.toFile()
     )

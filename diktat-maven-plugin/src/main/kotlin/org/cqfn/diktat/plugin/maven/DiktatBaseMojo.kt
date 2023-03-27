@@ -6,8 +6,6 @@ import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.api.Baseline
-import com.pinterest.ktlint.core.api.Baseline.Status.VALID
 import com.pinterest.ktlint.core.api.KtLintParseException
 import com.pinterest.ktlint.core.api.KtLintRuleException
 import com.pinterest.ktlint.core.api.containsLintError
