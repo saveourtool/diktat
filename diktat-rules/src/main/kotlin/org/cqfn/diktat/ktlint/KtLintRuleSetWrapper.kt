@@ -15,11 +15,15 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  *
  * @param diktatRuleSet the rules which belong to the current [DiktatRuleSet].
  */
-class KtLintRuleSetWrapper(
+class KtLintRuleSetWrapper private constructor(
     diktatRuleSet: DiktatRuleSet,
 ) : RuleSet(DIKTAT_RULE_SET_ID, rules = wrapRules(diktatRuleSet.rules)) {
-
     companion object {
+        /**
+         * @return __KtLint__'s [RuleSet] created from [DiktatRuleSet]
+         */
+        fun DiktatRuleSet.toKtLint(): RuleSet = KtLintRuleSetWrapper(this)
+
         private fun wrapRules(rules: List<DiktatRule>): Array<Rule> {
             if (rules.isEmpty()) {
                 return emptyArray()

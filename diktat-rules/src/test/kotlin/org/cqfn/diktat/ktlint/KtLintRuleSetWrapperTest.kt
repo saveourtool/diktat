@@ -3,6 +3,7 @@ package org.cqfn.diktat.ktlint
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.delegatee
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import org.cqfn.diktat.util.TEST_FILE_NAME
@@ -19,7 +20,7 @@ class KtLintRuleSetWrapperTest {
     fun `check KtLintRuleSetWrapper with duplicate`() {
         val rule = mockRule("rule")
         Assertions.assertThrows(IllegalArgumentException::class.java) {
-            KtLintRuleSetWrapper(DiktatRuleSet(listOf(rule, rule)))
+            DiktatRuleSet(listOf(rule, rule)).toKtLint()
         }
     }
 
@@ -30,7 +31,7 @@ class KtLintRuleSetWrapperTest {
         val rule1 = mockRule(id = "rule-first".qualifiedWithRuleSetId(ruleSetId))
         val rule2 = mockRule(id = "rule-second".qualifiedWithRuleSetId(ruleSetId))
 
-        val orderedRuleSet = KtLintRuleSetWrapper(DiktatRuleSet(listOf(rule1, rule2)))
+        val orderedRuleSet = DiktatRuleSet(listOf(rule1, rule2)).toKtLint()
 
         val orderedRuleSetIterator = orderedRuleSet.rules.iterator()
         val orderedRule1 = orderedRuleSetIterator.next()
@@ -78,7 +79,7 @@ class KtLintRuleSetWrapperTest {
         /*
          * Make sure OrderedRuleSet preserves the order.
          */
-        val ruleSet = KtLintRuleSetWrapper(DiktatRuleSet(rules))
+        val ruleSet = DiktatRuleSet(rules).toKtLint()
         assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id))
 
         @Language("kotlin")
