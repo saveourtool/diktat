@@ -7,6 +7,7 @@ package org.cqfn.diktat.plugin.maven
 import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.api.DiktatLogLevel
+import org.cqfn.diktat.ktlint.LintErrorReporter
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
@@ -73,7 +74,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.baseline")
     var baseline: File? = null
-    private lateinit var reporterImpl: Reporter
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -133,19 +133,19 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: CurrentBaseline(emptyMap(), false)
-        reporterImpl = resolveReporter(baselineResults)
+        val reporterImpl = resolveReporter(baselineResults)
         reporterImpl.beforeAll()
 
-        val lintErrors: MutableList<LintError> = mutableListOf()
+        val lintErrorReporter = LintErrorReporter()
         inputs
             .map(::File)
             .forEach {
-                diktatProcessor.checkDirectory(it, lintErrors, baselineResults.baselineRules ?: emptyMap())
+                diktatProcessor.checkDirectory(it, Reporter.from(reporterImpl, lintErrorReporter), baselineResults.baselineRules ?: emptyMap())
             }
 
         reporterImpl.afterAll()
-        if (lintErrors.isNotEmpty()) {
-            throw MojoFailureException("There are ${lintErrors.size} lint errors")
+        if (!lintErrorReporter.isEmpty()) {
+            throw MojoFailureException("There are ${lintErrorReporter.errorCount()} lint errors")
         }
     }
 
@@ -211,7 +211,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     @Suppress("TYPE_ALIAS")
     private fun DiktatProcessor.checkDirectory(
         directory: File,
-        lintErrors: MutableList<LintError>,
+        reporter: Reporter,
         baselineRules: Map<String, List<LintError>>,
     ) {
         val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
@@ -225,16 +225,16 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .forEach { file ->
                 log.debug("Checking file $file")
                 try {
-                    reporterImpl.before(file.absolutePath)
+                    reporter.before(file.absolutePath)
                     checkFile(
                         file.toPath(),
-                        lintErrors,
+                        reporter,
                         baselineRules.getOrDefault(
                             file.relativeTo(mavenProject.basedir.parentFile).invariantSeparatorsPath,
                             emptyList()
                         ),
                     )
-                    reporterImpl.after(file.absolutePath)
+                    reporter.after(file.absolutePath)
                 } catch (e: RuleExecutionException) {
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
@@ -244,7 +244,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
     private fun DiktatProcessor.checkFile(
         file: Path,
-        lintErrors: MutableList<LintError>,
+        reporter: Reporter,
         baselineErrors: List<LintError>,
     ) {
         val command = DiktatProcessCommand.builder()
@@ -253,8 +253,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .callback { error, isCorrected ->
                 val ktLintError = error.unwrap()
                 if (!baselineErrors.containsLintError(ktLintError)) {
-                    reporterImpl.onLintError(file.absolutePathString(), ktLintError, isCorrected)
-                    lintErrors.add(ktLintError)
+                    reporter.onLintError(file.absolutePathString(), ktLintError, isCorrected)
                 }
             }
             .build()

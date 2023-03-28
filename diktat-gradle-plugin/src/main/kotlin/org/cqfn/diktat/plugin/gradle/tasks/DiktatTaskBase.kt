@@ -4,12 +4,12 @@ import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatLogLevel
+import org.cqfn.diktat.ktlint.LintErrorReporter
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.getOutputFile
 import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
-import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.internal.CurrentBaseline
 import com.pinterest.ktlint.core.internal.containsLintError
@@ -116,7 +116,7 @@ abstract class DiktatTaskBase(
                 .build()
 
             reporter.beforeAll()
-            val lintErrors: MutableList<LintError> = mutableListOf()
+            val lintErrorReporter = LintErrorReporter()
             actualInputs.files
                 .also { files ->
                     project.logger.info("Analyzing ${files.size} files with diktat in project ${project.name}")
@@ -126,12 +126,12 @@ abstract class DiktatTaskBase(
                     processFile(
                         file = file,
                         diktatProcessor = diktatProcessor,
-                        lintErrors = lintErrors
+                        reporter = Reporter.from(reporter, lintErrorReporter)
                     )
                 }
             reporter.afterAll()
-            if (lintErrors.isNotEmpty() && !ignoreFailures) {
-                throw GradleException("There are ${lintErrors.size} lint errors")
+            if (!lintErrorReporter.isEmpty() && !ignoreFailures) {
+                throw GradleException("There are ${lintErrorReporter.errorCount()} lint errors")
             }
         }
     }
@@ -139,7 +139,7 @@ abstract class DiktatTaskBase(
     private fun processFile(
         file: File,
         diktatProcessor: DiktatProcessor,
-        lintErrors: MutableList<LintError>
+        reporter: Reporter
     ) {
         project.logger.lifecycle("Checking file $file")
         reporter.before(file.absolutePath)
@@ -150,7 +150,6 @@ abstract class DiktatTaskBase(
             val ktLintError = error.unwrap()
             if (!baselineErrors.containsLintError(ktLintError)) {
                 reporter.onLintError(file.absolutePath, ktLintError, isCorrected)
-                lintErrors.add(ktLintError)
             }
         }
         val command = DiktatProcessCommand.builder()
