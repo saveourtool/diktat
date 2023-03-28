@@ -1,7 +1,10 @@
-package org.cqfn.diktat.ruleset.rules
+package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
-import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.delegatee
+import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
@@ -11,22 +14,12 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class OrderedRuleSetTest {
+class KtLintRuleSetWrapperTest {
     @Test
-    fun `check OrderedRule with VisitorModifier RunAfterRule`() {
+    fun `check KtLintRuleSetWrapper with duplicate`() {
         val rule = mockRule("rule")
         Assertions.assertThrows(IllegalArgumentException::class.java) {
-            OrderedRuleSet("duplicate", rule, rule)
-        }
-
-        val ruleWithRunAfterRule = mockRule("invalid-rule", setOf(Rule.VisitorModifier.RunAfterRule("another-rule")))
-        // validate that second rule which will be modified doesn't contain VisitorModifier.RunAfterRule
-        Assertions.assertThrows(IllegalArgumentException::class.java) {
-            OrderedRuleSet("visitor-modifier", rule, ruleWithRunAfterRule)
-        }
-        // validate that first rule which won't be modified doesn't contain VisitorModifier.RunAfterRule
-        Assertions.assertThrows(IllegalArgumentException::class.java) {
-            OrderedRuleSet("visitor-modifier", ruleWithRunAfterRule, rule)
+            KtLintRuleSetWrapper(DiktatRuleSet(listOf(rule, rule)))
         }
     }
 
@@ -37,14 +30,14 @@ class OrderedRuleSetTest {
         val rule1 = mockRule(id = "rule-first".qualifiedWithRuleSetId(ruleSetId))
         val rule2 = mockRule(id = "rule-second".qualifiedWithRuleSetId(ruleSetId))
 
-        val orderedRuleSet = OrderedRuleSet(ruleSetId, rule1, rule2)
+        val orderedRuleSet = KtLintRuleSetWrapper(DiktatRuleSet(listOf(rule1, rule2)))
 
-        val orderedRuleSetIterator = orderedRuleSet.iterator()
+        val orderedRuleSetIterator = orderedRuleSet.rules.iterator()
         val orderedRule1 = orderedRuleSetIterator.next()
         val orderedRule2 = orderedRuleSetIterator.next()
         Assertions.assertFalse(orderedRuleSetIterator.hasNext(), "Extra elements after ordering")
 
-        Assertions.assertEquals(rule1, orderedRule1, "First rule is modified")
+        Assertions.assertEquals(rule1, orderedRule1.delegatee(), "First rule is modified")
 
         orderedRule2.visitorModifiers
             .filterIsInstance<Rule.VisitorModifier.RunAfterRule>()
@@ -63,11 +56,11 @@ class OrderedRuleSetTest {
     @Suppress("TOO_LONG_FUNCTION")
     fun `KtLint keeps order with RuleVisitorModifierRunAfterRule`() {
         val actualRuleInvocationOrder: MutableList<String> = mutableListOf()
-        val onVisit: (Rule) -> Unit = { rule ->
+        val onVisit: (DiktatRule) -> Unit = { rule ->
             actualRuleInvocationOrder += rule.id
         }
         val ruleSetId = "id"
-        val rules: List<Rule> = sequenceOf("ccc", "bbb", "aaa").map { ruleId ->
+        val rules: List<DiktatRule> = sequenceOf("ccc", "bbb", "aaa").map { ruleId ->
             mockRule(
                 id = ruleId.qualifiedWithRuleSetId(ruleSetId),
                 onVisit = onVisit
@@ -78,15 +71,15 @@ class OrderedRuleSetTest {
         /*
          * Make sure the rules are not sorted by id.
          */
-        val rulesOrderedById: List<Rule> = rules.sortedBy(Rule::id)
+        val rulesOrderedById: List<DiktatRule> = rules.sortedBy(DiktatRule::id)
         assertThat(rules).containsExactlyInAnyOrder(*rulesOrderedById.toTypedArray())
         assertThat(rules).isNotEqualTo(rulesOrderedById)
 
         /*
          * Make sure OrderedRuleSet preserves the order.
          */
-        val ruleSet = OrderedRuleSet(ruleSetId, *rules.toTypedArray())
-        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(Rule::id))
+        val ruleSet = KtLintRuleSetWrapper(DiktatRuleSet(rules))
+        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id))
 
         @Language("kotlin")
         val code = "fun foo() { }"
@@ -143,7 +136,7 @@ class OrderedRuleSetTest {
          *     .toList()
          */
         val expectedRuleInvocationOrder = generateSequence {
-            rules.map(Rule::id)
+            rules.map(DiktatRule::id)
         }
             .take(astNodeCount)
             .flatten()
@@ -156,14 +149,9 @@ class OrderedRuleSetTest {
     companion object {
         private fun mockRule(
             id: String,
-            visitorModifiers: Set<Rule.VisitorModifier> = emptySet(),
-            onVisit: (Rule) -> Unit = { }
-        ): Rule = object : Rule(id.qualifiedWithRuleSetId(), visitorModifiers) {
-            override fun visit(
-                node: ASTNode,
-                autoCorrect: Boolean,
-                emit: EmitType
-            ) {
+            onVisit: (DiktatRule) -> Unit = { }
+        ): DiktatRule = object : DiktatRule(id.qualifiedWithRuleSetId(), emptyList(), emptyList()) {
+            override fun logic(node: ASTNode) {
                 onVisit(this)
             }
         }

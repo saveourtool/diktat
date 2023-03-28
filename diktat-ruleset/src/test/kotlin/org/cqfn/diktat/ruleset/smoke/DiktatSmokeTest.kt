@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
@@ -43,7 +44,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         resourceFilePath = RESOURCE_FILE_PATH,
         function = { expectedText, testFilePath ->
             format(
-                ruleSetProviderRef = { DiktatRuleSetProvider(config.absolutePathString()) },
+                ruleSetProviderRef = { DiktatRuleSetProvider(DiktatRuleSetFactory(config.absolutePathString())) },
                 text = expectedText,
                 fileName = testFilePath,
                 cb = { lintError, _ -> unfixedLintErrors.add(lintError) },

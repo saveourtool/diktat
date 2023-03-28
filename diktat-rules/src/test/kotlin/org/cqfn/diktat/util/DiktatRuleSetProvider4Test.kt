@@ -11,8 +11,11 @@ package org.cqfn.diktat.util
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.delegatee
+import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.delegatee
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
 import com.pinterest.ktlint.core.Rule
@@ -32,15 +35,12 @@ import kotlin.io.path.walk
 /**
  * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
  */
-class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
     @Suppress("OVERRIDE_DEPRECATION")
-    override fun get() = RuleSet(
-        DIKTAT_RULE_SET_ID,
-        ruleSupplier.invoke(rulesConfigList ?: emptyList())
-    )
+    override fun get(): RuleSet = KtLintRuleSetWrapper(DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList()))))
 }
 
 class DiktatRuleSetProviderTest {

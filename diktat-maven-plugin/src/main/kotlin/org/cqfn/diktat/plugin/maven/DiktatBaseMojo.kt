@@ -4,6 +4,7 @@
 
 package org.cqfn.diktat.plugin.maven
 
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
@@ -118,7 +119,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val ruleSets by lazy {
-            listOf(DiktatRuleSetProvider(configFile).get())
+            listOf(DiktatRuleSetProvider(DiktatRuleSetFactory(configFile)).get())
         }
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: CurrentBaseline(emptyMap(), false)
