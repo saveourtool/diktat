@@ -1,9 +1,8 @@
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.delegatee
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import org.cqfn.diktat.util.TEST_FILE_NAME

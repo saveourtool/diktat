@@ -11,10 +11,11 @@ package org.cqfn.diktat.util
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.delegatee
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
 import com.pinterest.ktlint.core.Rule
@@ -55,7 +56,7 @@ class DiktatRuleSetProviderTest {
             .map(Path::nameWithoutExtension)
             .filterNot { it in ignoredFileNames }
             .toList()
-        val ruleNames = DiktatRuleSetFactory()
+        val ruleNames = DiktatRuleSetProvider()
             .toKtLint()
             .get()
             .asSequence()
