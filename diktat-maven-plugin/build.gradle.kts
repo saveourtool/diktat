@@ -15,7 +15,7 @@ dependencies {
     compileOnly(libs.maven.core)
 
     implementation(libs.kotlin.stdlib.jdk8)
-    implementation(projects.diktatRules)
+    implementation(projects.diktatRuleset)
     implementation(libs.ktlint.core)
     implementation(libs.ktlint.reporter.plain)
     implementation(libs.ktlint.reporter.sarif)

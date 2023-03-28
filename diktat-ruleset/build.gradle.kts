@@ -36,11 +36,6 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
 }
 
-// disable default jar
-tasks.named("jar") {
-    enabled = false
-}
-
 // it triggers shadowJar with default build
 tasks {
     build {

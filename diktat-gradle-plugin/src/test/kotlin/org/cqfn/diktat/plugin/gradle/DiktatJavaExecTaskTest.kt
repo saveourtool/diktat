@@ -1,7 +1,9 @@
 package org.cqfn.diktat.plugin.gradle
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
-import org.cqfn.diktat.common.ktlint.ktlintDisabledRulesArgument
+import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask
+import com.pinterest.ktlint.reporter.json.JsonReporter
+import com.pinterest.ktlint.reporter.plain.PlainReporter
+import com.pinterest.ktlint.reporter.sarif.SarifReporter
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -33,28 +35,22 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `check command line for various inputs`() {
-        assertCommandLineEquals(
+        assertFiles(
             listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                combinePathParts("src", "main", "kotlin", "Test.kt"),
-                "--reporter=plain"
+                combinePathParts("src", "main", "kotlin", "Test.kt")
             )
         ) {
             inputs { include("src/**/*.kt") }
         }
+
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is PlainReporter)
     }
 
     @Test
     fun `check command line in debug mode`() {
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                "--debug",
-                combinePathParts("src", "main", "kotlin", "Test.kt"),
-                "--reporter=plain"
-            )
+        assertFiles(
+            listOf(combinePathParts("src", "main", "kotlin", "Test.kt"))
         ) {
             inputs { include("src/**/*.kt") }
             debug = true
@@ -65,19 +61,17 @@ class DiktatJavaExecTaskTest {
     fun `check command line with excludes`() {
         project.file("src/main/kotlin/generated").mkdirs()
         project.file("src/main/kotlin/generated/Generated.kt").createNewFile()
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                combinePathParts("src", "main", "kotlin", "Test.kt"),
-                "--reporter=plain"
-            )
+        assertFiles(
+            listOf(combinePathParts("src", "main", "kotlin", "Test.kt"))
         ) {
             inputs {
                 include("src/**/*.kt")
                 exclude("src/main/kotlin/generated")
             }
         }
+
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is PlainReporter)
     }
 
     @Test
@@ -93,7 +87,7 @@ class DiktatJavaExecTaskTest {
         val task = project.registerDiktatTask {
             inputs { exclude("*") }
         }
-        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
+        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml"), task.extension.diktatConfigFile)
     }
 
     @Test
@@ -102,96 +96,74 @@ class DiktatJavaExecTaskTest {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
         }
-        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
+        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml"), task.extension.diktatConfigFile)
     }
 
     @Test
     fun `check command line has reporter type and output`() {
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                "--reporter=json,output=${project.projectDir.resolve("some.txt")}"
-            )
-        ) {
+        assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporter = "json"
             output = "some.txt"
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is JsonReporter)
     }
 
     @Test
     fun `check command line has reporter type without output`() {
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                "--reporter=json"
-            )
-        ) {
+        assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporter = "json"
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is JsonReporter)
     }
 
     @Test
     fun `check command line in githubActions mode`() {
         val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                "--reporter=sarif,output=$path"
-            )
-        ) {
+        assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             githubActions = true
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
-            task.systemProperties["user.home"]
+            System.getProperty("user.home")
         )
     }
 
     @Test
     fun `githubActions mode should have higher precedence over explicit reporter`() {
         val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                "--reporter=sarif,output=$path"
-            )
-        ) {
+        assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             githubActions = true
             reporter = "json"
             output = "report.json"
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is SarifReporter)
     }
 
     @Test
     fun `should set system property with SARIF reporter`() {
-        assertCommandLineEquals(
-            listOf(
-                null,
-                ktlintDisabledRulesArgument,
-                "--reporter=sarif"
-            )
-        ) {
+        assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporter = "sarif"
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.reporter is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
-            task.systemProperties["user.home"]
+            System.getProperty("user.home")
         )
     }
 
@@ -204,10 +176,10 @@ class DiktatJavaExecTaskTest {
                 inputs { exclude("*") }
             }
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
-        val subprojectTask = subproject.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
-        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
-        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, subprojectTask.systemProperties[DIKTAT_CONF_PROPERTY])
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        val subprojectTask = subproject.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml"), task.extension.diktatConfigFile)
+        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml"), subprojectTask.extension.diktatConfigFile)
     }
 
     @Test
@@ -220,10 +192,10 @@ class DiktatJavaExecTaskTest {
                 diktatConfigFile = it.rootProject.file("diktat-analysis.yml")
             }
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
-        val subprojectTask = subproject.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
-        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
-        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, subprojectTask.systemProperties[DIKTAT_CONF_PROPERTY])
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        val subprojectTask = subproject.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml"), task.extension.diktatConfigFile)
+        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml"), subprojectTask.extension.diktatConfigFile)
     }
 
     @Test
@@ -237,21 +209,29 @@ class DiktatJavaExecTaskTest {
                 diktatConfigFile = it.file("diktat-analysis.yml")
             }
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
-        val subprojectTask = subproject.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
-        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
-        Assertions.assertEquals(File(subproject.projectDir, "diktat-analysis.yml").absolutePath, subprojectTask.systemProperties[DIKTAT_CONF_PROPERTY])
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        val subprojectTask = subproject.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml"), task.extension.diktatConfigFile)
+        Assertions.assertEquals(File(subproject.projectDir, "diktat-analysis.yml"), subprojectTask.extension.diktatConfigFile)
     }
 
-    private fun Project.registerDiktatTask(extensionConfiguration: DiktatExtension.() -> Unit): DiktatJavaExecTaskBase {
+    private fun Project.registerDiktatTask(extensionConfiguration: DiktatExtension.() -> Unit): DiktatCheckTask {
         pluginManager.apply(DiktatGradlePlugin::class.java)
         extensions.configure("diktat", extensionConfiguration)
-        return tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
+        return tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
     }
 
-    private fun assertCommandLineEquals(expected: List<String?>, extensionConfiguration: DiktatExtension.() -> Unit) {
+    private fun assertFiles(expected: List<String>, extensionConfiguration: DiktatExtension.() -> Unit) {
         val task = project.registerDiktatTask(extensionConfiguration)
-        Assertions.assertIterableEquals(expected, task.commandLine)
+        val files = task.actualInputs.files
+        Assertions.assertEquals(expected.size, files.size)
+        Assertions.assertTrue {
+            expected.zip(files)
+                .map { (expectedStr, file) ->
+                    file.path.endsWith(expectedStr)
+                }
+                .all { it }
+        }
     }
 
     private fun setupMultiProject() {

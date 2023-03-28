@@ -1,5 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
+import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Assertions
@@ -29,7 +30,7 @@ class DiktatGradlePluginTest {
     fun `check default extension properties`() {
         val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
         val actualInputs = project.tasks
-            .named("diktatCheck", DiktatJavaExecTaskBase::class.java)
+            .named("diktatCheck", DiktatCheckTask::class.java)
             .get()
             .actualInputs
         Assertions.assertFalse(diktatExtension.debug)
@@ -42,7 +43,7 @@ class DiktatGradlePluginTest {
         val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
         Assertions.assertEquals("", diktatExtension.reporter)
 
-        val reporterFlag = project.createReporterFlag(diktatExtension)
+        val reporterFlag = project.getReporterType(diktatExtension)
         Assertions.assertEquals("--reporter=plain", reporterFlag)
     }
 }

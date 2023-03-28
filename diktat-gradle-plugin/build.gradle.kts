@@ -13,17 +13,14 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
+    implementation(projects.diktatRuleset)
     implementation(libs.sarif4k.jvm)
-
-    api(projects.diktatCommon) {
-        exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
-        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
-        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
-        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
-        exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
-        exclude("org.slf4j", "slf4j-log4j12")
-    }
-
+    implementation(libs.ktlint.core)
+    implementation(libs.ktlint.reporter.plain)
+    implementation(libs.ktlint.reporter.sarif)
+    implementation(libs.ktlint.reporter.json)
+    implementation(libs.ktlint.reporter.html)
+    implementation(libs.ktlint.reporter.baseline)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
 }

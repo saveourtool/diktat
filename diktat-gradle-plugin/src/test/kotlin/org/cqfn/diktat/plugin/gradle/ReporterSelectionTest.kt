@@ -28,7 +28,7 @@ class ReporterSelectionTest {
 
         Assertions.assertEquals(
             "--reporter=plain",
-            project.createReporterFlag(diktatExtension)
+            project.getReporterType(diktatExtension)
         )
     }
 }
