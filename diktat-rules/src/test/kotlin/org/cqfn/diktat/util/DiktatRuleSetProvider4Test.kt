@@ -10,7 +10,7 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ktlint.KtLintRuleSetProvider.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.delegatee
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRule

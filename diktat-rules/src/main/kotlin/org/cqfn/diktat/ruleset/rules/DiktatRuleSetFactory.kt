@@ -152,6 +152,8 @@ class DiktatRuleSetFactory(private var diktatConfigFile: String = DIKTAT_ANALYSI
      * As the same [Rule] instance is reused for the second execution of the
      * [Rule], the state of the [Rule] is shared.
      * As of this [Rule] have to clear their internal state.
+     *
+     * @return a default [DiktatRuleSet]
      */
     @Suppress(
         "LongMethod",

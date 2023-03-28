@@ -4,7 +4,7 @@
 
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.ktlint.KtLintRuleSetProvider.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 

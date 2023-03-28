@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.ktlint.KtLintRuleSetProvider.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.utils.format

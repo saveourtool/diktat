@@ -29,8 +29,8 @@ class KtLintRuleSetWrapper private constructor(
                 return emptyArray()
             }
             return rules.runningFold(null as OrderedRule?) { prevRule, diktatRule ->
-                    OrderedRule(diktatRule, prevRule)
-                }
+                OrderedRule(diktatRule, prevRule)
+            }
                 .filterNotNull()
                 .toTypedArray()
         }
@@ -56,7 +56,7 @@ class KtLintRuleSetWrapper private constructor(
         /**
          * @return a rule to which a logic is delegated
          */
-        internal fun Rule.delegatee(): DiktatRule =(this as? OrderedRule)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
+        internal fun Rule.delegatee(): DiktatRule = (this as? OrderedRule)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
 
         /**
          * @property rule wraps this rule to keep order

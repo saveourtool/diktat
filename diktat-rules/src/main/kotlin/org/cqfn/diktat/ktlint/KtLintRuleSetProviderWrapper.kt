@@ -8,7 +8,7 @@ import com.pinterest.ktlint.core.RuleSetProvider
 /**
  * This is a wrapper around __KtLint__'s [RuleSetProvider].
  */
-class KtLintRuleSetProvider private constructor(
+class KtLintRuleSetProviderWrapper private constructor(
     private val diktatRuleSetFactory: DiktatRuleSetFactory,
 ) : RuleSetProvider {
     override fun get(): RuleSet = diktatRuleSetFactory().toKtLint()
@@ -17,6 +17,6 @@ class KtLintRuleSetProvider private constructor(
         /**
          * @return __KtLint__'s [RuleSetProvider] created from [DiktatRuleSetFactory]
          */
-        fun DiktatRuleSetFactory.toKtLint(): RuleSetProvider = KtLintRuleSetProvider(this)
+        fun DiktatRuleSetFactory.toKtLint(): RuleSetProvider = KtLintRuleSetProviderWrapper(this)
     }
 }

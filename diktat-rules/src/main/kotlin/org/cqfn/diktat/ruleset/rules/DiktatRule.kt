@@ -45,6 +45,12 @@ abstract class DiktatRule(
      */
     lateinit var emitWarn: EmitType
 
+    /**
+     * @param node
+     * @param autoCorrect
+     * @param emit
+     * @throws Error
+     */
     @Suppress("TooGenericExceptionThrown")
     fun visit(
         node: ASTNode,
