@@ -35,12 +35,6 @@ abstract class AbstractDiktatProcessCommand(
 
     /**
      * Builder for [AbstractDiktatProcessCommand]
-     *
-     * @property processor
-     * @property file
-     * @property fileContent
-     * @property isScript
-     * @property callback
      */
     abstract class Builder<C : AbstractDiktatProcessCommand> {
         private var processor: DiktatProcessor? = null
@@ -100,13 +94,12 @@ abstract class AbstractDiktatProcessCommand(
         }
 
         /**
-         * @return [C] is built using values from builder
-         *
          * @param processor
          * @param file
          * @param fileContent
          * @param isScript
          * @param callback
+         * @return [C] is built using values from builder
          */
         abstract fun doBuild(
             processor: DiktatProcessor,
