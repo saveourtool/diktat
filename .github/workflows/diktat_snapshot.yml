@@ -48,7 +48,8 @@ jobs:
           arguments: |
             :diktat-common:publishToMavenLocal
             :diktat-rules:publishToMavenLocal
-            :diktat-ruleset:publishToMavenLocal
+            :diktat-runner:diktat-runner-api:publishToMavenLocal
+            :diktat-runner:diktat-runner-ktlint-engine:publishToMavenLocal
             :diktat-gradle-plugin:publishToMavenLocal
             :generateLibsForDiktatSnapshot
             -x detekt

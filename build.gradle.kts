@@ -36,7 +36,8 @@ tasks.create("generateLibsForDiktatSnapshot") {
     val dependencies = setOf(
         projects.diktatCommon,
         projects.diktatRules,
-        projects.diktatRuleset,
+        projects.diktatRunner.diktatRunnerApi,
+        projects.diktatRunner.diktatRunnerKtlintEngine,
         projects.diktatGradlePlugin,
     )
     mustRunAfter(dependencies.map { ":${it.name}:publishToMavenLocal" })
