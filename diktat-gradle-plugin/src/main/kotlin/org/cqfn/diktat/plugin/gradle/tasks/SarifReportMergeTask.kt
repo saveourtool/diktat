@@ -2,9 +2,10 @@ package org.cqfn.diktat.plugin.gradle.tasks
 
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
-import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.getOutputFile
+import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
+
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -17,6 +18,7 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
 import org.gradle.api.tasks.VerificationTask
+
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString

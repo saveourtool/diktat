@@ -1,3 +1,7 @@
+@file:Suppress(
+    "Deprecation"
+)
+
 package org.cqfn.diktat.plugin.gradle.tasks
 
 import org.cqfn.diktat.DiktatProcessCommand
@@ -7,18 +11,19 @@ import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.LintErrorReporter
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
-import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.getOutputFile
+import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
+
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.internal.CurrentBaseline
 import com.pinterest.ktlint.core.internal.containsLintError
 import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
-import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
+import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.DefaultTask
@@ -33,12 +38,14 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
+
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
 
 /**
  * A base task to run `diktat`
+ * @property extension
  */
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
@@ -72,6 +79,23 @@ abstract class DiktatTaskBase(
     }
 
     /**
+     * [DiktatProcessor] created from [extension]
+     */
+    @get:Internal
+    internal val diktatProcessor: DiktatProcessor by lazy {
+        DiktatProcessor.builder()
+            .diktatRuleSetProvider(extension.diktatConfigFile.toPath())
+            .logLevel(
+                if (extension.debug) {
+                    DiktatLogLevel.DEBUG
+                } else {
+                    DiktatLogLevel.INFO
+                }
+            )
+            .build()
+    }
+
+    /**
      * A baseline loaded from provided file or empty
      */
     @get:Internal
@@ -90,6 +114,8 @@ abstract class DiktatTaskBase(
 
     /**
      * Function to execute diKTat
+     *
+     * @throws GradleException
      */
     @TaskAction
     fun run() {
@@ -104,17 +130,6 @@ abstract class DiktatTaskBase(
             project.logger.warn("Inputs for $name do not exist, will not run diktat")
             project.logger.info("Skipping diktat execution")
         } else {
-            val diktatProcessor = DiktatProcessor.builder()
-                .diktatRuleSetProvider(extension.diktatConfigFile.toPath())
-                .logLevel(
-                    if (extension.debug) {
-                        DiktatLogLevel.DEBUG
-                    } else {
-                        DiktatLogLevel.INFO
-                    }
-                )
-                .build()
-
             reporter.beforeAll()
             val lintErrorReporter = LintErrorReporter()
             actualInputs.files
@@ -130,7 +145,7 @@ abstract class DiktatTaskBase(
                     )
                 }
             reporter.afterAll()
-            if (!lintErrorReporter.isEmpty() && !ignoreFailures) {
+            if (lintErrorReporter.isNotEmpty() && !ignoreFailures) {
                 throw GradleException("There are ${lintErrorReporter.errorCount()} lint errors")
             }
         }

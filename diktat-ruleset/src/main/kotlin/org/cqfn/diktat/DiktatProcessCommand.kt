@@ -42,7 +42,7 @@ class DiktatProcessCommand private constructor(
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
         fileName = file.absolutePathString(),
         text = fileContent,
-        ruleSets =  setOf(processor.diktatRuleSetProvider.get()),
+        ruleSets = setOf(processor.diktatRuleSetProvider.get()),
         userData = emptyMap(),
         cb = callback.unwrap(),
         script = isScript,
@@ -51,13 +51,6 @@ class DiktatProcessCommand private constructor(
         editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
         isInvokedFromCli = false
     )
-
-    companion object {
-        /**
-         * @return a builder for [DiktatProcessCommand]
-         */
-        fun builder(): Builder = Builder()
-    }
 
     /**
      * Builder for [DiktatProcessCommand]
@@ -124,5 +117,12 @@ class DiktatProcessCommand private constructor(
                 },
             )
         }
+    }
+
+    companion object {
+        /**
+         * @return a builder for [DiktatProcessCommand]
+         */
+        fun builder(): Builder = Builder()
     }
 }

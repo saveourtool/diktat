@@ -11,17 +11,11 @@ import kotlin.io.path.absolutePathString
  * @property diktatRuleSetProvider
  * @property logLevel
  */
+@Suppress("USE_DATA_CLASS")  // to hide `copy` method
 class DiktatProcessor private constructor(
     val diktatRuleSetProvider: DiktatRuleSetProvider,
     val logLevel: DiktatLogLevel,
 ) {
-    companion object {
-        /**
-         * @return a builder for [DiktatProcessor]
-         */
-        fun builder(): Builder = Builder()
-    }
-
     /**
      * Builder for [DiktatProcessCommand]
      *
@@ -37,7 +31,6 @@ class DiktatProcessor private constructor(
          * @return updated builder
          */
         fun diktatRuleSetProvider(diktatRuleSetProvider: DiktatRuleSetProvider) = apply { this.diktatRuleSetProvider = diktatRuleSetProvider }
-
 
         /**
          * @param configFile a config file to load [DiktatRuleSetProvider]
@@ -64,5 +57,11 @@ class DiktatProcessor private constructor(
             diktatRuleSetProvider = diktatRuleSetProvider ?: DiktatRuleSetProvider(),
             logLevel = logLevel,
         )
+    }
+    companion object {
+        /**
+         * @return a builder for [DiktatProcessor]
+         */
+        fun builder(): Builder = Builder()
     }
 }

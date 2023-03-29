@@ -144,7 +144,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
 
         reporterImpl.afterAll()
-        if (!lintErrorReporter.isEmpty()) {
+        if (lintErrorReporter.isNotEmpty()) {
             throw MojoFailureException("There are ${lintErrorReporter.errorCount()} lint errors")
         }
     }

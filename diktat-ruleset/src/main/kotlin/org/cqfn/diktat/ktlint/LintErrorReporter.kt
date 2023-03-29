@@ -10,14 +10,18 @@ import java.util.concurrent.atomic.AtomicInteger
 class LintErrorReporter : Reporter {
     private val errorCounter: AtomicInteger = AtomicInteger()
 
-    override fun onLintError(file: String, err: LintError, corrected: Boolean) {
+    override fun onLintError(
+        file: String,
+        err: LintError,
+        corrected: Boolean
+    ) {
         errorCounter.incrementAndGet()
     }
 
     /**
-     * @return true if there are no reported [LintError], otherwise -- false.
+     * @return true if there is a reported [LintError], otherwise -- false.
      */
-    fun isEmpty(): Boolean = errorCounter.get() == 0
+    fun isNotEmpty(): Boolean = errorCounter.get() != 0
 
     /**
      * @return count of reported [LintError]
