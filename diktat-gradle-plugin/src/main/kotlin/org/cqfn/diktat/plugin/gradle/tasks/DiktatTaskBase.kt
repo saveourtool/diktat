@@ -11,6 +11,7 @@ import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.LintErrorReporter
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
+import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
 import org.cqfn.diktat.plugin.gradle.getOutputFile
 import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
