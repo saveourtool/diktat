@@ -31,3 +31,7 @@ run {
         }
     }
 }
+
+run {
+    configurePublications()
+}

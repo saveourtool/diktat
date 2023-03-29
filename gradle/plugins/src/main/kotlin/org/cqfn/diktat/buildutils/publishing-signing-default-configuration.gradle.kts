@@ -5,7 +5,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 
 plugins {
-    id("org.cqfn.diktat.buildutils.nexus-publishing-configuration")
+    id("org.cqfn.diktat.buildutils.publishing-configuration")
 }
 
 run {
