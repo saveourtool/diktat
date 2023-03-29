@@ -48,6 +48,7 @@ import java.io.PrintStream
  * A base task to run `diktat`
  * @property extension
  */
+@Suppress("WRONG_NEWLINES")
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable
@@ -113,6 +114,10 @@ abstract class DiktatTaskBase(
         resolveReporter(baseline)
     }
 
+    init {
+        ignoreFailures = extension.ignoreFailures
+    }
+
     /**
      * Function to execute diKTat
      *
@@ -157,7 +162,7 @@ abstract class DiktatTaskBase(
         diktatProcessor: DiktatProcessor,
         reporter: Reporter
     ) {
-        project.logger.lifecycle("Checking file $file")
+        project.logger.debug("Checking file $file")
         reporter.before(file.absolutePath)
         val baselineErrors = baseline.baselineRules?.get(
             file.relativeTo(project.projectDir).invariantSeparatorsPath
