@@ -50,7 +50,7 @@ import java.io.PrintStream
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable
-) : DefaultTask(), VerificationTask {
+) : DefaultTask(), VerificationTask, DiktatJavaExecTaskBase {
     /**
      * Files that will be analyzed by diktat
      */
