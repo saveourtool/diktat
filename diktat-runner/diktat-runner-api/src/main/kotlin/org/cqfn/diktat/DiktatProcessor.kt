@@ -58,6 +58,7 @@ class DiktatProcessor private constructor(
             logLevel = logLevel,
         )
     }
+
     companion object {
         /**
          * @return a builder for [DiktatProcessor]

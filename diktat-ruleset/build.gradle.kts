@@ -1,5 +1,4 @@
-import org.cqfn.diktat.buildutils.configurePublications
-import org.cqfn.diktat.buildutils.configureSigning
+import org.cqfn.diktat.buildutils.configurePom
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
@@ -38,9 +37,9 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
 }
 
-tasks.named<Jar>("jar") {
-    // FIXME: need to extract shadowJar to a dedicated module
-    archiveClassifier.set("library")
+// disable default jar
+tasks.named("jar") {
+    enabled = false
 }
 
 // it triggers shadowJar with default build
@@ -52,19 +51,18 @@ tasks {
 
 publishing {
     publications {
-        // it creates a publication for diktat-ruleset
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
         // it creates a publication for shadowJar
         create<MavenPublication>("shadow") {
             // https://github.com/johnrengelman/shadow/issues/417#issuecomment-830668442
             project.extensions.configure<ShadowExtension> {
                 component(this@create)
             }
+            this.artifactId = "diktat"
+            this.pom {
+                configurePom(project)
+                // need to override name
+                name.set("diktat")
+            }
         }
     }
 }
-
-configurePublications()
-configureSigning()

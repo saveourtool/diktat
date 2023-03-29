@@ -1,17 +1,12 @@
 package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
-import org.cqfn.diktat.api.DiktatLogLevel
-import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.utils.isKotlinScript
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.api.EditorConfigOverride
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
 
 /**
- * Command to run `diktat`
+ * An abstract implementation for command to run `diktat`
  *
  * @property processor
  * @property file
@@ -19,41 +14,27 @@ import kotlin.io.path.readText
  * @property isScript
  * @property callback
  */
-class DiktatProcessCommand private constructor(
-    private val processor: DiktatProcessor,
-    private val file: Path,
-    private val fileContent: String,
-    private val isScript: Boolean,
-    private val callback: DiktatCallback,
+abstract class AbstractDiktatProcessCommand(
+    protected val processor: DiktatProcessor,
+    protected val file: Path,
+    protected val fileContent: String,
+    protected val isScript: Boolean,
+    protected val callback: DiktatCallback,
 ) {
     /**
      * Run `diktat fix` using parameters from current command
      *
      * @return result of `diktat fix`
      */
-    fun fix(): String = KtLint.format(ktLintParams())
+    abstract fun fix(): String
 
     /**
      * Run `diktat check` using parameters from current command
      */
-    fun check(): Unit = KtLint.lint(ktLintParams())
-
-    @Suppress("DEPRECATION")
-    private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
-        fileName = file.absolutePathString(),
-        text = fileContent,
-        ruleSets = setOf(processor.diktatRuleSetProvider.get()),
-        userData = emptyMap(),
-        cb = callback.unwrap(),
-        script = isScript,
-        editorConfigPath = null,
-        debug = processor.logLevel == DiktatLogLevel.DEBUG,
-        editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
-        isInvokedFromCli = false
-    )
+    abstract fun check()
 
     /**
-     * Builder for [DiktatProcessCommand]
+     * Builder for [AbstractDiktatProcessCommand]
      *
      * @property processor
      * @property file
@@ -61,13 +42,13 @@ class DiktatProcessCommand private constructor(
      * @property isScript
      * @property callback
      */
-    class Builder internal constructor(
-        private var processor: DiktatProcessor? = null,
-        private var file: Path? = null,
-        private var fileContent: String? = null,
-        private var isScript: Boolean? = null,
-        private var callback: DiktatCallback? = null,
-    ) {
+    abstract class Builder<C : AbstractDiktatProcessCommand> {
+        private var processor: DiktatProcessor? = null
+        private var file: Path? = null
+        private var fileContent: String? = null
+        private var isScript: Boolean? = null
+        private var callback: DiktatCallback? = null
+
         /**
          * @param processor
          * @return updated builder
@@ -99,13 +80,13 @@ class DiktatProcessCommand private constructor(
         fun callback(callback: DiktatCallback) = apply { this.callback = callback }
 
         /**
-         * @return built [DiktatProcessCommand]
+         * @return built [C]
          */
-        fun build(): DiktatProcessCommand {
+        fun build(): C {
             val resolvedFile = requireNotNull(file) {
                 "file is required"
             }
-            return DiktatProcessCommand(
+            return doBuild(
                 processor = requireNotNull(processor) {
                     "processor is required"
                 },
@@ -117,12 +98,22 @@ class DiktatProcessCommand private constructor(
                 },
             )
         }
-    }
 
-    companion object {
         /**
-         * @return a builder for [DiktatProcessCommand]
+         * @return [C] is built using values from builder
+         *
+         * @param processor
+         * @param file
+         * @param fileContent
+         * @param isScript
+         * @param callback
          */
-        fun builder(): Builder = Builder()
+        abstract fun doBuild(
+            processor: DiktatProcessor,
+            file: Path,
+            fileContent: String,
+            isScript: Boolean,
+            callback: DiktatCallback,
+        ): C
     }
 }
