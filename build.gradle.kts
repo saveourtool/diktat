@@ -32,13 +32,13 @@ tasks.create("generateLibsForDiktatSnapshot") {
     val dir = rootProject.buildDir.resolve("diktat-snapshot")
 
     val dependencies = setOf(
-        projects.diktatCommon,
-        projects.diktatRules,
-        projects.diktatRunner.diktatRunnerApi,
-        projects.diktatRunner.diktatRunnerKtlintEngine,
-        projects.diktatGradlePlugin,
+        rootProject.project(":diktat-common"),
+        rootProject.project(":diktat-rules"),
+        rootProject.project(":diktat-runner:diktat-runner-api"),
+        rootProject.project(":diktat-runner:diktat-runner-ktlint-engine"),
+        rootProject.project(":diktat-gradle-plugin"),
     )
-    mustRunAfter(dependencies.map { ":${it.name}:publishToMavenLocal" })
+    mustRunAfter(dependencies.map { "${it.path}:publishToMavenLocal" })
     val libsFile = rootProject.file("gradle/libs.versions.toml")
 
     inputs.file(libsFile)
@@ -74,19 +74,19 @@ tasks.create("generateLibsForDiktatSnapshot") {
 }
 
 /**
- * @param projectDependency
+ * @param project
  * @return resolved path to directory according to maven coordinate
  */
-fun File.pathToMavenArtifact(projectDependency: ProjectDependency): File = projectDependency.group.toString()
+fun File.pathToMavenArtifact(project: Project): File = project.group.toString()
     .split(".")
     .fold(this) { dirToArtifact, newPart -> dirToArtifact.resolve(newPart) }
-    .resolve(projectDependency.name)
-    .resolve(projectDependency.version.toString())
+    .resolve(project.name)
+    .resolve(project.version.toString())
 
 /**
  * @return generated pom.xml for project dependency
  */
-fun ProjectDependency.pomFile(): File = rootProject.file("$name/build/publications/")
+fun Project.pomFile(): File = buildDir.resolve("publications")
     .let { publicationsDir ->
         publicationsDir.resolve("pluginMaven")
             .takeIf { it.exists() }
@@ -95,16 +95,16 @@ fun ProjectDependency.pomFile(): File = rootProject.file("$name/build/publicatio
     .resolve("pom-default.xml")
 
 /**
- * @return file name of pom.xml for project dependency
+ * @return file name of pom.xml for project
  */
-fun ProjectDependency.pomFileName(): String = "$name-$version.pom"
+fun Project.pomFileName(): String = "$name-$version.pom"
 
 /**
  * @return generated artifact for project dependency
  */
-fun ProjectDependency.artifactFile(): File = rootProject.file("$name/build/libs/$name-$version.jar")
+fun Project.artifactFile(): File = buildDir.resolve("libs/${artifactFileName()}")
 
 /**
  * @return file name of artifact for project dependency
  */
-fun ProjectDependency.artifactFileName(): String = "$name-$version.jar"
+fun Project.artifactFileName(): String = "$name-$version.jar"
