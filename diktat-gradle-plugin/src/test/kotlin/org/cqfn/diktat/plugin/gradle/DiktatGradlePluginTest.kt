@@ -44,6 +44,6 @@ class DiktatGradlePluginTest {
         Assertions.assertEquals("", diktatExtension.reporter)
 
         val reporterFlag = project.getReporterType(diktatExtension)
-        Assertions.assertEquals("--reporter=plain", reporterFlag)
+        Assertions.assertEquals("plain", reporterFlag)
     }
 }

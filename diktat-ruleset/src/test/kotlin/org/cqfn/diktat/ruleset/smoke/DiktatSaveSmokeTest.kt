@@ -27,6 +27,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 import kotlin.io.path.readText
 
 @DisabledOnOs(OS.MAC)
@@ -170,7 +171,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 val diktatFrom = buildDirectory
                     .takeIf(Path::exists)
                     ?.listDirectoryEntries(DIKTAT_FAT_JAR_GLOB)
-                    ?.singleOrNull()
+                    ?.singleOrNull { jarFile ->
+                        !jarFile.name.startsWith(DIKTAT_RULESET_JAR_PREFIX)
+                    }
                 softly.assertThat(diktatFrom)
                     .describedAs(diktatFrom?.toString() ?: "$BUILD_DIRECTORY/$DIKTAT_FAT_JAR_GLOB")
                     .isNotNull
