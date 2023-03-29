@@ -31,7 +31,3 @@ run {
         }
     }
 }
-
-run {
-    configurePublications()
-}

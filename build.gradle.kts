@@ -1,3 +1,4 @@
+import org.cqfn.diktat.buildutils.configurePublications
 import org.cqfn.diktat.buildutils.configureSigning
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.nio.file.Files
@@ -7,7 +8,7 @@ plugins {
     id("org.cqfn.diktat.buildutils.versioning-configuration")
     id("org.cqfn.diktat.buildutils.git-hook-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
-    id("org.cqfn.diktat.buildutils.publishing-configuration")
+    id("org.cqfn.diktat.buildutils.nexus-publishing-configuration")
     alias(libs.plugins.talaiot.base)
     java
     `maven-publish`
@@ -26,6 +27,7 @@ talaiot {
 
 project.description = "diKTat kotlin formatter and fixer"
 
+configurePublications()
 configureSigning()
 
 tasks.create("generateLibsForDiktatSnapshot") {

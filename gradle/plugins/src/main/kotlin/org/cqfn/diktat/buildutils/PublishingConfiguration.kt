@@ -68,8 +68,11 @@ fun Project.configureSigning() {
     }
 }
 
+/**
+ * Updates pom.xml for publication
+ */
 @Suppress("TOO_LONG_FUNCTION")
-internal fun Project.configurePublications() {
+fun Project.configurePublications() {
     val dokkaJar: Jar = tasks.create<Jar>("dokkaJar") {
         group = "documentation"
         archiveClassifier.set("javadoc")

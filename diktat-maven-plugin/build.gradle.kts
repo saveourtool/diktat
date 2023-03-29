@@ -1,10 +1,12 @@
+import org.cqfn.diktat.buildutils.configurePublications
+import org.cqfn.diktat.buildutils.configureSigning
 import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
 import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
 
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
-    id("org.cqfn.diktat.buildutils.publishing-configuration")
+    id("org.cqfn.diktat.buildutils.nexus-publishing-configuration")
     id("de.benediktritter.maven-plugin-development") version "0.4.1"
     `maven-publish`
 }
@@ -51,3 +53,6 @@ publishing {
         }
     }
 }
+
+configurePublications()
+configureSigning()

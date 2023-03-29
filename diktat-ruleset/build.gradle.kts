@@ -1,10 +1,12 @@
+import org.cqfn.diktat.buildutils.configurePublications
+import org.cqfn.diktat.buildutils.configureSigning
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
-    id("org.cqfn.diktat.buildutils.publishing-configuration")
+    id("org.cqfn.diktat.buildutils.nexus-publishing-configuration")
     id("com.github.johnrengelman.shadow") version "7.1.2"
     `maven-publish`
 }
@@ -36,6 +38,11 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
 }
 
+tasks.named<Jar>("jar") {
+    // FIXME: need to extract shadowJar to a dedicated module
+    archiveClassifier.set("library")
+}
+
 // it triggers shadowJar with default build
 tasks {
     build {
@@ -43,9 +50,13 @@ tasks {
     }
 }
 
-// it creates a publication for shadowJar
 publishing {
     publications {
+        // it creates a publication for diktat-ruleset
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+        // it creates a publication for shadowJar
         create<MavenPublication>("shadow") {
             // https://github.com/johnrengelman/shadow/issues/417#issuecomment-830668442
             project.extensions.configure<ShadowExtension> {
@@ -54,3 +65,6 @@ publishing {
         }
     }
 }
+
+configurePublications()
+configureSigning()
