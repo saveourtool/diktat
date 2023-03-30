@@ -52,7 +52,7 @@ abstract class DiktatRule(
      * @throws Error
      */
     @Suppress("TooGenericExceptionThrown")
-    fun beforeVisitChildNodes(
+    fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType

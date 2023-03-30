@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
 import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.InvalidPropertyValueException

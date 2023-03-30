@@ -4,12 +4,10 @@
 
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
-import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.delegatee
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
@@ -34,8 +32,10 @@ import kotlin.io.path.walk
  * Simple class for emulating [RuleSetProviderV2] to inject `.yml` rule configuration and mock this part of code.
  */
 @Suppress("serial")
-class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
-                                 rulesConfigList: List<RulesConfig>?) : RuleSetProviderV2(
+class DiktatRuleSetProvider4Test(
+    private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
+    rulesConfigList: List<RulesConfig>?,
+) : RuleSetProviderV2(
     id = DIKTAT_RULE_SET_ID,
     about = NO_ABOUT,
 ) {
@@ -59,7 +59,8 @@ class DiktatRuleSetProviderTest {
             .toList()
         val ruleNames = DiktatRuleSetProvider()
             .toKtLint()
-            .get()
+            .getRuleProviders()
+            .map { it.createNewRuleInstance() }
             .asSequence()
             .onEachIndexed { index, rule ->
                 if (index != 0) {

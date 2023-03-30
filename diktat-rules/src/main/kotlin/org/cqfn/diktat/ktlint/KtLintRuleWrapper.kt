@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleProvider
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -18,11 +19,7 @@ class KtLintRuleWrapper(
     id = rule.id.qualifiedWithRuleSetId(DIKTAT_RULE_SET_ID),
     visitorModifiers = createVisitorModifiers(rule, prevRule),
 ) {
-    @Deprecated(
-        "Marked for deletion in ktlint 0.48.0",
-        replaceWith = ReplaceWith("beforeVisitChildNodes(node, autoCorrect, emit)"),
-    )
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType,
@@ -51,5 +48,10 @@ class KtLintRuleWrapper(
          * @return a rule to which a logic is delegated
          */
         internal fun Rule.delegatee(): DiktatRule = (this as? KtLintRuleWrapper)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
+
+        /**
+         * @return wraps [Rule] to [RuleProvider]
+         */
+        internal fun Rule.asProvider(): RuleProvider = RuleProvider { this }
     }
 }

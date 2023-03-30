@@ -2,10 +2,10 @@ package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ktlint.unwrapForLint
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactory
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine
 import org.slf4j.Logger
@@ -19,14 +19,14 @@ import java.nio.file.Path
  */
 class DiktatProcessCommand private constructor(
     val file: Path,
-    diktatRuleSetFactory: DiktatRuleSetFactory,
+    diktatRuleSetFactory: DiktatRuleSetProvider,
     private val callback: DiktatCallback,
 ) {
     private val isDebug: Boolean by lazy {
         LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).isDebugEnabled
     }
     private val ktLintRuleEngine: KtLintRuleEngine = KtLintRuleEngine(
-        ruleProviders = DiktatRuleSetProviderV2(diktatRuleSetFactory).getRuleProviders(),
+        ruleProviders = diktatRuleSetFactory().toKtLint(),
     )
     private val code: Code = Code.CodeFile(
         file = file.toFile()
@@ -56,7 +56,7 @@ class DiktatProcessCommand private constructor(
      */
     data class Builder(
         var file: Path? = null,
-        var diktatRuleSetFactory: DiktatRuleSetFactory? = null,
+        var diktatRuleSetFactory: DiktatRuleSetProvider? = null,
         var config: String? = null,
         var callback: DiktatCallback? = null,
     ) {
@@ -70,7 +70,7 @@ class DiktatProcessCommand private constructor(
          * @param diktatRuleSetFactory
          * @return updated builder
          */
-        fun diktatRuleSetFactory(diktatRuleSetFactory: DiktatRuleSetFactory) = require(config == null) {
+        fun diktatRuleSetFactory(diktatRuleSetFactory: DiktatRuleSetProvider) = require(config == null) {
             "diktatRuleSetFactory is set already via config"
         }.let {
             apply { this.diktatRuleSetFactory = diktatRuleSetFactory }
@@ -99,7 +99,7 @@ class DiktatProcessCommand private constructor(
             requireNotNull(file) {
                 "file is required"
             },
-            diktatRuleSetFactory ?: DiktatRuleSetFactory(config ?: DIKTAT_ANALYSIS_CONF),
+            diktatRuleSetFactory ?: DiktatRuleSetProvider(config ?: DIKTAT_ANALYSIS_CONF),
             requireNotNull(callback) {
                 "callback is required"
             },
