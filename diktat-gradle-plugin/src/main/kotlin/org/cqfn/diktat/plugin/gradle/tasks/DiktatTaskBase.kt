@@ -17,9 +17,9 @@ import org.cqfn.diktat.plugin.gradle.getReporterType
 import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
 
 import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.internal.CurrentBaseline
-import com.pinterest.ktlint.core.internal.containsLintError
-import com.pinterest.ktlint.core.internal.loadBaseline
+import com.pinterest.ktlint.core.api.Baseline
+import com.pinterest.ktlint.core.api.containsLintError
+import com.pinterest.ktlint.core.api.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
@@ -101,9 +101,9 @@ abstract class DiktatTaskBase(
      * A baseline loaded from provided file or empty
      */
     @get:Internal
-    internal val baseline: CurrentBaseline by lazy {
+    internal val baseline: Baseline by lazy {
         extension.baseline?.let { loadBaseline(it) }
-            ?: CurrentBaseline(emptyMap(), false)
+            ?: Baseline(status = Baseline.Status.NOT_FOUND)
     }
 
     /**
@@ -164,9 +164,10 @@ abstract class DiktatTaskBase(
     ) {
         project.logger.debug("Checking file $file")
         reporter.before(file.absolutePath)
-        val baselineErrors = baseline.baselineRules?.get(
-            file.relativeTo(project.projectDir).invariantSeparatorsPath
-        ) ?: emptyList()
+        val baselineErrors = baseline.lintErrorsPerFile.getOrDefault(
+            file.relativeTo(project.projectDir).invariantSeparatorsPath,
+            emptyList()
+        )
         val diktatCallback = DiktatCallback { error, isCorrected ->
             val ktLintError = error.unwrap()
             if (!baselineErrors.containsLintError(ktLintError)) {
@@ -197,7 +198,7 @@ abstract class DiktatTaskBase(
      */
     protected abstract fun doRun(diktatCommand: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit)
 
-    private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
+    private fun resolveReporter(baselineResults: Baseline): Reporter {
         val reporterType = project.getReporterType(extension)
         if (isSarifReporterActive(reporterType)) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
@@ -219,14 +220,11 @@ abstract class DiktatTaskBase(
             }
         }
 
-        return if (baselineResults.baselineGenerationNeeded) {
-            val baseline = requireNotNull(extension.baseline) {
-                "baseline is not provided, but baselineGenerationNeeded is true"
-            }
-            val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
-            return Reporter.from(actualReporter, baselineReporter)
-        } else {
-            actualReporter
-        }
+        return extension.baseline
+            ?.takeUnless { baselineResults.status == Baseline.Status.VALID }
+            ?.let { baseline ->
+                val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
+                Reporter.from(actualReporter, baselineReporter)
+            } ?: actualReporter
     }
 }

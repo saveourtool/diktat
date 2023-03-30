@@ -16,7 +16,13 @@ class KtLintRuleSetProviderV2Wrapper private constructor(
     private val diktatRuleSetFactory: DiktatRuleSetProvider,
 ) : RuleSetProviderV2(
     id = DIKTAT_RULE_SET_ID,
-    about = about,
+    about = About(
+        maintainer = "Diktat",
+        description = "Strict coding standard for Kotlin and a custom set of rules for detecting code smells, code style issues, and bugs",
+        license = "https://github.com/saveourtool/diktat/blob/master/LICENSE",
+        repositoryUrl = "https://github.com/saveourtool/diktat",
+        issueTrackerUrl = "https://github.com/saveourtool/diktat/issues",
+    ),
 ) {
     override fun getRuleProviders(): Set<RuleProvider> = diktatRuleSetFactory().toKtLint()
 
@@ -24,17 +30,6 @@ class KtLintRuleSetProviderV2Wrapper private constructor(
         private fun Sequence<DiktatRule>.wrapRules(): Sequence<Rule> = runningFold(null as KtLintRuleWrapper?) { prevRule, diktatRule ->
             KtLintRuleWrapper(diktatRule, prevRule)
         }.filterNotNull()
-
-        /**
-         * About for diktat ruleset
-         */
-        val about: About = About(
-            maintainer = "Diktat",
-            description = "Strict coding standard for Kotlin and a custom set of rules for detecting code smells, code style issues, and bugs",
-            license = "https://github.com/saveourtool/diktat/blob/master/LICENSE",
-            repositoryUrl = "https://github.com/saveourtool/diktat",
-            issueTrackerUrl = "https://github.com/saveourtool/diktat/issues",
-        )
 
         /**
          * @return __KtLint__'s [RuleSetProviderV2] created from [DiktatRuleSetProvider]

@@ -166,12 +166,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
         }
 
-        return if (baselineResults.status == Baseline.Status.NOT_FOUND) {
-            val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
-            return Reporter.from(actualReporter, baselineReporter)
-        } else {
-            actualReporter
-        }
+        return baseline
+            ?.takeUnless { baselineResults.status == Baseline.Status.VALID }
+            ?.let {
+                val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(it, true)))
+                Reporter.from(actualReporter, baselineReporter)
+            } ?: actualReporter
     }
 
     /**

@@ -135,7 +135,6 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYS
      * of the rules have state or are not thread-safe - a new [DiktatRuleSet] must
      * be created).
      *
-     * TODO: comments for 0.47.x
      * For each invocation of [com.pinterest.ktlint.core.KtLintRuleEngine.lint] and [com.pinterest.ktlint.core.KtLintRuleEngine.format] the [DiktatRuleSet]
      * is retrieved.
      * This results in new instances of each [Rule] for each file being
