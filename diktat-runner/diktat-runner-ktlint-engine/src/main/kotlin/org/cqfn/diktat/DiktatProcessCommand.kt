@@ -2,10 +2,12 @@ package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.unwrapForLint
 import org.cqfn.diktat.ktlint.unwrapForFormat
+import org.cqfn.diktat.ktlint.unwrapForLint
+
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine
+
 import java.nio.file.Path
 
 /**

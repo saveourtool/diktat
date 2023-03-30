@@ -1,9 +1,9 @@
 package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.ktlint.LintErrorReporter
+import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 
@@ -31,6 +31,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
 import java.nio.file.Path
+
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
 import kotlin.io.path.writeText

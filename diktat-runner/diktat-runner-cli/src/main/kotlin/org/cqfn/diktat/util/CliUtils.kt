@@ -1,3 +1,7 @@
+/**
+ * This class contains util methods to operate with kotlinx.cli.*
+ */
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.ktlint.colorNamesForPlainReporter
