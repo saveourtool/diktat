@@ -21,6 +21,7 @@ class DiktatRuleSetProviderV2Spi private constructor(
     /**
      * The no-argument constructor is used by the Java SPI interface.
      */
+    @Suppress("unused")
     constructor() : this(DiktatRuleSetProvider().toKtLint())
 
     override fun getRuleProviders(): Set<RuleProvider> = ruleSetProviderV2.getRuleProviders()
