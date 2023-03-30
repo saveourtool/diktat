@@ -12,7 +12,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.ordered
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
@@ -87,22 +86,24 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
+import com.pinterest.ktlint.core.Rule
 
-import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.RuleSetProvider
 import mu.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 
 import java.io.File
 
 /**
- * [RuleSetProvider] that provides diKTat ruleset.
- * By default, it is expected to have diktat-analysis.yml configuration in the root folder where 'ktlint' is run
- * otherwise it will use default configuration where some rules are disabled
+ * _KtLint_-agnostic factory which creates a [DiktatRuleSet].
  *
- * @param diktatConfigFile - configuration file where all configurations for inspections and rules are stored
+ * By default, it is expected to have `diktat-analysis.yml` configuration in the root folder where 'ktlint' is run
+ * otherwise it will use default configuration where some rules are disabled.
+ *
+ * @param diktatConfigFile the configuration file where all configurations for
+ *   inspections and rules are stored.
  */
-class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleSetProvider {
+@Suppress("ForbiddenComment")
+class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) {
     private val possibleConfigs: Sequence<String?> = sequence {
         yield(resolveDefaultConfig())
         yield(resolveConfigFileFromJarLocation())
@@ -134,18 +135,35 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYS
             ?: emptyList()
     }
 
+    /**
+     * This method is going to be called once for each file (which means if any
+     * of the rules have state or are not thread-safe - a new [DiktatRuleSet] must
+     * be created).
+     *
+     * TODO: comments for 0.47.x
+     * For each invocation of [com.pinterest.ktlint.core.KtLintRuleEngine.lint] and [com.pinterest.ktlint.core.KtLintRuleEngine.format] the [DiktatRuleSet]
+     * is retrieved.
+     * This results in new instances of each [Rule] for each file being
+     * processed.
+     * As of that a [Rule] does not need to be thread-safe.
+     *
+     * However, [com.pinterest.ktlint.core.KtLintRuleEngine.format] requires the [Rule] to be executed twice on a
+     * file in case at least one violation has been autocorrected.
+     * As the same [Rule] instance is reused for the second execution of the
+     * [Rule], the state of the [Rule] is shared.
+     * As of this [Rule] have to clear their internal state.
+     *
+     * @return a default [DiktatRuleSet]
+     */
     @Suppress(
         "LongMethod",
         "TOO_LONG_FUNCTION",
     )
-    @Deprecated(
-        "Marked for removal in KtLint 0.48. See changelog or KDoc for more information.",
-    )
-    override fun get(): RuleSet {
+    operator fun invoke(): DiktatRuleSet {
         // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
-        val rules = listOf(
+        val rules = sequenceOf(
             // comments & documentation
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
@@ -228,12 +246,10 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYS
 
         )
             .map {
-                it.invoke(configRules)
+                it(configRules)
             }
-        return RuleSet(
-            DIKTAT_RULE_SET_ID,
-            rules = rules.toTypedArray()
-        ).ordered()
+            .toList()
+        return DiktatRuleSet(rules)
     }
 
     private fun validate(config: RulesConfig) =
@@ -248,8 +264,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYS
         // for some aggregators of static analyzers we need to provide configuration for cli
         // in this case diktat would take the configuration from the directory where jar file is stored
         val ruleSetProviderPath =
-            DiktatRuleSetProvider::class
-                .java
+            javaClass
                 .protectionDomain
                 .codeSource
                 .location

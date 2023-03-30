@@ -19,15 +19,12 @@ import kotlin.math.min
  * @property actualCode the original file content (may well get modified as
  *   fixes are applied).
  */
-@Suppress(
-    "TOO_MANY_BLANK_LINES",  // Readability
-    "WRONG_INDENTATION")  // False positives, see #1404.
+@Suppress("TOO_MANY_BLANK_LINES")  // Readability
 internal class IndentationTestWarnExtension(
     override val customConfig: Map<String, Any>,
     @Language("kotlin") override val actualCode: String,
     private val expectedErrors: Array<LintError>
-) : LintTestBase(::IndentationRule),
-    IndentationTestExtension {
+) : LintTestBase(::IndentationRule), IndentationTestExtension {
 
     override fun beforeTestExecution(context: ExtensionContext) {
         val actualErrors = lintResult(
