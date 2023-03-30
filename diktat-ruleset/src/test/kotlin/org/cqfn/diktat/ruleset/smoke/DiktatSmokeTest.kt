@@ -2,8 +2,9 @@ package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -43,12 +44,19 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceFilePath = RESOURCE_FILE_PATH,
         function = { expectedText, testFilePath ->
-            format(
-                ruleSetProviderRef = { DiktatRuleSetProvider(config.absolutePathString()).toKtLint() },
-                text = expectedText,
-                fileName = testFilePath,
-                cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
+            val ruleProviders = DiktatRuleSetProvider(config.absolutePathString()).invoke().toKtLint()
+            val ktLintRuleEngine = KtLintRuleEngine(
+                ruleProviders = ruleProviders
             )
+            val code: Code = Code.CodeSnippet(
+                content = expectedText,
+                script = testFilePath.removeSuffix("_copy").endsWith("kts")
+            )
+            ktLintRuleEngine.format(code) { error: LintError, corrected: Boolean ->
+                if (!corrected) {
+                    unfixedLintErrors.add(error)
+                }
+            }
         },
     )
 }

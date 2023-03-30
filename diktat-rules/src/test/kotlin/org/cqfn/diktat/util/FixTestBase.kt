@@ -1,12 +1,16 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.FormatCallback
 import org.cqfn.diktat.ruleset.utils.defaultCallback
-import org.cqfn.diktat.ruleset.utils.format
+import org.cqfn.diktat.util.format
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
+import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
@@ -30,12 +34,20 @@ open class FixTestBase(
         TestComparatorUnit(
             resourceFilePath = resourceFilePath,
             function = { expectedText, testFilePath ->
-                format(
-                    ruleSetProviderRef = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
-                    text = expectedText,
-                    fileName = testFilePath,
-                    cb = cb,
+                val ruleProviders = DiktatRuleSetProviderTest.diktatRuleSetForTest(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList)
+                    .toKtLint()
+                val ktLintRuleEngine = KtLintRuleEngine(
+                    ruleProviders = ruleProviders
                 )
+                val code: Code = Code.CodeSnippet(
+                    content = expectedText,
+                    script = testFilePath.removeSuffix("_copy").endsWith("kts")
+                )
+                ktLintRuleEngine.format(code) { error: LintError, corrected: Boolean ->
+                    if (!corrected) {
+                        cb(error, false)
+                    }
+                }
             },
         )
     }

@@ -5,10 +5,14 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.utils.FormatCallback
+import org.cqfn.diktat.ruleset.utils.defaultCallback
 import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleProvider
+import com.pinterest.ktlint.core.RuleSetProviderV2
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.intellij.lang.annotations.Language
@@ -131,4 +135,33 @@ internal fun applyToCode(@Language("kotlin") code: String,
     assertThat(counter.get())
         .`as`("Number of expected asserts")
         .isEqualTo(expectedAsserts)
+}
+
+/**
+ * @param ruleSetProviderRef
+ * @param text
+ * @param fileName
+ * @param cb callback to be called on unhandled [LintError]s
+ * @return formatted code
+ */
+@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
+fun format(
+    ruleSetProviderRef: () -> RuleSetProviderV2,
+    @Language("kotlin") text: String,
+    fileName: String,
+    cb: FormatCallback = defaultCallback
+): String {
+    val ruleProviders = ruleSetProviderRef().getRuleProviders()
+    val ktLintRuleEngine = KtLintRuleEngine(
+        ruleProviders = ruleProviders
+    )
+    val code: Code = Code.CodeSnippet(
+        content = text,
+        script = fileName.removeSuffix("_copy").endsWith("kts")
+    )
+    return ktLintRuleEngine.format(code) { error: LintError, corrected: Boolean ->
+        if (!corrected) {
+            cb(error, false)
+        }
+    }
 }

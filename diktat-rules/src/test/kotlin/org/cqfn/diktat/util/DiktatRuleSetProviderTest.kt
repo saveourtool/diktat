@@ -1,10 +1,5 @@
-/**
- * Stub for diktat ruleset provide to be used in tests and other related utilities
- */
-
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
@@ -15,8 +10,6 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleProvider
-import com.pinterest.ktlint.core.RuleSetProviderV2
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -27,22 +20,6 @@ import kotlin.io.path.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.walk
-
-/**
- * Simple class for emulating [RuleSetProviderV2] to inject `.yml` rule configuration and mock this part of code.
- */
-@Suppress("serial")
-class DiktatRuleSetProvider4Test(
-    private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
-    rulesConfigList: List<RulesConfig>?,
-) : RuleSetProviderV2(
-    id = DIKTAT_RULE_SET_ID,
-    about = NO_ABOUT,
-) {
-    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
-
-    override fun getRuleProviders(): Set<RuleProvider> = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList()))).toKtLint()
-}
 
 class DiktatRuleSetProviderTest {
     @OptIn(ExperimentalPathApi::class)
@@ -58,8 +35,8 @@ class DiktatRuleSetProviderTest {
             .filterNot { it in ignoredFileNames }
             .toList()
         val ruleNames = DiktatRuleSetProvider()
+            .invoke()
             .toKtLint()
-            .getRuleProviders()
             .map { it.createNewRuleInstance() }
             .asSequence()
             .onEachIndexed { index, rule ->
@@ -88,5 +65,21 @@ class DiktatRuleSetProviderTest {
         private val ignoredRuleNames = listOf(
             "DummyWarning",
         )
+
+        /**
+         * Simple method to emulate [DiktatRuleSet] to inject `.yml` rule configuration and mock this part of code.
+         */
+        internal fun diktatRuleSetForTest(
+            ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
+            rulesConfigList: List<RulesConfig>?,
+        ): DiktatRuleSet = run {
+            rulesConfigList ?: RulesConfigReader(Companion::class.java.classLoader)
+                .readResource("diktat-analysis.yml")
+                .orEmpty()
+        }
+            .let(ruleSupplier)
+            .let {
+                DiktatRuleSet(listOf(it))
+            }
     }
 }

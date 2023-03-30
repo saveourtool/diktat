@@ -1,6 +1,7 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine
@@ -77,8 +78,8 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val lintErrors: MutableList<LintError> = mutableListOf()
 
         KtLintRuleEngine(
-            ruleProviders = DiktatRuleSetProvider4Test(ruleSupplier,
-                rulesConfigList ?: this.rulesConfigList).getRuleProviders(),
+            ruleProviders = DiktatRuleSetProviderTest.diktatRuleSetForTest(ruleSupplier, rulesConfigList ?: this.rulesConfigList)
+                .toKtLint(),
         ).lint(
             code = Code.CodeSnippet(
                 content = code,
