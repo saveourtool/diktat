@@ -141,36 +141,40 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
             // this logic splits long expressions into multiple lines
-            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handDotQualifiedAndSafeAccessExpression(node)
+            DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION -> handleDotQualifiedExpressions(node)
             else -> {
             }
         }
     }
 
     @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION", "MagicNumber")
-    private fun handDotQualifiedAndSafeAccessExpression(node: ASTNode) {
+    private fun handleDotQualifiedExpressions(node: ASTNode) {
         val listParentTypesNoFix = listOf(PACKAGE_DIRECTIVE, IMPORT_DIRECTIVE, VALUE_PARAMETER_LIST,
             VALUE_ARGUMENT_LIST, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
-        if (isNotFindParentNodeWithSpecificManyType(node, listParentTypesNoFix)) {
-            val listDot = node.findAllNodesWithCondition(
+        if (isNotFoundParentNodeOfTypes(node, listParentTypesNoFix)) {
+            val listOfDotQualifiedExpressions = node.findAllNodesWithCondition(
                 withSelf = true,
                 excludeChildrenCondition = { !isDotQuaOrSafeAccessOrPostfixExpression(it) }
             ) {
                 isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
             }.reversed()
-            if (listDot.size > 3) {
-                val without = listDot.filterIndexed { index, it ->
+            if (listOfDotQualifiedExpressions.size > configuration.maxCallsInOneLine) {
+                // corner case: fully-qualified expression names
+                val expressionsWithoutCornerCases = listOfDotQualifiedExpressions.filterIndexed { index, it ->
                     val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
-                    val firstElem = it.firstChildNode
-                    val isTextContainsParenthesized = isTextContainsFunctionCall(firstElem)
-                    val isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
-                            (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
-                    isTextContainsParenthesized && (index > 0) && isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine
+                    val isTextContainsParenthesized = isTextContainsFunctionCall(it.firstChildNode)
+
+                    isTextContainsParenthesized && (index > 0) &&
+                            nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE &&
+                            nodeBeforeDotOrSafeAccess?.textContains('\n') != true
                 }
-                if (without.isNotEmpty()) {
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "wrong split long `dot qualified expression` or `safe access expression`",
-                        node.startOffset, node) {
-                        fixDotQualifiedExpression(without)
+                if (expressionsWithoutCornerCases.isNotEmpty()) {
+                    WRONG_NEWLINES.warnAndFix(
+                        configRules, emitWarn, isFixMode,
+                        "Dot qualified expression chain (more than ${configuration.maxCallsInOneLine}) should be split with newlines",
+                        node.startOffset, node
+                    ) {
+                        fixDotQualifiedExpression(expressionsWithoutCornerCases)
                     }
                 }
             }
@@ -180,8 +184,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Return false, if you find parent with types in list else return true
      */
-    private fun isNotFindParentNodeWithSpecificManyType(node: ASTNode, list: List<IElementType>): Boolean {
-        list.forEach { elem ->
+    private fun isNotFoundParentNodeOfTypes(node: ASTNode, types: List<IElementType>): Boolean {
+        types.forEach { elem ->
             node.findParentNodeWithSpecificType(elem)?.let {
                 return false
             }
@@ -228,7 +232,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         // at the beginning of the line.
         if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                "should break a line after and not before ${node.text}", node.startOffset, node) {
+                "need to break a line after and not before ${node.text}", node.startOffset, node) {
                 node.run {
                     treeParent.removeChild(treePrev)
                     if (!isFollowedByNewline()) {
@@ -263,9 +267,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         if (isIncorrect || node.isElvisCorrect()) {
             val freeText = if (node.isInvalidCallsChain() || node.isElvisCorrect()) {
-                "should follow functional style at ${node.text}"
+                "need to follow functional style at ${node.text}"
             } else {
-                "should break a line before and not after ${node.text}"
+                "need to break a line before and not after ${node.text}"
             }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.selfOrOperationReferenceParent().run {
