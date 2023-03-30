@@ -16,6 +16,7 @@ dependencies {
 
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(projects.diktatRules)
+    implementation(projects.diktatRunner.diktatRunnerKtlintEngine)
     implementation(libs.ktlint.core)
     implementation(libs.ktlint.reporter.plain)
     implementation(libs.ktlint.reporter.sarif)

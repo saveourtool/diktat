@@ -13,6 +13,7 @@ import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.internal.logging.text.StyledTextOutput
@@ -68,8 +69,11 @@ fun Project.configureSigning() {
     }
 }
 
+/**
+ * Updates pom.xml for publication
+ */
 @Suppress("TOO_LONG_FUNCTION")
-internal fun Project.configurePublications() {
+fun Project.configurePublications() {
     val dokkaJar: Jar = tasks.create<Jar>("dokkaJar") {
         group = "documentation"
         archiveClassifier.set("javadoc")
@@ -86,36 +90,45 @@ internal fun Project.configurePublications() {
              */
             this.artifact(dokkaJar)
             this.pom {
-                name.set(project.name)
-                description.set(project.description ?: project.name)
-                url.set("https://www.cqfn.org/diKTat/")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("http://www.opensource.org/licenses/mit-license.php")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("akuleshov7")
-                        name.set("Andrey Kuleshov")
-                        email.set("andrewkuleshov7@gmail.com")
-                        url.set("https://github.com/akuleshov7")
-                    }
-                    developer {
-                        id.set("petertrr")
-                        name.set("Peter Trifanov")
-                        email.set("peter.trifanov@gmail.com")
-                        url.set("https://github.com/petertrr")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/saveourtool/diktat.git")
-                    developerConnection.set("scm:git:ssh://github.com:saveourtool/diktat.git")
-                    url.set("http://github.com/saveourtool/diktat/tree/master")
-                }
+                configurePom(project)
             }
         }
+    }
+}
+
+/**
+ * Configures _pom.xml_
+ *
+ * @param project
+ */
+fun MavenPom.configurePom(project: Project) {
+    name.set(project.name)
+    description.set(project.description ?: project.name)
+    url.set("https://www.cqfn.org/diKTat/")
+    licenses {
+        license {
+            name.set("MIT License")
+            url.set("http://www.opensource.org/licenses/mit-license.php")
+        }
+    }
+    developers {
+        developer {
+            id.set("akuleshov7")
+            name.set("Andrey Kuleshov")
+            email.set("andrewkuleshov7@gmail.com")
+            url.set("https://github.com/akuleshov7")
+        }
+        developer {
+            id.set("petertrr")
+            name.set("Peter Trifanov")
+            email.set("peter.trifanov@gmail.com")
+            url.set("https://github.com/petertrr")
+        }
+    }
+    scm {
+        connection.set("scm:git:git://github.com/saveourtool/diktat.git")
+        developerConnection.set("scm:git:ssh://github.com:saveourtool/diktat.git")
+        url.set("http://github.com/saveourtool/diktat/tree/master")
     }
 }
 

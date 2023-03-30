@@ -27,8 +27,11 @@ diktat {
 }
 
 tasks.withType<DiktatJavaExecTaskBase>().configureEach {
-    javaLauncher.set(project.extensions.getByType<JavaToolchainService>().launcherFor {
-        // a temporary workaround -- diktat-gradle-plugin doesn't detect java version of `javaLauncher`
-        languageVersion.set(JavaLanguageVersion.of(11))
-    })
+    val project = this@configureEach.project
+    if (this is JavaExec) {
+        javaLauncher.set(project.extensions.getByType<JavaToolchainService>().launcherFor {
+            // a temporary workaround -- diktat-gradle-plugin doesn't detect java version of `javaLauncher`
+            languageVersion.set(JavaLanguageVersion.of(11))
+        })
+    }
 }

@@ -1,12 +1,10 @@
 package org.cqfn.diktat.plugin.gradle
 
+import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask.Companion.registerDiktatCheckTask
+import org.cqfn.diktat.plugin.gradle.tasks.DiktatFixTask.Companion.registerDiktatFixTask
 import org.cqfn.diktat.plugin.gradle.tasks.configureMergeReportsTask
-import generated.DIKTAT_VERSION
-import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ExternalModuleDependency
-import org.gradle.api.attributes.Bundling
 import org.gradle.api.tasks.util.PatternSet
 
 /**
@@ -28,38 +26,8 @@ class DiktatGradlePlugin : Plugin<Project> {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
 
-        // Configuration that will be used as classpath for JavaExec task.
-        val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
-            configuration.isVisible = false
-            configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
-                /*
-                 * Prevent the discovery of standard rules by excluding them as
-                 * dependencies.
-                 */
-                val ktlintRuleSets = sequenceOf(
-                    "standard",
-                    "experimental",
-                    "test",
-                    "template"
-                )
-                ktlintRuleSets.forEach { ktlintRuleSet ->
-                    exclude(
-                        mutableMapOf(
-                            "group" to "com.pinterest.ktlint",
-                            "module" to "ktlint-ruleset-$ktlintRuleSet"
-                        )
-                    )
-                }
-
-                attributes {
-                    it.attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling::class.java, Bundling.EXTERNAL))
-                }
-            }))
-            configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))
-        }
-
-        project.registerDiktatCheckTask(diktatExtension, diktatConfiguration, patternSet)
-        project.registerDiktatFixTask(diktatExtension, diktatConfiguration, patternSet)
+        project.registerDiktatCheckTask(diktatExtension, patternSet)
+        project.registerDiktatFixTask(diktatExtension, patternSet)
         project.configureMergeReportsTask(diktatExtension)
     }
 
