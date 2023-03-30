@@ -2,6 +2,7 @@ package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatLogLevel
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.unwrap
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigOverride
@@ -46,7 +47,7 @@ class DiktatProcessCommand private constructor(
     private fun ktLintParams(): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
         fileName = file.absolutePathString(),
         text = fileContent,
-        ruleSets = setOf(processor.diktatRuleSetProvider.get()),
+        ruleSets = setOf(processor.diktatRuleSetProvider.toKtLint().get()),
         userData = emptyMap(),
         cb = callback.unwrap(),
         script = isScript,
