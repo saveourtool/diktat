@@ -1,6 +1,7 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.FormatCallback
 import org.cqfn.diktat.ruleset.utils.defaultCallback
 import org.cqfn.diktat.ruleset.utils.format
@@ -18,7 +19,7 @@ import kotlin.io.path.div
  */
 open class FixTestBase(
     resourceFilePath: String,
-    ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+    ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
     defaultRulesConfigList: List<RulesConfig>? = null,
     cb: FormatCallback = defaultCallback,
 ) {

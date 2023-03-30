@@ -1,6 +1,7 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
@@ -13,7 +14,7 @@ import org.intellij.lang.annotations.Language
  * @property ruleSupplier mapping of list of [RulesConfig] into a [Rule]
  * @property rulesConfigList optional custom rules config
  */
-open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
                         private val rulesConfigList: List<RulesConfig>? = null) {
     /**
      * Perform linting of [code], collect errors and compare with [expectedLintErrors]

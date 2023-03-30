@@ -82,6 +82,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
+import com.pinterest.ktlint.core.Rule
 
 import mu.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
@@ -89,13 +90,15 @@ import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import java.io.File
 
 /**
+ * _KtLint_-agnostic factory which creates a [DiktatRuleSet].
+ *
  * By default, it is expected to have `diktat-analysis.yml` configuration in the root folder where 'ktlint' is run
  * otherwise it will use default configuration where some rules are disabled.
  *
  * @param diktatConfigFile the configuration file where all configurations for
  *   inspections and rules are stored.
  */
-internal class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : DiktatRuleSetFactory {
+class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) {
     private val possibleConfigs: Sequence<String?> = sequence {
         yield(resolveDefaultConfig())
         yield(resolveConfigFileFromJarLocation())
@@ -127,11 +130,31 @@ internal class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKT
             ?: emptyList()
     }
 
+    /**
+     * This method is going to be called once for each file (which means if any
+     * of the rules have state or are not thread-safe - a new [DiktatRuleSet] must
+     * be created).
+     *
+     * TODO: comments for 0.47.x
+     * For each invocation of [com.pinterest.ktlint.core.KtLintRuleEngine.lint] and [com.pinterest.ktlint.core.KtLintRuleEngine.format] the [DiktatRuleSet]
+     * is retrieved.
+     * This results in new instances of each [Rule] for each file being
+     * processed.
+     * As of that a [Rule] does not need to be thread-safe.
+     *
+     * However, [com.pinterest.ktlint.core.KtLintRuleEngine.format] requires the [Rule] to be executed twice on a
+     * file in case at least one violation has been autocorrected.
+     * As the same [Rule] instance is reused for the second execution of the
+     * [Rule], the state of the [Rule] is shared.
+     * As of this [Rule] have to clear their internal state.
+     *
+     * @return a default [DiktatRuleSet]
+     */
     @Suppress(
         "LongMethod",
         "TOO_LONG_FUNCTION",
     )
-    override fun invoke(): DiktatRuleSet {
+    operator fun invoke(): DiktatRuleSet {
         // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
@@ -221,10 +244,7 @@ internal class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKT
                 it(configRules)
             }
             .toList()
-        return OrderedRuleSet(
-            DIKTAT_RULE_SET_ID,
-            rules
-        )
+        return DiktatRuleSet(rules)
     }
 
     private fun validate(config: RulesConfig) =

@@ -1,14 +1,10 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.RuleProvider
-import com.pinterest.ktlint.core.RuleSetProviderV2
-
 /**
- * A group of [RuleProvider]'s discoverable through [RuleSetProviderV2].
+ * A group of [DiktatRule]'s as a single set.
+ *
+ * @property rules diktat rules.
  */
-interface DiktatRuleSet {
-    /**
-     * The rule providers.
-     */
-    val ruleProviders: Set<RuleProvider>
-}
+data class DiktatRuleSet(
+    val rules: List<DiktatRule>
+)

@@ -2,11 +2,10 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
@@ -23,18 +22,14 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
  * In .kts files allow use only property declaration, function, classes, and code inside `run` block
  * In gradle.kts files allow to call binary expression with EQ, expression and dot qualified expression in addition to everything used in .kts files
  */
-class RunInScript(private val configRules: List<RulesConfig>) : Rule(NAME_ID.qualifiedWithRuleSetId()) {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun beforeVisitChildNodes(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+class RunInScript(
+    configRules: List<RulesConfig>,
+) : DiktatRule(
+    id = NAME_ID.qualifiedWithRuleSetId(),
+    configRules = configRules,
+    inspections = listOf(RUN_IN_SCRIPT),
+) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == SCRIPT_INITIALIZER && node.getFilePath().isKotlinScript()) {
             if (node.getFilePath().isGradleScript()) {
                 checkGradleNode(node)

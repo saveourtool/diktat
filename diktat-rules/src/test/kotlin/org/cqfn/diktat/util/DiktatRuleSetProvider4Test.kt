@@ -4,11 +4,16 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProviderV2
 import org.cqfn.diktat.ruleset.rules.OrderedRuleSet.Companion.delegatee
+import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
+import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
 import com.pinterest.ktlint.core.Rule
@@ -29,17 +34,14 @@ import kotlin.io.path.walk
  * Simple class for emulating [RuleSetProviderV2] to inject `.yml` rule configuration and mock this part of code.
  */
 @Suppress("serial")
-class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProviderV2(
     id = DIKTAT_RULE_SET_ID,
     about = NO_ABOUT,
 ) {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
-    override fun getRuleProviders(): Set<RuleProvider> =
-        setOf(RuleProvider {
-            ruleSupplier(rulesConfigList ?: emptyList())
-        })
+    override fun getRuleProviders(): Set<RuleProvider> = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList()))).toKtLint()
 }
 
 class DiktatRuleSetProviderTest {
@@ -55,9 +57,10 @@ class DiktatRuleSetProviderTest {
             .map(Path::nameWithoutExtension)
             .filterNot { it in ignoredFileNames }
             .toList()
-        val ruleNames = DiktatRuleSetProviderV2().getRuleProviders()
+        val ruleNames = DiktatRuleSetProvider()
+            .toKtLint()
+            .get()
             .asSequence()
-            .map(RuleProvider::createNewRuleInstance)
             .onEachIndexed { index, rule ->
                 if (index != 0) {
                     Assertions.assertTrue(
