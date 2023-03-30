@@ -47,28 +47,28 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
  * @param diktatExtension extension of type [DiktatExtension]
  * @return CLI flag as string
  */
-fun Project.createReporterFlag(diktatExtension: DiktatExtension): String {
+fun Project.getReporterType(diktatExtension: DiktatExtension): String {
     val name = diktatExtension.reporter.trim()
     val validReporters = listOf("sarif", "plain", "json", "html")
-    val reporterFlag = when {
+    val reporterType = when {
         diktatExtension.githubActions -> {
             if (diktatExtension.reporter.isNotEmpty()) {
                 logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
             }
-            "--reporter=sarif"
+            "sarif"
         }
         name.isEmpty() -> {
             logger.info("Reporter name was not set. Using 'plain' reporter")
-            "--reporter=plain"
+            "plain"
         }
         name !in validReporters -> {
             logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
-            "--reporter=plain"
+            "plain"
         }
-        else -> "--reporter=$name"
+        else -> name
     }
 
-    return reporterFlag
+    return reporterType
 }
 
 /**

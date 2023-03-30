@@ -1,3 +1,4 @@
+import org.cqfn.diktat.buildutils.configurePom
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
@@ -50,13 +51,19 @@ tasks {
     }
 }
 
-// it creates a publication for shadowJar
 publishing {
     publications {
+        // it creates a publication for shadowJar
         create<MavenPublication>("shadow") {
             // https://github.com/johnrengelman/shadow/issues/417#issuecomment-830668442
             project.extensions.configure<ShadowExtension> {
                 component(this@create)
+            }
+            this.artifactId = "diktat"
+            this.pom {
+                configurePom(project)
+                // need to override name
+                name.set("diktat")
             }
         }
     }

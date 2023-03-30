@@ -98,7 +98,7 @@ import java.io.File
  * @param diktatConfigFile the configuration file where all configurations for
  *   inspections and rules are stored.
  */
-class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) {
+class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) {
     private val possibleConfigs: Sequence<String?> = sequence {
         yield(resolveDefaultConfig())
         yield(resolveConfigFileFromJarLocation())
@@ -109,7 +109,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
             .firstOrNull { it != null && File(it).exists() }
-        diktatConfigFile = configPath
+        val resultedDiktatConfigFile = configPath
             ?: run {
                 val possibleConfigsList = possibleConfigs.toList()
                 log.warn(
@@ -125,7 +125,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             }
 
         RulesConfigReader(javaClass.classLoader)
-            .readResource(diktatConfigFile)
+            .readResource(resultedDiktatConfigFile)
             ?.onEach(::validate)
             ?: emptyList()
     }
