@@ -2,9 +2,7 @@ package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.ktlint.unwrap
-import org.cqfn.diktat.DiktatProcessCommand
 import org.cqfn.diktat.DiktatProcessor
-import org.cqfn.diktat.api.DiktatLogLevel
 import org.cqfn.diktat.ktlint.LintErrorReporter
 import org.cqfn.diktat.ktlint.unwrap
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
@@ -16,10 +14,6 @@ import com.pinterest.ktlint.core.api.KtLintParseException
 import com.pinterest.ktlint.core.api.KtLintRuleException
 import com.pinterest.ktlint.core.api.containsLintError
 import com.pinterest.ktlint.core.api.loadBaseline
-import com.pinterest.ktlint.core.RuleExecutionException
-import com.pinterest.ktlint.core.internal.CurrentBaseline
-import com.pinterest.ktlint.core.internal.containsLintError
-import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
@@ -123,9 +117,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val diktatProcessor by lazy {
             DiktatProcessor.builder()
                 .diktatRuleSetProvider(configFile)
-                .logLevel(
-                    if (debug) DiktatLogLevel.DEBUG else DiktatLogLevel.INFO
-                )
                 .build()
         }
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }

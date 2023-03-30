@@ -20,8 +20,8 @@ val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lint
     log.warn("Received linting error: $lintError")
 }
 
-typealias LintCallback = (LintError) -> Unit
 typealias FormatCallback = (LintError, Boolean) -> Unit
+typealias LintCallback = (LintError) -> Unit
 
 /**
  * @param ruleSetProviderRef

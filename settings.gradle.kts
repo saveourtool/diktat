@@ -40,6 +40,7 @@ include("diktat-ruleset")
 include("diktat-test-framework")
 include("diktat-dev-ksp")
 include("diktat-runner:diktat-runner-api")
+include("diktat-runner:diktat-runner-cli")
 include("diktat-runner:diktat-runner-ktlint-engine")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

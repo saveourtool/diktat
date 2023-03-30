@@ -9,7 +9,6 @@ import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ktlint.unwrap
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 import org.cqfn.diktat.util.tryToPathIfExists
 import org.cqfn.diktat.util.walkByGlob
@@ -34,7 +33,9 @@ fun main(args: Array<String>) {
     log.debug {
         "Loading diktatRuleSet using config ${properties.config}"
     }
-    val diktatRuleSetFactory = DiktatRuleSetProvider(properties.config)
+    val diktatProcessor = DiktatProcessor.builder()
+        .diktatRuleSetProvider(properties.config)
+        .build()
     val reporter = properties.reporter()
     reporter.beforeAll()
 
@@ -56,9 +57,9 @@ fun main(args: Array<String>) {
                 "Start processing the file: $file"
             }
             val result: MutableList<DiktatErrorWithCorrectionInfo> = mutableListOf()
-            DiktatProcessCommand.Builder()
+            DiktatProcessCommand.builder()
+                .processor(diktatProcessor)
                 .file(file)
-                .diktatRuleSetFactory(diktatRuleSetFactory)
                 .callback { error, isCorrected ->
                     result.add(error to isCorrected)
                 }

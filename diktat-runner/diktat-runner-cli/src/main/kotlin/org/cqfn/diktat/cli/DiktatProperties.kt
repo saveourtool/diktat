@@ -4,8 +4,8 @@ import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.ktlint.buildReporter
-import org.cqfn.diktat.ktlint.colorName
-import org.cqfn.diktat.ktlint.reporterProviderId
+import org.cqfn.diktat.util.colorName
+import org.cqfn.diktat.util.reporterProviderId
 import com.pinterest.ktlint.core.Reporter
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext

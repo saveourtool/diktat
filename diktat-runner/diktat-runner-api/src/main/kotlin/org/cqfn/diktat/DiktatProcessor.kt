@@ -17,7 +17,7 @@ class DiktatProcessor private constructor(
     val logLevel: DiktatLogLevel,
 ) {
     /**
-     * Builder for [DiktatProcessCommand]
+     * Builder for [DiktatProcessor]
      *
      * @property diktatRuleSetProvider
      * @property logLevel
