@@ -33,7 +33,6 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     override fun invoke(
         id: String,
         outputStream: OutputStream,
-        extraProperties: Map<String, String>,
         sourceRootDir: Path,
     ): DiktatReporter {
         val reporterProvider = reporterProviders[id] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
@@ -41,6 +40,6 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
             System.setProperty("user.home", sourceRootDir.pathString)
         }
         val printStream = (outputStream as? PrintStream) ?: PrintStream(outputStream)
-        return reporterProvider.get(printStream, extraProperties).wrap(sourceRootDir)
+        return reporterProvider.get(printStream, emptyMap()).wrap(sourceRootDir)
     }
 }
