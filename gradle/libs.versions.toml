@@ -29,7 +29,7 @@ jupiter-itf-extension = "0.12.0"
 mockito-all = "1.10.19"
 
 # executable jar
-log4j = "2.20.0"
+log4j2 = "2.20.0"
 kotlinx-cli = "0.3.5"
 
 # copied from save-cloud

@@ -5,6 +5,8 @@
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatCallback
+import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
+import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
 import org.cqfn.diktat.ruleset.utils.LintErrorCallback
 
 /**

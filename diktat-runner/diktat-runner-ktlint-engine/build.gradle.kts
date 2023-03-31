@@ -10,4 +10,10 @@ dependencies {
     api(projects.diktatRunner.diktatRunnerApi)
     implementation(projects.diktatRules)
     implementation(libs.ktlint.core)
+    implementation(libs.ktlint.reporter.baseline)
+    implementation(libs.ktlint.reporter.checkstyle)
+    implementation(libs.ktlint.reporter.html)
+    implementation(libs.ktlint.reporter.json)
+    implementation(libs.ktlint.reporter.plain)
+    implementation(libs.ktlint.reporter.sarif)
 }

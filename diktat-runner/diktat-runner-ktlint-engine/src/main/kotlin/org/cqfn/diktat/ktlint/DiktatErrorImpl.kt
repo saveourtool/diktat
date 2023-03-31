@@ -8,7 +8,7 @@ import com.pinterest.ktlint.core.LintError
  *
  * @property lintError
  */
-data class LintErrorWrapper(
+data class DiktatErrorImpl(
     val lintError: LintError
 ) : DiktatError {
     override fun getLine(): Int = lintError.line
@@ -20,15 +20,18 @@ data class LintErrorWrapper(
     override fun getDetail(): String = lintError.detail
 
     override fun canBeAutoCorrected(): Boolean = lintError.canBeAutoCorrected
+
+    companion object {
+        /**
+         * @return [DiktatError] from KtLint [LintError]
+         */
+        fun LintError.wrap(): DiktatError = DiktatErrorImpl(this)
+
+        /**
+         * @return KtLint [LintError] from [DiktatError] or exception
+         */
+        fun DiktatError.unwrap(): LintError = (this as? DiktatErrorImpl)?.lintError
+            ?: error("Unsupported wrapper of ${DiktatError::class.java.simpleName}: ${this::class.java.canonicalName}")
+    }
 }
 
-/**
- * @return [DiktatError] from KtLint [LintError]
- */
-fun LintError.wrap(): DiktatError = LintErrorWrapper(this)
-
-/**
- * @return KtLint [LintError] from [DiktatError] or exception
- */
-fun DiktatError.unwrap(): LintError = (this as? LintErrorWrapper)?.lintError
-    ?: error("Unsupported wrapper of ${DiktatError::class.java.simpleName}: ${this::class.java.canonicalName}")

@@ -1,68 +1,72 @@
 package org.cqfn.diktat
 
-import org.cqfn.diktat.api.DiktatLogLevel
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.api.DiktatCallback
+import org.cqfn.diktat.api.DiktatProcessorListener
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 
 /**
  * Processor to run `diktat`
- *
- * @property diktatRuleSetProvider
- * @property logLevel
  */
-@Suppress("USE_DATA_CLASS")  // to hide `copy` method
-class DiktatProcessor private constructor(
-    val diktatRuleSetProvider: DiktatRuleSetProvider,
-    val logLevel: DiktatLogLevel,
-) {
+abstract class DiktatProcessor {
     /**
-     * Builder for [DiktatProcessCommand]
+     * Run `diktat fix` on provided [file] using [callback] for detected errors and returned formatted file content.
      *
-     * @property diktatRuleSetProvider
-     * @property logLevel
+     * @param file
+     * @param callback
+     * @return result of `diktat fix`
      */
-    class Builder internal constructor(
-        private var diktatRuleSetProvider: DiktatRuleSetProvider? = null,
-        private var logLevel: DiktatLogLevel = DiktatLogLevel.INFO,
+    abstract fun fix(file: Path, callback: DiktatCallback): String
+
+    /**
+     * Run `diktat fix` for all [files] using [listener] during of processing and [formattedCodeHandler] to handle result of `diktat fix`.
+     *
+     * @param listener a listener which is called during processing.
+     * @param files
+     * @param formattedCodeHandler
+     */
+    fun fixAll(
+        listener: DiktatProcessorListener = DiktatProcessorListener.empty,
+        files: Sequence<Path>,
+        formattedCodeHandler: (Path, String) -> Unit,
     ) {
-        /**
-         * @param diktatRuleSetProvider
-         * @return updated builder
-         */
-        fun diktatRuleSetProvider(diktatRuleSetProvider: DiktatRuleSetProvider) = apply { this.diktatRuleSetProvider = diktatRuleSetProvider }
-
-        /**
-         * @param configFile a config file to load [DiktatRuleSetProvider]
-         * @return updated builder
-         */
-        fun diktatRuleSetProvider(configFile: String) = diktatRuleSetProvider(DiktatRuleSetProvider(configFile))
-
-        /**
-         * @param configFile a config file to load [DiktatRuleSetProvider]
-         * @return updated builder
-         */
-        fun diktatRuleSetProvider(configFile: Path) = diktatRuleSetProvider(configFile.absolutePathString())
-
-        /**
-         * @param logLevel
-         * @return updated builder
-         */
-        fun logLevel(logLevel: DiktatLogLevel) = apply { this.logLevel = logLevel }
-
-        /**
-         * @return built [DiktatProcessCommand]
-         */
-        fun build(): DiktatProcessor = DiktatProcessor(
-            diktatRuleSetProvider = diktatRuleSetProvider ?: DiktatRuleSetProvider(),
-            logLevel = logLevel,
-        )
+        listener.beforeAll()
+        files.forEach { file ->
+            listener.before(file)
+            val formattedCode = fix(file) { error, isCorrected ->
+                listener.onError(file, error, isCorrected)
+            }
+            formattedCodeHandler(file, formattedCode)
+            listener.after(file)
+        }
+        listener.afterAll()
     }
 
-    companion object {
-        /**
-         * @return a builder for [DiktatProcessor]
-         */
-        fun builder(): Builder = Builder()
+    /**
+     * Run `diktat check` on provided [file] using [callback] for detected errors.
+     *
+     * @param file
+     * @param callback
+     */
+    abstract fun check(file: Path, callback: DiktatCallback)
+
+    /**
+     * Run `diktat check` for all [files] using [listener] during of processing.
+     *
+     * @param listener a listener which is called during processing.
+     * @param files
+     */
+    fun checkAll(
+        listener: DiktatProcessorListener = DiktatProcessorListener.empty,
+        files: Sequence<Path>,
+    ) {
+        listener.beforeAll()
+        files.forEach { file ->
+            listener.before(file)
+            check(file) { error, isCorrected ->
+                listener.onError(file, error, isCorrected)
+            }
+            listener.after(file)
+        }
+        listener.afterAll()
     }
 }

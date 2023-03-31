@@ -44,7 +44,7 @@ class DiktatJavaExecTaskTest {
         }
 
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is PlainReporter)
+        assert(task.processorListener is PlainReporter)
     }
 
     @Test
@@ -71,7 +71,7 @@ class DiktatJavaExecTaskTest {
         }
 
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is PlainReporter)
+        assert(task.processorListener is PlainReporter)
     }
 
     @Test
@@ -108,7 +108,7 @@ class DiktatJavaExecTaskTest {
             output = "some.txt"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is JsonReporter)
+        assert(task.processorListener is JsonReporter)
     }
 
     @Test
@@ -119,7 +119,7 @@ class DiktatJavaExecTaskTest {
             reporter = "json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is JsonReporter)
+        assert(task.processorListener is JsonReporter)
     }
 
     @Test
@@ -131,7 +131,7 @@ class DiktatJavaExecTaskTest {
             githubActions = true
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is SarifReporter)
+        assert(task.processorListener is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -149,7 +149,7 @@ class DiktatJavaExecTaskTest {
             output = "report.json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is SarifReporter)
+        assert(task.processorListener is SarifReporter)
     }
 
     @Test
@@ -160,7 +160,7 @@ class DiktatJavaExecTaskTest {
             reporter = "sarif"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is SarifReporter)
+        assert(task.processorListener is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")

@@ -1,12 +1,14 @@
 package org.cqfn.diktat.plugin.gradle.tasks
 
-import org.cqfn.diktat.DiktatProcessCommand
+import org.cqfn.diktat.DiktatProcessor
+import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
+import java.nio.file.Path
 import javax.inject.Inject
 
 /**
@@ -16,9 +18,12 @@ abstract class DiktatFixTask @Inject constructor(
     extension: DiktatExtension,
     inputs: PatternFilterable
 ) : DiktatTaskBase(extension, inputs) {
-    override fun doRun(diktatCommand: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit) {
-        val formattedText = diktatCommand.fix()
-        formattedContentConsumer(formattedText)
+    override fun doRun(
+        diktatProcessor: DiktatProcessor,
+        listener: DiktatProcessorListener,
+        files: Sequence<Path>, formattedContentConsumer: (Path, String) -> Unit
+    ) {
+        diktatProcessor.fixAll(listener, files, formattedContentConsumer)
     }
 
     companion object {
