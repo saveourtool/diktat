@@ -1,15 +1,28 @@
 package org.cqfn.diktat.cli
 
 import org.cqfn.diktat.api.DiktatMode
+import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import org.cqfn.diktat.ktlint.buildReporter
+import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.wrap
 import org.cqfn.diktat.util.colorName
 import org.cqfn.diktat.util.reporterProviderId
 import com.pinterest.ktlint.core.Reporter
+import com.pinterest.ktlint.core.ReporterProvider
+import com.pinterest.ktlint.reporter.checkstyle.CheckStyleReporterProvider
+import com.pinterest.ktlint.reporter.html.HtmlReporterProvider
+import com.pinterest.ktlint.reporter.json.JsonReporterProvider
+import com.pinterest.ktlint.reporter.plain.PlainReporterProvider
+import com.pinterest.ktlint.reporter.plain.internal.Color
+import com.pinterest.ktlint.reporter.sarif.SarifReporterProvider
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
+import java.io.PrintStream
+import java.nio.file.Path
+import java.nio.file.Paths
+import kotlin.io.path.createDirectories
+import kotlin.io.path.outputStream
 import kotlin.system.exitProcess
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
@@ -34,11 +47,12 @@ data class DiktatProperties(
     val patterns: List<String>,
 ) {
     /**
+     * @param sourceRootDir
      * @return a configured [Reporter]
      */
-    fun reporter(): Reporter = buildReporter(
+    fun reporter(sourceRootDir: Path): DiktatReporter = buildReporter(
         reporterProviderId, output, colorNameInPlain, groupByFileInPlain, mode
-    )
+    ).wrap(sourceRootDir)
 
     /**
      * Configure logger level using [logLevel]
@@ -161,5 +175,70 @@ data class DiktatProperties(
             .getResource(resourceName)
             ?.readText()
             ?: error("Resource $resourceName not found")
+
+        private fun buildReporter(
+            reporterProviderId: String,
+            output: String?,
+            colorNameInPlain: String?,
+            groupByFileInPlain: Boolean,
+            mode: DiktatMode,
+        ): Reporter {
+            val reporterProvider = reporterProviders.getValue(reporterProviderId)
+            return reporterProvider.get(
+                out = output
+                    ?.let { Paths.get(it) }
+                    ?.also { it.parent.createDirectories() }
+                    ?.outputStream()
+                    ?.let { PrintStream(it) }
+                    ?: System.out,
+                opt = buildMap<String, Any> {
+                    colorNameInPlain?.let {
+                        require(reporterProvider.isPlain()) {
+                            "colorization is applicable only for plain reporter"
+                        }
+                        put("color", true)
+                        put("color_name", it)
+                    } ?: run {
+                        put("color", false)
+                        put("color_name", Color.DARK_GRAY.name)
+                    }
+                    put("format", (mode == DiktatMode.FIX))
+                    if (groupByFileInPlain) {
+                        require(reporterProvider.isPlain()) {
+                            "groupByFile is applicable only for plain reporter"
+                        }
+                        put("group_by_file", true)
+                    }
+                }.mapValues { it.value.toString() },
+            )
+        }
+
+
+        /**
+         * supported color names in __KtLint__, taken from [Color]
+         */
+        val colorNamesForPlainReporter = Color.values().map { it.name }
+
+        /**
+         * A default [ReporterProvider] for [PlainReporterProvider]
+         */
+        val plainReporterProvider = PlainReporterProvider()
+
+        /**
+         * All [ReporterProvider] which __KtLint__ provides
+         */
+        val reporterProviders = setOf(
+            plainReporterProvider,
+            JsonReporterProvider(),
+            SarifReporterProvider(),
+            CheckStyleReporterProvider(),
+            HtmlReporterProvider(),
+        )
+            .associateBy { it.id }
+
+        /**
+         * @return true if receiver is [PlainReporterProvider]
+         */
+        internal fun ReporterProvider<*>.isPlain(): Boolean = id == plainReporterProvider.id
     }
 }

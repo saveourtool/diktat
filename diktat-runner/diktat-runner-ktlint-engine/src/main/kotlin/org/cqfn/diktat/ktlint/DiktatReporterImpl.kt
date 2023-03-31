@@ -2,6 +2,7 @@ package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.api.DiktatReporter
+import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
 import com.pinterest.ktlint.core.Reporter
 import java.nio.file.Path
 
@@ -23,7 +24,7 @@ class DiktatReporterImpl(
          * @param sourceRootDir
          * @return [DiktatReporter] which wraps __KtLint__'s [Reporter]
          */
-        fun Reporter.wrap(sourceRootDir: Path) = DiktatReporterImpl(this, sourceRootDir)
+        fun Reporter.wrap(sourceRootDir: Path): DiktatReporter = DiktatReporterImpl(this, sourceRootDir)
 
         /**
          * @return __KtLint__'s [Reporter]

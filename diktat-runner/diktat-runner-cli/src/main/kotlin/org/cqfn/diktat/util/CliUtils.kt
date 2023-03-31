@@ -4,9 +4,9 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.ktlint.colorNamesForPlainReporter
-import org.cqfn.diktat.ktlint.plainReporterProvider
-import org.cqfn.diktat.ktlint.reporterProviders
+import org.cqfn.diktat.cli.DiktatProperties.Companion.colorNamesForPlainReporter
+import org.cqfn.diktat.cli.DiktatProperties.Companion.plainReporterProvider
+import org.cqfn.diktat.cli.DiktatProperties.Companion.reporterProviders
 import com.pinterest.ktlint.core.ReporterProvider
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
