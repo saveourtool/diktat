@@ -4,7 +4,7 @@ import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.wrap
+import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.util.colorName
 import org.cqfn.diktat.util.reporterProviderId
 import com.pinterest.ktlint.core.Reporter
@@ -51,8 +51,8 @@ data class DiktatProperties(
      * @return a configured [Reporter]
      */
     fun reporter(sourceRootDir: Path): DiktatReporter = buildReporter(
-        reporterProviderId, output, colorNameInPlain, groupByFileInPlain, mode
-    ).wrap(sourceRootDir)
+        reporterProviderId, output, colorNameInPlain, groupByFileInPlain, sourceRootDir
+    )
 
     /**
      * Configure logger level using [logLevel]
@@ -181,19 +181,20 @@ data class DiktatProperties(
             output: String?,
             colorNameInPlain: String?,
             groupByFileInPlain: Boolean,
-            mode: DiktatMode,
-        ): Reporter {
-            val reporterProvider = reporterProviders.getValue(reporterProviderId)
-            return reporterProvider.get(
-                out = output
-                    ?.let { Paths.get(it) }
-                    ?.also { it.parent.createDirectories() }
-                    ?.outputStream()
-                    ?.let { PrintStream(it) }
-                    ?: System.out,
-                opt = buildMap<String, Any> {
+            sourceRootDir: Path,
+        ): DiktatReporter {
+            val outputStream = output
+                ?.let { Paths.get(it) }
+                ?.also { it.parent.createDirectories() }
+                ?.outputStream()
+                ?.let { PrintStream(it) }
+                ?: System.out
+            return DiktatReporterFactoryImpl().invoke(
+                reporterProviderId,
+                outputStream,
+                buildMap<String, Any> {
                     colorNameInPlain?.let {
-                        require(reporterProvider.isPlain()) {
+                        require(reporterProviderId == "plain") {
                             "colorization is applicable only for plain reporter"
                         }
                         put("color", true)
@@ -202,14 +203,14 @@ data class DiktatProperties(
                         put("color", false)
                         put("color_name", Color.DARK_GRAY.name)
                     }
-                    put("format", (mode == DiktatMode.FIX))
                     if (groupByFileInPlain) {
-                        require(reporterProvider.isPlain()) {
+                        require(reporterProviderId == "plain") {
                             "groupByFile is applicable only for plain reporter"
                         }
                         put("group_by_file", true)
                     }
                 }.mapValues { it.value.toString() },
+                sourceRootDir,
             )
         }
 
