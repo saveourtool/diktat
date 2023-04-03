@@ -4,7 +4,6 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
@@ -134,7 +133,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(TrailingCommaRule::class)
+        private val log = KotlinLogging.logger {}
         const val NAME_ID = "trailing-comma"
         val ktVersion = KotlinVersion(1, 4)
         val whenChildrenTypes = listOf(WHEN_CONDITION_WITH_EXPRESSION, WHEN_CONDITION_IS_PATTERN, WHEN_CONDITION_IN_RANGE)

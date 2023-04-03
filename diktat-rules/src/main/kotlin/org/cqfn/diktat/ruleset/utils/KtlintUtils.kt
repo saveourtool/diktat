@@ -5,7 +5,6 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.KtLint.ExperimentalParams
 import com.pinterest.ktlint.core.LintError
@@ -13,8 +12,7 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
+private val log = KotlinLogging.logger {}
 
 @Suppress("TYPE_ALIAS")
 val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->

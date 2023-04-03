@@ -1,6 +1,5 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.common.TestBase
 import org.cqfn.diktat.test.framework.config.TestArgumentsReader
 import org.cqfn.diktat.test.framework.config.TestConfig
@@ -90,8 +89,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val log = KotlinLogging.loggerWithKtlintConfig {}
+        private val log = KotlinLogging.logger {}
         private const val STATUS_FIVE = 5
         private const val STATUS_THREE = 3
     }

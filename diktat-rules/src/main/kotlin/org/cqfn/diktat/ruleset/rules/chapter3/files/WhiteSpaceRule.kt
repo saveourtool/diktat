@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
@@ -459,7 +458,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(WhiteSpaceRule::class)
+        private val log = KotlinLogging.logger {}
         const val NAME_ID = "horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list

@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
@@ -212,7 +211,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(CompactInitialization::class)
+        private val log = KotlinLogging.logger {}
         const val NAME_ID = "class-compact-initialization"
     }
 }

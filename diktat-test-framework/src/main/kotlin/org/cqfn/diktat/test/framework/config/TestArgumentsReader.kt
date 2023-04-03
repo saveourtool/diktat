@@ -2,7 +2,6 @@ package org.cqfn.diktat.test.framework.config
 
 import org.cqfn.diktat.common.cli.CliArgument
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import mu.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
@@ -95,7 +94,6 @@ class TestArgumentsReader(
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val log = KotlinLogging.loggerWithKtlintConfig {}
+        private val log = KotlinLogging.logger {}
     }
 }
