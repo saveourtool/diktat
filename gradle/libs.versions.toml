@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.8.10"
+kotlin = "1.8.20"
 serialization = "1.5.0"
 ktlint = "0.46.1"
 junit = "5.9.2"
