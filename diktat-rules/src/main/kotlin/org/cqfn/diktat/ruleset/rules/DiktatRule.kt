@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.Rule
@@ -92,6 +91,6 @@ abstract class DiktatRule(
     abstract fun logic(node: ASTNode)
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(DiktatRule::class)
+        private val log = KotlinLogging.logger {}
     }
 }

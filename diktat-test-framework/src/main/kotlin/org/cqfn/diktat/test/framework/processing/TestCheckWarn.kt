@@ -8,7 +8,7 @@ import mu.KotlinLogging
  * [TestCompare] that uses stderr as tests output stream
  */
 class TestCheckWarn : TestCompare() {
-    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR", "MISSING_KDOC_CLASS_ELEMENTS")
+    @Suppress("MISSING_KDOC_CLASS_ELEMENTS")
     override val log: KLogger = KotlinLogging.logger {}
 
     @Suppress(

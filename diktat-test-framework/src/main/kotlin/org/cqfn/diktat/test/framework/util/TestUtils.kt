@@ -30,7 +30,6 @@ import kotlin.io.path.div
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val logger = KotlinLogging.logger {}
 
 /**

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.cqfn.diktat.test.framework.util.checkForkedJavaHome
 import org.cqfn.diktat.test.framework.util.deleteIfExistsRecursively
@@ -129,8 +128,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val logger = KotlinLogging.loggerWithKtlintConfig { }
+        private val logger = KotlinLogging.logger {}
         private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
         private const val SAVE_VERSION: String = "0.3.4"
         private const val WINDOWS_TEMP_DIRECTORY = ".save-cli"

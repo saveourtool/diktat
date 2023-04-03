@@ -16,7 +16,7 @@ import java.io.File
  */
 @Suppress("ForbiddenComment")
 open class TestCompare : TestBase {
-    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR", "MISSING_KDOC_CLASS_ELEMENTS")
+    @Suppress("MISSING_KDOC_CLASS_ELEMENTS")
     protected open val log: KLogger = KotlinLogging.logger {}
     private lateinit var expectedResult: File
 

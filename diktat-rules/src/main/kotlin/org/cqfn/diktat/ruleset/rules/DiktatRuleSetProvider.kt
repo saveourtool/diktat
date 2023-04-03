@@ -11,7 +11,6 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
@@ -282,6 +281,6 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYS
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(DiktatRuleSetProvider::class)
+        private val log = KotlinLogging.logger {}
     }
 }

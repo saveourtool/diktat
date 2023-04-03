@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import com.pinterest.ktlint.core.initKtLintKLogger
 import mu.KotlinLogging
 import org.slf4j.Logger
@@ -17,7 +17,7 @@ import org.slf4j.Logger
  */
 class DiktatRuleSetProviderSpi : RuleSetProvider {
     init {
-        // need to init KtLintKLogger for ROOT logger
+        // Need to init KtLint logger to set log level from CLI
         KotlinLogging.logger(Logger.ROOT_LOGGER_NAME).initKtLintKLogger()
     }
 

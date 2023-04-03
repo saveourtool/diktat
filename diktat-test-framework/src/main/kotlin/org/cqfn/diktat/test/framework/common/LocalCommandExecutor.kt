@@ -36,7 +36,6 @@ class LocalCommandExecutor internal constructor(private val command: String) {
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val log = KotlinLogging.logger { }
     }
 }

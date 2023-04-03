@@ -109,7 +109,6 @@ class FileComparator(
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val log = KotlinLogging.logger {}
 
         /**
