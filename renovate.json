@@ -17,7 +17,8 @@
       ],
       "excludePackagePatterns": [
         "^org\\.jetbrains\\.kotlin[.:]",
-        "^com\\.pinterest\\.ktlint[.:]"
+        "^com\\.pinterest\\.ktlint[.:]",
+        "^com\\.google\\.devtools\\.ksp[.:]"
       ],
       "matchUpdateTypes": [
         "minor",
@@ -29,7 +30,8 @@
     {
       "managers": ["gradle"],
       "matchPackagePatterns": [
-        "^org\\.jetbrains\\.kotlin[.:]"
+        "^org\\.jetbrains\\.kotlin[.:]",
+        "^com\\.google\\.devtools\\.ksp[.:]"
       ],
       "groupName": "Kotlin core dependencies",
       "groupSlug": "core-kotlin"
@@ -59,7 +61,7 @@
     {
       "managers": ["gradle"],
       "matchPackageNames": [
-          "com.charleskorn.kaml:kaml-jvm"
+          "com.charleskorn.kaml:kaml"
       ],
       "allowedVersions": "<= 0.47.0"
     },
