@@ -32,6 +32,7 @@ plugins {
 }
 
 includeBuild("gradle/plugins")
+include("diktat-api")
 include("diktat-common")
 include("diktat-gradle-plugin")
 include("diktat-maven-plugin")
@@ -39,9 +40,8 @@ include("diktat-rules")
 include("diktat-ruleset")
 include("diktat-test-framework")
 include("diktat-dev-ksp")
-include("diktat-runner:diktat-runner-api")
-include("diktat-runner:diktat-runner-cli")
-include("diktat-runner:diktat-runner-ktlint-engine")
+include("diktat-cli")
+include("diktat-ktlint-engine")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

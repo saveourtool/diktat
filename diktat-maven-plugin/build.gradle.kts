@@ -16,7 +16,7 @@ dependencies {
 
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(projects.diktatRules)
-    implementation(projects.diktatRunner.diktatRunnerKtlintEngine)
+    implementation(projects.diktatKtlintEngine)
 
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.vintage.engine)

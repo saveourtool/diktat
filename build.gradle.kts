@@ -32,10 +32,10 @@ tasks.create("generateLibsForDiktatSnapshot") {
     val dir = rootProject.buildDir.resolve("diktat-snapshot")
 
     val dependencies = setOf(
+        rootProject.project(":diktat-api"),
+        rootProject.project(":diktat-ktlint-engine"),
         rootProject.project(":diktat-common"),
         rootProject.project(":diktat-rules"),
-        rootProject.project(":diktat-runner:diktat-runner-api"),
-        rootProject.project(":diktat-runner:diktat-runner-ktlint-engine"),
         rootProject.project(":diktat-gradle-plugin"),
     )
     mustRunAfter(dependencies.map { "${it.path}:publishToMavenLocal" })
