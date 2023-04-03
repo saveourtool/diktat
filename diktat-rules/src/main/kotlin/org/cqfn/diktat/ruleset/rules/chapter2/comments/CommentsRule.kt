@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter2.comments
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -174,7 +173,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("MaxLineLength")
     companion object {
-        private val logger = KotlinLogging.loggerWithKtlintConfig(CommentsRule::class)
+        private val logger = KotlinLogging.logger {}
         const val NAME_ID = "comments"
         private val importKeywordWithSpace = "${KtTokens.IMPORT_KEYWORD.value} "
         private val packageKeywordWithSpace = "${KtTokens.PACKAGE_KEYWORD.value} "

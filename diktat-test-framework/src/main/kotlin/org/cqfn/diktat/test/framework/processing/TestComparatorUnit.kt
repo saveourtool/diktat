@@ -1,6 +1,5 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import mu.KotlinLogging
 import java.io.IOException
 import java.nio.file.Path
@@ -125,8 +124,7 @@ class TestComparatorUnit(
     }
 
     private companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val log = KotlinLogging.loggerWithKtlintConfig {}
+        private val log = KotlinLogging.logger {}
 
         /**
          * @param file the file whose content is to be read.

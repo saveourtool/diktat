@@ -1,6 +1,5 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import io.github.petertrr.diffutils.diff
 import io.github.petertrr.diffutils.patch.ChangeDelta
 import io.github.petertrr.diffutils.text.DiffRowGenerator
@@ -110,8 +109,7 @@ class FileComparator(
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val log = KotlinLogging.loggerWithKtlintConfig {}
+        private val log = KotlinLogging.logger {}
 
         /**
          * @param file file where to write these list to, separated with newlines.

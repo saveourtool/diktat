@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
@@ -711,7 +710,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(NewlinesRule::class)
+        private val log = KotlinLogging.logger {}
         const val MAX_CALLS_IN_ONE_LINE = 3
         const val NAME_ID = "newlines"
 
