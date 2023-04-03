@@ -59,13 +59,6 @@
     {
       "managers": ["gradle"],
       "matchPackageNames": [
-          "com.charleskorn.kaml:kaml-jvm"
-      ],
-      "allowedVersions": "<= 0.47.0"
-    },
-    {
-      "managers": ["gradle"],
-      "matchPackageNames": [
         "org.apache.maven.plugins:maven-plugin-plugin"
       ],
       "allowedVersions": "< 3.7.0"

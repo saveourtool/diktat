@@ -35,8 +35,8 @@ dependencies {
 tasks.named<ShadowJar>("shadowJar") {
     archiveBaseName.set("diktat")
     archiveClassifier.set("")
-    // need to relocate kaml to avoid conflicts with KtLint
-    relocate("com.charleskorn.kaml", "com.saveourtool.com_charleskorn_kaml")
+    // need to relocate serialization from kaml to avoid conflicts with KtLint
+    relocate("kotlinx.serialization", "com.saveourtool.kotlinx_serialization")
 }
 
 // disable default jar
