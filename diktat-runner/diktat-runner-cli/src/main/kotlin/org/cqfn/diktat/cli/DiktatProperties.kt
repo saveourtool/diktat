@@ -2,19 +2,11 @@ package org.cqfn.diktat.cli
 
 import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.api.DiktatReporter
+import org.cqfn.diktat.api.DiktatReporterFactory
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
-import org.cqfn.diktat.util.colorName
-import org.cqfn.diktat.util.reporterProviderId
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.ReporterProvider
-import com.pinterest.ktlint.reporter.checkstyle.CheckStyleReporterProvider
-import com.pinterest.ktlint.reporter.html.HtmlReporterProvider
-import com.pinterest.ktlint.reporter.json.JsonReporterProvider
-import com.pinterest.ktlint.reporter.plain.PlainReporterProvider
-import com.pinterest.ktlint.reporter.plain.internal.Color
-import com.pinterest.ktlint.reporter.sarif.SarifReporterProvider
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
@@ -47,11 +39,18 @@ data class DiktatProperties(
     val patterns: List<String>,
 ) {
     /**
+     * @param diktatReporterFactory
      * @param sourceRootDir
      * @return a configured [Reporter]
      */
-    fun reporter(sourceRootDir: Path): DiktatReporter = buildReporter(
-        reporterProviderId, output, colorNameInPlain, groupByFileInPlain, sourceRootDir
+    fun reporter(
+        diktatReporterFactory: DiktatReporterFactory,
+        sourceRootDir: Path,
+    ): DiktatReporter = buildReporter(
+        diktatReporterFactory, reporterProviderId,
+        output,
+        colorNameInPlain, groupByFileInPlain,
+        sourceRootDir,
     )
 
     /**
@@ -75,6 +74,7 @@ data class DiktatProperties(
 
     companion object {
         /**
+         * @param diktatReporterFactory
          * @param args cli arguments
          * @return parsed [DiktatProperties]
          */
@@ -82,7 +82,10 @@ data class DiktatProperties(
             "LongMethod",
             "TOO_LONG_FUNCTION"
         )
-        fun parse(args: Array<String>): DiktatProperties {
+        fun parse(
+            diktatReporterFactory: DiktatReporterFactory,
+            args: Array<String>,
+        ): DiktatProperties {
             val parser = ArgParser(DIKTAT)
             val config: String by parser.option(
                 type = ArgType.String,
@@ -96,7 +99,7 @@ data class DiktatProperties(
                 shortName = "m",
                 description = "Mode of `diktat` controls that `diktat` fixes or only finds any deviations from the code style."
             ).default(DiktatMode.CHECK)
-            val reporterProviderId: String by parser.reporterProviderId()
+            val reporterProviderId: String by parser.reporterProviderId(diktatReporterFactory)
             val output: String? by parser.option(
                 type = ArgType.String,
                 fullName = "output",
@@ -109,7 +112,7 @@ data class DiktatProperties(
                 shortName = null,
                 description = "A flag for plain reporter"
             ).default(false)
-            val colorName: String? by parser.colorName()
+            val colorName: String? by parser.colorName(diktatReporterFactory)
             val logLevel: Level by parser.option(
                 type = ArgType.Choice<Level>(),
                 fullName = "log-level",
@@ -149,6 +152,37 @@ data class DiktatProperties(
             )
         }
 
+        /**
+         * @param diktatReporterFactory
+         * @return a single [ReporterProvider] as parsed cli arg
+         */
+        private fun ArgParser.reporterProviderId(diktatReporterFactory: DiktatReporterFactory) = option(
+            type = ArgType.Choice(
+                choices = diktatReporterFactory.ids.toList(),
+                toVariant = { it },
+                variantToString = { it },
+            ),
+            fullName = "reporter",
+            shortName = "r",
+            description = "The reporter to use"
+        )
+            .default(diktatReporterFactory.plainId)
+
+        /**
+         * @param diktatReporterFactory
+         * @return a single and optional color name as parsed cli args
+         */
+        private fun ArgParser.colorName(diktatReporterFactory: DiktatReporterFactory) = this.option(
+            type = ArgType.Choice(
+                choices = diktatReporterFactory.colorNamesInPlain.toList(),
+                toVariant = { it },
+                variantToString = { it },
+            ),
+            fullName = "plain-color",
+            shortName = null,
+            description = "Colorize the output.",
+        )
+
         private fun ArgParser.addOptionAndShowResourceWithExit(
             fullName: String,
             shortName: String?,
@@ -177,6 +211,7 @@ data class DiktatProperties(
             ?: error("Resource $resourceName not found")
 
         private fun buildReporter(
+            diktatReporterFactory: DiktatReporterFactory,
             reporterProviderId: String,
             output: String?,
             colorNameInPlain: String?,
@@ -189,57 +224,17 @@ data class DiktatProperties(
                 ?.outputStream()
                 ?.let { PrintStream(it) }
                 ?: System.out
-            return DiktatReporterFactoryImpl().invoke(
-                reporterProviderId,
-                outputStream,
-                buildMap<String, Any> {
-                    colorNameInPlain?.let {
-                        require(reporterProviderId == "plain") {
-                            "colorization is applicable only for plain reporter"
-                        }
-                        put("color", true)
-                        put("color_name", it)
-                    } ?: run {
-                        put("color", false)
-                        put("color_name", Color.DARK_GRAY.name)
-                    }
-                    if (groupByFileInPlain) {
-                        require(reporterProviderId == "plain") {
-                            "groupByFile is applicable only for plain reporter"
-                        }
-                        put("group_by_file", true)
-                    }
-                }.mapValues { it.value.toString() },
-                sourceRootDir,
-            )
+            return if (reporterProviderId == diktatReporterFactory.plainId) {
+                diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
+            } else {
+                require(colorNameInPlain == null) {
+                    "colorization is applicable only for plain reporter"
+                }
+                require(!groupByFileInPlain) {
+                    "groupByFile is applicable only for plain reporter"
+                }
+                diktatReporterFactory.invoke(reporterProviderId, outputStream, sourceRootDir)
+            }
         }
-
-
-        /**
-         * supported color names in __KtLint__, taken from [Color]
-         */
-        val colorNamesForPlainReporter = Color.values().map { it.name }
-
-        /**
-         * A default [ReporterProvider] for [PlainReporterProvider]
-         */
-        val plainReporterProvider = PlainReporterProvider()
-
-        /**
-         * All [ReporterProvider] which __KtLint__ provides
-         */
-        val reporterProviders = setOf(
-            plainReporterProvider,
-            JsonReporterProvider(),
-            SarifReporterProvider(),
-            CheckStyleReporterProvider(),
-            HtmlReporterProvider(),
-        )
-            .associateBy { it.id }
-
-        /**
-         * @return true if receiver is [PlainReporterProvider]
-         */
-        internal fun ReporterProvider<*>.isPlain(): Boolean = id == plainReporterProvider.id
     }
 }

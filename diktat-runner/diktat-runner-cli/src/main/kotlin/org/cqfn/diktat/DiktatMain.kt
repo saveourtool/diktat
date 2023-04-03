@@ -7,8 +7,8 @@ package org.cqfn.diktat
 import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.cli.DiktatProperties
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
+import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 import org.cqfn.diktat.util.tryToPathIfExists
 import org.cqfn.diktat.util.walkByGlob
@@ -20,14 +20,15 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
+private val log = KotlinLogging.logger { }
 
 @Suppress(
     "LongMethod",
     "TOO_LONG_FUNCTION"
 )
 fun main(args: Array<String>) {
-    val properties = DiktatProperties.parse(args)
+    val diktatReporterFactory = DiktatReporterFactoryImpl()
+    val properties = DiktatProperties.parse(diktatReporterFactory, args)
     properties.configureLogger()
 
     log.debug {
@@ -36,7 +37,7 @@ fun main(args: Array<String>) {
     val diktatProcessor = DiktatProcessorFactoryImpl()
         .create(properties.config)
     val currentFolder = Paths.get(".")
-    val reporter = properties.reporter(currentFolder)
+    val reporter = properties.reporter(diktatReporterFactory, currentFolder)
 
     log.debug {
         "Resolving files by patterns: ${properties.patterns}"

@@ -210,10 +210,14 @@ abstract class DiktatTaskBase(
 
     private fun createReporter(): DiktatReporter {
         val reporterType = project.getReporterType(extension)
-        val (outputStream, closeListener) = project.getOutputFile(extension)?.outputStream()?.let {
-            it to it.closeAfterAllAsProcessorListener()
-        } ?: (System.out to DiktatProcessorListener.empty)
-        val actualReporter = reporterFactory(reporterType, outputStream ?: System.`out`, emptyMap(), project.rootDir.toPath())
+        val (outputStream, closeListener) = project.getOutputFile(extension)
+            ?.outputStream()
+            ?.let {
+                it to it.closeAfterAllAsProcessorListener()
+            } ?: run {
+                System.`out` to DiktatProcessorListener.empty
+            }
+        val actualReporter = reporterFactory(reporterType, outputStream, project.rootDir.toPath())
         return  DiktatProcessorListener(actualReporter, closeListener)
     }
 }

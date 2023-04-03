@@ -172,7 +172,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             ?: run {
                 System.`out` to DiktatProcessorListener.empty
             }
-        val actualReporter = reporterFactory(reporterType, outputStream, emptyMap(), sourceRootDir)
+        val actualReporter = reporterFactory(reporterType, outputStream, sourceRootDir)
 
         return DiktatProcessorListener(actualReporter, closeListener)
     }
