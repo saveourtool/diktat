@@ -173,8 +173,8 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("MaxLineLength")
     companion object {
-        private val logger = KotlinLogging.logger {}
         const val NAME_ID = "comments"
+        private val logger = KotlinLogging.logger {}
         private val importKeywordWithSpace = "${KtTokens.IMPORT_KEYWORD.value} "
         private val packageKeywordWithSpace = "${KtTokens.PACKAGE_KEYWORD.value} "
         private val importOrPackage = """($importKeywordWithSpace|$packageKeywordWithSpace)""".toRegex()
