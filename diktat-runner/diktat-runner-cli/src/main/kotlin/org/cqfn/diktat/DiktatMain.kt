@@ -9,6 +9,7 @@ import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
 import org.cqfn.diktat.util.tryToPathIfExists
 import org.cqfn.diktat.util.walkByGlob
@@ -19,7 +20,6 @@ import java.nio.file.Paths
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val log = KotlinLogging.logger { }
 
 @Suppress(
@@ -34,8 +34,8 @@ fun main(args: Array<String>) {
     log.debug {
         "Loading diktatRuleSet using config ${properties.config}"
     }
-    val diktatProcessor = DiktatProcessorFactoryImpl()
-        .create(properties.config)
+    val diktatRuleSet = DiktatRuleSetFactoryImpl().create(properties.config)
+    val diktatProcessor = DiktatProcessorFactoryImpl().invoke(diktatRuleSet)
     val currentFolder = Paths.get(".")
     val reporter = properties.reporter(diktatReporterFactory, currentFolder)
 
