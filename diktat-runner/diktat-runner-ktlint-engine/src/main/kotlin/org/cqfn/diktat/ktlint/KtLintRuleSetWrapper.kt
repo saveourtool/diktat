@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ktlint
 
+import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 

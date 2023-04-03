@@ -6,7 +6,6 @@ package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -106,7 +105,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 
     companion object {
-        internal val log: KLogger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
+        internal val log: KLogger = KotlinLogging.logger { }
     }
 }
 

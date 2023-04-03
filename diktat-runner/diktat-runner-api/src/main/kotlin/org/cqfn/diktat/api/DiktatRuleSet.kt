@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules
+package org.cqfn.diktat.api
 
 /**
  * A group of [DiktatRule]'s as a single set.

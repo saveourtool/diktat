@@ -1,8 +1,9 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
+import org.cqfn.diktat.api.DiktatError
+import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
+import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
@@ -16,7 +17,7 @@ import kotlin.io.path.absolutePathString
  * may change after some changes to text or other rules.
  */
 class DiktatSmokeTest : DiktatSmokeTestBase() {
-    private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
+    private val unfixedLintErrors: MutableList<DiktatError> = mutableListOf()
 
     override fun fixAndCompare(
         config: Path,
@@ -37,14 +38,14 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     }
 
     override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) {
-        lintErrorsConsumer(unfixedLintErrors)
+        lintErrorsConsumer(unfixedLintErrors.map { it.unwrap() })
     }
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceFilePath = RESOURCE_FILE_PATH,
         function = { expectedText, testFilePath ->
             format(
-                ruleSetProviderRef = { DiktatRuleSetProvider(config.absolutePathString()).toKtLint() },
+                ruleSetSupplier = { DiktatRuleSetProvider(config.absolutePathString()).invoke() },
                 text = expectedText,
                 fileName = testFilePath,
                 cb = { lintError, _ -> unfixedLintErrors.add(lintError) },

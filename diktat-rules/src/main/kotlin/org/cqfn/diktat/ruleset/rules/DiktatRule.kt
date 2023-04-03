@@ -1,9 +1,9 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.Rule
@@ -11,6 +11,7 @@ import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
+private typealias DiktatRuleApi = org.cqfn.diktat.api.DiktatRule
 
 /**
  * This is a wrapper around _KtLint_ `Rule`.
@@ -21,10 +22,10 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
  */
 @Suppress("TooGenericExceptionCaught")
 abstract class DiktatRule(
-    val id: String,
+    override val id: String,
     val configRules: List<RulesConfig>,
     private val inspections: List<DiktatConfigRule>,
-) {
+) : DiktatRuleApi {
     /**
      * Default value is false
      */
@@ -43,21 +44,21 @@ abstract class DiktatRule(
      * @see visit
      * @see logic
      */
-    lateinit var emitWarn: EmitType
+    lateinit var emitWarn: DiktatErrorEmitter
 
     /**
      * @param node
      * @param autoCorrect
-     * @param emit
+     * @param emitter
      * @throws Error
      */
     @Suppress("TooGenericExceptionThrown")
-    fun visit(
+    override fun invoke(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitType
+        emitter: DiktatErrorEmitter
     ) {
-        emitWarn = emit
+        emitWarn = emitter
         isFixMode = autoCorrect
 
         if (areInspectionsDisabled()) {

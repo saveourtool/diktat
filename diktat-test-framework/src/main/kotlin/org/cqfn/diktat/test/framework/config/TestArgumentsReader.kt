@@ -2,7 +2,6 @@ package org.cqfn.diktat.test.framework.config
 
 import org.cqfn.diktat.common.cli.CliArgument
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import mu.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
@@ -17,7 +16,6 @@ import java.io.IOException
 import java.util.stream.Collectors
 
 import kotlin.system.exitProcess
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -87,7 +85,6 @@ class TestArgumentsReader(
      * @param fileStream a [BufferedReader] representing input JSON
      * @return list of [CliArgument]s
      */
-    @OptIn(ExperimentalSerializationApi::class)
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
         val jsonValue = fileStream.lines().collect(Collectors.joining())
@@ -96,6 +93,6 @@ class TestArgumentsReader(
 
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val log = KotlinLogging.loggerWithKtlintConfig {}
+        private val log = KotlinLogging.logger {}
     }
 }

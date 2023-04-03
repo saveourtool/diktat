@@ -1,11 +1,12 @@
 package org.cqfn.diktat.ktlint
 
+import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.rules.DiktatRule
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+
+private typealias EmitType = (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
 
 /**
  * This is a wrapper around __KtLint__'s [Rule] which adjusts visitorModifiers to keep order with prevRule.
@@ -26,7 +27,7 @@ class KtLintRuleWrapper(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType,
-    ) = rule.visit(node, autoCorrect, emit)
+    ) = rule.invoke(node, autoCorrect, emit)
 
     companion object {
         private fun createVisitorModifiers(
@@ -50,6 +51,6 @@ class KtLintRuleWrapper(
         /**
          * @return a rule to which a logic is delegated
          */
-        internal fun Rule.delegatee(): DiktatRule = (this as? KtLintRuleWrapper)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
+        internal fun Rule.unwrap(): DiktatRule = (this as? KtLintRuleWrapper)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
     }
 }

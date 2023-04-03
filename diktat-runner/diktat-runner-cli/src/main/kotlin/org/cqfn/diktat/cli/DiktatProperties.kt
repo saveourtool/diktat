@@ -1,6 +1,5 @@
 package org.cqfn.diktat.cli
 
-import org.cqfn.diktat.api.DiktatMode
 import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.api.DiktatReporterFactory
 import org.cqfn.diktat.common.config.rules.DIKTAT
@@ -46,12 +45,25 @@ data class DiktatProperties(
     fun reporter(
         diktatReporterFactory: DiktatReporterFactory,
         sourceRootDir: Path,
-    ): DiktatReporter = buildReporter(
-        diktatReporterFactory, reporterProviderId,
-        output,
-        colorNameInPlain, groupByFileInPlain,
-        sourceRootDir,
-    )
+    ): DiktatReporter {
+        val outputStream = output
+            ?.let { Paths.get(it) }
+            ?.also { it.parent.createDirectories() }
+            ?.outputStream()
+            ?.let { PrintStream(it) }
+            ?: System.out
+        return if (reporterProviderId == diktatReporterFactory.plainId) {
+            diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
+        } else {
+            require(colorNameInPlain == null) {
+                "colorization is applicable only for plain reporter"
+            }
+            require(!groupByFileInPlain) {
+                "groupByFile is applicable only for plain reporter"
+            }
+            diktatReporterFactory.invoke(reporterProviderId, outputStream, sourceRootDir)
+        }
+    }
 
     /**
      * Configure logger level using [logLevel]
@@ -209,32 +221,5 @@ data class DiktatProperties(
             .getResource(resourceName)
             ?.readText()
             ?: error("Resource $resourceName not found")
-
-        private fun buildReporter(
-            diktatReporterFactory: DiktatReporterFactory,
-            reporterProviderId: String,
-            output: String?,
-            colorNameInPlain: String?,
-            groupByFileInPlain: Boolean,
-            sourceRootDir: Path,
-        ): DiktatReporter {
-            val outputStream = output
-                ?.let { Paths.get(it) }
-                ?.also { it.parent.createDirectories() }
-                ?.outputStream()
-                ?.let { PrintStream(it) }
-                ?: System.out
-            return if (reporterProviderId == diktatReporterFactory.plainId) {
-                diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
-            } else {
-                require(colorNameInPlain == null) {
-                    "colorization is applicable only for plain reporter"
-                }
-                require(!groupByFileInPlain) {
-                    "groupByFile is applicable only for plain reporter"
-                }
-                diktatReporterFactory.invoke(reporterProviderId, outputStream, sourceRootDir)
-            }
-        }
     }
 }

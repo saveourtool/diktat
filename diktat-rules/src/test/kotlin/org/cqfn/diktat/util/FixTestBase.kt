@@ -4,14 +4,13 @@
 
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ktlint.defaultCallback
+import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.LintErrorCallback
-import org.cqfn.diktat.ruleset.utils.defaultCallback
-import org.cqfn.diktat.ruleset.utils.format
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-import com.pinterest.ktlint.core.Rule
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
@@ -25,7 +24,7 @@ open class FixTestBase(
     resourceFilePath: String,
     ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
     defaultRulesConfigList: List<RulesConfig>? = null,
-    cb: LintErrorCallback = defaultCallback,
+    cb: DiktatCallback = defaultCallback,
 ) {
     /**
      * testComparatorUnit
@@ -35,7 +34,7 @@ open class FixTestBase(
             resourceFilePath = resourceFilePath,
             function = { expectedText, testFilePath ->
                 format(
-                    ruleSetProviderRef = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
+                    ruleSetSupplier = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList).invoke() },
                     text = expectedText,
                     fileName = testFilePath,
                     cb = cb,

@@ -9,7 +9,7 @@ import com.pinterest.ktlint.core.LintError
  * @property lintError
  */
 data class DiktatErrorImpl(
-    val lintError: LintError
+    private val lintError: LintError
 ) : DiktatError {
     override fun getLine(): Int = lintError.line
 

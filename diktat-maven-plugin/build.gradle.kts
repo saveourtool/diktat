@@ -17,12 +17,7 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(projects.diktatRules)
     implementation(projects.diktatRunner.diktatRunnerKtlintEngine)
-    implementation(libs.ktlint.core)
-    implementation(libs.ktlint.reporter.plain)
-    implementation(libs.ktlint.reporter.sarif)
-    implementation(libs.ktlint.reporter.json)
-    implementation(libs.ktlint.reporter.html)
-    implementation(libs.ktlint.reporter.baseline)
+
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.vintage.engine)
     testImplementation(libs.junit.jupiter.extension.itf)

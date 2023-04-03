@@ -8,7 +8,7 @@ project.description = "This module builds diktat-runner implementation using ktl
 
 dependencies {
     api(projects.diktatRunner.diktatRunnerApi)
-    implementation(projects.diktatRules)
+    implementation(projects.diktatCommon)
     implementation(libs.ktlint.core)
     implementation(libs.ktlint.reporter.baseline)
     implementation(libs.ktlint.reporter.checkstyle)
@@ -16,4 +16,9 @@ dependencies {
     implementation(libs.ktlint.reporter.json)
     implementation(libs.ktlint.reporter.plain)
     implementation(libs.ktlint.reporter.sarif)
+
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.platform.suite)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.mockito)
 }

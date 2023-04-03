@@ -10,6 +10,8 @@ project.description = "The main diktat ruleset"
 
 dependencies {
     api(projects.diktatCommon)
+    api(projects.diktatRunner.diktatRunnerApi)
+    implementation(projects.diktatRunner.diktatRunnerKtlintEngine)
     testImplementation(projects.diktatTestFramework)
     api(libs.ktlint.core)
     implementation(libs.kotlin.stdlib.jdk8)

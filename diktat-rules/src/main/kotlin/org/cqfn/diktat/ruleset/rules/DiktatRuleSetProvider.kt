@@ -4,6 +4,7 @@
 
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY

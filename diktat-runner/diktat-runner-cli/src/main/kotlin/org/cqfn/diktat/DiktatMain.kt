@@ -4,7 +4,7 @@
 
 package org.cqfn.diktat
 
-import org.cqfn.diktat.api.DiktatMode
+import org.cqfn.diktat.cli.DiktatMode
 import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl

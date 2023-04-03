@@ -12,9 +12,11 @@ import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.countErrorsAsProcessorListener
 import org.cqfn.diktat.api.DiktatReporterFactory
+import org.cqfn.diktat.api.DiktatRuleSetFactory
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -119,8 +121,11 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
+        val diktatRuleSet by lazy {
+            DiktatRuleSetFactoryImpl().create(configFile)
+        }
         val diktatProcessor by lazy {
-            DiktatProcessorFactoryImpl().create(configFile)
+            DiktatProcessorFactoryImpl().invoke(diktatRuleSet)
         }
         val baselineFactory: DiktatBaselineFactory by lazy {
             DiktatBaselineFactoryImpl()

@@ -1,11 +1,11 @@
 package org.cqfn.diktat.ktlint
 
+import org.cqfn.diktat.api.DiktatErrorEmitter
+import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
-import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
-import org.cqfn.diktat.util.TEST_FILE_NAME
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.unwrap
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions.assertThat
@@ -37,7 +37,7 @@ class KtLintRuleSetWrapperTest {
         val orderedRule2 = orderedRuleSetIterator.next()
         Assertions.assertFalse(orderedRuleSetIterator.hasNext(), "Extra elements after ordering")
 
-        Assertions.assertEquals(rule1, orderedRule1.delegatee(), "First rule is modified")
+        Assertions.assertEquals(rule1, orderedRule1.unwrap(), "First rule is modified")
 
         orderedRule2.visitorModifiers
             .filterIsInstance<Rule.VisitorModifier.RunAfterRule>()
@@ -86,7 +86,7 @@ class KtLintRuleSetWrapperTest {
 
         KtLint.lint(
             KtLint.ExperimentalParams(
-                fileName = TEST_FILE_NAME,
+                fileName = "TestFileName.kt",
                 text = code,
                 ruleSets = listOf(ruleSet),
                 cb = { _, _ -> },
@@ -150,8 +150,10 @@ class KtLintRuleSetWrapperTest {
         private fun mockRule(
             id: String,
             onVisit: (DiktatRule) -> Unit = { }
-        ): DiktatRule = object : DiktatRule(id.qualifiedWithRuleSetId(), emptyList(), emptyList()) {
-            override fun logic(node: ASTNode) {
+        ): DiktatRule = object : DiktatRule {
+            override val id: String
+                get() = id
+            override fun invoke(node: ASTNode, autoCorrect: Boolean, emitter: DiktatErrorEmitter) {
                 onVisit(this)
             }
         }

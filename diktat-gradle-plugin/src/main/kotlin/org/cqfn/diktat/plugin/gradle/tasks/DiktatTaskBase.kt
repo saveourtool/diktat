@@ -16,6 +16,7 @@ import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
 import org.cqfn.diktat.plugin.gradle.getOutputFile
 import org.cqfn.diktat.plugin.gradle.getReporterType
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
@@ -75,8 +76,16 @@ abstract class DiktatTaskBase(
      * [DiktatProcessor] created from [extension]
      */
     @get:Internal
+    internal val diktatRuleSet by lazy {
+        DiktatRuleSetFactoryImpl().create(extension.diktatConfigFile.toPath())
+    }
+
+    /**
+     * [DiktatProcessor] created from [diktatRuleSet]
+     */
+    @get:Internal
     internal val diktatProcessor: DiktatProcessor by lazy {
-        DiktatProcessorFactoryImpl().create(extension.diktatConfigFile.toPath())
+        DiktatProcessorFactoryImpl().invoke(diktatRuleSet)
     }
 
     /**

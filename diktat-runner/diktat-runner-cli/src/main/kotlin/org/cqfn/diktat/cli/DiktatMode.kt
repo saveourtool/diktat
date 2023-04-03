@@ -1,4 +1,4 @@
-package org.cqfn.diktat.api
+package org.cqfn.diktat.cli
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
