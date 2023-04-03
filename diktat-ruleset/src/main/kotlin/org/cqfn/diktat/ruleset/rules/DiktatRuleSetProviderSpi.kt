@@ -3,6 +3,9 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import com.pinterest.ktlint.core.initKtLintKLogger
+import mu.KotlinLogging
+import org.slf4j.Logger
 
 /**
  * [RuleSetProvider] that provides diKTat ruleset.
@@ -13,5 +16,10 @@ import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
  * This class is registered in [resources/META-INF/services/com.pinterest.ktlint.core.RuleSetProvider]
  */
 class DiktatRuleSetProviderSpi : RuleSetProvider {
+    init {
+        // need to init KtLintKLogger for ROOT logger
+        KotlinLogging.logger(Logger.ROOT_LOGGER_NAME).initKtLintKLogger()
+    }
+
     override fun get(): RuleSet = DiktatRuleSetProvider().invoke().toKtLint()
 }

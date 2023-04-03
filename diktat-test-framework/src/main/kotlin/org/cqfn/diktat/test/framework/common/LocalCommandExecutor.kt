@@ -1,6 +1,5 @@
 package org.cqfn.diktat.test.framework.common
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import mu.KotlinLogging
 
 import java.io.IOException
@@ -38,6 +37,6 @@ class LocalCommandExecutor internal constructor(private val command: String) {
 
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val log = KotlinLogging.loggerWithKtlintConfig {}
+        private val log = KotlinLogging.logger { }
     }
 }

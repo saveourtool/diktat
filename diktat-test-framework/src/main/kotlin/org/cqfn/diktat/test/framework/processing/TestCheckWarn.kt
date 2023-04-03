@@ -1,6 +1,5 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.config.TestConfig
 import mu.KLogger
 import mu.KotlinLogging
@@ -10,7 +9,7 @@ import mu.KotlinLogging
  */
 class TestCheckWarn : TestCompare() {
     @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR", "MISSING_KDOC_CLASS_ELEMENTS")
-    override val log: KLogger = KotlinLogging.loggerWithKtlintConfig {}
+    override val log: KLogger = KotlinLogging.logger {}
 
     @Suppress(
         "UnusedPrivateMember",

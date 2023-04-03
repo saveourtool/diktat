@@ -4,8 +4,6 @@
 
 package org.cqfn.diktat.test.framework.util
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
-
 import mu.KotlinLogging
 
 import java.io.File
@@ -33,7 +31,7 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val logger = KotlinLogging.loggerWithKtlintConfig {}
+private val logger = KotlinLogging.logger {}
 
 /**
  * Deletes the file if it exists, retrying as necessary if the file is
