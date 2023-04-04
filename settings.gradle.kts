@@ -32,6 +32,7 @@ plugins {
 }
 
 includeBuild("gradle/plugins")
+include("diktat-api")
 include("diktat-common")
 include("diktat-gradle-plugin")
 include("diktat-maven-plugin")
