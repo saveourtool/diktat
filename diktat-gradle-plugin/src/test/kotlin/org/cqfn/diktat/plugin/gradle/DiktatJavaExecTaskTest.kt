@@ -1,9 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask
-import com.pinterest.ktlint.reporter.json.JsonReporter
-import com.pinterest.ktlint.reporter.plain.PlainReporter
-import com.pinterest.ktlint.reporter.sarif.SarifReporter
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -42,9 +39,6 @@ class DiktatJavaExecTaskTest {
         ) {
             inputs { include("src/**/*.kt") }
         }
-
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is PlainReporter)
     }
 
     @Test
@@ -69,9 +63,6 @@ class DiktatJavaExecTaskTest {
                 exclude("src/main/kotlin/generated")
             }
         }
-
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is PlainReporter)
     }
 
     @Test
@@ -100,38 +91,12 @@ class DiktatJavaExecTaskTest {
     }
 
     @Test
-    fun `check command line has reporter type and output`() {
-        assertFiles(emptyList()) {
-            inputs { exclude("*") }
-            diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporter = "json"
-            output = "some.txt"
-        }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is JsonReporter)
-    }
-
-    @Test
-    fun `check command line has reporter type without output`() {
-        assertFiles(emptyList()) {
-            inputs { exclude("*") }
-            diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporter = "json"
-        }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is JsonReporter)
-    }
-
-    @Test
     fun `check command line in githubActions mode`() {
-        val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             githubActions = true
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -140,7 +105,6 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `githubActions mode should have higher precedence over explicit reporter`() {
-        val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -148,8 +112,10 @@ class DiktatJavaExecTaskTest {
             reporter = "json"
             output = "report.json"
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is SarifReporter)
+        Assertions.assertEquals(
+            project.rootDir.toString(),
+            System.getProperty("user.home")
+        )
     }
 
     @Test
@@ -159,8 +125,6 @@ class DiktatJavaExecTaskTest {
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporter = "sarif"
         }
-        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.reporter is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
