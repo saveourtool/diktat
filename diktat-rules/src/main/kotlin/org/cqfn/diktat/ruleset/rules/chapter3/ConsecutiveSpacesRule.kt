@@ -6,9 +6,9 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

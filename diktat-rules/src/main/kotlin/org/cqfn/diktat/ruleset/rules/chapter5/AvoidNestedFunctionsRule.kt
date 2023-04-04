@@ -9,12 +9,12 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isAnonymousFunction
 
-import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
-import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl

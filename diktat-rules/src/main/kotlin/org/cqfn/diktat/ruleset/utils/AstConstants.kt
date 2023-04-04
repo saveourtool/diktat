@@ -2,16 +2,16 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.DO_WHILE
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.FOR
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
-import org.jetbrains.kotlin.KtNodeTypes.RBRACE
-import org.jetbrains.kotlin.KtNodeTypes.SEMICOLON
-import org.jetbrains.kotlin.KtNodeTypes.WHILE
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FOR
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.WHILE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 
 internal const val GET_PREFIX = "get"
 internal const val SET_PREFIX = "set"

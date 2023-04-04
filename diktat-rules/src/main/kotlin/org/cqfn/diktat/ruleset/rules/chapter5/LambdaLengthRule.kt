@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_LINES_IN_LAMBDA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes
+import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**

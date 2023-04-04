@@ -5,15 +5,15 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK
-import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
-import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
-import org.jetbrains.kotlin.KtNodeTypes.RBRACE
-import org.jetbrains.kotlin.KtNodeTypes.SCRIPT
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**

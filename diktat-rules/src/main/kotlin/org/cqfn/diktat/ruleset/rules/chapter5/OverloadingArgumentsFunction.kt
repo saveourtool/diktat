@@ -7,9 +7,9 @@ import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 
-import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFunction

@@ -5,10 +5,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.NULLABLE_TYPE
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty

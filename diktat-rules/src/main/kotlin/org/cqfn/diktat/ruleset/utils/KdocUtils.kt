@@ -4,9 +4,9 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_SECTION
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

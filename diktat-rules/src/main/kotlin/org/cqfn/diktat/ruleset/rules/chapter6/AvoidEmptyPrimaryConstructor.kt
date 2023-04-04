@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 

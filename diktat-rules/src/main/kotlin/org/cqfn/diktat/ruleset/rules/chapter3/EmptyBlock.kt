@@ -7,16 +7,16 @@ import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.RBRACE
-import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl

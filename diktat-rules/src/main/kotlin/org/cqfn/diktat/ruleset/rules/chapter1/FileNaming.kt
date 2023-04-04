@@ -10,9 +10,9 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isKotlinScript
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
-import org.jetbrains.kotlin.KtNodeTypes.CLASS
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 import java.io.File

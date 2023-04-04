@@ -13,15 +13,15 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
-import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isLeaf
 import mu.KotlinLogging

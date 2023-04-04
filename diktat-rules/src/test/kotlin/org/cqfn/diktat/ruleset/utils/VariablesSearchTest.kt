@@ -4,7 +4,7 @@ import org.cqfn.diktat.ruleset.utils.search.VariablesSearch
 import org.cqfn.diktat.ruleset.utils.search.default
 import org.cqfn.diktat.util.applyToCode
 
-import org.jetbrains.kotlin.KtNodeTypes
+import com.pinterest.ktlint.core.ast.ElementType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

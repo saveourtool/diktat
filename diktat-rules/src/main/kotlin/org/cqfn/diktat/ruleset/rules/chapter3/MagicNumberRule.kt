@@ -8,16 +8,16 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.MINUS
-import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
-import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.RANGE
-import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.MINUS
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.RANGE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction

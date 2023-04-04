@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.utils
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithAssignments
 import org.cqfn.diktat.util.applyToCode
 
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

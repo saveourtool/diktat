@@ -10,8 +10,8 @@ import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement

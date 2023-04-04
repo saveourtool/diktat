@@ -5,12 +5,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.ANNOTATION_NEW_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.CLASS
-import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
-import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement

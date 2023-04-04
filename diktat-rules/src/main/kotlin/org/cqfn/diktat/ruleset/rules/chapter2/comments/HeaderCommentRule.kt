@@ -18,13 +18,13 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
-import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

@@ -6,7 +6,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import org.jetbrains.kotlin.KtNodeTypes
+import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**

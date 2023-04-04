@@ -13,7 +13,7 @@ package org.cqfn.diktat.ruleset.utils.search
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
-import org.jetbrains.kotlin.KtNodeTypes
+import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtElement

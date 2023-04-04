@@ -16,10 +16,10 @@ import com.bpodgursky.jbool_expressions.rules.DistributiveLaw
 import com.bpodgursky.jbool_expressions.rules.Rule
 import com.bpodgursky.jbool_expressions.rules.RuleList
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
-import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.CONDITION
-import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
-import org.jetbrains.kotlin.KtNodeTypes.PREFIX_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
+import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
