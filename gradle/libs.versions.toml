@@ -105,11 +105,12 @@ kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-
 
 # ktlint & detekt
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
+ktlint-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
+ktlint-reporter-checkstyle = { module = "com.pinterest.ktlint:ktlint-reporter-checkstyle", version.ref = "ktlint" }
+ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
+ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
 ktlint-reporter-plain = { module = "com.pinterest.ktlint:ktlint-reporter-plain", version.ref = "ktlint" }
 ktlint-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-reporter-sarif", version.ref = "ktlint" }
-ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
-ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
-ktlint-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
 sarif4k = { module = "io.github.detekt.sarif4k:sarif4k", version.ref = "sarif4k" }
 sarif4k-jvm = { module = "io.github.detekt.sarif4k:sarif4k-jvm", version.ref = "sarif4k" }
 

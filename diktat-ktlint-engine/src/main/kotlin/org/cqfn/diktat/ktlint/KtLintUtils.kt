@@ -18,13 +18,13 @@ import java.nio.file.Path
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.relativeTo
 
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
 private val log = KotlinLogging.logger { }
 
 val defaultCallback = DiktatCallback { error, _ ->
     log.warn { "Received linting error: $error" }
 }
+
+typealias LintErrorCallback = (LintError, Boolean) -> Unit
 
 /**
  * @param sourceRootDir

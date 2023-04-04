@@ -1,3 +1,5 @@
+package org.cqfn.diktat.ktlint
+
 import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback

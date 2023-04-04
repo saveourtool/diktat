@@ -1,3 +1,5 @@
+package org.cqfn.diktat.ktlint
+
 import org.cqfn.diktat.api.DiktatError
 import com.pinterest.ktlint.core.LintError
 

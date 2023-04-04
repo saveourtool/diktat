@@ -59,7 +59,12 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         return reporterProvider.get(outputStream.asPrintStream(), opt).wrap(sourceRootDir)
     }
 
-    override fun createPlain(outputStream: OutputStream, sourceRootDir: Path, colorName: String?, groupByFile: Boolean): DiktatReporter {
+    override fun createPlain(
+        outputStream: OutputStream,
+        sourceRootDir: Path,
+        colorName: String?,
+        groupByFile: Boolean,
+    ): DiktatReporter {
         val opt = buildMap<String, Any> {
             colorName?.let {
                 put("color", true)

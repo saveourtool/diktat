@@ -11,7 +11,7 @@ dependencies {
     implementation(projects.diktatCommon)
     implementation(libs.ktlint.core)
     implementation(libs.ktlint.reporter.baseline)
-//    implementation(libs.ktlint.reporter.checkstyle)
+    implementation(libs.ktlint.reporter.checkstyle)
     implementation(libs.ktlint.reporter.html)
     implementation(libs.ktlint.reporter.json)
     implementation(libs.ktlint.reporter.plain)
