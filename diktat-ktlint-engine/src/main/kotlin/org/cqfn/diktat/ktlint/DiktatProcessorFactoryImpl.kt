@@ -5,6 +5,7 @@ import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.util.isKotlinScript
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigOverride
 import java.nio.charset.StandardCharsets
@@ -31,7 +32,7 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
         ruleSets = setOf(diktatRuleSet.toKtLint()),
         userData = emptyMap(),
         cb = callback,
-        script = false,  // internal API of KtLint
+        script = file.isKotlinScript(),
         editorConfigPath = null,
         debug = false,  // we do not use it
         editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,

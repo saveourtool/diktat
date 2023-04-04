@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.isKotlinScript
+import org.cqfn.diktat.util.isKotlinScript
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS

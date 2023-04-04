@@ -64,7 +64,6 @@ abstract class DiktatTaskBase(
     internal val shouldRun: Boolean by lazy {
         !actualInputs.isEmpty
     }
-
     private val diktatRunnerFactory by lazy {
         DiktatRunnerFactory(
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
@@ -73,7 +72,6 @@ abstract class DiktatTaskBase(
             diktatReporterFactory = DiktatReporterFactoryImpl()
         )
     }
-
     private val diktatRunnerArguments by lazy {
         DiktatRunnerArguments(
             configFile = extension.diktatConfigFile.toPath(),
