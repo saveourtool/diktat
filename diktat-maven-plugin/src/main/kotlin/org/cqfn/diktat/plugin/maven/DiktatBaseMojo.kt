@@ -1,27 +1,12 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.DiktatProcessor
-import org.cqfn.diktat.api.DiktatLogLevel
-import org.cqfn.diktat.ktlint.LintErrorReporter
-import org.cqfn.diktat.ktlint.unwrap
-import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
+import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
+import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
+import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.RuleExecutionException
-import com.pinterest.ktlint.core.internal.CurrentBaseline
-import com.pinterest.ktlint.core.internal.containsLintError
-import com.pinterest.ktlint.core.internal.loadBaseline
-import com.pinterest.ktlint.reporter.baseline.BaselineReporter
-import com.pinterest.ktlint.reporter.html.HtmlReporter
-import com.pinterest.ktlint.reporter.json.JsonReporter
-import com.pinterest.ktlint.reporter.plain.PlainReporter
-import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -32,11 +17,8 @@ import org.apache.maven.project.MavenProject
 
 import java.io.File
 import java.io.FileOutputStream
-import java.io.PrintStream
-import java.nio.file.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import java.io.OutputStream
+import kotlin.io.path.Path
 
 /**
  * Base [Mojo] for checking and fixing code using diktat
@@ -103,16 +85,21 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private lateinit var mavenSession: MavenSession
 
     /**
-     * @param command instance of [DiktatProcessCommand] used in analysis
-     * @param formattedContentConsumer consumer for formatted content of the file
+     * @param runner instance of [DiktatRunner] used in analysis
+     * @param args arguments for [DiktatRunner]
+     * @return count of errors
      */
-    abstract fun runAction(command: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit)
+    @Suppress("TOO_MANY_PARAMETERS")
+    abstract fun runAction(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments,
+    ): Int
 
     /**
      * Perform code check using diktat ruleset
      *
      * @throws MojoFailureException if code style check was not passed
-     * @throws MojoExecutionException if [RuleExecutionException] has been thrown
+     * @throws MojoExecutionException if an exception in __KtLint__ has been thrown
      */
     override fun execute() {
         val configFile = resolveConfig()
@@ -123,66 +110,44 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
-        val diktatProcessor by lazy {
-            DiktatProcessor.builder()
-                .diktatRuleSetProvider(configFile)
-                .logLevel(
-                    if (debug) DiktatLogLevel.DEBUG else DiktatLogLevel.INFO
-                )
-                .build()
-        }
-        val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
-            ?: CurrentBaseline(emptyMap(), false)
-        val reporterImpl = resolveReporter(baselineResults)
-        reporterImpl.beforeAll()
-
-        val lintErrorReporter = LintErrorReporter()
-        inputs
-            .map(::File)
-            .forEach {
-                diktatProcessor.checkDirectory(it, Reporter.from(reporterImpl, lintErrorReporter), baselineResults.baselineRules ?: emptyMap())
-            }
-
-        reporterImpl.afterAll()
-        if (lintErrorReporter.isNotEmpty()) {
-            throw MojoFailureException("There are ${lintErrorReporter.errorCount()} lint errors")
+        val sourceRootDir = mavenProject.basedir.parentFile.toPath()
+        val diktatRunner = DiktatRunner(
+            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
+            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
+            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
+            diktatReporterFactory = DiktatReporterFactoryImpl()
+        )
+        val errorCounter = runAction(
+            runner = diktatRunner,
+            args = DiktatRunnerArguments(
+                configFileName = resolveConfig(),
+                sourceRootDir = sourceRootDir,
+                files = inputs.map(::Path),
+                baselineFile = baseline?.toPath(),
+                reporterType = getReporterType(),
+                reporterOutput = getReporterOutput(),
+            ),
+        )
+        if (errorCounter > 0) {
+            throw MojoFailureException("There are $errorCounter lint errors")
         }
     }
 
-    private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
-        val output = if (this.output.isBlank()) {
-            if (this.githubActions) {
-                // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
-                System.setProperty("user.home", mavenSession.executionRootDirectory)
-                PrintStream(FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false))
-            } else {
-                System.`out`
-            }
-        } else {
-            PrintStream(FileOutputStream(this.output, false))
-        }
+    private fun getReporterType(): String = if (githubActions) {
+        "sarif"
+    } else if (reporter in setOf("sarif", "plain", "json", "html")) {
+        reporter
+    } else {
+        log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
+        "plain"
+    }
 
-        val actualReporter = if (this.githubActions) {
-            SarifReporter(output)
-        } else {
-            when (this.reporter) {
-                "sarif" -> SarifReporter(output)
-                "plain" -> PlainReporter(output)
-                "json" -> JsonReporter(output)
-                "html" -> HtmlReporter(output)
-                else -> {
-                    log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
-                    PlainReporter(output)
-                }
-            }
-        }
-
-        return if (baselineResults.baselineGenerationNeeded) {
-            val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
-            return Reporter.from(actualReporter, baselineReporter)
-        } else {
-            actualReporter
-        }
+    private fun getReporterOutput(): OutputStream? = if (output.isNotBlank()) {
+        FileOutputStream(this.output, false)
+    } else if (githubActions) {
+        FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
+    } else {
+        null
     }
 
     /**
@@ -203,67 +168,5 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 firstOrNull { it.exists() } ?: first()
             }
             .absolutePath
-    }
-
-    /**
-     * @throws MojoExecutionException if [RuleExecutionException] has been thrown by ktlint
-     */
-    @Suppress("TYPE_ALIAS")
-    private fun DiktatProcessor.checkDirectory(
-        directory: File,
-        reporter: Reporter,
-        baselineRules: Map<String, List<LintError>>,
-    ) {
-        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
-        directory
-            .walk()
-            .filter { file ->
-                file.isDirectory || file.toPath().isKotlinCodeOrScript()
-            }
-            .filter { it.isFile }
-            .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
-            .forEach { file ->
-                log.debug("Checking file $file")
-                try {
-                    reporter.before(file.absolutePath)
-                    checkFile(
-                        file.toPath(),
-                        reporter,
-                        baselineRules.getOrDefault(
-                            file.relativeTo(mavenProject.basedir.parentFile).invariantSeparatorsPath,
-                            emptyList()
-                        ),
-                    )
-                    reporter.after(file.absolutePath)
-                } catch (e: RuleExecutionException) {
-                    log.error("Unhandled exception during rule execution: ", e)
-                    throw MojoExecutionException("Unhandled exception during rule execution", e)
-                }
-            }
-    }
-
-    private fun DiktatProcessor.checkFile(
-        file: Path,
-        reporter: Reporter,
-        baselineErrors: List<LintError>,
-    ) {
-        val command = DiktatProcessCommand.builder()
-            .processor(this)
-            .file(file)
-            .callback { error, isCorrected ->
-                val ktLintError = error.unwrap()
-                if (!baselineErrors.containsLintError(ktLintError)) {
-                    reporter.onLintError(file.absolutePathString(), ktLintError, isCorrected)
-                }
-            }
-            .build()
-        runAction(command) { formattedText ->
-            val fileName = file.absolutePathString()
-            val fileContent = file.readText(Charsets.UTF_8)
-            if (fileContent != formattedText) {
-                log.info("Original and formatted content differ, writing to $fileName...")
-                file.writeText(formattedText, Charsets.UTF_8)
-            }
-        }
     }
 }

@@ -26,10 +26,10 @@ abstract class DiktatProcessor {
      */
     fun fixAll(
         listener: DiktatProcessorListener = DiktatProcessorListener.empty,
-        files: Sequence<Path>,
+        files: Collection<Path>,
         formattedCodeHandler: (Path, String) -> Unit,
     ) {
-        listener.beforeAll()
+        listener.beforeAll(files)
         files.forEach { file ->
             listener.before(file)
             val formattedCode = fix(file) { error, isCorrected ->
@@ -57,9 +57,9 @@ abstract class DiktatProcessor {
      */
     fun checkAll(
         listener: DiktatProcessorListener = DiktatProcessorListener.empty,
-        files: Sequence<Path>,
+        files: Collection<Path>,
     ) {
-        listener.beforeAll()
+        listener.beforeAll(files)
         files.forEach { file ->
             listener.before(file)
             check(file) { error, isCorrected ->

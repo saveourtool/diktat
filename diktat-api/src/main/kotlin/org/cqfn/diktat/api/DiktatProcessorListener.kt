@@ -9,8 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger
 interface DiktatProcessorListener {
     /**
      * Called once, before [org.cqfn.diktat.DiktatProcessor] starts process a bunch of files.
+     *
+     * @param files
      */
-    fun beforeAll(): Unit = Unit
+    fun beforeAll(files: Collection<Path>): Unit = Unit
 
     /**
      * Called before each file when [org.cqfn.diktat.DiktatProcessor] starts to process it.
@@ -56,7 +58,7 @@ interface DiktatProcessorListener {
          * @return a single [DiktatProcessorListener] which uses all provided [listeners]
          */
         operator fun invoke(vararg listeners: DiktatProcessorListener): DiktatProcessorListener = object : DiktatProcessorListener {
-            override fun beforeAll() = listeners.forEach(DiktatProcessorListener::beforeAll)
+            override fun beforeAll(files: Collection<Path>) = listeners.forEach { it.beforeAll(files) }
             override fun before(file: Path) = listeners.forEach { it.before(file) }
             override fun onError(
                 file: Path,

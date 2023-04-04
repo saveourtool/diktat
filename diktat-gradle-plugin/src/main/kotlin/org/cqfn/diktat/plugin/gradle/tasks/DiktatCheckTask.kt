@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle.tasks
 
-import org.cqfn.diktat.DiktatProcessCommand
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin
 import org.gradle.api.Project
@@ -16,9 +17,10 @@ abstract class DiktatCheckTask @Inject constructor(
     extension: DiktatExtension,
     inputs: PatternFilterable
 ) : DiktatTaskBase(extension, inputs) {
-    override fun doRun(diktatCommand: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit) {
-        diktatCommand.check()
-    }
+    override fun doRun(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments
+    ): Int = runner.checkAll(args)
 
     companion object {
         /**
