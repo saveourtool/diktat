@@ -109,3 +109,30 @@ fun format(
         ).ignoreCorrectedErrors()
     )
 }
+
+/**
+ * @param ruleSetSupplier
+ * @param text
+ * @param fileName
+ * @param cb callback to be called on unhandled [LintError]s
+ * @return formatted code
+ */
+@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
+fun lint(
+    ruleSetSupplier: () -> DiktatRuleSet,
+    @Language("kotlin") text: String,
+    fileName: String,
+    cb: DiktatCallback = defaultCallback
+) {
+    val ruleSets = listOf(ruleSetSupplier().toKtLint())
+    KtLint.lint(
+        ExperimentalParams(
+            text = text,
+            ruleSets = ruleSets,
+            fileName = fileName.removeSuffix("_copy"),
+            script = fileName.removeSuffix("_copy").endsWith("kts"),
+            cb = cb.unwrap(),
+            debug = true,
+        ).ignoreCorrectedErrors()
+    )
+}
