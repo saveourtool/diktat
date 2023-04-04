@@ -20,18 +20,18 @@ import org.cqfn.diktat.ruleset.utils.ignoreImports
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
 
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_MARKDOWN_LINK
+import org.jetbrains.kotlin.lexer.KtTokens.KDOC
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.MARKDOWN_LINK
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOf
 import com.pinterest.ktlint.core.ast.isPartOfComment
@@ -83,7 +83,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     private val ignoreImportsPatterns = setOf("component\\d+".toRegex())
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
             )

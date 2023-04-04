@@ -11,9 +11,10 @@ import org.cqfn.diktat.ruleset.utils.isKotlinScript
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.io.File
 
@@ -34,7 +35,7 @@ class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var filePath: String
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             filePath = node.getFilePath()
             if (!filePath.isKotlinScript()) {
                 checkFileNaming(node)

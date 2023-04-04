@@ -13,10 +13,10 @@ import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.MINUS
+import org.jetbrains.kotlin.lexer.KtTokens.MINUS
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.RANGE
+import org.jetbrains.kotlin.lexer.KtTokens.RANGE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

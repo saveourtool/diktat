@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.KtNodeTypes.BINARY_WITH_TYPE
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.IF
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * Rule that detects redundant explicit casts
@@ -40,7 +41,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(SMART_CAST_NEEDED)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val usages = collectLocalPropertiesWithUsages(node)
             val properMap = collectReferenceList(usages)
             handleProp(properMap)

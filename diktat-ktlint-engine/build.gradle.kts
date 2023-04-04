@@ -9,7 +9,7 @@ project.description = "This module builds diktat-api implementation using ktlint
 dependencies {
     api(projects.diktatApi)
     implementation(projects.diktatCommon)
-    implementation(libs.ktlint.core)
+    api(libs.ktlint.core)
     implementation(libs.ktlint.reporter.baseline)
     implementation(libs.ktlint.reporter.checkstyle)
     implementation(libs.ktlint.reporter.html)

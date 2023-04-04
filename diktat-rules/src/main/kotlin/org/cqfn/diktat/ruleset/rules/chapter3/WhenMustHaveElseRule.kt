@@ -11,23 +11,23 @@ import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 
 import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.ARROW
+import org.jetbrains.kotlin.lexer.KtTokens.ARROW
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.ELSE_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.RETURN
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IN_RANGE
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IS_PATTERN
-import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_WITH_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -51,7 +51,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(WHEN_WITHOUT_ELSE)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.WHEN && isStatement(node)) {
+        if (node.elementType == KtNodeTypes.WHEN && isStatement(node)) {
             checkEntries(node)
         }
     }
@@ -84,7 +84,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
         }.flatten()
 
         val conditionsWithExpression = whenEntries.map {
-            it.getAllChildrenWithType(WHEN_CONDITION_WITH_EXPRESSION)
+            it.getAllChildrenWithType(WHEN_CONDITION_EXPRESSION)
         }.flatten()
 
         val areOnlyEnumEntriesWithExpressions = if (conditionsWithExpression.isNotEmpty()) {

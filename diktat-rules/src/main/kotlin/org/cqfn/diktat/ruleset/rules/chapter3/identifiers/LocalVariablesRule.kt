@@ -10,8 +10,8 @@ import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -43,7 +43,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(LOCAL_VARIABLE_EARLY_DECLARATION)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             // collect all local properties and associate with corresponding references
             val propertiesToUsages = collectLocalPropertiesWithUsages(node)
 

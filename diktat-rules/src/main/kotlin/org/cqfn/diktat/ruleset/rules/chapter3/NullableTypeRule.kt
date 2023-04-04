@@ -11,9 +11,9 @@ import org.jetbrains.kotlin.KtNodeTypes.BOOLEAN_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CHARACTER_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.CHARACTER_LITERAL
-import org.jetbrains.kotlin.KtNodeTypes.CLOSING_QUOTE
+import org.jetbrains.kotlin.lexer.KtTokens.CLOSING_QUOTE
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
 import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.FLOAT_LITERAL
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
 import org.jetbrains.kotlin.KtNodeTypes.TRUE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.USER_TYPE
-import org.jetbrains.kotlin.KtNodeTypes.VAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement

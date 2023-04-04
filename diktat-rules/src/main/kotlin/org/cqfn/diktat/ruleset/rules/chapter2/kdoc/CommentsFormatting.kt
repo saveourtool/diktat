@@ -11,31 +11,30 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
-import org.jetbrains.kotlin.KtNodeTypes.ELSE_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IF
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_CODE_BLOCK_TEXT
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_LEADING_ASTERISK
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_SECTION
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TEXT
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This class handles rule 2.6
@@ -193,7 +192,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         if (node.treeParent.firstChildNode == node) {
             return
         }
-        if (node.treeParent.elementType == FILE) {
+        if (node.treeParent.elementType == KtFileElementType.INSTANCE) {
             // This case is for top-level comments that are located in the beginning of the line and therefore don't need any spaces before.
             if (!node.treePrev.isWhiteSpaceWithNewline() && node.treePrev.text.count { it == ' ' } > 0) {
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
@@ -253,17 +252,17 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         if (node.elementType == KDOC) {
-            val section = node.getFirstChildWithType(KDOC_SECTION)
+            val section = node.getFirstChildWithType(KDocElementTypes.KDOC_SECTION)
             if (section != null &&
-                    section.findChildrenMatching(KDOC_TEXT) { (it.treePrev != null && it.treePrev.elementType == KDOC_LEADING_ASTERISK) || it.treePrev == null }
+                    section.findChildrenMatching(KDocTokens.TEXT) { (it.treePrev != null && it.treePrev.elementType == KDocTokens.LEADING_ASTERISK) || it.treePrev == null }
                         .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
                 // it.treePrev == null if there is no \n at the beginning of KDoc
                 return
             }
 
             if (section != null &&
-                    section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).isNotEmpty() &&
-                    section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
+                    section.getAllChildrenWithType(KDocTokens.CODE_BLOCK_TEXT).isNotEmpty() &&
+                    section.getAllChildrenWithType(KDocTokens.CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) {
                 return
             }
         }
@@ -276,10 +275,10 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 EOL_COMMENT -> (node as LeafPsiElement).rawReplaceWithText("// $commentText")
                 BLOCK_COMMENT -> (node as LeafPsiElement).rawReplaceWithText("/* $commentText")
                 KDOC -> {
-                    node.findAllDescendantsWithSpecificType(KDOC_TEXT).forEach {
+                    node.findAllDescendantsWithSpecificType(KDocTokens.TEXT).forEach {
                         modifyKdocText(it, configuration)
                     }
-                    node.findAllDescendantsWithSpecificType(KDOC_CODE_BLOCK_TEXT).forEach {
+                    node.findAllDescendantsWithSpecificType(KDocTokens.CODE_BLOCK_TEXT).forEach {
                         modifyKdocText(it, configuration)
                     }
                 }
@@ -333,7 +332,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             node.treePrev == null || node.treePrev.elementType == LBRACE  // null is handled for functional literal
         }
-    } else if (node.treeParent?.treeParent?.elementType == FILE && node.treeParent.prevSibling { it.text.isNotBlank() } == null) {
+    } else if (node.treeParent?.treeParent?.elementType == KtFileElementType.INSTANCE && node.treeParent.prevSibling { it.text.isNotBlank() } == null) {
         // `treeParent` is the first not-empty node in a file
         true
     } else if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&

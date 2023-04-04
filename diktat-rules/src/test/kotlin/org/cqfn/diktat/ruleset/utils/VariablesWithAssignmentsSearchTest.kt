@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.utils
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithAssignments
 import org.cqfn.diktat.util.applyToCode
 
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -23,7 +23,7 @@ class VariablesWithAssignmentsSearchTest {
                 }
             }
         """.trimIndent(), 0) { node, _ ->
-            if (node.elementType == FILE) {
+            if (node.elementType == KtFileElementType.INSTANCE) {
                 val vars = node.findAllVariablesWithAssignments().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
@@ -49,7 +49,7 @@ class VariablesWithAssignmentsSearchTest {
                 }
             }
         """.trimIndent(), 0) { node, _ ->
-            if (node.elementType == FILE) {
+            if (node.elementType == KtFileElementType.INSTANCE) {
                 val vars = node.findAllVariablesWithAssignments().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
@@ -68,7 +68,7 @@ class VariablesWithAssignmentsSearchTest {
                     a++
                 }
         """.trimIndent(), 0) { node, _ ->
-            if (node.elementType == FILE) {
+            if (node.elementType == KtFileElementType.INSTANCE) {
                 val vars = node.findAllVariablesWithAssignments().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)

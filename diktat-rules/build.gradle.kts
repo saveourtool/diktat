@@ -14,6 +14,8 @@ dependencies {
     api(projects.diktatApi)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlin.compiler.embeddable)
+    // a temporary added
+    implementation(projects.diktatKtlintEngine)
     // guava is used for string case utils
     implementation(libs.guava)
     implementation(libs.kotlin.logging)

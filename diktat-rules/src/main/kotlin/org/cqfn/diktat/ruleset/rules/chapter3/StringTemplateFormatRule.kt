@@ -8,15 +8,15 @@ import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 
 import org.jetbrains.kotlin.KtNodeTypes.ARRAY_ACCESS_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.CLOSING_QUOTE
+import org.jetbrains.kotlin.lexer.KtTokens.CLOSING_QUOTE
 import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.LITERAL_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SHORT_STRING_TEMPLATE_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.SHORT_TEMPLATE_ENTRY_START
+import org.jetbrains.kotlin.lexer.KtTokens.SHORT_TEMPLATE_ENTRY_START
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement

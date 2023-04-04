@@ -9,7 +9,7 @@ import org.cqfn.diktat.ruleset.utils.isGoingAfter
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION

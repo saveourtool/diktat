@@ -38,24 +38,24 @@ import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.CLOSING_QUOTE
+import org.jetbrains.kotlin.lexer.KtTokens.CLOSING_QUOTE
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
-import org.jetbrains.kotlin.KtNodeTypes.FILE
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
-import org.jetbrains.kotlin.KtNodeTypes.LBRACKET
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACKET
 import org.jetbrains.kotlin.KtNodeTypes.LITERAL_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.LONG_TEMPLATE_ENTRY_END
-import org.jetbrains.kotlin.KtNodeTypes.LONG_TEMPLATE_ENTRY_START
-import org.jetbrains.kotlin.KtNodeTypes.LPAR
+import org.jetbrains.kotlin.lexer.KtTokens.LONG_TEMPLATE_ENTRY_END
+import org.jetbrains.kotlin.lexer.KtTokens.LONG_TEMPLATE_ENTRY_START
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
-import org.jetbrains.kotlin.KtNodeTypes.RBRACE
-import org.jetbrains.kotlin.KtNodeTypes.RBRACKET
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACKET
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.REGULAR_STRING_PART
-import org.jetbrains.kotlin.KtNodeTypes.RPAR
+import org.jetbrains.kotlin.lexer.KtTokens.REGULAR_STRING_PART
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
 import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SHORT_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
@@ -63,7 +63,7 @@ import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.visit
 import mu.KotlinLogging
@@ -107,7 +107,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             filePath = node.getFilePath()
 
             customIndentationCheckers = listOf(

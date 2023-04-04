@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.KtNodeTypes.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PROTECTED_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PUBLIC_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
-import org.jetbrains.kotlin.KtNodeTypes.VAR_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.children
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass

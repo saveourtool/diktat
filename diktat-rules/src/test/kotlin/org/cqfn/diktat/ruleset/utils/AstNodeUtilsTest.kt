@@ -16,18 +16,18 @@ import com.pinterest.ktlint.core.RuleSet
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.EQ
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.VAL_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.nextSibling
@@ -175,7 +175,7 @@ class AstNodeUtilsTest {
                 Assertions.assertEquals(map { it.text }, listOf(code))
                 counter.incrementAndGet()
             }
-            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == FILE) {
+            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == KtFileElementType.INSTANCE) {
                 Assertions.assertEquals(node.getAllChildrenWithType(IDENTIFIER)[0].text, "Test")
                 counter.incrementAndGet()
             }
@@ -194,7 +194,7 @@ class AstNodeUtilsTest {
             }
         """.trimIndent()
         applyToCode(code, 1) { node, counter ->
-            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == FILE) {
+            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == KtFileElementType.INSTANCE) {
                 Assertions.assertEquals(node.getFirstChildWithType(IDENTIFIER)!!.text, "Test")
                 counter.incrementAndGet()
             }
@@ -675,7 +675,7 @@ class AstNodeUtilsTest {
         applyToCode("""
                 |val a = 0
                 |val b = 1""".trimMargin(), 1) { node, counter ->
-            if (node.elementType == FILE) {
+            if (node.elementType == KtFileElementType.INSTANCE) {
                 val val1 = node.getFirstChildWithType(PROPERTY)!!
                 val val2 = val1.nextSibling { it.elementType == PROPERTY }!!
                 node.moveChildBefore(val2, val1, true)

@@ -15,64 +15,65 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import org.jetbrains.kotlin.KtNodeTypes.ANDAND
-import org.jetbrains.kotlin.KtNodeTypes.ARROW
+import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
+import org.jetbrains.kotlin.lexer.KtTokens.ARROW
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.BOOLEAN_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.CHARACTER_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.COMMA
-import org.jetbrains.kotlin.KtNodeTypes.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.COMMA
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.ELVIS
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.EQ
-import org.jetbrains.kotlin.KtNodeTypes.EQEQ
-import org.jetbrains.kotlin.KtNodeTypes.EQEQEQ
-import org.jetbrains.kotlin.KtNodeTypes.EXCL
-import org.jetbrains.kotlin.KtNodeTypes.EXCLEQ
-import org.jetbrains.kotlin.KtNodeTypes.EXCLEQEQEQ
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.EQEQ
+import org.jetbrains.kotlin.lexer.KtTokens.EQEQEQ
+import org.jetbrains.kotlin.lexer.KtTokens.EXCL
+import org.jetbrains.kotlin.lexer.KtTokens.EXCLEQ
+import org.jetbrains.kotlin.lexer.KtTokens.EXCLEQEQEQ
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
-import org.jetbrains.kotlin.KtNodeTypes.GT
-import org.jetbrains.kotlin.KtNodeTypes.GTEQ
+import org.jetbrains.kotlin.lexer.KtTokens.GT
+import org.jetbrains.kotlin.lexer.KtTokens.GTEQ
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_MARKDOWN_INLINE_LINK
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TEXT
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.MARKDOWN_INLINE_LINK
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TEXT
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.LITERAL_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.LPAR
-import org.jetbrains.kotlin.KtNodeTypes.LT
-import org.jetbrains.kotlin.KtNodeTypes.LTEQ
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
+import org.jetbrains.kotlin.lexer.KtTokens.LT
+import org.jetbrains.kotlin.lexer.KtTokens.LTEQ
 import org.jetbrains.kotlin.KtNodeTypes.NULL
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
-import org.jetbrains.kotlin.KtNodeTypes.OROR
+import org.jetbrains.kotlin.lexer.KtTokens.OROR
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
 import org.jetbrains.kotlin.KtNodeTypes.POSTFIX_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.PREFIX_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.RPAR
-import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
+import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
 import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SHORT_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_WITH_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.net.MalformedURLException
 import java.net.URL
@@ -97,7 +98,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             node.getChildren(null).forEach {
                 if (it.elementType != PACKAGE_DIRECTIVE && it.elementType != IMPORT_LIST) {
                     checkLength(it, configuration)
@@ -112,7 +113,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
-                if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
+                if ((newNode.elementType != TEXT && newNode.elementType != MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(
@@ -145,7 +146,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
-                    val parentIsValArgListOrFunLitOrWhenEntry = listOf(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsValArgListOrFunLitOrWhenEntry = listOf(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_EXPRESSION)
                     findParentNodeMatching(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
@@ -175,12 +176,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     parent = it
                 } ?: return checkArgumentsList(parent, configuration)
                 WHEN_ENTRY -> return WhenEntry(parent)
-                WHEN_CONDITION_WITH_EXPRESSION -> return None()
+                WHEN_CONDITION_EXPRESSION -> return None()
                 EOL_COMMENT -> return checkComment(parent, configuration)
                 FUNCTION_LITERAL -> return Lambda(parent)
                 STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION -> {
                     stringOrDot = parent
-                    val parentIsBinExpOrValArgListOrWhenEntry = listOf(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsBinExpOrValArgListOrWhenEntry = listOf(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_EXPRESSION)
                     findParentNodeMatching(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
                         parent = it
                     } ?: run {

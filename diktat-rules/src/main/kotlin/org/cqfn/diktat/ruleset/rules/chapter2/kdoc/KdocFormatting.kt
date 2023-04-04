@@ -26,13 +26,13 @@ import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.reversedChildren
 
 import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_LEADING_ASTERISK
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_SECTION
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TAG
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TAG_NAME
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TEXT
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.LEADING_ASTERISK
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.SECTION
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TAG
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TAG_NAME
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TEXT
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling

@@ -20,43 +20,46 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.ANDAND
+import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.CONST_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.DOT
-import org.jetbrains.kotlin.KtNodeTypes.ELVIS
-import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
-import org.jetbrains.kotlin.KtNodeTypes.EQ
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.lexer.KtTokens.CONST_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.INTERNAL_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.LATEINIT_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
-import org.jetbrains.kotlin.KtNodeTypes.OROR
+import org.jetbrains.kotlin.lexer.KtTokens.OROR
 import org.jetbrains.kotlin.KtNodeTypes.OVERRIDE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
 import org.jetbrains.kotlin.KtNodeTypes.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PROTECTED_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PUBLIC_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
@@ -64,6 +67,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -102,10 +106,10 @@ fun ASTNode.isTextLengthInRange(range: IntRange): Boolean = this.textLength in r
 /**
  * getting first child name with IDENTIFIER type
  *
- * @return node with type [ElementType.IDENTIFIER] or null if it is not present
+ * @return node with type [org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER] or null if it is not present
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
-    this.getFirstChildWithType(ElementType.IDENTIFIER)
+    this.getFirstChildWithType(IDENTIFIER)
 
 /**
  * getting first child name with TYPE_PARAMETER_LIST type
@@ -113,7 +117,7 @@ fun ASTNode.getIdentifierName(): ASTNode? =
  * @return a node with type TYPE_PARAMETER_LIST or null if it is not present
  */
 fun ASTNode.getTypeParameterList(): ASTNode? =
-    this.getFirstChildWithType(ElementType.TYPE_PARAMETER_LIST)
+    this.getFirstChildWithType(TYPE_PARAMETER_LIST)
 
 /**
  * @return true if this node contains no error elements, false otherwise
@@ -369,7 +373,7 @@ fun ASTNode.isNodeFromObject(): Boolean {
  *
  * @return boolean result
  */
-fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
+fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == KtFileElementType.INSTANCE
 
 /**
  * Checks whether [this] node of type PROPERTY is `val`
@@ -794,7 +798,7 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = getRootNode().also {
-    require(it.elementType == FILE) { "Root node type is not FILE, but ${KtLint.FILE_PATH_USER_DATA_KEY} is present in user_data only in FILE nodes" }
+    require(it.elementType == KtFileElementType.INSTANCE) { "Root node type is not FILE, but ${KtLint.FILE_PATH_USER_DATA_KEY} is present in user_data only in FILE nodes" }
 }.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
 }
@@ -1009,8 +1013,8 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
 
 private fun ASTNode.hasExplicitIt(): Boolean {
     require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-    val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
-        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+    val parameterList = findChildByType(FUNCTION_LITERAL)
+        ?.findChildByType(VALUE_PARAMETER_LIST)
         ?.psi
             as KtParameterList?
     return parameterList?.parameters
@@ -1060,7 +1064,7 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
     }
     val hasIt = lambdaNode
         .findAllNodesWithCondition(excludeChildrenCondition = excludeChildrenCondition) {
-            it.elementType == ElementType.REFERENCE_EXPRESSION
+            it.elementType == REFERENCE_EXPRESSION
         }
         .map { it.text }
         .contains("it")
@@ -1095,6 +1099,6 @@ private fun hasAnySuppressorForInspection(
 private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
     require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
     return null == lambdaNode
-        .findChildByType(ElementType.FUNCTION_LITERAL)
-        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+        .findChildByType(FUNCTION_LITERAL)
+        ?.findChildByType(VALUE_PARAMETER_LIST)
 }

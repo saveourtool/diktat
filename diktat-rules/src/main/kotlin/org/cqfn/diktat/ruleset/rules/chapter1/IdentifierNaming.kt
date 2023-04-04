@@ -30,10 +30,10 @@ import org.jetbrains.kotlin.KtNodeTypes.CATCH_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER
@@ -52,6 +52,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.util.Locale
 
@@ -187,7 +188,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                         // FixMe: cover fixes with tests
                         val correctVariableName = variableName.text.toLowerCamelCase()
                         variableName
-                            .parent({ it.elementType == FILE })
+                            .parent({ it.elementType == KtFileElementType.INSTANCE })
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
                             ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }

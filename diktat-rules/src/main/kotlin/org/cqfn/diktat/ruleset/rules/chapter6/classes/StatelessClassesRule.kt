@@ -10,9 +10,9 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.INTERFACE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_KEYWORD
@@ -34,7 +34,7 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 ) {
     override fun logic(node: ASTNode) {
         // Fixme: We should find interfaces in all project and then check them
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val interfacesNodes = node
                 .findAllDescendantsWithSpecificType(CLASS)
                 .filter { it.hasChildOfType(INTERFACE_KEYWORD) }

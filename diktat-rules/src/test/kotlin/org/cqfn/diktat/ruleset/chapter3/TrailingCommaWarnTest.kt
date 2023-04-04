@@ -188,7 +188,7 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                    when (x) {}
                }
             """.trimMargin(),
-            LintError(4, 21, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_WITH_EXPRESSION: String::class", true),
+            LintError(4, 21, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_EXPRESSION: String::class", true),
             LintError(12, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IS_PATTERN: is String", true),
             LintError(20, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IN_RANGE: in 1..2", true),
             rulesConfigList = getRulesConfig("whenConditions")

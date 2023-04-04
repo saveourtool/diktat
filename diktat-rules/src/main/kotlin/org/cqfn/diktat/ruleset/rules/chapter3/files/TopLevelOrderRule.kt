@@ -6,22 +6,22 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
-import org.jetbrains.kotlin.KtNodeTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.INTERNAL_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
-import org.jetbrains.kotlin.KtNodeTypes.OVERRIDE_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.PROTECTED_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.TYPEALIAS
-import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.isExtensionDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * Rule that checks order in top level
@@ -32,7 +32,7 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(TOP_LEVEL_ORDER),
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             checkNode(node)
         }
     }

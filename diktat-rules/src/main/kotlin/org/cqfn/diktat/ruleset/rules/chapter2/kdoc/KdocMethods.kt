@@ -35,14 +35,14 @@ import org.jetbrains.kotlin.KtNodeTypes.ACTUAL_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CATCH
-import org.jetbrains.kotlin.KtNodeTypes.COLON
+import org.jetbrains.kotlin.lexer.KtTokens.COLON
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
 import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_SECTION
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TAG_NAME
-import org.jetbrains.kotlin.KtNodeTypes.KDOC_TEXT
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.SECTION
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TAG_NAME
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TEXT
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THIS_EXPRESSION
@@ -319,7 +319,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             ElementType.LAMBDA_EXPRESSION,
             ElementType.CALLABLE_REFERENCE_EXPRESSION,
             ElementType.SAFE_ACCESS_EXPRESSION,
-            ElementType.WHEN_CONDITION_WITH_EXPRESSION,
+            ElementType.WHEN_CONDITION_EXPRESSION,
             ElementType.COLLECTION_LITERAL_EXPRESSION,
         )
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()

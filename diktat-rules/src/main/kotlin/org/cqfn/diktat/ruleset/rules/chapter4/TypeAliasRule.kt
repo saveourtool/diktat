@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.KtNodeTypes.LT
+import org.jetbrains.kotlin.lexer.KtTokens.LT
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.KtNodeTypes.TYPEALIAS
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE

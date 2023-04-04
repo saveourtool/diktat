@@ -12,10 +12,10 @@ import org.cqfn.diktat.ruleset.utils.takeByChainOfTypes
 
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_LITERAL
-import org.jetbrains.kotlin.KtNodeTypes.MINUS
-import org.jetbrains.kotlin.KtNodeTypes.RANGE
+import org.jetbrains.kotlin.lexer.KtTokens.MINUS
+import org.jetbrains.kotlin.lexer.KtTokens.RANGE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST

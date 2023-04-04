@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_PARAMETERS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 

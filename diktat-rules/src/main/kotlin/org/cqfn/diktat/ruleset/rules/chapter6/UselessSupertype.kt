@@ -10,9 +10,9 @@ import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
-import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.OPEN_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import java.util.HashMap
 
 /**
@@ -113,7 +114,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType", "WRONG_NEWLINES")
     private fun findAllSupers(superTypeList: List<ASTNode>, methodsName: List<String>): Map<String, Int>? {
-        val fileNode = superTypeList.first().parent({ it.elementType == FILE })!!
+        val fileNode = superTypeList.first().parent({ it.elementType == KtFileElementType.INSTANCE })!!
         val superNodesIdentifier = superTypeList.map {
             it.findAllDescendantsWithSpecificType(IDENTIFIER)
                 .first()
