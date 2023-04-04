@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.unwrap
 import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask
+import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
 import com.pinterest.ktlint.reporter.sarif.SarifReporter
 
@@ -97,6 +98,29 @@ class DiktatJavaExecTaskTest {
             diktatConfigFile = project.file("../diktat-analysis.yml")
         }
         Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml"), task.extension.diktatConfigFile)
+    }
+
+    @Test
+    fun `check command line has reporter type and output`() {
+        assertFiles(emptyList()) {
+            inputs { exclude("*") }
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporter = "json"
+            output = "some.txt"
+        }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is JsonReporter)
+    }
+
+    @Test
+    fun `check command line has reporter type without output`() {
+        assertFiles(emptyList()) {
+            inputs { exclude("*") }
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporter = "json"
+        }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is JsonReporter)
     }
 
     @Test

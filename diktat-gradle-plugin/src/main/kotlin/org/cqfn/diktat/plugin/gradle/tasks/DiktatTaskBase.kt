@@ -104,7 +104,6 @@ abstract class DiktatTaskBase(
         diktatRunnerFactory(diktatRunnerArguments)
     }
 
-
     init {
         ignoreFailures = extension.ignoreFailures
     }

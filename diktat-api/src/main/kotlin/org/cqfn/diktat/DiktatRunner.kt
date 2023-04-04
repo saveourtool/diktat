@@ -2,14 +2,9 @@ package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatBaseline
 import org.cqfn.diktat.api.DiktatBaseline.Companion.skipKnownErrors
-import org.cqfn.diktat.api.DiktatBaselineFactory
 import org.cqfn.diktat.api.DiktatProcessorListener
-import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.countErrorsAsProcessorListener
 import org.cqfn.diktat.api.DiktatReporter
-import org.cqfn.diktat.api.DiktatReporterFactory
-import org.cqfn.diktat.api.DiktatRuleSetFactory
-import java.io.OutputStream
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.readText
