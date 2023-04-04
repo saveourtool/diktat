@@ -8,16 +8,16 @@ import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.THIS_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
+import org.jetbrains.kotlin.KtNodeTypes.EQ
+import org.jetbrains.kotlin.KtNodeTypes.KDOC
+import org.jetbrains.kotlin.KtNodeTypes.LBRACE
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.THIS_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

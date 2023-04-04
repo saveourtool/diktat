@@ -5,12 +5,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.CUSTOM_GETTERS_SETTERS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType.GET_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
-import com.pinterest.ktlint.core.ast.ElementType.SET_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.GET_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.OVERRIDE_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR
+import org.jetbrains.kotlin.KtNodeTypes.SET_KEYWORD
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**

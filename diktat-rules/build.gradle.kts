@@ -11,12 +11,14 @@ project.description = "The main diktat ruleset"
 
 dependencies {
     api(projects.diktatCommon)
-    testImplementation(projects.diktatTestFramework)
-    api(libs.ktlint.core)
+    api(projects.diktatApi)
     implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.kotlin.compiler.embeddable)
     // guava is used for string case utils
     implementation(libs.guava)
     implementation(libs.kotlin.logging)
+    testImplementation(projects.diktatTestFramework)
+    testImplementation(projects.diktatKtlintEngine)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

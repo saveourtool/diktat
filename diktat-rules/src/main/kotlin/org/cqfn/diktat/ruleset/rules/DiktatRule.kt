@@ -1,18 +1,18 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 
-import com.pinterest.ktlint.core.Rule
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
+private typealias DiktatRuleApi = org.cqfn.diktat.api.DiktatRule
 
 /**
- * This is a wrapper around _KtLint_ `Rule`.
+ * This is a wrapper around _KtLint_ `com.pinterest.ktlint.core.Rule`.
  *
  * @property id id of the rule
  * @property configRules all rules from configuration
@@ -20,10 +20,10 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
  */
 @Suppress("TooGenericExceptionCaught")
 abstract class DiktatRule(
-    val id: String,
+    override val id: String,
     val configRules: List<RulesConfig>,
     private val inspections: List<DiktatConfigRule>,
-) {
+) : DiktatRuleApi {
     /**
      * Default value is false
      */
@@ -31,32 +31,32 @@ abstract class DiktatRule(
 
     /**
      * The **file-specific** error emitter, initialized in
-     * [visit] and used in [logic] implementations.
+     * [invoke] and used in [logic] implementations.
      *
      * Since the file is indirectly a part of the state of a `Rule`, the same
      * `Rule` instance should **never be re-used** to check more than a single
      * file, or confusing effects (incl. race conditions) will occur.
-     * See the documentation of the [Rule] class for more details.
+     * See the documentation of the [com.pinterest.ktlint.core.Rule] class for more details.
      *
-     * @see Rule
-     * @see visit
+     * @see com.pinterest.ktlint.core.Rule
+     * @see invoke
      * @see logic
      */
-    lateinit var emitWarn: EmitType
+    lateinit var emitWarn: DiktatErrorEmitter
 
     /**
      * @param node
      * @param autoCorrect
-     * @param emit
+     * @param emitter
      * @throws Error
      */
     @Suppress("TooGenericExceptionThrown")
-    fun visit(
+    override fun invoke(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitType
+        emitter: DiktatErrorEmitter
     ) {
-        emitWarn = emit
+        emitWarn = emitter
         isFixMode = autoCorrect
 
         if (areInspectionsDisabled()) {

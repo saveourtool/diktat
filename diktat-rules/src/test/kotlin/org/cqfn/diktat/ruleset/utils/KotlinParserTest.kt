@@ -2,21 +2,21 @@ package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.util.applyToCode
 
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.KDOC
+import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.RBRACE
+import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.junit.jupiter.api.Assertions
@@ -87,7 +87,7 @@ class KotlinParserTest {
         val code = """
             |import org.junit.jupiter.api.Test
             |import org.junit.jupiter.api.Tests
-            | 
+            |
             |class A {
             |   fun foo(){
             |       println("hello")

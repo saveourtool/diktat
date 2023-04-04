@@ -19,7 +19,7 @@ class DiktatReporterImpl(
         file: Path,
         error: DiktatError,
         isCorrected: Boolean,
-    ) = ktLintReporter.onLintError(file.relativePathStringTo(sourceRootDir), error.unwrap(), isCorrected)
+    ): Unit = ktLintReporter.onLintError(file.relativePathStringTo(sourceRootDir), error.unwrap(), isCorrected)
     override fun after(file: Path): Unit = ktLintReporter.after(file.relativePathStringTo(sourceRootDir))
     override fun afterAll(): Unit = ktLintReporter.beforeAll()
 

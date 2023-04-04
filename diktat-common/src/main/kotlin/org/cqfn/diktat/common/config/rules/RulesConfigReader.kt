@@ -226,20 +226,6 @@ fun String.kotlinVersion(): KotlinVersion {
 }
 
 /**
- * Makes sure this _rule id_ is qualified with a _rule set id_.
- *
- * @param ruleSetId the _rule set id_; defaults to [DIKTAT_RULE_SET_ID].
- * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId`.
- * @see DIKTAT_RULE_SET_ID
- * @since 1.2.4
- */
-fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): String =
-    when {
-        this.contains(':') -> this
-        else -> "$ruleSetId:$this"
-    }
-
-/**
  * Get [RulesConfig] representing common configuration part that can be used in any rule
  */
 private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }

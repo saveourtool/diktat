@@ -3,7 +3,6 @@ package org.cqfn.diktat.ktlint
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.unwrap
 import com.pinterest.ktlint.core.KtLint
@@ -25,10 +24,8 @@ class KtLintRuleSetWrapperTest {
 
     @Test
     fun `check OrderedRule`() {
-        val ruleSetId = "id"
-
-        val rule1 = mockRule(id = "rule-first".qualifiedWithRuleSetId(ruleSetId))
-        val rule2 = mockRule(id = "rule-second".qualifiedWithRuleSetId(ruleSetId))
+        val rule1 = mockRule(id = "rule-first")
+        val rule2 = mockRule(id = "rule-second")
 
         val orderedRuleSet = DiktatRuleSet(listOf(rule1, rule2)).toKtLint()
 
@@ -47,7 +44,7 @@ class KtLintRuleSetWrapperTest {
             }
             .first()
             .let {
-                Assertions.assertEquals(rule1.id.qualifiedWithRuleSetId(ruleSetId), it.ruleId,
+                Assertions.assertEquals(rule1.id.qualifiedWithRuleSetId(), it.ruleId,
                     "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
             }
     }
@@ -59,10 +56,9 @@ class KtLintRuleSetWrapperTest {
         val onVisit: (DiktatRule) -> Unit = { rule ->
             actualRuleInvocationOrder += rule.id
         }
-        val ruleSetId = "id"
         val rules: List<DiktatRule> = sequenceOf("ccc", "bbb", "aaa").map { ruleId ->
             mockRule(
-                id = ruleId.qualifiedWithRuleSetId(ruleSetId),
+                id = ruleId,
                 onVisit = onVisit
             )
         }.toList()
@@ -79,7 +75,7 @@ class KtLintRuleSetWrapperTest {
          * Make sure OrderedRuleSet preserves the order.
          */
         val ruleSet = DiktatRuleSet(rules).toKtLint()
-        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id))
+        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.qualifiedWithRuleSetId() })
 
         @Language("kotlin")
         val code = "fun foo() { }"

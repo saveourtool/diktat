@@ -2,27 +2,17 @@
  * Stub for diktat ruleset provide to be used in tests and other related utilities
  */
 
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.api.DiktatRuleSetFactory
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.RuleSetProvider
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 import java.nio.file.Path
@@ -35,12 +25,15 @@ import kotlin.io.path.walk
 /**
  * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
  */
-class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
-                                 rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
+class DiktatRuleSetProvider4Test(
+    private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
+    rulesConfigList: List<RulesConfig>?,
+) : DiktatRuleSetFactory {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun get(): RuleSet = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList()))).toKtLint()
+    override fun invoke(): DiktatRuleSet = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList())))
+
+    override fun create(configFile: String): DiktatRuleSet = throw IllegalStateException("Method is not supported for testing")
 }
 
 class DiktatRuleSetProviderTest {
@@ -57,18 +50,9 @@ class DiktatRuleSetProviderTest {
             .filterNot { it in ignoredFileNames }
             .toList()
         val ruleNames = DiktatRuleSetProvider()
-            .toKtLint()
-            .get()
+            .invoke()
+            .rules
             .asSequence()
-            .onEachIndexed { index, rule ->
-                if (index != 0) {
-                    Assertions.assertTrue(
-                        rule.visitorModifiers.any { it is Rule.VisitorModifier.RunAfterRule },
-                        "Rule ${rule.id} doesn't contain Rule.VisitorModifier.RunAfterRule"
-                    )
-                }
-            }
-            .map { it.delegatee() }
             .map { it::class.simpleName }
             .filterNotNull()
             .filterNot { it in ignoredRuleNames }

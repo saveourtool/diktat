@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_LONG_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 

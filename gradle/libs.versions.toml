@@ -21,6 +21,7 @@ plexus = "2.0"
 jbool = "1.24"
 # downgraded to be compliance with ktlint
 mu-logging = "2.1.23"
+log4j2 = "2.20.0"
 kaml = "0.53.0"
 kotlin-multiplatform-diff = "0.4.0"
 sarif4k = "0.3.0"
@@ -41,8 +42,6 @@ diktat = "1.2.5"
 jgit = "6.5.0.202303070854-r"
 mockito = "5.2.0"
 mockito-kotlin = "4.1.0"
-# only in save-cli
-log4j = "2.20.0"
 testcontainers = "1.17.6"
 okhttp3 = "4.10.0"
 reckon = "0.16.1"
@@ -124,6 +123,8 @@ jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref =
 
 # logging
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "mu-logging" }
+log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
+log4j2-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j2" }
 
 # testing
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }

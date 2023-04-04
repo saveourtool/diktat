@@ -6,6 +6,7 @@ package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
@@ -25,6 +26,20 @@ val defaultCallback = DiktatCallback { error, _ ->
 }
 
 typealias LintErrorCallback = (LintError, Boolean) -> Unit
+
+/**
+ * Makes sure this _rule id_ is qualified with a _rule set id_.
+ *
+ * @param ruleSetId the _rule set id_; defaults to [DIKTAT_RULE_SET_ID].
+ * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId`.
+ * @see DIKTAT_RULE_SET_ID
+ * @since 1.2.4
+ */
+fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): String =
+    when {
+        this.contains(':') -> this
+        else -> "$ruleSetId:$this"
+    }
 
 /**
  * @param sourceRootDir

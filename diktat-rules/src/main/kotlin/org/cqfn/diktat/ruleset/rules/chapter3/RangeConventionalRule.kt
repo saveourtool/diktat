@@ -10,15 +10,15 @@ import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.takeByChainOfTypes
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.MINUS
-import com.pinterest.ktlint.core.ast.ElementType.RANGE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER
+import org.jetbrains.kotlin.KtNodeTypes.INTEGER_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.MINUS
+import org.jetbrains.kotlin.KtNodeTypes.RANGE
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

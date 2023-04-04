@@ -7,10 +7,10 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK_COMMENT
+import org.jetbrains.kotlin.KtNodeTypes.EOL_COMMENT
+import org.jetbrains.kotlin.KtNodeTypes.FILE
+import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

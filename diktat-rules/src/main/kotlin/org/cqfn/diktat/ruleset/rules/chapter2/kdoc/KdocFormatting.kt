@@ -25,14 +25,14 @@ import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.reversedChildren
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.KDOC
+import org.jetbrains.kotlin.KtNodeTypes.KDOC_LEADING_ASTERISK
+import org.jetbrains.kotlin.KtNodeTypes.KDOC_SECTION
+import org.jetbrains.kotlin.KtNodeTypes.KDOC_TAG
+import org.jetbrains.kotlin.KtNodeTypes.KDOC_TAG_NAME
+import org.jetbrains.kotlin.KtNodeTypes.KDOC_TEXT
+import org.jetbrains.kotlin.KtNodeTypes.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling

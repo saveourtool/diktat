@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.doesLambdaContainIt
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**

@@ -30,7 +30,7 @@ interface DiktatProcessorListener {
         file: Path,
         error: DiktatError,
         isCorrected: Boolean
-    )
+    ): Unit = Unit
 
     /**
      * Called after each file when [org.cqfn.diktat.DiktatProcessor] finished to process it.
@@ -46,9 +46,10 @@ interface DiktatProcessorListener {
 
     companion object {
         /**
-         * An instance of [DiktatProcessorListener.Empty]
+         * An instance of [DiktatProcessorListener] that does nothing
          */
-        val empty = Empty()
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        val empty = object : DiktatProcessorListener {}
 
         /**
          * @param listeners
@@ -82,22 +83,10 @@ interface DiktatProcessorListener {
         /**
          * @return An implementation of [DiktatProcessorListener] which closes [AutoCloseable] at the end
          */
-        fun AutoCloseable.closeAfterAllAsProcessorListener(): DiktatProcessorListener = object : Empty() {
+        fun AutoCloseable.closeAfterAllAsProcessorListener(): DiktatProcessorListener = object : DiktatProcessorListener {
             override fun afterAll() {
                 this@closeAfterAllAsProcessorListener.close()
             }
-        }
-
-        /**
-         * An empty implementation of [DiktatProcessorListener]
-         */
-        @Suppress("OBJECT_IS_PREFERRED")
-        class Empty : DiktatProcessorListener {
-            override fun onError(
-                file: Path,
-                error: DiktatError,
-                isCorrected: Boolean
-            ) = Unit
         }
     }
 }

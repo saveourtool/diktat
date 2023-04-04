@@ -21,6 +21,8 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
     }
     testImplementation(projects.diktatTestFramework)
+    testImplementation(projects.diktatKtlintEngine)
+    testImplementation(libs.kotlin.logging)
     testImplementation(libs.kotlin.stdlib.common)
     testImplementation(libs.kotlin.stdlib.jdk7)
     testImplementation(libs.kotlin.stdlib.jdk8)

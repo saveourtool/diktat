@@ -2,7 +2,6 @@ package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 

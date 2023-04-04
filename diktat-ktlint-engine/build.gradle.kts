@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.ktlint.reporter.plain)
     implementation(libs.ktlint.reporter.sarif)
 
+    testImplementation(libs.log4j2.slf4j)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

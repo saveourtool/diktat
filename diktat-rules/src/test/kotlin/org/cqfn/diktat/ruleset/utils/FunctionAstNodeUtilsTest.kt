@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.util.applyToCode
 
-import com.pinterest.ktlint.core.ast.ElementType.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

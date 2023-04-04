@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
+import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.cqfn.diktat.test.framework.util.checkForkedJavaHome
 import org.cqfn.diktat.test.framework.util.deleteIfExistsRecursively
@@ -7,7 +8,6 @@ import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 import org.cqfn.diktat.test.framework.util.inheritJavaHome
 import org.cqfn.diktat.test.framework.util.isWindows
 import org.cqfn.diktat.test.framework.util.temporaryDirectory
-import com.pinterest.ktlint.core.LintError
 
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.fail
@@ -40,7 +40,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     }
 
     // do nothing, we can't check unfixed lint errors here
-    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) = Unit
+    override fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) = Unit
 
     /**
      * @param testPath path to file with code that will be transformed by formatter, relative to [TestComparatorUnit.resourceFilePath]
