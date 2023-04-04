@@ -1,5 +1,6 @@
 package org.cqfn.diktat
 
+import org.cqfn.diktat.api.DiktatProcessorListener
 import java.io.OutputStream
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
@@ -13,6 +14,7 @@ import kotlin.io.path.absolutePathString
  * @property baselineFile an optional path to file with baseline
  * @property reporterType type of reporter to report the detected errors
  * @property reporterOutput output for reporter
+ * @property loggingListener listener to log diktat runner phases
  */
 data class DiktatRunnerArguments(
     val configFileName: String,
@@ -21,6 +23,7 @@ data class DiktatRunnerArguments(
     val baselineFile: Path?,
     val reporterType: String,
     val reporterOutput: OutputStream?,
+    val loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
 ) {
     constructor(
         configFile: Path,
@@ -29,6 +32,7 @@ data class DiktatRunnerArguments(
         baselineFile: Path?,
         reporterType: String,
         reporterOutput: OutputStream?,
+        loggingListener: DiktatProcessorListener,
     ) : this(
         configFile.absolutePathString(),
         sourceRootDir,
@@ -36,5 +40,6 @@ data class DiktatRunnerArguments(
         baselineFile,
         reporterType,
         reporterOutput,
+        loggingListener,
     )
 }

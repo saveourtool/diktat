@@ -52,7 +52,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
             System.setProperty("user.home", sourceRootDir.pathString)
         }
         val opt = if (reporterProvider is PlainReporterProvider) {
-            mapOf("color" to "DARK_GRAY")
+            mapOf("color_name" to Color.DARK_GRAY.name)
         } else {
             emptyMap()
         }

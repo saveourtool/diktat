@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle.tasks
 
 import org.cqfn.diktat.DiktatRunner
 import org.cqfn.diktat.DiktatRunnerArguments
+import org.cqfn.diktat.DiktatRunnerFactory
 import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
@@ -64,6 +65,46 @@ abstract class DiktatTaskBase(
         !actualInputs.isEmpty
     }
 
+    @get:Internal
+    private val diktatRunnerFactory by lazy {
+        DiktatRunnerFactory(
+            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
+            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
+            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
+            diktatReporterFactory = DiktatReporterFactoryImpl()
+        )
+    }
+
+    @get:Internal
+    private val diktatRunnerArguments by lazy {
+        DiktatRunnerArguments(
+            configFile = extension.diktatConfigFile.toPath(),
+            sourceRootDir = project.projectDir.toPath(),
+            files = actualInputs.files.map { it.toPath() },
+            baselineFile = extension.baseline?.let { project.file(it).toPath() },
+            reporterType = project.getReporterType(extension),
+            reporterOutput = project.getOutputFile(extension)?.outputStream(),
+            loggingListener = object : DiktatProcessorListener {
+                override fun beforeAll(files: Collection<Path>) {
+                    project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
+                    project.logger.debug("Analyzing {}", files)
+                }
+                override fun before(file: Path) {
+                    project.logger.debug("Checking file {}", file)
+                }
+            }
+        )
+    }
+
+    /**
+     * [DiktatRunner] created based on a default [DiktatRunnerFactory]
+     */
+    @get:Internal
+    val diktatRunner by lazy {
+        diktatRunnerFactory(diktatRunnerArguments)
+    }
+
+
     init {
         ignoreFailures = extension.ignoreFailures
     }
@@ -91,33 +132,9 @@ abstract class DiktatTaskBase(
     }
 
     private fun doRun() {
-        val loggingListener = object : DiktatProcessorListener {
-            override fun beforeAll(files: Collection<Path>) {
-                project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
-                project.logger.debug("Analyzing {}", files)
-            }
-            override fun before(file: Path) {
-                project.logger.debug("Checking file {}", file)
-            }
-        }
-        val diktatRunner = DiktatRunner(
-            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
-            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
-            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = DiktatReporterFactoryImpl(),
-            loggingListener = loggingListener
-        )
-
         val errorCounter = doRun(
             runner = diktatRunner,
-            args = DiktatRunnerArguments(
-                configFile = extension.diktatConfigFile.toPath(),
-                sourceRootDir = project.projectDir.toPath(),
-                files = actualInputs.files.map { it.toPath() },
-                baselineFile = extension.baseline?.let { project.file(it).toPath() },
-                reporterType = project.getReporterType(extension),
-                reporterOutput = project.getOutputFile(extension)?.outputStream()
-            )
+            args = diktatRunnerArguments
         )
         if (errorCounter > 0 && !ignoreFailures) {
             throw GradleException("There are $errorCounter lint errors")

@@ -21,6 +21,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.ktlint.reporter.json)
+    testImplementation(libs.ktlint.reporter.plain)
+    testImplementation(libs.ktlint.reporter.sarif)
 }
 
 tasks.withType<KotlinCompile> {

@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.maven
 
 import org.cqfn.diktat.DiktatRunner
 import org.cqfn.diktat.DiktatRunnerArguments
+import org.cqfn.diktat.DiktatRunnerFactory
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
@@ -111,22 +112,24 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val diktatRunner = DiktatRunner(
+        val diktatRunnerFactory = DiktatRunnerFactory(
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
             diktatProcessorFactory = DiktatProcessorFactoryImpl(),
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),
             diktatReporterFactory = DiktatReporterFactoryImpl()
         )
+        val args = DiktatRunnerArguments(
+            configFileName = resolveConfig(),
+            sourceRootDir = sourceRootDir,
+            files = inputs.map(::Path),
+            baselineFile = baseline?.toPath(),
+            reporterType = getReporterType(),
+            reporterOutput = getReporterOutput(),
+        )
+        val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(
             runner = diktatRunner,
-            args = DiktatRunnerArguments(
-                configFileName = resolveConfig(),
-                sourceRootDir = sourceRootDir,
-                files = inputs.map(::Path),
-                baselineFile = baseline?.toPath(),
-                reporterType = getReporterType(),
-                reporterOutput = getReporterOutput(),
-            ),
+            args = args,
         )
         if (errorCounter > 0) {
             throw MojoFailureException("There are $errorCounter lint errors")

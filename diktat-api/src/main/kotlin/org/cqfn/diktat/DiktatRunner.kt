@@ -6,6 +6,7 @@ import org.cqfn.diktat.api.DiktatBaselineFactory
 import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.countErrorsAsProcessorListener
+import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.api.DiktatReporterFactory
 import org.cqfn.diktat.api.DiktatRuleSetFactory
 import java.io.OutputStream
@@ -18,60 +19,36 @@ private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
 
 /**
  * A runner for diktat on bunch of files using baseline and reporter
+ *
+ * @property diktatProcessor
+ * @property diktatBaseline
+ * @property diktatBaselineGenerator
+ * @property diktatReporter
+ * @property diktatReporterCloser
  */
 data class DiktatRunner(
-    private val diktatRuleSetFactory: DiktatRuleSetFactory,
-    private val diktatProcessorFactory: DiktatProcessorFactory,
-    private val diktatBaselineFactory: DiktatBaselineFactory,
-    private val diktatReporterFactory: DiktatReporterFactory,
-    private val loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
+    val diktatProcessor: DiktatProcessor,
+    val diktatBaseline: DiktatBaseline,
+    private val diktatBaselineGenerator: DiktatProcessorListener,
+    val diktatReporter: DiktatReporter,
+    private val diktatReporterCloser: DiktatProcessorListener,
 ) {
     private fun doRun(
         args: DiktatRunnerArguments,
         runAction: RunAction,
     ): Int {
-        val diktatRuleSet = diktatRuleSetFactory.create(args.configFileName)
-        val diktatProcessor = diktatProcessorFactory(diktatRuleSet)
-        val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
-        val processorListener = resolveReporter(args.reporterType, args.reporterOutput, args.sourceRootDir)
         val errorCounter = AtomicInteger()
         runAction(
             diktatProcessor,
             DiktatProcessorListener(
-                loggingListener,
-                processorListener.skipKnownErrors(baseline),
-                baselineGenerator,
+                args.loggingListener,
+                diktatReporter.skipKnownErrors(diktatBaseline),
+                diktatReporterCloser,
+                diktatBaselineGenerator,
                 errorCounter.countErrorsAsProcessorListener()
             ),
         )
         return errorCounter.get()
-    }
-
-    private fun resolveBaseline(
-        baselineFile: Path?,
-        sourceRootDir: Path,
-    ): Pair<DiktatBaseline, DiktatProcessorListener> = baselineFile
-        ?.let { diktatBaselineFactory.tryToLoad(it, sourceRootDir) }
-        ?.let { it to DiktatProcessorListener.empty }
-        ?: run {
-            val baselineGenerator = baselineFile?.let {
-                diktatBaselineFactory.generator(it, sourceRootDir)
-            } ?: DiktatProcessorListener.empty
-            DiktatBaseline.empty to baselineGenerator
-        }
-
-    private fun resolveReporter(
-        reporterType: String,
-        reporterOutput: OutputStream?,
-        sourceRootDir: Path,
-    ): DiktatProcessorListener {
-        val (outputStream, closeListener) = reporterOutput
-            ?.let { it to it.closeAfterAllAsProcessorListener() }
-            ?: run {
-                System.`out` to DiktatProcessorListener.empty
-            }
-        val actualReporter = diktatReporterFactory(reporterType, outputStream, sourceRootDir)
-        return DiktatProcessorListener(actualReporter, closeListener)
     }
 
     /**
@@ -85,13 +62,20 @@ data class DiktatRunner(
         args: DiktatRunnerArguments,
         fileUpdateNotifier: (Path) -> Unit,
     ): Int = doRun(args) { processor, listener ->
-        processor.fixAll(listener, args.files) { file, formattedText ->
-            val fileContent = file.readText(Charsets.UTF_8)
-            if (fileContent != formattedText) {
-                fileUpdateNotifier(file)
-                file.writeText(formattedText, Charsets.UTF_8)
+        listener.beforeAll(args.files)
+        args.files.forEach { file ->
+            listener.before(file)
+            val formattedContent = processor.fix(file) { error, isCorrected ->
+                listener.onError(file, error, isCorrected)
             }
+            val fileContent = file.readText(Charsets.UTF_8)
+            if (fileContent != formattedContent) {
+                fileUpdateNotifier(file)
+                file.writeText(formattedContent, Charsets.UTF_8)
+            }
+            listener.after(file)
         }
+        listener.afterAll()
     }
 
     /**
@@ -103,6 +87,14 @@ data class DiktatRunner(
     fun checkAll(
         args: DiktatRunnerArguments,
     ): Int = doRun(args) { processor, listener ->
-        processor.checkAll(listener, args.files)
+        listener.beforeAll(args.files)
+        args.files.forEach { file ->
+            listener.before(file)
+            processor.check(file) { error, isCorrected ->
+                listener.onError(file, error, isCorrected)
+            }
+            listener.after(file)
+        }
+        listener.afterAll()
     }
 }

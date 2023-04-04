@@ -1,6 +1,9 @@
 package org.cqfn.diktat.plugin.gradle
 
+import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.unwrap
 import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask
+import com.pinterest.ktlint.reporter.plain.PlainReporter
+import com.pinterest.ktlint.reporter.sarif.SarifReporter
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -39,6 +42,9 @@ class DiktatJavaExecTaskTest {
         ) {
             inputs { include("src/**/*.kt") }
         }
+
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is PlainReporter)
     }
 
     @Test
@@ -63,6 +69,9 @@ class DiktatJavaExecTaskTest {
                 exclude("src/main/kotlin/generated")
             }
         }
+
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is PlainReporter)
     }
 
     @Test
@@ -97,6 +106,8 @@ class DiktatJavaExecTaskTest {
             diktatConfigFile = project.file("../diktat-analysis.yml")
             githubActions = true
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -112,6 +123,8 @@ class DiktatJavaExecTaskTest {
             reporter = "json"
             output = "report.json"
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -125,6 +138,8 @@ class DiktatJavaExecTaskTest {
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporter = "sarif"
         }
+        val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
+        assert(task.diktatRunner.diktatReporter.unwrap() is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")

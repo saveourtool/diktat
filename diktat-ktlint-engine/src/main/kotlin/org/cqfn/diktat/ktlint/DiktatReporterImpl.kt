@@ -33,7 +33,7 @@ class DiktatReporterImpl(
         /**
          * @return __KtLint__'s [Reporter]
          */
-        internal fun DiktatReporter.unwrap(): Reporter = (this as? DiktatReporterImpl)?.ktLintReporter
+        fun DiktatReporter.unwrap(): Reporter = (this as? DiktatReporterImpl)?.ktLintReporter
             ?: error("Unsupported wrapper of ${DiktatReporter::class.java.simpleName}: ${this::class.java.canonicalName}")
     }
 }
