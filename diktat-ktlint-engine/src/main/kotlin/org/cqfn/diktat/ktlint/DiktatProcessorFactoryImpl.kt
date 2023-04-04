@@ -16,12 +16,11 @@ import kotlin.io.path.readText
  * A factory to create [DiktatProcessor] using [DiktatProcessorFactory] and `KtLint` as engine
  */
 class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
-    override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor = object : DiktatProcessor() {
+    override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor = object : DiktatProcessor {
         override fun fix(file: Path, callback: DiktatCallback): String = KtLint.format(ktLintParams(diktatRuleSet, file, callback.unwrap()))
         override fun check(file: Path, callback: DiktatCallback) = KtLint.lint(ktLintParams(diktatRuleSet, file, callback.unwrap()))
     }
 
-    @Suppress("DEPRECATION")
     private fun ktLintParams(
         diktatRuleSet: DiktatRuleSet,
         file: Path,

@@ -6,7 +6,7 @@ import java.nio.file.Path
 /**
  * Processor to run `diktat`
  */
-abstract class DiktatProcessor {
+interface DiktatProcessor {
     /**
      * Run `diktat fix` on provided [file] using [callback] for detected errors and returned formatted file content.
      *
@@ -14,7 +14,7 @@ abstract class DiktatProcessor {
      * @param callback
      * @return result of `diktat fix`
      */
-    abstract fun fix(file: Path, callback: DiktatCallback): String
+    fun fix(file: Path, callback: DiktatCallback): String
 
     /**
      * Run `diktat check` on provided [file] using [callback] for detected errors.
@@ -22,5 +22,5 @@ abstract class DiktatProcessor {
      * @param file
      * @param callback
      */
-    abstract fun check(file: Path, callback: DiktatCallback)
+    fun check(file: Path, callback: DiktatCallback)
 }
