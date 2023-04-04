@@ -48,8 +48,7 @@ interface DiktatProcessorListener {
         /**
          * An instance of [DiktatProcessorListener.Empty]
          */
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        val empty = object : Empty() {}
+        val empty = Empty()
 
         /**
          * @param listeners
@@ -93,7 +92,7 @@ interface DiktatProcessorListener {
          * An empty implementation of [DiktatProcessorListener]
          */
         @Suppress("OBJECT_IS_PREFERRED")
-        abstract class Empty : DiktatProcessorListener {
+        class Empty : DiktatProcessorListener {
             override fun onError(
                 file: Path,
                 error: DiktatError,
