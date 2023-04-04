@@ -121,8 +121,8 @@ fun format(
 fun lint(
     ruleSetSupplier: () -> DiktatRuleSet,
     @Language("kotlin") text: String,
-    fileName: String,
-    cb: DiktatCallback = defaultCallback
+    fileName: String = "test.ks",
+    cb: DiktatCallback = DiktatCallback.empty
 ) {
     val ruleSets = listOf(ruleSetSupplier().toKtLint())
     KtLint.lint(

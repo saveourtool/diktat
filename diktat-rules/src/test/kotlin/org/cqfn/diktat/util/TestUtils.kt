@@ -122,8 +122,6 @@ internal fun applyToCode(@Language("kotlin") code: String,
             }))
         },
         text = code,
-        fileName = "test.ks",
-        cb = { _, _ -> }
     )
     assertThat(counter.get())
         .`as`("Number of expected asserts")
