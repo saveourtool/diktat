@@ -34,6 +34,7 @@ plugins {
 includeBuild("gradle/plugins")
 include("diktat-api")
 include("diktat-common")
+include("diktat-ktlint-engine")
 include("diktat-gradle-plugin")
 include("diktat-maven-plugin")
 include("diktat-rules")
