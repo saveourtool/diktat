@@ -1,5 +1,6 @@
 package org.cqfn.diktat.api
 
+import java.io.OutputStream
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -83,10 +84,11 @@ interface DiktatProcessorListener {
         }
 
         /**
-         * @return An implementation of [DiktatProcessorListener] which closes [AutoCloseable] at the end
+         * @return An implementation of [DiktatProcessorListener] which closes [OutputStream] at the end
          */
-        fun AutoCloseable.closeAfterAllAsProcessorListener(): DiktatProcessorListener = object : DiktatProcessorListener {
+        fun OutputStream.closeAfterAllAsProcessorListener(): DiktatProcessorListener = object : DiktatProcessorListener {
             override fun afterAll() {
+                this@closeAfterAllAsProcessorListener.flush()
                 this@closeAfterAllAsProcessorListener.close()
             }
         }
