@@ -4,6 +4,7 @@
 
 package org.cqfn.diktat.util
 
+import java.nio.file.FileSystem
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -19,12 +20,16 @@ import kotlin.io.path.walk
  * @return a sequence of files which matches to [glob]
  */
 @OptIn(ExperimentalPathApi::class)
-fun Path.walkByGlob(glob: String): Sequence<Path> =
-    fileSystem.getPathMatcher("glob:$glob")
-        .let { matcher ->
-            this.walk(PathWalkOption.INCLUDE_DIRECTORIES)
-                .filter { matcher.matches(it) }
-        }
+fun Path.walkByGlob(glob: String): Sequence<Path> = run {
+    fileSystem.globMatcher(glob) to fileSystem.relativeGlobMatcher(glob)
+}.let { (matcher, relativeMatcher) ->
+    this.walk(PathWalkOption.INCLUDE_DIRECTORIES)
+        .filter { matcher.matches(it) || relativeMatcher.matches(it) }
+}
+
+private fun FileSystem.globMatcher(glob: String) = getPathMatcher("glob:${glob.replace(java.io.File.separatorChar, '/')}")
+
+private fun FileSystem.relativeGlobMatcher(glob: String) = globMatcher("**/$glob")
 
 /**
  * @return path or null if path is invalid or doesn't exist
