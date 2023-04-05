@@ -27,10 +27,6 @@ fun Path.walkByGlob(glob: String): Sequence<Path> = run {
         .filter { matcher.matches(it) || relativeMatcher.matches(it) }
 }
 
-private fun FileSystem.globMatcher(glob: String) = getPathMatcher("glob:${glob.replace(java.io.File.separatorChar, '/')}")
-
-private fun FileSystem.relativeGlobMatcher(glob: String) = globMatcher("**/$glob")
-
 /**
  * @return path or null if path is invalid or doesn't exist
  */
@@ -39,3 +35,7 @@ fun String.tryToPathIfExists(): Path? = try {
 } catch (e: InvalidPathException) {
     null
 }
+
+private fun FileSystem.globMatcher(glob: String) = getPathMatcher("glob:${glob.replace(java.io.File.separatorChar, '/')}")
+
+private fun FileSystem.relativeGlobMatcher(glob: String) = globMatcher("**/$glob")
