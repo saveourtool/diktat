@@ -7,10 +7,12 @@ package org.cqfn.diktat.util
 import java.nio.file.FileSystem
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
+import java.nio.file.PathMatcher
 import java.nio.file.Paths
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.PathWalkOption
 import kotlin.io.path.exists
+import kotlin.io.path.pathString
 import kotlin.io.path.walk
 
 /**
@@ -20,12 +22,11 @@ import kotlin.io.path.walk
  * @return a sequence of files which matches to [glob]
  */
 @OptIn(ExperimentalPathApi::class)
-fun Path.walkByGlob(glob: String): Sequence<Path> = run {
-    fileSystem.globMatcher(glob) to fileSystem.relativeGlobMatcher(glob)
-}.let { (matcher, relativeMatcher) ->
-    this.walk(PathWalkOption.INCLUDE_DIRECTORIES)
-        .filter { matcher.matches(it) || relativeMatcher.matches(it) }
-}
+fun Path.walkByGlob(glob: String): Sequence<Path> = fileSystem.globMatcher(glob)
+    .let { matcher ->
+        this.walk(PathWalkOption.INCLUDE_DIRECTORIES)
+            .filter { matcher.matches(it) }
+    }
 
 /**
  * @return path or null if path is invalid or doesn't exist
@@ -36,6 +37,12 @@ fun String.tryToPathIfExists(): Path? = try {
     null
 }
 
-private fun FileSystem.globMatcher(glob: String) = getPathMatcher("glob:${glob.replace(java.io.File.separatorChar, '/')}")
+private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGlob(glob)) {
+    getPathMatcher("glob:${glob.toUnixSeparator()}")
+} else {
+    getPathMatcher("glob:**/${glob.toUnixSeparator()}")
+}
 
-private fun FileSystem.relativeGlobMatcher(glob: String) = globMatcher("**/$glob")
+private fun FileSystem.isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || rootDirectories.any { glob.startsWith(it.pathString, true) }
+
+private fun String.toUnixSeparator(): String = replace(java.io.File.separatorChar, '/')
