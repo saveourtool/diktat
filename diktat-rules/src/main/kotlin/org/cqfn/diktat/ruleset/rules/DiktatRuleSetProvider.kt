@@ -1,9 +1,6 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
@@ -85,7 +82,6 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
-import com.pinterest.ktlint.core.Rule
 
 import mu.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
@@ -142,11 +138,11 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = DIKTAT_ANALYS
      * TODO: comments for 0.47.x
      * For each invocation of [com.pinterest.ktlint.core.KtLintRuleEngine.lint] and [com.pinterest.ktlint.core.KtLintRuleEngine.format] the [DiktatRuleSet]
      * is retrieved.
-     * This results in new instances of each [Rule] for each file being
+     * This results in new instances of each [com.pinterest.ktlint.core.Rule] for each file being
      * processed.
-     * As of that a [Rule] does not need to be thread-safe.
+     * As of that a [com.pinterest.ktlint.core.Rule] does not need to be thread-safe.
      *
-     * However, [com.pinterest.ktlint.core.KtLintRuleEngine.format] requires the [Rule] to be executed twice on a
+     * However, [com.pinterest.ktlint.core.KtLintRuleEngine.format] requires the [com.pinterest.ktlint.core.Rule] to be executed twice on a
      * file in case at least one violation has been autocorrected.
      * As the same [Rule] instance is reused for the second execution of the
      * [Rule], the state of the [Rule] is shared.

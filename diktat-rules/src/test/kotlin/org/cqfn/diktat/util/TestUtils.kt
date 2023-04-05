@@ -2,17 +2,13 @@
  * Utility classes and methods for tests
  */
 
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.api.DiktatErrorEmitter
+import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.ktlint.lint
 
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.intellij.lang.annotations.Language
@@ -115,22 +111,17 @@ internal fun applyToCode(@Language("kotlin") code: String,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
 ) {
     val counter = AtomicInteger(0)
-    KtLint.lint(
-        KtLint.ExperimentalParams(
-            text = code,
-            ruleSets = listOf(
-                RuleSet("test", object : Rule("astnode-utils-test") {
-                    override fun visit(
-                        node: ASTNode,
-                        autoCorrect: Boolean,
-                        emit: EmitType
-                    ) {
-                        applyToNode(node, counter)
-                    }
-                })
-            ),
-            cb = { _, _ -> }
-        )
+    lint(
+        ruleSetSupplier = {
+            DiktatRuleSet(listOf(object : DiktatRule {
+                override val id: String
+                    get() = "astnode-utils-test"
+                override fun invoke(node: ASTNode, autoCorrect: Boolean, emitter: DiktatErrorEmitter) {
+                    applyToNode(node, counter)
+                }
+            }))
+        },
+        text = code,
     )
     assertThat(counter.get())
         .`as`("Number of expected asserts")

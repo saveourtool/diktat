@@ -20,7 +20,16 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
     }
+    implementation(projects.diktatKtlintEngine) {
+        // Kotlin runtime & libraries will be provided by ktlint executable
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+        exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
+    }
     testImplementation(projects.diktatTestFramework)
+    testImplementation(projects.diktatKtlintEngine)
+    testImplementation(libs.log4j2.slf4j)
     testImplementation(libs.kotlin.stdlib.common)
     testImplementation(libs.kotlin.stdlib.jdk7)
     testImplementation(libs.kotlin.stdlib.jdk8)

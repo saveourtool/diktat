@@ -250,7 +250,7 @@ class VariablesWithUsagesSearchTest {
             fun foo() {
                 v++
                 var v = 1
-                v++ 
+                v++
             }
             class A {
                 fun foo() {
@@ -322,7 +322,7 @@ class VariablesWithUsagesSearchTest {
                     var v = 2
                     v++
                 }
-            
+
                 var v = 3
             }
         """.trimIndent(), 0) { node, _ ->
@@ -375,7 +375,7 @@ class VariablesWithUsagesSearchTest {
                 fun foo() {
                     v++
                 }
-            
+
                 var v = 1
             }
         """.trimIndent(), 0) { node, _ ->

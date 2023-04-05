@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.rules
 
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import com.pinterest.ktlint.core.initKtLintKLogger
@@ -21,5 +21,5 @@ class DiktatRuleSetProviderSpi : RuleSetProvider {
         KotlinLogging.logger(Logger.ROOT_LOGGER_NAME).initKtLintKLogger()
     }
 
-    override fun get(): RuleSet = DiktatRuleSetProvider().toKtLint().get()
+    override fun get(): RuleSet = DiktatRuleSetProvider().invoke().toKtLint()
 }
