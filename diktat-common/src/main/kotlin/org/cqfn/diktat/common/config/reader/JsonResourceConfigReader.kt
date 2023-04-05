@@ -56,6 +56,6 @@ abstract class JsonResourceConfigReader<T> {
     protected abstract fun parseResource(fileStream: BufferedReader): T
 
     companion object {
-        private val log = KotlinLogging.logger { }
+        private val log = KotlinLogging.logger {}
     }
 }

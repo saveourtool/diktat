@@ -105,7 +105,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 
     companion object {
-        internal val log: KLogger = KotlinLogging.logger { }
+        internal val log: KLogger = KotlinLogging.logger {}
     }
 }
 

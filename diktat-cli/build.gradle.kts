@@ -6,18 +6,11 @@ plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 
-project.description = "This module builds diktat-runner implementation using ktlint as CLI"
+project.description = "This module builds diktat-cli to run diktat as CLI using ktlint"
 
 dependencies {
-    api(projects.diktatApi)
-    implementation(projects.diktatRules)
     implementation(projects.diktatKtlintEngine)
+    implementation(projects.diktatRules)
     implementation(libs.kotlinx.cli)
     implementation(libs.log4j2.core)
-    implementation(libs.ktlint.reporter.baseline)
-    implementation(libs.ktlint.reporter.checkstyle)
-    implementation(libs.ktlint.reporter.html)
-    implementation(libs.ktlint.reporter.json)
-    implementation(libs.ktlint.reporter.plain)
-    implementation(libs.ktlint.reporter.sarif)
 }

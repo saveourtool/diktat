@@ -32,8 +32,6 @@ tasks.create("generateLibsForDiktatSnapshot") {
     val dir = rootProject.buildDir.resolve("diktat-snapshot")
 
     val dependencies = setOf(
-        rootProject.project(":diktat-api"),
-        rootProject.project(":diktat-ktlint-engine"),
         rootProject.project(":diktat-common"),
         rootProject.project(":diktat-api"),
         rootProject.project(":diktat-ktlint-engine"),
