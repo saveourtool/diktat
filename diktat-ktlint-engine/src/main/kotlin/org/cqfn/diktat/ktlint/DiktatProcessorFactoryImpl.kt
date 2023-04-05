@@ -4,7 +4,6 @@ import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import org.cqfn.diktat.util.isKotlinScript
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigOverride

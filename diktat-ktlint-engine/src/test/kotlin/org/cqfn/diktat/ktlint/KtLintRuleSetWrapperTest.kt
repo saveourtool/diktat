@@ -1,18 +1,12 @@
 package org.cqfn.diktat.ktlint
 
 <<<<<<<< HEAD:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleWrapperTest.kt
-import org.cqfn.diktat.common.config.rules.qualifiedWithRuleSetId
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
-import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine
 ========
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.unwrap
 import com.pinterest.ktlint.core.KtLint
 >>>>>>>> origin/master:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleSetWrapperTest.kt

@@ -9,9 +9,9 @@ import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.KtLint.ExperimentalParams
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
 import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
@@ -62,28 +62,6 @@ fun DiktatCallback.unwrap(): LintErrorCallback = { error, isCorrected ->
 }
 
 /**
- * Enables ignoring autocorrected errors when in "fix" mode (i.e. when
- * [KtLint.format] is invoked).
- *
- * Before version 0.47, _Ktlint_ only reported non-corrected errors in "fix"
- * mode.
- * Now, this has changed.
- *
- * @receiver the instance of _Ktlint_ parameters.
- * @return the instance with the [callback][ExperimentalParams.cb] modified in
- *   such a way that it ignores corrected errors.
- * @see KtLint.format
- * @see ExperimentalParams.cb
- * @since 1.2.4
- */
-private fun ExperimentalParams.ignoreCorrectedErrors(): ExperimentalParams =
-    copy(cb = { error: LintError, corrected: Boolean ->
-        if (!corrected) {
-            cb(error, false)
-        }
-    })
-
-/**
  * @param ruleSetSupplier
  * @param text
  * @param fileName
@@ -97,17 +75,19 @@ fun format(
     fileName: String,
     cb: DiktatCallback = defaultCallback
 ): String {
-    val ruleSets = listOf(ruleSetSupplier().toKtLint())
-    return KtLint.format(
-        ExperimentalParams(
-            text = text,
-            ruleSets = ruleSets,
-            fileName = fileName.removeSuffix("_copy"),
-            script = fileName.removeSuffix("_copy").endsWith("kts"),
-            cb = cb.unwrap(),
-            debug = true,
-        ).ignoreCorrectedErrors()
+    val ktLintRuleEngine = KtLintRuleEngine(
+        ruleProviders = ruleSetSupplier().toKtLint()
     )
+    return ktLintRuleEngine.format(
+        code = Code.CodeSnippet(
+            content = text,
+            script = fileName.removeSuffix("_copy").endsWith("kts"),
+        )
+    ) { lintError: LintError, isCorrected: Boolean ->
+        if (!isCorrected) {
+            cb(lintError.wrap(), false)
+        }
+    }
 }
 
 /**
@@ -124,15 +104,15 @@ fun lint(
     fileName: String = "test.ks",
     cb: DiktatCallback = DiktatCallback.empty
 ) {
-    val ruleSets = listOf(ruleSetSupplier().toKtLint())
-    KtLint.lint(
-        ExperimentalParams(
-            text = text,
-            ruleSets = ruleSets,
-            fileName = fileName.removeSuffix("_copy"),
-            script = fileName.removeSuffix("_copy").endsWith("kts"),
-            cb = cb.unwrap(),
-            debug = true,
-        ).ignoreCorrectedErrors()
+    val ktLintRuleEngine = KtLintRuleEngine(
+        ruleProviders = ruleSetSupplier().toKtLint()
     )
+    return ktLintRuleEngine.lint(
+        code = Code.CodeSnippet(
+            content = text,
+            script = fileName.removeSuffix("_copy").endsWith("kts"),
+        )
+    ) { lintError: LintError ->
+        cb(lintError.wrap(), false)
+    }
 }

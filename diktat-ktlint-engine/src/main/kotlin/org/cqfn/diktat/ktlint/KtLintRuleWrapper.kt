@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleProvider
@@ -26,6 +27,19 @@ class KtLintRuleWrapper(
     ) = rule.invoke(node, autoCorrect, emit)
 
     companion object {
+        private fun Sequence<DiktatRule>.wrapRules(): Sequence<Rule> = runningFold(null as KtLintRuleWrapper?) { prevRule, diktatRule ->
+            KtLintRuleWrapper(diktatRule, prevRule)
+        }.filterNotNull()
+
+        /**
+         * @return [Set] of __KtLint__'s [RuleProvider]s created from [DiktatRuleSet]
+         */
+        fun DiktatRuleSet.toKtLint(): Set<RuleProvider> = rules
+            .asSequence()
+            .wrapRules()
+            .map { it.asProvider() }
+            .toSet()
+
         private fun createVisitorModifiers(
             rule: DiktatRule,
             prevRule: KtLintRuleWrapper?,

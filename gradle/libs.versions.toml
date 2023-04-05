@@ -30,7 +30,6 @@ jupiter-itf-extension = "0.12.0"
 mockito-all = "1.10.19"
 
 # main class in executable jar
-log4j2 = "2.20.0"
 kotlinx-cli = "0.3.5"
 
 
