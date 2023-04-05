@@ -89,6 +89,7 @@ data class DiktatProperties(
         .filter { file -> file.isKotlinCodeOrScript() }
         .distinct()
         .map { it.normalize() }
+        .map { it.toAbsolutePath() }
         .toList()
 
     private fun getReporterOutput(): OutputStream? = output
