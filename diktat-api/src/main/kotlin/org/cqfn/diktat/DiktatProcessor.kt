@@ -17,10 +17,37 @@ interface DiktatProcessor {
     fun fix(file: Path, callback: DiktatCallback): String
 
     /**
+     * Run `diktat fix` on provided [code] using [callback] for detected errors and returned formatted code.
+     *
+     * @param code
+     * @param isScript
+     * @param callback
+     * @return result of `diktat fix`
+     */
+    fun fix(
+        code: String,
+        isScript: Boolean,
+        callback: DiktatCallback,
+    ): String
+
+    /**
      * Run `diktat check` on provided [file] using [callback] for detected errors.
      *
      * @param file
      * @param callback
      */
     fun check(file: Path, callback: DiktatCallback)
+
+    /**
+     * Run `diktat check` on provided [code] using [callback] for detected errors.
+     *
+     * @param code
+     * @param isScript
+     * @param callback
+     */
+    fun check(
+        code: String,
+        isScript: Boolean,
+        callback: DiktatCallback,
+    )
 }

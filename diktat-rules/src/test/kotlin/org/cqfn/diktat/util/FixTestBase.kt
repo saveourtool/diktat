@@ -2,11 +2,12 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ktlint.defaultCallback
 import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
+import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
@@ -30,7 +31,7 @@ open class FixTestBase(
             resourceFilePath = resourceFilePath,
             function = { expectedText, testFilePath ->
                 format(
-                    ruleSetSupplier = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList).invoke() },
+                    ruleSetSupplier = { diktatRuleSetForTest(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
                     text = expectedText,
                     fileName = testFilePath,
                     cb = cb,
@@ -98,5 +99,13 @@ open class FixTestBase(
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         return testComparatorUnit
             .compareFilesFromFileSystem(expected, actual, false)
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger { }
+
+        private val defaultCallback = DiktatCallback { error, _ ->
+            log.warn { "Received linting error: $error" }
+        }
     }
 }
