@@ -56,3 +56,10 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.named("jar") {
     enabled = false
 }
+
+// it triggers shadowJar with default build
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+}
