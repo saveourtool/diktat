@@ -90,40 +90,40 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Retrieve Ktlint version
-        if: ${{ runner.type == 'ktlint' }}
+        if: matrix.type == 'ktlint'
         run: |
           ktlint_version=$(cat gradle/libs.versions.toml | grep '^ktlint =' | awk -F'[=]' '{print $2}' | tr -d '" ')
           echo KTLINT_VERSION=$ktlint_version >> $GITHUB_ENV
         shell: bash
 
       - name: Setup environment
-        if: ${{ runner.type == 'ktlint' }}
+        if: matrix.type == 'ktlint'
         run: |
           curl -o ktlint -sSL https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
           java -version
         shell: bash
 
       - name: Download diktat jar
-        if: ${{ runner.type == 'ktlint' }}
+        if: matrix.type == 'ktlint'
         uses: actions/download-artifact@v3
         with:
           name: diktat-ruleset
 
       - name: Generate run command using ktlint
-        if: ${{ runner.type == 'ktlint' }}
+        if: matrix.type == 'ktlint'
         run: |
           filename=$(ls diktat-*.jar)
           echo DIKTAT_RUN="java -jar ktlint -R $filename --disabled_rules=standard,experimental,test,custom" >> $GITHUB_ENV
         shell: bash
 
       - name: Download diktat cli jar
-        if: ${{ runner.type == 'cli' }}
+        if: matrix.type == 'cli'
         uses: actions/download-artifact@v3
         with:
           name: diktat-cli
 
       - name: Generate run command using cli
-        if: ${{ runner.type == 'cli' }}
+        if: matrix.type == 'cli'
         run: |
           filename=$(ls diktat-cli-*.jar)
           echo DIKTAT_RUN="java -jar $filename" >> $GITHUB_ENV
