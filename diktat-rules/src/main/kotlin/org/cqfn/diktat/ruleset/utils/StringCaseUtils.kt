@@ -2,14 +2,12 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import com.google.common.base.CaseFormat
 import mu.KotlinLogging
 
 import java.util.Locale
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val log = KotlinLogging.loggerWithKtlintConfig {}
+private val log = KotlinLogging.logger {}
 
 /**
  * Available cases to name enum members

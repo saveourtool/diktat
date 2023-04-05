@@ -4,15 +4,11 @@
 
 package org.cqfn.diktat.util
 
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.utils.FormatCallback
-import org.cqfn.diktat.ruleset.utils.defaultCallback
-import com.pinterest.ktlint.core.KtLintRuleEngine
-import com.pinterest.ktlint.core.Code
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleProvider
-import com.pinterest.ktlint.core.RuleSetProviderV2
+import org.cqfn.diktat.api.DiktatErrorEmitter
+import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.ktlint.lint
+
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.intellij.lang.annotations.Language
@@ -115,53 +111,19 @@ internal fun applyToCode(@Language("kotlin") code: String,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
 ) {
     val counter = AtomicInteger(0)
-    KtLintRuleEngine(
-        ruleProviders = setOf(RuleProvider {
-            object : Rule("test:astnode-utils-test") {
-                override fun beforeVisitChildNodes(
-                        node: ASTNode,
-                        autoCorrect: Boolean,
-                        emit: EmitType
-                    ) {
-                        applyToNode(node, counter)
-                    }
+    lint(
+        ruleSetSupplier = {
+            DiktatRuleSet(listOf(object : DiktatRule {
+                override val id: String
+                    get() = "astnode-utils-test"
+                override fun invoke(node: ASTNode, autoCorrect: Boolean, emitter: DiktatErrorEmitter) {
+                    applyToNode(node, counter)
                 }
-            }),
-            ).lint(
-        code = Code.CodeSnippet(
-            content = code
-        )
+            }))
+        },
+        text = code,
     )
     assertThat(counter.get())
         .`as`("Number of expected asserts")
         .isEqualTo(expectedAsserts)
-}
-
-/**
- * @param ruleSetProviderRef
- * @param text
- * @param fileName
- * @param cb callback to be called on unhandled [LintError]s
- * @return formatted code
- */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun format(
-    ruleSetProviderRef: () -> RuleSetProviderV2,
-    @Language("kotlin") text: String,
-    fileName: String,
-    cb: FormatCallback = defaultCallback
-): String {
-    val ruleProviders = ruleSetProviderRef().getRuleProviders()
-    val ktLintRuleEngine = KtLintRuleEngine(
-        ruleProviders = ruleProviders
-    )
-    val code: Code = Code.CodeSnippet(
-        content = text,
-        script = fileName.removeSuffix("_copy").endsWith("kts")
-    )
-    return ktLintRuleEngine.format(code) { error: LintError, corrected: Boolean ->
-        if (!corrected) {
-            cb(error, false)
-        }
-    }
 }

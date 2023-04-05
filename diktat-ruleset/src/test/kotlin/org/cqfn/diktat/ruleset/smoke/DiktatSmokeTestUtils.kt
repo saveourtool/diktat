@@ -2,7 +2,6 @@
 
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.util.retry
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.fail
@@ -18,8 +17,7 @@ internal const val DIKTAT_FAT_JAR_GLOB = "diktat-*.jar"
 internal const val KTLINT_FAT_JAR = "ktlint"
 internal const val KTLINT_VERSION = "0.48.2"
 
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-private val logger = KotlinLogging.loggerWithKtlintConfig { }
+private val logger = KotlinLogging.logger {}
 
 /**
  * Downloads the file from a remote URL, retrying if necessary.

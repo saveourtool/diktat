@@ -1,6 +1,5 @@
 package org.cqfn.diktat.common.config.reader
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import mu.KotlinLogging
 
 import java.io.IOException
@@ -36,7 +35,7 @@ open class ApplicationProperties(propertiesFileName: String) {
     }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(ApplicationProperties::class)
+        private val log = KotlinLogging.logger {}
         private const val EXIT_STATUS_MISSING_PROPERTIES = 4
     }
 }

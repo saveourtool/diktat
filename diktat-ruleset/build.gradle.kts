@@ -13,16 +13,23 @@ plugins {
 project.description = "This module builds jar that can be used to run diktat using ktlint -R via command line"
 
 dependencies {
-    implementation(projects.diktatRules)
-    implementation(libs.log4j2.core)
-    implementation(libs.kotlinx.cli)
-    implementation(libs.ktlint.reporter.baseline)
-    implementation(libs.ktlint.reporter.checkstyle)
-    implementation(libs.ktlint.reporter.html)
-    implementation(libs.ktlint.reporter.json)
-    implementation(libs.ktlint.reporter.plain)
-    implementation(libs.ktlint.reporter.sarif)
+    api(projects.diktatRules) {
+        // Kotlin runtime & libraries will be provided by ktlint executable
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+        exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
+    }
+    implementation(projects.diktatKtlintEngine) {
+        // Kotlin runtime & libraries will be provided by ktlint executable
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+        exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
+    }
     testImplementation(projects.diktatTestFramework)
+    testImplementation(projects.diktatKtlintEngine)
+    testImplementation(libs.log4j2.slf4j)
     testImplementation(libs.kotlin.stdlib.common)
     testImplementation(libs.kotlin.stdlib.jdk7)
     testImplementation(libs.kotlin.stdlib.jdk8)
@@ -37,6 +44,8 @@ dependencies {
 tasks.named<ShadowJar>("shadowJar") {
     archiveBaseName.set("diktat")
     archiveClassifier.set("")
+    // need to relocate serialization from kaml to avoid conflicts with KtLint
+    relocate("kotlinx.serialization", "com.saveourtool.kotlinx_serialization")
 }
 
 // disable default jar

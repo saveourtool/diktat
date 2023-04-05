@@ -1,11 +1,9 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
+import org.cqfn.diktat.api.DiktatError
+import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-import com.pinterest.ktlint.core.Code
-import com.pinterest.ktlint.core.KtLintRuleEngine
-import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
@@ -17,7 +15,7 @@ import kotlin.io.path.absolutePathString
  * may change after some changes to text or other rules.
  */
 class DiktatSmokeTest : DiktatSmokeTestBase() {
-    private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
+    private val unfixedLintErrors: MutableList<DiktatError> = mutableListOf()
 
     override fun fixAndCompare(
         config: Path,
@@ -37,26 +35,19 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         unfixedLintErrors.clear()
     }
 
-    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) {
-        lintErrorsConsumer(unfixedLintErrors)
+    override fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) {
+        diktatErrorConsumer(unfixedLintErrors)
     }
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceFilePath = RESOURCE_FILE_PATH,
         function = { expectedText, testFilePath ->
-            val ruleProviders = DiktatRuleSetProvider(config.absolutePathString()).invoke().toKtLint()
-            val ktLintRuleEngine = KtLintRuleEngine(
-                ruleProviders = ruleProviders
+            format(
+                ruleSetSupplier = { DiktatRuleSetProvider(config.absolutePathString()).invoke() },
+                text = expectedText,
+                fileName = testFilePath,
+                cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
             )
-            val code: Code = Code.CodeSnippet(
-                content = expectedText,
-                script = testFilePath.removeSuffix("_copy").endsWith("kts")
-            )
-            ktLintRuleEngine.format(code) { error: LintError, corrected: Boolean ->
-                if (!corrected) {
-                    unfixedLintErrors.add(error)
-                }
-            }
         },
     )
 }

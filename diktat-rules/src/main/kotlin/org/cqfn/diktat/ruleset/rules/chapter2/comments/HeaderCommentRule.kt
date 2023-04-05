@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter2.comments
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
@@ -274,7 +273,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(HeaderCommentRule::class)
+        private val log = KotlinLogging.logger {}
         const val CURR_YEAR_PATTERN = ";@currYear;"
         const val NAME_ID = "header-comment"
         val hyphenRegex = Regex("""\d+-\d+""")

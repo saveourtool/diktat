@@ -1,6 +1,5 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.test.framework.common.ExecutionResult
 import org.cqfn.diktat.test.framework.common.TestBase
 import org.cqfn.diktat.test.framework.config.TestConfig
@@ -17,8 +16,8 @@ import java.io.File
  */
 @Suppress("ForbiddenComment")
 open class TestCompare : TestBase {
-    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR", "MISSING_KDOC_CLASS_ELEMENTS")
-    protected open val log: KLogger = KotlinLogging.loggerWithKtlintConfig {}
+    @Suppress("MISSING_KDOC_CLASS_ELEMENTS")
+    protected open val log: KLogger = KotlinLogging.logger {}
     private lateinit var expectedResult: File
 
     // testResultFile will be used if and only if --in-place option will be used

@@ -1,10 +1,9 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
+import org.cqfn.diktat.ktlint.lint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import com.pinterest.ktlint.core.Code
-import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions.assertThat
@@ -77,15 +76,13 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val actualFileName = fileName ?: TEST_FILE_NAME
         val lintErrors: MutableList<LintError> = mutableListOf()
 
-        KtLintRuleEngine(
-            ruleProviders = DiktatRuleSetProviderTest.diktatRuleSetForTest(ruleSupplier, rulesConfigList ?: this.rulesConfigList)
-                .toKtLint(),
-        ).lint(
-            code = Code.CodeSnippet(
-                content = code,
-                script = actualFileName.endsWith("kts"),
-            )
-        ) { lintError -> lintErrors += lintError }
+        lint(
+            ruleSetSupplier = { DiktatRuleSetProvider4Test(ruleSupplier,
+                rulesConfigList ?: this.rulesConfigList).invoke() },
+            text = code,
+            fileName = actualFileName,
+            cb = { lintError, _ -> lintErrors += lintError.unwrap() },
+        )
 
         return lintErrors
     }

@@ -1,6 +1,7 @@
 package org.cqfn.diktat.plugin.gradle.tasks
 
-import org.cqfn.diktat.DiktatProcessCommand
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin
 import org.gradle.api.Project
@@ -16,9 +17,11 @@ abstract class DiktatFixTask @Inject constructor(
     extension: DiktatExtension,
     inputs: PatternFilterable
 ) : DiktatTaskBase(extension, inputs) {
-    override fun doRun(diktatCommand: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit) {
-        val formattedText = diktatCommand.fix()
-        formattedContentConsumer(formattedText)
+    override fun doRun(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments
+    ): Int = runner.fixAll(args) { updatedFile ->
+        project.logger.info("Original and formatted content differ, writing to ${updatedFile.fileName}...")
     }
 
     companion object {

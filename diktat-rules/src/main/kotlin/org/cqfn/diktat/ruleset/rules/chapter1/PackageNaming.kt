@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter1
 import org.cqfn.diktat.common.config.rules.CommonConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
@@ -13,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.util.isKotlinScript
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -282,7 +282,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val log = KotlinLogging.loggerWithKtlintConfig(PackageNaming::class)
+        private val log = KotlinLogging.logger {}
         const val NAME_ID = "package-naming"
 
         /**

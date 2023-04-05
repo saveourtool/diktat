@@ -6,13 +6,12 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.api.DiktatErrorEmitter
+import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.ktlint.lint
 import org.cqfn.diktat.util.applyToCode
-import com.pinterest.ktlint.core.Code
-import com.pinterest.ktlint.core.KtLintRuleEngine
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleProvider
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -791,13 +790,12 @@ class AstNodeUtilsTest {
 private class PrettyPrintingVisitor(private val elementType: IElementType,
                                     private val level: Int,
                                     private val maxLevel: Int,
-                                    private val expected: String
-) : Rule("test:print-ast") {
-    override fun beforeVisitChildNodes(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
+                                    private val expected: String,
+) : DiktatRule {
+    override val id: String
+        get() = "print-ast"
+
+    override fun invoke(node: ASTNode, autoCorrect: Boolean, emitter: DiktatErrorEmitter) {
         if (node.elementType == elementType) {
             Assertions.assertEquals(
                 expected.replace("\n", System.lineSeparator()),
@@ -814,14 +812,9 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             maxLevel: Int = -1,
             expected: String
         ) {
-            KtLintRuleEngine(
-                setOf(RuleProvider {
-                    PrettyPrintingVisitor(elementType, level, maxLevel, expected)
-                })
-            ).lint(
-                Code.CodeSnippet(
-                    content = code
-                )
+            lint(
+                ruleSetSupplier = { DiktatRuleSet(listOf(PrettyPrintingVisitor(elementType, level, maxLevel, expected))) },
+                text = code,
             )
         }
     }

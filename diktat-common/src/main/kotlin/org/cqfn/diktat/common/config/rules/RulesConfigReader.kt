@@ -6,7 +6,6 @@ package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
-import org.cqfn.diktat.common.utils.loggerWithKtlintConfig
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -106,7 +105,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 
     companion object {
-        internal val log: KLogger = KotlinLogging.loggerWithKtlintConfig(RulesConfigReader::class)
+        internal val log: KLogger = KotlinLogging.logger {}
     }
 }
 
@@ -225,20 +224,6 @@ fun String.kotlinVersion(): KotlinVersion {
         KotlinVersion(versions[0], versions[1], versions[2])
     }
 }
-
-/**
- * Makes sure this _rule id_ is qualified with a _rule set id_.
- *
- * @param ruleSetId the _rule set id_; defaults to [DIKTAT_RULE_SET_ID].
- * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId`.
- * @see DIKTAT_RULE_SET_ID
- * @since 1.2.4
- */
-fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): String =
-    when {
-        this.contains(':') -> this
-        else -> "$ruleSetId:$this"
-    }
 
 /**
  * Get [RulesConfig] representing common configuration part that can be used in any rule

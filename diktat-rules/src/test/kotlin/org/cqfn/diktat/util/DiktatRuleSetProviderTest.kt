@@ -1,17 +1,18 @@
+/**
+ * Stub for diktat ruleset provide to be used in tests and other related utilities
+ */
+
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.api.DiktatRuleSetFactory
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ktlint.KtLintRuleSetProviderV2Wrapper.Companion.toKtLint
-import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.delegatee
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSet
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
-import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 import java.nio.file.Path
@@ -20,6 +21,20 @@ import kotlin.io.path.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.walk
+
+/**
+ * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
+ */
+class DiktatRuleSetProvider4Test(
+    private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
+    rulesConfigList: List<RulesConfig>?,
+) : DiktatRuleSetFactory {
+    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
+
+    override fun invoke(): DiktatRuleSet = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList())))
+
+    override fun create(configFile: String): DiktatRuleSet = throw IllegalStateException("Method is not supported for testing")
+}
 
 class DiktatRuleSetProviderTest {
     @OptIn(ExperimentalPathApi::class)
@@ -36,18 +51,8 @@ class DiktatRuleSetProviderTest {
             .toList()
         val ruleNames = DiktatRuleSetProvider()
             .invoke()
-            .toKtLint()
-            .map { it.createNewRuleInstance() }
+            .rules
             .asSequence()
-            .onEachIndexed { index, rule ->
-                if (index != 0) {
-                    Assertions.assertTrue(
-                        rule.visitorModifiers.any { it is Rule.VisitorModifier.RunAfterRule },
-                        "Rule ${rule.id} doesn't contain Rule.VisitorModifier.RunAfterRule"
-                    )
-                }
-            }
-            .map { it.delegatee() }
             .map { it::class.simpleName }
             .filterNotNull()
             .filterNot { it in ignoredRuleNames }

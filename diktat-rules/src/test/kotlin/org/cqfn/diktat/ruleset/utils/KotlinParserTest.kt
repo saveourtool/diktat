@@ -87,7 +87,7 @@ class KotlinParserTest {
         val code = """
             |import org.junit.jupiter.api.Test
             |import org.junit.jupiter.api.Tests
-            | 
+            |
             |class A {
             |   fun foo(){
             |       println("hello")

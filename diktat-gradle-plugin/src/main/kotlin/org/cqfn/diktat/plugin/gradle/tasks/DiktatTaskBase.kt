@@ -1,30 +1,17 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.plugin.gradle.tasks
 
-import org.cqfn.diktat.DiktatProcessCommand
-import org.cqfn.diktat.DiktatProcessor
-import org.cqfn.diktat.api.DiktatCallback
-import org.cqfn.diktat.api.DiktatLogLevel
-import org.cqfn.diktat.ktlint.LintErrorReporter
-import org.cqfn.diktat.ktlint.unwrap
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
+import org.cqfn.diktat.DiktatRunnerFactory
+import org.cqfn.diktat.api.DiktatProcessorListener
+import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
+import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
+import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
-import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
 import org.cqfn.diktat.plugin.gradle.getOutputFile
 import org.cqfn.diktat.plugin.gradle.getReporterType
-import org.cqfn.diktat.plugin.gradle.isSarifReporterActive
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
-import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.api.Baseline
-import com.pinterest.ktlint.core.api.containsLintError
-import com.pinterest.ktlint.core.api.loadBaseline
-import com.pinterest.ktlint.reporter.baseline.BaselineReporter
-import com.pinterest.ktlint.reporter.html.HtmlReporter
-import com.pinterest.ktlint.reporter.json.JsonReporter
-import com.pinterest.ktlint.reporter.plain.PlainReporter
-import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.DefaultTask
@@ -40,19 +27,17 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 
-import java.io.File
-import java.io.FileOutputStream
-import java.io.PrintStream
+import java.nio.file.Path
 
 /**
  * A base task to run `diktat`
  * @property extension
  */
-@Suppress("WRONG_NEWLINES")
+@Suppress("WRONG_NEWLINES", "Deprecation")
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable
-) : DefaultTask(), VerificationTask, DiktatJavaExecTaskBase {
+) : DefaultTask(), VerificationTask, org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase {
     /**
      * Files that will be analyzed by diktat
      */
@@ -79,39 +64,40 @@ abstract class DiktatTaskBase(
     internal val shouldRun: Boolean by lazy {
         !actualInputs.isEmpty
     }
-
-    /**
-     * [DiktatProcessor] created from [extension]
-     */
-    @get:Internal
-    internal val diktatProcessor: DiktatProcessor by lazy {
-        DiktatProcessor.builder()
-            .diktatRuleSetProvider(extension.diktatConfigFile.toPath())
-            .logLevel(
-                if (extension.debug) {
-                    DiktatLogLevel.DEBUG
-                } else {
-                    DiktatLogLevel.INFO
+    private val diktatRunnerFactory by lazy {
+        DiktatRunnerFactory(
+            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
+            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
+            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
+            diktatReporterFactory = DiktatReporterFactoryImpl()
+        )
+    }
+    private val diktatRunnerArguments by lazy {
+        DiktatRunnerArguments(
+            configFile = extension.diktatConfigFile.toPath(),
+            sourceRootDir = project.projectDir.toPath(),
+            files = actualInputs.files.map { it.toPath() },
+            baselineFile = extension.baseline?.let { project.file(it).toPath() },
+            reporterType = project.getReporterType(extension),
+            reporterOutput = project.getOutputFile(extension)?.outputStream(),
+            loggingListener = object : DiktatProcessorListener {
+                override fun beforeAll(files: Collection<Path>) {
+                    project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
+                    project.logger.debug("Analyzing {}", files)
                 }
-            )
-            .build()
+                override fun before(file: Path) {
+                    project.logger.debug("Checking file {}", file)
+                }
+            }
+        )
     }
 
     /**
-     * A baseline loaded from provided file or empty
+     * [DiktatRunner] created based on a default [DiktatRunnerFactory]
      */
     @get:Internal
-    internal val baseline: Baseline by lazy {
-        extension.baseline?.let { loadBaseline(it) }
-            ?: Baseline(status = Baseline.Status.NOT_FOUND)
-    }
-
-    /**
-     * A reporter created based on configuration
-     */
-    @get:Internal
-    internal val reporter: Reporter by lazy {
-        resolveReporter(baseline)
+    val diktatRunner by lazy {
+        diktatRunnerFactory(diktatRunnerArguments)
     }
 
     init {
@@ -136,95 +122,29 @@ abstract class DiktatTaskBase(
             project.logger.warn("Inputs for $name do not exist, will not run diktat")
             project.logger.info("Skipping diktat execution")
         } else {
-            reporter.beforeAll()
-            val lintErrorReporter = LintErrorReporter()
-            actualInputs.files
-                .also { files ->
-                    project.logger.info("Analyzing ${files.size} files with diktat in project ${project.name}")
-                    project.logger.debug("Analyzing $files")
-                }
-                .forEach { file ->
-                    processFile(
-                        file = file,
-                        diktatProcessor = diktatProcessor,
-                        reporter = Reporter.from(reporter, lintErrorReporter)
-                    )
-                }
-            reporter.afterAll()
-            if (lintErrorReporter.isNotEmpty() && !ignoreFailures) {
-                throw GradleException("There are ${lintErrorReporter.errorCount()} lint errors")
-            }
+            doRun()
         }
     }
 
-    private fun processFile(
-        file: File,
-        diktatProcessor: DiktatProcessor,
-        reporter: Reporter
-    ) {
-        project.logger.debug("Checking file $file")
-        reporter.before(file.absolutePath)
-        val baselineErrors = baseline.lintErrorsPerFile.getOrDefault(
-            file.relativeTo(project.projectDir).invariantSeparatorsPath,
-            emptyList()
+    private fun doRun() {
+        val errorCounter = doRun(
+            runner = diktatRunner,
+            args = diktatRunnerArguments
         )
-        val diktatCallback = DiktatCallback { error, isCorrected ->
-            val ktLintError = error.unwrap()
-            if (!baselineErrors.containsLintError(ktLintError)) {
-                reporter.onLintError(file.absolutePath, ktLintError, isCorrected)
-            }
+        if (errorCounter > 0 && !ignoreFailures) {
+            throw GradleException("There are $errorCounter lint errors")
         }
-        val command = DiktatProcessCommand.builder()
-            .processor(diktatProcessor)
-            .file(file.toPath())
-            .callback(diktatCallback)
-            .build()
-        doRun(command) { formattedText ->
-            val fileName = file.absolutePath
-            val fileContent = file.readText(Charsets.UTF_8)
-            if (fileContent != formattedText) {
-                project.logger.info("Original and formatted content differ, writing to $fileName...")
-                file.writeText(formattedText, Charsets.UTF_8)
-            }
-        }
-        reporter.after(file.absolutePath)
     }
 
     /**
      * An abstract method which should be overridden by fix and check tasks
      *
-     * @param diktatCommand
-     * @param formattedContentConsumer
+     * @param runner instance of [DiktatRunner] used in analysis
+     * @param args arguments for [DiktatRunner]
+     * @return count of errors
      */
-    protected abstract fun doRun(diktatCommand: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit)
-
-    private fun resolveReporter(baselineResults: Baseline): Reporter {
-        val reporterType = project.getReporterType(extension)
-        if (isSarifReporterActive(reporterType)) {
-            // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
-            System.setProperty("user.home", project.rootDir.toString())
-        }
-        val output = project.getOutputFile(extension)?.outputStream()?.let { PrintStream(it) } ?: System.`out`
-        val actualReporter = if (extension.githubActions) {
-            SarifReporter(output)
-        } else {
-            when (reporterType) {
-                "sarif" -> SarifReporter(output)
-                "plain" -> PlainReporter(output)
-                "json" -> JsonReporter(output)
-                "html" -> HtmlReporter(output)
-                else -> {
-                    project.logger.warn("Reporter name $reporterType was not specified or is invalid. Falling to 'plain' reporter")
-                    PlainReporter(output)
-                }
-            }
-        }
-
-        return extension.baseline
-            ?.takeUnless { baselineResults.status == Baseline.Status.VALID }
-            ?.let { baseline ->
-                val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
-                Reporter.from(actualReporter, baselineReporter)
-            } ?: actualReporter
-    }
+    abstract fun doRun(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments
+    ): Int
 }
