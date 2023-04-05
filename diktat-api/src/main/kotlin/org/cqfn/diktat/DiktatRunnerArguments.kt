@@ -14,7 +14,9 @@ import kotlin.io.path.absolutePathString
  * @property baselineFile an optional path to file with baseline
  * @property reporterType type of reporter to report the detected errors
  * @property reporterOutput output for reporter
- * @property loggingListener listener to log diktat runner phases
+ * @property groupByFileInPlain a flag `groupByFile` which is applicable for plain reporter only, **null** by default
+ * @property colorNameInPlain a color name  which is applicable for plain reporter only, **null** by default
+ * @property loggingListener listener to log diktat runner phases, [DiktatProcessorListener.empty] by default
  */
 data class DiktatRunnerArguments(
     val configFileName: String,
@@ -23,6 +25,8 @@ data class DiktatRunnerArguments(
     val baselineFile: Path?,
     val reporterType: String,
     val reporterOutput: OutputStream?,
+    val groupByFileInPlain: Boolean? = null,
+    val colorNameInPlain: String? = null,
     val loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
 ) {
     constructor(
@@ -32,7 +36,9 @@ data class DiktatRunnerArguments(
         baselineFile: Path?,
         reporterType: String,
         reporterOutput: OutputStream?,
-        loggingListener: DiktatProcessorListener,
+        groupByFileInPlain: Boolean? = null,
+        colorNameInPlain: String? = null,
+        loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
     ) : this(
         configFile.absolutePathString(),
         sourceRootDir,
@@ -40,6 +46,8 @@ data class DiktatRunnerArguments(
         baselineFile,
         reporterType,
         reporterOutput,
+        groupByFileInPlain,
+        colorNameInPlain,
         loggingListener,
     )
 }

@@ -1,15 +1,18 @@
 package org.cqfn.diktat.cli
 
-import org.cqfn.diktat.api.DiktatReporter
+import org.cqfn.diktat.DiktatRunnerArguments
+import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.api.DiktatReporterFactory
 import org.cqfn.diktat.common.config.rules.DIKTAT
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import com.pinterest.ktlint.core.Reporter
+import org.cqfn.diktat.util.isKotlinCodeOrScript
+import org.cqfn.diktat.util.tryToPathIfExists
+import org.cqfn.diktat.util.walkByGlob
 import com.pinterest.ktlint.core.ReporterProvider
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
-import java.io.PrintStream
+import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.createDirectories
@@ -38,34 +41,6 @@ data class DiktatProperties(
     val patterns: List<String>,
 ) {
     /**
-     * @param diktatReporterFactory
-     * @param sourceRootDir
-     * @return a configured [Reporter]
-     */
-    fun reporter(
-        diktatReporterFactory: DiktatReporterFactory,
-        sourceRootDir: Path,
-    ): DiktatReporter {
-        val outputStream = output
-            ?.let { Paths.get(it) }
-            ?.also { it.parent.createDirectories() }
-            ?.outputStream()
-            ?.let { PrintStream(it) }
-            ?: System.out
-        return if (reporterProviderId == diktatReporterFactory.plainId) {
-            diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
-        } else {
-            require(colorNameInPlain == null) {
-                "colorization is applicable only for plain reporter"
-            }
-            require(!groupByFileInPlain) {
-                "groupByFile is applicable only for plain reporter"
-            }
-            diktatReporterFactory.invoke(reporterProviderId, outputStream, sourceRootDir)
-        }
-    }
-
-    /**
      * Configure logger level using [logLevel]
      */
     fun configureLogger() {
@@ -83,6 +58,37 @@ data class DiktatProperties(
             }
             .updateLoggers()
     }
+
+    /**
+     * @return [DiktatRunnerArguments] created from [DiktatProperties]
+     */
+    fun toRunnerArguments(sourceRootDir: Path, loggingListener: DiktatProcessorListener): DiktatRunnerArguments = DiktatRunnerArguments(
+        configFileName = config,
+        sourceRootDir = sourceRootDir,
+        files = getFiles(sourceRootDir),
+        baselineFile = null,
+        reporterType = reporterProviderId,
+        reporterOutput = getReporterOutput(),
+        groupByFileInPlain = groupByFileInPlain,
+        colorNameInPlain = colorNameInPlain,
+        loggingListener = loggingListener,
+    )
+
+    private fun getFiles(sourceRootDir: Path): Collection<Path> = patterns
+        .asSequence()
+        .flatMap { pattern ->
+            pattern.tryToPathIfExists()?.let { sequenceOf(it) }
+                ?: sourceRootDir.walkByGlob(pattern)
+        }
+        .filter { file -> file.isKotlinCodeOrScript() }
+        .distinct()
+        .map { it.normalize() }
+        .toList()
+
+    private fun getReporterOutput(): OutputStream? = output
+        ?.let { Paths.get(it) }
+        ?.also { it.parent.createDirectories() }
+        ?.outputStream()
 
     companion object {
         /**

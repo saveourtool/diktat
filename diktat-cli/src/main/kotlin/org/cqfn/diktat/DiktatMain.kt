@@ -7,69 +7,50 @@ package org.cqfn.diktat
 import org.cqfn.diktat.cli.DiktatMode
 import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.cli.DiktatProperties
+import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
-import org.cqfn.diktat.ruleset.utils.isKotlinCodeOrScript
-import org.cqfn.diktat.util.tryToPathIfExists
-import org.cqfn.diktat.util.walkByGlob
 import mu.KotlinLogging
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import kotlin.io.path.absolutePathString
 
 private val log = KotlinLogging.logger { }
 
-@Suppress(
-    "LongMethod",
-    "TOO_LONG_FUNCTION"
-)
+private val loggingListener = object : DiktatProcessorListener {
+    override fun before(file: Path) {
+        log.debug {
+            "Start processing the file: $file"
+        }
+    }
+}
+
 fun main(args: Array<String>) {
-    val diktatReporterFactory = DiktatReporterFactoryImpl()
-    val properties = DiktatProperties.parse(diktatReporterFactory, args)
+    val diktatRunnerFactory = DiktatRunnerFactory(
+        DiktatRuleSetFactoryImpl(),
+        DiktatProcessorFactoryImpl(),
+        DiktatBaselineFactoryImpl(),
+        DiktatReporterFactoryImpl(),
+    )
+    val properties = DiktatProperties.parse(diktatRunnerFactory.diktatReporterFactory, args)
     properties.configureLogger()
 
     log.debug {
         "Loading diktatRuleSet using config ${properties.config}"
     }
-    val diktatRuleSet = DiktatRuleSetFactoryImpl().create(properties.config)
-    val diktatProcessor = DiktatProcessorFactoryImpl().invoke(diktatRuleSet)
     val currentFolder = Paths.get(".")
-    val reporter = properties.reporter(diktatReporterFactory, currentFolder)
+    val diktatRunnerArguments = properties.toRunnerArguments(
+        sourceRootDir = currentFolder,
+        loggingListener = loggingListener,
+    )
 
-    log.debug {
-        "Resolving files by patterns: ${properties.patterns}"
-    }
-    val files = properties.patterns
-        .asSequence()
-        .flatMap { pattern ->
-            pattern.tryToPathIfExists()?.let { sequenceOf(it) }
-                ?: currentFolder.walkByGlob(pattern)
-        }
-        .filter { file -> file.isKotlinCodeOrScript() }
-        .distinct()
-        .map { it.normalize() }
-
-    val loggingListener = object : DiktatProcessorListener.Companion.Empty() {
-        override fun before(file: Path) {
-            log.debug {
-                "Start processing the file: $file"
-            }
-        }
-    }
+    val diktatRunner = diktatRunnerFactory(diktatRunnerArguments)
     when (properties.mode) {
-        DiktatMode.CHECK -> diktatProcessor.checkAll(
-            listener = DiktatProcessorListener(loggingListener, reporter),
-            files = files,
-        )
-        DiktatMode.FIX -> diktatProcessor.fixAll(
-            listener = DiktatProcessorListener(loggingListener, reporter),
-            files = files,
-        ) { file, formatterText ->
-            if (file.readText(StandardCharsets.UTF_8) != formatterText) {
-                file.writeText(formatterText, Charsets.UTF_8)
+        DiktatMode.CHECK -> diktatRunner.checkAll(diktatRunnerArguments)
+        DiktatMode.FIX -> diktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->
+            log.warn {
+                "Original and formatted content differ, writing to ${updatedFile.absolutePathString()}..."
             }
         }
     }

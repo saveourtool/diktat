@@ -47,6 +47,6 @@ interface DiktatReporterFactory : Function3<String, OutputStream, Path, DiktatRe
         outputStream: OutputStream,
         sourceRootDir: Path,
         colorName: String? = null,
-        groupByFile: Boolean = false,
+        groupByFile: Boolean? = null,
     ): DiktatReporter
 }

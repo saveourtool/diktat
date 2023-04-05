@@ -36,6 +36,6 @@ class LocalCommandExecutor internal constructor(private val command: String) {
     }
 
     companion object {
-        private val log = KotlinLogging.logger { }
+        private val log = KotlinLogging.logger {}
     }
 }
