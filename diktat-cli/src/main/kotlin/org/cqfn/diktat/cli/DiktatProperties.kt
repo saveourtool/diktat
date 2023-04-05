@@ -60,9 +60,14 @@ data class DiktatProperties(
     }
 
     /**
+     * @param sourceRootDir
+     * @param loggingListener
      * @return [DiktatRunnerArguments] created from [DiktatProperties]
      */
-    fun toRunnerArguments(sourceRootDir: Path, loggingListener: DiktatProcessorListener): DiktatRunnerArguments = DiktatRunnerArguments(
+    fun toRunnerArguments(
+        sourceRootDir: Path,
+        loggingListener: DiktatProcessorListener,
+    ): DiktatRunnerArguments = DiktatRunnerArguments(
         configFileName = config,
         sourceRootDir = sourceRootDir,
         files = getFiles(sourceRootDir),

@@ -4,16 +4,19 @@
 
 package org.cqfn.diktat
 
-import org.cqfn.diktat.cli.DiktatMode
 import org.cqfn.diktat.api.DiktatProcessorListener
+import org.cqfn.diktat.cli.DiktatMode
 import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
+
 import mu.KotlinLogging
+
 import java.nio.file.Path
 import java.nio.file.Paths
+
 import kotlin.io.path.absolutePathString
 
 private val log = KotlinLogging.logger { }
