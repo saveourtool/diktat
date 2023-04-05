@@ -7,6 +7,7 @@ import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
+import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
@@ -30,7 +31,7 @@ open class FixTestBase(
             resourceFilePath = resourceFilePath,
             function = { expectedText, testFilePath ->
                 format(
-                    ruleSetSupplier = { DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList).invoke() },
+                    ruleSetSupplier = { diktatRuleSetForTest(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
                     text = expectedText,
                     fileName = testFilePath,
                     cb = cb,

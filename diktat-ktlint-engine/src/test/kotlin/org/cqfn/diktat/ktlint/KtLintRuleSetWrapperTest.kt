@@ -1,15 +1,12 @@
 package org.cqfn.diktat.ktlint
 
-<<<<<<<< HEAD:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleWrapperTest.kt
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine
-========
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.unwrap
-import com.pinterest.ktlint.core.KtLint
->>>>>>>> origin/master:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleSetWrapperTest.kt
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
@@ -79,31 +76,18 @@ class KtLintRuleWrapperTest {
         /*
          * Make sure OrderedRuleSet preserves the order.
          */
-<<<<<<<< HEAD:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleWrapperTest.kt
         val ruleProviders = DiktatRuleSet(rules).toKtLint()
-        assertThat(ruleProviders.map(RuleProvider::createNewRuleInstance).map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id))
-========
-        val ruleSet = DiktatRuleSet(rules).toKtLint()
-        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.qualifiedWithRuleSetId() })
->>>>>>>> origin/master:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleSetWrapperTest.kt
+        assertThat(ruleProviders.map(RuleProvider::createNewRuleInstance).map(Rule::id))
+            .containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.qualifiedWithRuleSetId() })
 
         @Language("kotlin")
         val code = "fun foo() { }"
 
-<<<<<<<< HEAD:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleWrapperTest.kt
         KtLintRuleEngine(
             ruleProviders = ruleProviders
         ).lint(
             code = Code.CodeSnippet(
                 content = code
-========
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                fileName = "TestFileName.kt",
-                text = code,
-                ruleSets = listOf(ruleSet),
-                cb = { _, _ -> },
->>>>>>>> origin/master:diktat-ktlint-engine/src/test/kotlin/org/cqfn/diktat/ktlint/KtLintRuleSetWrapperTest.kt
             )
         )
 
@@ -141,20 +125,13 @@ class KtLintRuleWrapperTest {
          *            |
          *            V
          * C(File) -> C(Node) -> C(Leaf)
-         *
-         * val expectedRuleInvocationOrder = rules.asSequence()
-         *     .map(Rule::id)
-         *     .flatMap { ruleId ->
-         *         generateSequence { ruleId }.take(astNodeCount)
-         *     }
-         *     .toList()
          */
-        val expectedRuleInvocationOrder = generateSequence {
-            rules.map(DiktatRule::id)
-        }
-            .take(astNodeCount)
-            .flatten()
-            .toList()
+         val expectedRuleInvocationOrder = rules.asSequence()
+              .map(DiktatRule::id)
+              .flatMap { ruleId ->
+                  generateSequence { ruleId }.take(astNodeCount)
+              }
+              .toList()
 
         assertThat(actualRuleInvocationOrder)
             .containsExactlyElementsOf(expectedRuleInvocationOrder)

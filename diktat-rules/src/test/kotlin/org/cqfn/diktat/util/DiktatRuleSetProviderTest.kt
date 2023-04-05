@@ -5,7 +5,6 @@
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.api.DiktatRuleSetFactory
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -21,20 +20,6 @@ import kotlin.io.path.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.walk
-
-/**
- * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
- */
-class DiktatRuleSetProvider4Test(
-    private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
-    rulesConfigList: List<RulesConfig>?,
-) : DiktatRuleSetFactory {
-    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
-
-    override fun invoke(): DiktatRuleSet = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList())))
-
-    override fun create(configFile: String): DiktatRuleSet = throw IllegalStateException("Method is not supported for testing")
-}
 
 class DiktatRuleSetProviderTest {
     @OptIn(ExperimentalPathApi::class)
