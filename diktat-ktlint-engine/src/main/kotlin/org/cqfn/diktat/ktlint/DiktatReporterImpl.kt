@@ -21,7 +21,7 @@ class DiktatReporterImpl(
         isCorrected: Boolean,
     ): Unit = ktLintReporter.onLintError(file.relativePathStringTo(sourceRootDir), error.unwrap(), isCorrected)
     override fun after(file: Path): Unit = ktLintReporter.after(file.relativePathStringTo(sourceRootDir))
-    override fun afterAll(): Unit = ktLintReporter.beforeAll()
+    override fun afterAll(): Unit = ktLintReporter.afterAll()
 
     companion object {
         /**
