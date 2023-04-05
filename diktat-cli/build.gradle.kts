@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.incremental.createDirectory
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
@@ -19,23 +20,25 @@ dependencies {
     implementation(libs.log4j2.slf4j)
 }
 
-val addLicenseTask = tasks.register<Copy>("addLicense") {
-    val sourceLicenseFile = rootProject.file("LICENSE")
+val addLicenseTask = tasks.register("addLicense") {
+    val licenseFile = rootProject.file("LICENSE")
     val outputDir = File("$buildDir/generated/src")
-    val targetDir = outputDir.resolve("META-INF/diktat")
 
-    inputs.file(sourceLicenseFile)
+    inputs.file(licenseFile)
     outputs.dir(outputDir)
 
-    copy {
-        from(rootProject.path)
-        include(sourceLicenseFile.name)
-        into(targetDir)
+    doLast {
+        licenseFile.copyTo(
+            outputDir.resolve("META-INF").resolve("diktat")
+                .also { it.createDirectory() }
+                .resolve(licenseFile.name),
+            overwrite = true
+        )
     }
 }
 
-kotlin.sourceSets.getByName("main") {
-    kotlin.srcDir(
+sourceSets.getByName("main") {
+    resources.srcDir(
         addLicenseTask.map {
             it.outputs.files.singleFile
         }

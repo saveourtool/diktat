@@ -165,7 +165,12 @@ data class DiktatProperties(
                 description = "Display the license and exit.",
                 args = args,
             ) {
-                readFromResource("META-INF/diktat/LICENSE")
+                val resourceName = "META-INF/diktat/LICENSE"
+                DiktatProperties::class.java
+                    .classLoader
+                    .getResource(resourceName)
+                    ?.readText()
+                    ?: error("Resource $resourceName not found")
             }
 
             parser.parse(args)
@@ -232,11 +237,5 @@ data class DiktatProperties(
                 exitProcess(0)
             }
         }
-
-        private fun readFromResource(resourceName: String): String = DiktatProperties::class.java
-            .classLoader
-            .getResource(resourceName)
-            ?.readText()
-            ?: error("Resource $resourceName not found")
     }
 }
