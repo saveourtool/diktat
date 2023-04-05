@@ -47,6 +47,7 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     // need to relocate serialization from kaml to avoid conflicts with KtLint
     relocate("kotlinx.serialization", "com.saveourtool.kotlinx_serialization")
+    duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
 // disable default jar

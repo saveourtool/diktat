@@ -51,6 +51,7 @@ tasks.named<ShadowJar>("shadowJar") {
     manifest {
         attributes["Main-Class"] = "org.cqfn.diktat.DiktatMainKt"
     }
+    duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
 // disable default jar

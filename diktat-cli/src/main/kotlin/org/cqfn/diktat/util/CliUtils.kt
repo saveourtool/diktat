@@ -1,5 +1,5 @@
 /**
- * This class contains util methods to operate with java.nio.file.Path
+ * This class contains util methods to operate with java.nio.file.Path for CLI
  */
 
 package org.cqfn.diktat.util
