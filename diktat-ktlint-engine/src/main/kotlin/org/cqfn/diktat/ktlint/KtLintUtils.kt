@@ -6,6 +6,7 @@ package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
+import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
@@ -18,13 +19,27 @@ import java.nio.file.Path
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.relativeTo
 
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
 private val log = KotlinLogging.logger { }
 
 val defaultCallback = DiktatCallback { error, _ ->
     log.warn { "Received linting error: $error" }
 }
+
+typealias LintErrorCallback = (LintError, Boolean) -> Unit
+
+/**
+ * Makes sure this _rule id_ is qualified with a _rule set id_.
+ *
+ * @param ruleSetId the _rule set id_; defaults to [DIKTAT_RULE_SET_ID].
+ * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId`.
+ * @see DIKTAT_RULE_SET_ID
+ * @since 1.2.4
+ */
+fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): String =
+    when {
+        this.contains(':') -> this
+        else -> "$ruleSetId:$this"
+    }
 
 /**
  * @param sourceRootDir
@@ -84,6 +99,33 @@ fun format(
 ): String {
     val ruleSets = listOf(ruleSetSupplier().toKtLint())
     return KtLint.format(
+        ExperimentalParams(
+            text = text,
+            ruleSets = ruleSets,
+            fileName = fileName.removeSuffix("_copy"),
+            script = fileName.removeSuffix("_copy").endsWith("kts"),
+            cb = cb.unwrap(),
+            debug = true,
+        ).ignoreCorrectedErrors()
+    )
+}
+
+/**
+ * @param ruleSetSupplier
+ * @param text
+ * @param fileName
+ * @param cb callback to be called on unhandled [LintError]s
+ * @return formatted code
+ */
+@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
+fun lint(
+    ruleSetSupplier: () -> DiktatRuleSet,
+    @Language("kotlin") text: String,
+    fileName: String = "test.ks",
+    cb: DiktatCallback = DiktatCallback.empty
+) {
+    val ruleSets = listOf(ruleSetSupplier().toKtLint())
+    KtLint.lint(
         ExperimentalParams(
             text = text,
             ruleSets = ruleSets,

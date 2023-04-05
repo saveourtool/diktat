@@ -1,7 +1,3 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.api.DiktatCallback

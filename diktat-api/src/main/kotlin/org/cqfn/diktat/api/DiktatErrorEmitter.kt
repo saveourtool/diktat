@@ -1,6 +1,5 @@
 package org.cqfn.diktat.api
 
-
 /**
  * The **file-specific** error emitter, initialized and used in [DiktatRule] implementations.
  *
@@ -16,5 +15,9 @@ fun interface DiktatErrorEmitter : Function3<Int, String, Boolean, Unit> {
      * @param errorMessage
      * @param canBeAutoCorrected
      */
-    override fun invoke(offset: Int, errorMessage: String, canBeAutoCorrected: Boolean)
+    override fun invoke(
+        offset: Int,
+        errorMessage: String,
+        canBeAutoCorrected: Boolean
+    )
 }

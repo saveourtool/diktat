@@ -21,6 +21,7 @@ plexus = "2.0"
 jbool = "1.24"
 # downgraded to be compliance with ktlint
 mu-logging = "2.1.23"
+log4j2 = "2.20.0"
 kaml = "0.53.0"
 kotlin-multiplatform-diff = "0.4.0"
 sarif4k = "0.3.0"
@@ -29,7 +30,6 @@ jupiter-itf-extension = "0.12.0"
 mockito-all = "1.10.19"
 
 # executable jar
-log4j2 = "2.20.0"
 kotlinx-cli = "0.3.5"
 
 # copied from save-cloud
@@ -105,12 +105,12 @@ kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-
 
 # ktlint & detekt
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
-ktlint-reporter-plain = { module = "com.pinterest.ktlint:ktlint-reporter-plain", version.ref = "ktlint" }
-ktlint-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-reporter-sarif", version.ref = "ktlint" }
-ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
-ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
 ktlint-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
 ktlint-reporter-checkstyle = { module = "com.pinterest.ktlint:ktlint-reporter-checkstyle", version.ref = "ktlint" }
+ktlint-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
+ktlint-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
+ktlint-reporter-plain = { module = "com.pinterest.ktlint:ktlint-reporter-plain", version.ref = "ktlint" }
+ktlint-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-reporter-sarif", version.ref = "ktlint" }
 sarif4k = { module = "io.github.detekt.sarif4k:sarif4k", version.ref = "sarif4k" }
 sarif4k-jvm = { module = "io.github.detekt.sarif4k:sarif4k-jvm", version.ref = "sarif4k" }
 
@@ -125,6 +125,7 @@ jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref =
 # logging
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "mu-logging" }
 log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
+log4j2-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j2" }
 
 # cli
 kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinx-cli" }

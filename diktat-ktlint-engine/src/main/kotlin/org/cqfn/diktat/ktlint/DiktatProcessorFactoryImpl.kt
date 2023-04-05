@@ -5,6 +5,7 @@ import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.util.isKotlinScript
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.api.EditorConfigOverride
 import java.nio.charset.StandardCharsets
@@ -16,12 +17,11 @@ import kotlin.io.path.readText
  * A factory to create [DiktatProcessor] using [DiktatProcessorFactory] and `KtLint` as engine
  */
 class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
-    override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor = object : DiktatProcessor() {
+    override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor = object : DiktatProcessor {
         override fun fix(file: Path, callback: DiktatCallback): String = KtLint.format(ktLintParams(diktatRuleSet, file, callback.unwrap()))
         override fun check(file: Path, callback: DiktatCallback) = KtLint.lint(ktLintParams(diktatRuleSet, file, callback.unwrap()))
     }
 
-    @Suppress("DEPRECATION")
     private fun ktLintParams(
         diktatRuleSet: DiktatRuleSet,
         file: Path,
@@ -32,9 +32,9 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
         ruleSets = setOf(diktatRuleSet.toKtLint()),
         userData = emptyMap(),
         cb = callback,
-        script = false, // internal API of KtLint
+        script = file.isKotlinScript(),
         editorConfigPath = null,
-        debug = false, // we do not use it
+        debug = false,  // we do not use it
         editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
         isInvokedFromCli = false
     )

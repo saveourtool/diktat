@@ -52,14 +52,19 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
             System.setProperty("user.home", sourceRootDir.pathString)
         }
         val opt = if (reporterProvider is PlainReporterProvider) {
-            mapOf("color" to "DARK_GRAY")
+            mapOf("color_name" to Color.DARK_GRAY.name)
         } else {
             emptyMap()
         }
         return reporterProvider.get(outputStream.asPrintStream(), opt).wrap(sourceRootDir)
     }
 
-    override fun createPlain(outputStream: OutputStream, sourceRootDir: Path, colorName: String?, groupByFile: Boolean): DiktatReporter {
+    override fun createPlain(
+        outputStream: OutputStream,
+        sourceRootDir: Path,
+        colorName: String?,
+        groupByFile: Boolean,
+    ): DiktatReporter {
         val opt = buildMap<String, Any> {
             colorName?.let {
                 put("color", true)

@@ -25,10 +25,12 @@ class KtLintRuleSetWrapper private constructor(
             if (rules.isEmpty()) {
                 return emptyArray()
             }
-            return rules.runningFold(null as KtLintRuleWrapper?) { prevRule, diktatRule ->
-                KtLintRuleWrapper(diktatRule, prevRule)
-            }
+            return rules.asSequence()
+                .runningFold(null as KtLintRuleWrapper?) { prevRule, diktatRule ->
+                    KtLintRuleWrapper(diktatRule, prevRule)
+                }
                 .filterNotNull()
+                .toList()
                 .toTypedArray()
         }
     }

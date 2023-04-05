@@ -37,7 +37,6 @@ import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
-import com.pinterest.ktlint.core.LintError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
@@ -371,7 +370,12 @@ abstract class DiktatSmokeTestBase {
         trimLastEmptyLine: Boolean = true,
     )
 
-    abstract fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit)
+    abstract fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit)
+
+
+    private fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) = doAssertUnfixedLintErrors { diktatErrors ->
+        lintErrorsConsumer.invoke(diktatErrors.map(::LintError))
+    }
 
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
@@ -406,6 +410,25 @@ abstract class DiktatSmokeTestBase {
             tmpFiles.forEach {
                 it.toPath().deleteIfExistsSilently()
             }
+        }
+
+        /**
+         * A wrapper for DiktatError to be able to compare them
+         */
+        private data class LintError(
+            val line: Int,
+            val col: Int,
+            val ruleId: String,
+            val detail: String,
+            var canBeAutoCorrected: Boolean = false,
+        ) {
+            constructor(diktatError: DiktatError) : this(
+                line = diktatError.getLine(),
+                col = diktatError.getCol(),
+                ruleId = diktatError.getRuleId(),
+                detail = diktatError.getDetail(),
+                canBeAutoCorrected = diktatError.canBeAutoCorrected(),
+            )
         }
     }
 }

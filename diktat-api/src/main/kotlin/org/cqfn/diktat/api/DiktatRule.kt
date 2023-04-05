@@ -3,8 +3,8 @@ package org.cqfn.diktat.api
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
-* This is a base interface for diktat's rules
-*/
+ * This is a base interface for diktat's rules
+ */
 interface DiktatRule : Function3<ASTNode, Boolean, DiktatErrorEmitter, Unit> {
     /**
      * A unique ID of this rule.

@@ -4,12 +4,13 @@ plugins {
     id("org.cqfn.diktat.buildutils.publishing-signing-default-configuration")
 }
 
-project.description = "This module builds diktat-runner implementation using ktlint"
+project.description = "This module builds diktat-api implementation using ktlint"
 
 dependencies {
     api(projects.diktatApi)
     implementation(projects.diktatCommon)
-    implementation(libs.ktlint.core)
+    // a temporary solution to avoid a lot of changes in diktat-rules
+    api(libs.ktlint.core)
     implementation(libs.ktlint.reporter.baseline)
     implementation(libs.ktlint.reporter.checkstyle)
     implementation(libs.ktlint.reporter.html)
@@ -17,6 +18,7 @@ dependencies {
     implementation(libs.ktlint.reporter.plain)
     implementation(libs.ktlint.reporter.sarif)
 
+    testImplementation(libs.log4j2.slf4j)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

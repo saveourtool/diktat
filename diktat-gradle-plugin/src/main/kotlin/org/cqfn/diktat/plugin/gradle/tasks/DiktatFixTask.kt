@@ -1,14 +1,13 @@
 package org.cqfn.diktat.plugin.gradle.tasks
 
-import org.cqfn.diktat.DiktatProcessor
-import org.cqfn.diktat.api.DiktatProcessorListener
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
-import java.nio.file.Path
 import javax.inject.Inject
 
 /**
@@ -19,11 +18,10 @@ abstract class DiktatFixTask @Inject constructor(
     inputs: PatternFilterable
 ) : DiktatTaskBase(extension, inputs) {
     override fun doRun(
-        diktatProcessor: DiktatProcessor,
-        listener: DiktatProcessorListener,
-        files: Sequence<Path>, formattedContentConsumer: (Path, String) -> Unit
-    ) {
-        diktatProcessor.fixAll(listener, files, formattedContentConsumer)
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments
+    ): Int = runner.fixAll(args) { updatedFile ->
+        project.logger.info("Original and formatted content differ, writing to ${updatedFile.fileName}...")
     }
 
     companion object {

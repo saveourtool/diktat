@@ -35,6 +35,8 @@ tasks.create("generateLibsForDiktatSnapshot") {
         rootProject.project(":diktat-api"),
         rootProject.project(":diktat-ktlint-engine"),
         rootProject.project(":diktat-common"),
+        rootProject.project(":diktat-api"),
+        rootProject.project(":diktat-ktlint-engine"),
         rootProject.project(":diktat-rules"),
         rootProject.project(":diktat-gradle-plugin"),
     )

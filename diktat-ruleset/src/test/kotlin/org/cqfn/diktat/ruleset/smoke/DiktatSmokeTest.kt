@@ -1,11 +1,9 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.api.DiktatError
-import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
 import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
@@ -37,8 +35,8 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         unfixedLintErrors.clear()
     }
 
-    override fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) {
-        lintErrorsConsumer(unfixedLintErrors.map { it.unwrap() })
+    override fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) {
+        diktatErrorConsumer(unfixedLintErrors)
     }
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(

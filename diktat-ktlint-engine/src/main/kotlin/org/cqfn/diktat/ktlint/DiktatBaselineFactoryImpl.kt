@@ -18,19 +18,20 @@ import kotlin.io.path.outputStream
  */
 @Suppress("DEPRECATION")
 class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
-    override fun tryToLoad(baselineFile: Path, sourceRootDir: Path): DiktatBaseline? {
-        return loadBaseline(baselineFile.absolutePathString())
-            .takeUnless { it.baselineGenerationNeeded }
-            ?.let { ktLintBaseline ->
-                DiktatBaseline { file ->
-                    ktLintBaseline.baselineRules
-                        ?.get(file.relativePathStringTo(sourceRootDir))
-                        .orEmpty()
-                        .map { it.wrap() }
-                        .toSet()
-                }
+    override fun tryToLoad(
+        baselineFile: Path,
+        sourceRootDir: Path,
+    ): DiktatBaseline? = loadBaseline(baselineFile.absolutePathString())
+        .takeUnless { it.baselineGenerationNeeded }
+        ?.let { ktLintBaseline ->
+            DiktatBaseline { file ->
+                ktLintBaseline.baselineRules
+                    ?.get(file.relativePathStringTo(sourceRootDir))
+                    .orEmpty()
+                    .map { it.wrap() }
+                    .toSet()
             }
-    }
+        }
 
     override fun generator(baselineFile: Path, sourceRootDir: Path): DiktatProcessorListener {
         val outputStream = baselineFile.outputStream()

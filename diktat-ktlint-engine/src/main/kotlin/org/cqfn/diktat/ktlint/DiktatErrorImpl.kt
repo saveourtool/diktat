@@ -34,4 +34,3 @@ data class DiktatErrorImpl(
             ?: error("Unsupported wrapper of ${DiktatError::class.java.simpleName}: ${this::class.java.canonicalName}")
     }
 }
-

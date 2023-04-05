@@ -1,22 +1,13 @@
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.DiktatProcessor
-import org.cqfn.diktat.api.DiktatBaseline
-import org.cqfn.diktat.api.DiktatBaseline.Companion.skipKnownErrors
-import org.cqfn.diktat.api.DiktatBaselineFactory
-import org.cqfn.diktat.api.DiktatProcessorListener
-import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
-import org.cqfn.diktat.api.DiktatProcessorListener.Companion.countErrorsAsProcessorListener
-import org.cqfn.diktat.api.DiktatReporterFactory
-import org.cqfn.diktat.api.DiktatRuleSetFactory
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
+import org.cqfn.diktat.DiktatRunnerFactory
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
+
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -24,14 +15,11 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
+
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
-import java.nio.file.Path
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import kotlin.io.path.Path
 
 /**
  * Base [Mojo] for checking and fixing code using diktat
@@ -98,12 +86,15 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private lateinit var mavenSession: MavenSession
 
     /**
-     * @param processor instance of [DiktatProcessor] used in analysis
-     * @param listener
-     * @param files
-     * @param formattedContentConsumer consumer for formatted content of the file
+     * @param runner instance of [DiktatRunner] used in analysis
+     * @param args arguments for [DiktatRunner]
+     * @return count of errors
      */
-    abstract fun runAction(processor: DiktatProcessor, listener: DiktatProcessorListener, files: Sequence<Path>, formattedContentConsumer: (Path, String) -> Unit)
+    @Suppress("TOO_MANY_PARAMETERS")
+    abstract fun runAction(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments,
+    ): Int
 
     /**
      * Perform code check using diktat ruleset
@@ -121,65 +112,28 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val diktatRuleSet by lazy {
-            DiktatRuleSetFactoryImpl().create(configFile)
+        val diktatRunnerFactory = DiktatRunnerFactory(
+            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
+            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
+            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
+            diktatReporterFactory = DiktatReporterFactoryImpl()
+        )
+        val args = DiktatRunnerArguments(
+            configFileName = resolveConfig(),
+            sourceRootDir = sourceRootDir,
+            files = inputs.map(::Path),
+            baselineFile = baseline?.toPath(),
+            reporterType = getReporterType(),
+            reporterOutput = getReporterOutput(),
+        )
+        val diktatRunner = diktatRunnerFactory(args)
+        val errorCounter = runAction(
+            runner = diktatRunner,
+            args = args,
+        )
+        if (errorCounter > 0) {
+            throw MojoFailureException("There are $errorCounter lint errors")
         }
-        val diktatProcessor by lazy {
-            DiktatProcessorFactoryImpl().invoke(diktatRuleSet)
-        }
-        val baselineFactory: DiktatBaselineFactory by lazy {
-            DiktatBaselineFactoryImpl()
-        }
-        val (baselineResults, baselineGenerator) = baseline
-            ?.let { baselineFactory.tryToLoad(it.toPath(), sourceRootDir) }
-            ?.let { it to DiktatProcessorListener.empty }
-            ?: run {
-                val baselineGenerator = baseline?.let {
-                    baselineFactory.generator(it.toPath(), sourceRootDir)
-                } ?: DiktatProcessorListener.empty
-                DiktatBaseline.empty to baselineGenerator
-            }
-        val reporterFactory: DiktatReporterFactory by lazy {
-            DiktatReporterFactoryImpl()
-        }
-        val processorListener = resolveListener(reporterFactory, sourceRootDir)
-        val errorCounter = AtomicInteger()
-        processorListener.beforeAll()
-
-        runAction(
-            processor = diktatProcessor,
-            listener = DiktatProcessorListener(
-                processorListener.skipKnownErrors(baselineResults),
-                baselineGenerator,
-                errorCounter.countErrorsAsProcessorListener()
-            ),
-            files = inputs.asSequence().map(::File).map(File::toPath)
-        ) { file, formattedText ->
-            val fileName = file.absolutePathString()
-            val fileContent = file.readText(Charsets.UTF_8)
-            if (fileContent != formattedText) {
-                log.info("Original and formatted content differ, writing to $fileName...")
-                file.writeText(formattedText, Charsets.UTF_8)
-            }
-        }
-        if (errorCounter.get() > 0) {
-            throw MojoFailureException("There are ${errorCounter.get()} lint errors")
-        }
-    }
-
-    private fun resolveListener(
-        reporterFactory: DiktatReporterFactory,
-        sourceRootDir: Path,
-    ): DiktatProcessorListener {
-        val reporterType = getReporterType()
-        val (outputStream, closeListener) = getReporterOutput()
-            ?.let { it to it.closeAfterAllAsProcessorListener() }
-            ?: run {
-                System.`out` to DiktatProcessorListener.empty
-            }
-        val actualReporter = reporterFactory(reporterType, outputStream, sourceRootDir)
-
-        return DiktatProcessorListener(actualReporter, closeListener)
     }
 
     private fun getReporterType(): String = if (githubActions) {

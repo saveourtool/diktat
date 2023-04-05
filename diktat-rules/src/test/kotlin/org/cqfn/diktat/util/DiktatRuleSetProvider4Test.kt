@@ -2,10 +2,6 @@
  * Stub for diktat ruleset provide to be used in tests and other related utilities
  */
 
-@file:Suppress(
-    "Deprecation"
-)
-
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.api.DiktatRuleSet
@@ -37,7 +33,7 @@ class DiktatRuleSetProvider4Test(
 
     override fun invoke(): DiktatRuleSet = DiktatRuleSet(listOf(ruleSupplier.invoke(rulesConfigList ?: emptyList())))
 
-    override fun create(configFile: String): DiktatRuleSet = throw NotImplementedError("Method is not supported for testing")
+    override fun create(configFile: String): DiktatRuleSet = throw IllegalStateException("Method is not supported for testing")
 }
 
 class DiktatRuleSetProviderTest {
