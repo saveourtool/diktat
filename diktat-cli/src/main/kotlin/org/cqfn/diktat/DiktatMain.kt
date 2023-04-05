@@ -42,7 +42,7 @@ fun main(args: Array<String>) {
     log.debug {
         "Loading diktatRuleSet using config ${properties.config}"
     }
-    val currentFolder = Paths.get(".")
+    val currentFolder = Paths.get(".").toAbsolutePath()
     val diktatRunnerArguments = properties.toRunnerArguments(
         sourceRootDir = currentFolder,
         loggingListener = loggingListener,
