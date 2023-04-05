@@ -13,6 +13,7 @@ plugins {
 project.description = "This module builds diktat-cli to run diktat as CLI using ktlint"
 
 dependencies {
+    implementation(projects.diktatApi)
     implementation(projects.diktatKtlintEngine)
     implementation(projects.diktatRules)
     implementation(libs.kotlinx.cli)
