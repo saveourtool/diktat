@@ -31,6 +31,7 @@ mockito-all = "1.10.19"
 
 # executable jar
 kotlinx-cli = "0.3.5"
+gradle-shadow = "7.1.2"
 
 # copied from save-cloud
 jetbrains-annotations = "24.0.1"
@@ -68,6 +69,7 @@ talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "1.5.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.gradle.spotless", version.ref = "spotless" }
 download = { id = "de.undercouch.download", version.ref = "download" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "gradle-shadow" }
 
 [libraries]
 save-common = { module = "com.saveourtool.save:save-common", version.ref = "save-cli" }

@@ -8,7 +8,8 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.util.isKotlinCodeOrScript
 import org.cqfn.diktat.util.tryToPathIfExists
 import org.cqfn.diktat.util.walkByGlob
-import com.pinterest.ktlint.core.ReporterProvider
+import generated.DIKTAT_VERSION
+import generated.KTLINT_VERSION
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
@@ -122,7 +123,7 @@ data class DiktatProperties(
                 shortName = "m",
                 description = "Mode of `diktat` controls that `diktat` fixes or only finds any deviations from the code style."
             ).default(DiktatMode.CHECK)
-            val reporterProviderId: String by parser.reporterProviderId(diktatReporterFactory)
+            val reporterType: String by parser.reporterType(diktatReporterFactory)
             val output: String? by parser.option(
                 type = ArgType.String,
                 fullName = "output",
@@ -147,26 +148,31 @@ data class DiktatProperties(
                 description = "A list of files to process by diktat"
             ).vararg()
 
-            parser.addOptionAndShowResourceWithExit(
+            parser.addOptionAndShowTextWithExit(
                 fullName = "version",
                 shortName = "V",
                 description = "Output version information and exit.",
                 args = args,
-                resourceName = "META-INF/diktat/version"
-            )
-            parser.addOptionAndShowResourceWithExit(
+            ) {
+                """
+                    Diktat: $DIKTAT_VERSION
+                    Ktlint: $KTLINT_VERSION
+                """.trimIndent()
+            }
+            parser.addOptionAndShowTextWithExit(
                 fullName = "license",
                 shortName = null,
                 description = "Display the license and exit.",
                 args = args,
-                resourceName = "META-INF/diktat/LICENSE",
-            )
+            ) {
+                readFromResource("META-INF/diktat/LICENSE")
+            }
 
             parser.parse(args)
             return DiktatProperties(
                 config = config,
                 mode = mode,
-                reporterProviderId = reporterProviderId,
+                reporterProviderId = reporterType,
                 output = output,
                 groupByFileInPlain = groupByFileInPlain,
                 colorNameInPlain = colorName,
@@ -177,9 +183,9 @@ data class DiktatProperties(
 
         /**
          * @param diktatReporterFactory
-         * @return a single [ReporterProvider] as parsed cli arg
+         * @return a single type of [org.cqfn.diktat.api.DiktatReporter] as parsed cli arg
          */
-        private fun ArgParser.reporterProviderId(diktatReporterFactory: DiktatReporterFactory) = option(
+        private fun ArgParser.reporterType(diktatReporterFactory: DiktatReporterFactory) = option(
             type = ArgType.Choice(
                 choices = diktatReporterFactory.ids.toList(),
                 toVariant = { it },
@@ -206,12 +212,12 @@ data class DiktatProperties(
             description = "Colorize the output.",
         )
 
-        private fun ArgParser.addOptionAndShowResourceWithExit(
+        private fun ArgParser.addOptionAndShowTextWithExit(
             fullName: String,
             shortName: String?,
             description: String,
             args: Array<String>,
-            resourceName: String,
+            contentSupplier: () -> String
         ) {
             // add here to print in help
             option(
@@ -222,7 +228,7 @@ data class DiktatProperties(
             )
             if (args.contains("--$fullName") || shortName?.let { args.contains("-$it") } == true) {
                 @Suppress("DEBUG_PRINT", "ForbiddenMethodCall")
-                print(readFromResource(resourceName))
+                println(contentSupplier())
                 exitProcess(0)
             }
         }
