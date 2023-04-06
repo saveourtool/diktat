@@ -20,13 +20,21 @@ private typealias LintCallback = (LintError) -> Unit
 class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
     override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor = object : DiktatProcessor {
         override fun fix(file: Path, callback: DiktatCallback): String =
-                ktlintEngine(diktatRuleSet).format(file.toKtLint(), callback.toKtLintForFormat())
-        override fun fix(code: String, isScript: Boolean, callback: DiktatCallback): String =
-                ktlintEngine(diktatRuleSet).format(code.toKtLint(isScript), callback.toKtLintForFormat())
+            ktlintEngine(diktatRuleSet).format(file.toKtLint(), callback.toKtLintForFormat())
+        override fun fix(
+            code: String,
+            isScript: Boolean,
+            callback: DiktatCallback
+        ): String =
+            ktlintEngine(diktatRuleSet).format(code.toKtLint(isScript), callback.toKtLintForFormat())
         override fun check(file: Path, callback: DiktatCallback) =
-                ktlintEngine(diktatRuleSet).lint(file.toKtLint(), callback.toKtLintForLint())
-        override fun check(code: String, isScript: Boolean, callback: DiktatCallback) =
-                ktlintEngine(diktatRuleSet).lint(code.toKtLint(isScript), callback.toKtLintForLint())
+            ktlintEngine(diktatRuleSet).lint(file.toKtLint(), callback.toKtLintForLint())
+        override fun check(
+            code: String,
+            isScript: Boolean,
+            callback: DiktatCallback
+        ) =
+            ktlintEngine(diktatRuleSet).lint(code.toKtLint(isScript), callback.toKtLintForLint())
     }
 
     private fun ktlintEngine(

@@ -24,7 +24,11 @@ interface DiktatProcessor {
      * @param callback
      * @return result of `diktat fix`
      */
-    fun fix(code: String, isScript: Boolean, callback: DiktatCallback): String
+    fun fix(
+        code: String,
+        isScript: Boolean,
+        callback: DiktatCallback
+    ): String
 
     /**
      * Run `diktat check` on provided [file] using [callback] for detected errors.
@@ -34,7 +38,6 @@ interface DiktatProcessor {
      */
     fun check(file: Path, callback: DiktatCallback)
 
-
     /**
      * Run `diktat check` on provided [code] using [callback] for detected errors.
      *
@@ -42,5 +45,9 @@ interface DiktatProcessor {
      * @param isScript
      * @param callback
      */
-    fun check(code: String, isScript: Boolean, callback: DiktatCallback)
+    fun check(
+        code: String,
+        isScript: Boolean,
+        callback: DiktatCallback
+    )
 }

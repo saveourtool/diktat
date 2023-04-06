@@ -8,7 +8,6 @@ import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.pinterest.ktlint.core.LintError
-import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 import java.nio.file.Path
 import kotlin.io.path.invariantSeparatorsPathString
