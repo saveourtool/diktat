@@ -62,6 +62,6 @@ private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGl
     getPathMatcher("glob:**/${glob.toUnixSeparator()}")
 }
 
-private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }
-
 private fun String.toUnixSeparator(): String = replace(File.separatorChar, '/')
+
+private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }

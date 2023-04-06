@@ -1,7 +1,7 @@
 package org.cqfn.diktat.util
 
 import mu.KotlinLogging
-import org.junit.jupiter.api.Assertions
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -37,14 +37,13 @@ class CliUtilsKtTest {
     @Test
     fun walkByGlobWithLeadingAsterisks(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
-        Assertions.assertEquals(
-            listOf(
+
+        Assertions.assertThat(tmpDir.walkByGlob("**/Test1.kt").toList())
+            .containsExactlyInAnyOrder(
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
                 tmpDir.resolve("folder1").resolve("subFolder12").resolve("Test1.kt"),
                 tmpDir.resolve("folder2").resolve("Test1.kt"),
-            ),
-            tmpDir.walkByGlob("**/Test1.kt").toList()
-        )
+            )
     }
 
 
@@ -52,34 +51,30 @@ class CliUtilsKtTest {
     fun walkByGlobWithGlobalPath(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
-        Assertions.assertEquals(
-            listOf(
+        Assertions.assertThat(tmpDir.walkByGlob("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList())
+            .containsExactlyInAnyOrder(
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
                 tmpDir.resolve("folder2").resolve("Test2.kt"),
-            ),
-            tmpDir.walkByGlob("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList()
-        )
+            )
     }
 
     @Test
     fun walkByGlobWithRelativePath(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
-        Assertions.assertEquals(
-            listOf(
+
+        Assertions.assertThat(tmpDir.walkByGlob("folder1/subFolder11/*.kt").toList())
+            .containsExactlyInAnyOrder(
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
-            ),
-            tmpDir.walkByGlob("folder1/subFolder11/*.kt").toList()
-        )
+            )
     }
 
     @Test
     fun walkByGlobWithEmptyResult(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
-        Assertions.assertEquals(
-            emptyList<Path>(),
-            tmpDir.walkByGlob("**/*.kts").toList()
-        )
+
+        Assertions.assertThat(tmpDir.walkByGlob("**/*.kts").toList())
+            .isEmpty()
     }
 
     @Test
@@ -97,9 +92,7 @@ class CliUtilsKtTest {
                 log.info { "listRoots: $it" }
             }
             .toList()
-        assert(fromFile.isEmpty()) {
-            "File.listRoots is not empty: ${fromFile.joinToString()}"
-        }
+
         val fromFileSystem = FileSystems.getDefault().rootDirectories
             .also {
                 log.info { "rootDirectory is empty: ${it.iterator().hasNext()}" }
@@ -111,8 +104,8 @@ class CliUtilsKtTest {
             }
             .toList()
 
-        assert(fromFileSystem.isEmpty()) {
-            "FileSystems.getDefault().rootDirectories is not empty: ${fromFileSystem.joinToString()}"
+        assert(fromFileSystem.isEmpty() && fromFile.isEmpty()) {
+            "FileSystems.getDefault().rootDirectories is not empty: ${fromFileSystem.joinToString()} and File.listRoots is not empty: ${fromFile.joinToString()}"
         }
     }
 
