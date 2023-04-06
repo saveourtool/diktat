@@ -7,8 +7,6 @@ import io.github.petertrr.diffutils.text.DiffRowGenerator
 import mu.KotlinLogging
 
 import java.io.File
-import java.nio.charset.StandardCharsets
-import kotlin.io.path.readText
 
 /**
  * A class that is capable of comparing files content
