@@ -58,6 +58,7 @@ private fun isAbsoluteGlob(glob: String): Boolean {
         .onEach {
             println("listRoots: $it")
         }
+        .toList()
     val fromFileSystem = FileSystems.getDefault().rootDirectories
         .also {
             println("rootDirectory is empty: ${it.iterator().hasNext()}")
@@ -65,6 +66,7 @@ private fun isAbsoluteGlob(glob: String): Boolean {
         .asSequence()
         .map { it.absolutePathString() }
         .onEach { println("rootDirectory: $it") }
+        .toList()
 
     return glob.startsWith("**") || sequenceOf(fromFile, fromFileSystem).flatten().any { glob.startsWith(it, true) }
 }
