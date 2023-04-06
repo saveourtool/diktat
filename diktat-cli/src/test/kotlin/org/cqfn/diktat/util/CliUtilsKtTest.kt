@@ -1,9 +1,9 @@
 package org.cqfn.diktat.util
 
-import org.jetbrains.kotlin.konan.file.File
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectory

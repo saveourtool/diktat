@@ -112,8 +112,8 @@ jobs:
       - name: Generate run command using ktlint
         if: matrix.type == 'ktlint'
         run: |
-          filename=$(ls diktat-*.jar)
-          echo DIKTAT_RUN="java -jar ktlint -R $filename --disabled_rules=standard,experimental,test,custom" >> $GITHUB_ENV
+          filename=$(ls -1 diktat-*.jar | head -n1)
+          echo DIKTAT_RUN="java -jar ktlint -R \"$filename\" --disabled_rules=standard,experimental,test,custom" >> $GITHUB_ENV
         shell: bash
 
       - name: Download diktat cli jar
@@ -125,8 +125,8 @@ jobs:
       - name: Generate run command using cli
         if: matrix.type == 'cli'
         run: |
-          filename=$(ls diktat-cli-*.jar)
-          echo DIKTAT_RUN="java -jar $filename" >> $GITHUB_ENV
+          filename=$(ls -1 diktat-cli-*.jar | head -n1)
+          echo DIKTAT_RUN="java -jar \"$filename\"" >> $GITHUB_ENV
         shell: bash
 
       - name: Run diKTat from cli
@@ -153,7 +153,7 @@ jobs:
         continue-on-error: true
         if: runner.os == 'Windows'
         run: |
-          ${{ env.DIKTAT_RUN }} "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+          ${{ env.DIKTAT_RUN }} "%cd%/examples/maven/src/main/kotlin/Test.kt" &>out.txt
         shell: cmd
 
       - name: Check output (absolute paths)
