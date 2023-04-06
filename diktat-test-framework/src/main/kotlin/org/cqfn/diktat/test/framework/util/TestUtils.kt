@@ -29,6 +29,7 @@ import kotlin.io.path.deleteIfExists
 import kotlin.io.path.div
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
+import kotlin.io.path.readLines
 
 private val logger = KotlinLogging.logger {}
 
@@ -329,4 +330,16 @@ fun checkForkedJavaHome() {
             "Make sure JAVA_HOME ($forkedJavaHome) points to a Java 8 or Java 11 home. Java 17 is not yet supported."
         }
     }
+}
+
+/**
+ * @receiver the file whose content is to be read.
+ * @return file content as a list of lines, or null if an I/O error
+ *   has occurred.
+ */
+fun Path.readLinesOrNull(): List<String>? = try {
+    readLines()
+} catch (e: IOException) {
+    logger.error(e) { "Not able to read file: $this" }
+    null
 }

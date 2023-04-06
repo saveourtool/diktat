@@ -1,15 +1,10 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.cqfn.diktat.test.framework.util.readLinesOrNull
 import mu.KotlinLogging
-import java.io.IOException
 import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.copyTo
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
-import kotlin.io.path.readLines
 
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
@@ -21,7 +16,7 @@ import kotlin.io.path.readLines
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(
     private val resourceFilePath: String,
-    private val function: (expectedText: String, testFilePath: String) -> String,
+    private val function: (testFile: Path) -> String,
 ) {
     /**
      * @param expectedResult the name of the resource which has the expected
@@ -33,7 +28,7 @@ class TestComparatorUnit(
      * @param testFileStr the name of the resource which has the original content.
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testFileStr].
-     * @param replacements a map of replacements which will be applied to [expectedResult] and [testFileStr] before comparing.
+     * @param resourceReader [ResourceReader] to read resource content
      * @return the result of file comparison by their content.
      * @see compareFilesFromFileSystem
      */
@@ -41,11 +36,11 @@ class TestComparatorUnit(
     fun compareFilesFromResources(
         expectedResult: String,
         testFileStr: String,
-        trimLastEmptyLine: Boolean = false,
-        replacements: Map<String, String> = emptyMap(),
+        trimLastEmptyLine: Boolean = true,
+        resourceReader: ResourceReader = ResourceReader.default,
     ): FileComparisonResult {
-        val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
-        val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
+        val expectedPath = resourceReader("$resourceFilePath/$expectedResult")
+        val testPath = resourceReader("$resourceFilePath/$testFileStr")
         if (testPath == null || expectedPath == null) {
             log.error("Not able to find files for running test: $expectedResult and $testFileStr")
             return FileComparisonResult(
@@ -56,10 +51,9 @@ class TestComparatorUnit(
         }
 
         return compareFilesFromFileSystem(
-            Paths.get(expectedPath.toURI()),
-            Paths.get(testPath.toURI()),
+            expectedPath,
+            testPath,
             trimLastEmptyLine,
-            replacements,
         )
     }
 
@@ -72,7 +66,6 @@ class TestComparatorUnit(
      * @param testFile the file which has the original content.
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testFile].
-     * @param replacements a map of replacements which will be applied to [expectedFile] and [testFile] before comparing.
      * @return the result of file comparison by their content.
      * @see compareFilesFromResources
      */
@@ -81,7 +74,6 @@ class TestComparatorUnit(
         expectedFile: Path,
         testFile: Path,
         trimLastEmptyLine: Boolean = false,
-        replacements: Map<String, String> = emptyMap(),
     ): FileComparisonResult {
         if (!testFile.isRegularFile() || !expectedFile.isRegularFile()) {
             log.error("Not able to find files for running test: $expectedFile and $testFile")
@@ -92,13 +84,7 @@ class TestComparatorUnit(
                 expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
         }
 
-        val copyTestFile = Path("${testFile.absolutePathString()}_copy")
-        testFile.copyTo(copyTestFile, overwrite = true)
-
-        val actualResult = function(
-            readFile(copyTestFile).replaceAll(replacements).joinToString("\n"),
-            copyTestFile.absolutePathString()
-        )
+        val actualResult = function(testFile)
 
         val actualFileContent = if (trimLastEmptyLine) {
             actualResult.split("\n").dropLast(1)
@@ -107,12 +93,11 @@ class TestComparatorUnit(
             actualResult.split("\n")
         }
 
-        val expectedFileContent = readFile(expectedFile).replaceAll(replacements)
+        val expectedFileContent = expectedFile.readLinesOrNull().orEmpty()
 
         val comparator = FileComparator(
             expectedFile.name,
             expectedFileContent,
-            testFile.name,
             actualFileContent,
         )
 
@@ -125,25 +110,5 @@ class TestComparatorUnit(
 
     private companion object {
         private val log = KotlinLogging.logger {}
-
-        /**
-         * @param file the file whose content is to be read.
-         * @return file content as a list of lines, or an empty list if an I/O error
-         *   has occurred.
-         */
-        private fun readFile(file: Path): List<String> =
-            try {
-                file.readLines()
-            } catch (e: IOException) {
-                log.error("Not able to read file: $file")
-                emptyList()
-            }
-
-        private fun List<String>.replaceAll(replacements: Map<String, String>): List<String> = map { line ->
-            replacements.entries
-                .fold(line) { result, replacement ->
-                    result.replace(replacement.key, replacement.value)
-                }
-        }
     }
 }

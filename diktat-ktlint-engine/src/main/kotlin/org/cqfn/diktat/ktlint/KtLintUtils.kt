@@ -54,21 +54,18 @@ private fun DiktatCallback.ignoreCorrectedErrors(): DiktatCallback = DiktatCallb
 
 /**
  * @param ruleSetSupplier
- * @param text
- * @param fileName
+ * @param file
  * @param cb callback to be called on unhandled [LintError]s
  * @return formatted code
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 fun format(
     ruleSetSupplier: () -> DiktatRuleSet,
-    @Language("kotlin") text: String,
-    fileName: String,
+    file: Path,
     cb: DiktatCallback,
 ): String = DiktatProcessorFactoryImpl().invoke(ruleSetSupplier())
     .fix(
-        code = text,
-        isScript = fileName.removeSuffix("_copy").endsWith("kts"),
+        file = file,
         callback = cb.ignoreCorrectedErrors(),
     )
 
@@ -88,7 +85,6 @@ fun lint(
         file = file,
         callback = cb.ignoreCorrectedErrors(),
     )
-
 
 /**
  * @param ruleSetSupplier

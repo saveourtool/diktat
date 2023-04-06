@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ktlint.format
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
+import org.cqfn.diktat.test.framework.processing.ResourceReader
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
 import mu.KotlinLogging
@@ -29,11 +30,10 @@ open class FixTestBase(
     private val testComparatorUnitSupplier = { overrideRulesConfigList: List<RulesConfig>? ->
         TestComparatorUnit(
             resourceFilePath = resourceFilePath,
-            function = { expectedText, testFilePath ->
+            function = { testFile ->
                 format(
                     ruleSetSupplier = { diktatRuleSetForTest(ruleSupplier, overrideRulesConfigList ?: defaultRulesConfigList) },
-                    text = expectedText,
-                    fileName = testFilePath,
+                    file = testFile,
                     cb = cb,
                 )
             },
@@ -46,7 +46,7 @@ open class FixTestBase(
      * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
      * @param trimLastEmptyLine whether the last (empty) line should be
      *   discarded when reading the content of [testPath].
-     * @param replacements a map of replacements which will be applied to [expectedPath] and [testPath] before comparing.
+     * @param resourceReader [ResourceReader] to read resource content.
      * @see fixAndCompareContent
      */
     protected fun fixAndCompare(
@@ -54,11 +54,11 @@ open class FixTestBase(
         testPath: String,
         overrideRulesConfigList: List<RulesConfig>? = null,
         trimLastEmptyLine: Boolean = false,
-        replacements: Map<String, String> = emptyMap(),
+        resourceReader: ResourceReader = ResourceReader.default,
     ) {
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
-            .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine, replacements)
+            .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine, resourceReader)
         Assertions.assertTrue(
             result.isSuccessful
         ) {

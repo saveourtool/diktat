@@ -41,11 +41,10 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceFilePath = RESOURCE_FILE_PATH,
-        function = { expectedText, testFilePath ->
+        function = { testFile ->
             format(
                 ruleSetSupplier = { DiktatRuleSetProvider(config.absolutePathString()).invoke() },
-                text = expectedText,
-                fileName = testFilePath,
+                file = testFile,
                 cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
             )
         },

@@ -37,8 +37,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
-    fun `missing package name (check)`() {
-        lintMethod(
+    fun `missing package name (check)`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 import org.cqfn.diktat.a.b.c
 
@@ -48,6 +48,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
+            tempDir = tempDir,
+            fileName = TEST_FILE_NAME,
             LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
             rulesConfigList = rulesConfigList
         )
@@ -55,8 +57,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
-    fun `missing package name with annotation (check)`() {
-        lintMethod(
+    fun `missing package name with annotation (check)`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 @file:Suppress("CONSTANT_UPPERCASE")
 
@@ -68,6 +70,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
+            tempDir = tempDir,
+            fileName = TEST_FILE_NAME,
             LintError(1, 37, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
             rulesConfigList = rulesConfigList
         )

@@ -14,9 +14,8 @@ import kotlin.io.path.readLines
  * A class that is capable of comparing files content
  */
 class FileComparator(
-    private val expectedResultFileName: String,
+    private val fileName: String,
     private val expectedResultList: List<String>,
-    private val actualResultFileName: String,
     private val actualResultList: List<String>,
 ) {
     private val diffGenerator = DiffRowGenerator(
@@ -64,9 +63,8 @@ class FileComparator(
         expectedResultFile: File,
         actualResultList: List<String>
     ) : this(
-        expectedResultFileName = expectedResultFile.name,
+        fileName = expectedResultFile.name,
         expectedResultList = readFile(expectedResultFile.toPath()),
-        actualResultFileName = "No file name.kt",
         actualResultList = actualResultList,
     )
 
@@ -74,9 +72,8 @@ class FileComparator(
         expectedResultFile: File,
         actualResultFile: File
     ) : this(
-        expectedResultFileName = expectedResultFile.name,
+        fileName = expectedResultFile.name,
         expectedResultList = readFile(expectedResultFile.toPath()),
-        actualResultFileName = actualResultFile.name,
         actualResultList = readFile(actualResultFile.toPath()),
     )
 
@@ -96,14 +93,14 @@ class FileComparator(
             }
             val joinedDeltas = delta ?: return true
             log.error("""
-                |Expected result from <$expectedResultFileName> and <$actualResultFileName> formatted are different.
+                |Expected result for <$fileName> formatted are different.
                 |See difference below:
                 |$joinedDeltas
                 """.trimMargin()
             )
             return false
         } catch (e: IllegalArgumentException) {
-            log.error("Not able to prepare diffs between <$expectedResultFileName> and <$actualResultFileName>", e)
+            log.error("Not able to prepare diffs for <$fileName>", e)
             return false
         }
     }

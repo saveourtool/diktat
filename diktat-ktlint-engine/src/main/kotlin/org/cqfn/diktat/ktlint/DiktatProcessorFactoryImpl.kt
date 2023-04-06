@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.readLines
 import kotlin.io.path.readText
 
 private typealias KtLintCallback = (LintError, Boolean) -> Unit
@@ -45,7 +46,7 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
             callback: DiktatCallback,
         ): KtLint.ExperimentalParams = ktLintParams(
             fileName = absolutePathString(),
-            text = readText(StandardCharsets.UTF_8),
+            text = readLines(StandardCharsets.UTF_8).joinToString("\n"),
             isScript = isKotlinScript(),
             diktatRuleSet = diktatRuleSet,
             callback = callback,

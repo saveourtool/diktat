@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
+import org.cqfn.diktat.test.framework.processing.ResourceReader
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
@@ -11,6 +12,8 @@ import generated.WarningNames.WRONG_COPYRIGHT_YEAR
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 import java.time.LocalDate
 
 class HeaderCommentRuleFixTest : FixTestBase(
@@ -27,19 +30,19 @@ class HeaderCommentRuleFixTest : FixTestBase(
 ) {
     @Test
     @Tag(WarningNames.HEADER_WRONG_FORMAT)
-    fun `new line should be inserted after header KDoc`() {
-        fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt", replacements = currentYearReplacement)
+    fun `new line should be inserted after header KDoc`(@TempDir tempDir: Path) {
+        fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
-    fun `if no copyright is present and mandatoryCopyright=true, it is added`() {
-        fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt", replacements = currentYearReplacement)
+    fun `if no copyright is present and mandatoryCopyright=true, it is added`(@TempDir tempDir: Path) {
+        fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
-    fun `if no copyright is present, added it and apply pattern for current year`() {
+    fun `if no copyright is present, added it and apply pattern for current year`(@TempDir tempDir: Path) {
         fixAndCompare("AutoCopyrightApplyPatternExpected.kt", "AutoCopyrightApplyPatternTest.kt",
             listOf(
                 RulesConfig(
@@ -51,7 +54,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 ),
                 RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())
             ),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
@@ -60,88 +63,88 @@ class HeaderCommentRuleFixTest : FixTestBase(
      */
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
-    fun `header KDoc should be moved before package`() {
-        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt", replacements = currentYearReplacement)
+    fun `header KDoc should be moved before package`(@TempDir tempDir: Path) {
+        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
     }
 
     @Test
     @Tags(Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT), Tag(WarningNames.HEADER_WRONG_FORMAT))
-    fun `header KDoc should be moved before package - no copyright`() {
+    fun `header KDoc should be moved before package - no copyright`(@TempDir tempDir: Path) {
         fixAndCompare("MisplacedHeaderKdocNoCopyrightExpected.kt", "MisplacedHeaderKdocNoCopyrightTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, emptyMap()), RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tags(Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE), Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT))
-    fun `header KDoc should be moved before package - appended copyright`() {
-        fixAndCompare("MisplacedHeaderKdocAppendedCopyrightExpected.kt", "MisplacedHeaderKdocAppendedCopyrightTest.kt", replacements = currentYearReplacement)
+    fun `header KDoc should be moved before package - appended copyright`(@TempDir tempDir: Path) {
+        fixAndCompare("MisplacedHeaderKdocAppendedCopyrightExpected.kt", "MisplacedHeaderKdocAppendedCopyrightTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
     }
 
     @Test
     @Tag(WRONG_COPYRIGHT_YEAR)
-    fun `copyright invalid year should be auto-corrected`() {
+    fun `copyright invalid year should be auto-corrected`(@TempDir tempDir: Path) {
         fixAndCompare("CopyrightDifferentYearExpected.kt", "CopyrightDifferentYearTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tag(WRONG_COPYRIGHT_YEAR)
-    fun `copyright invalid year should be auto-corrected 2`() {
+    fun `copyright invalid year should be auto-corrected 2`(@TempDir tempDir: Path) {
         fixAndCompare("CopyrightDifferentYearExpected2.kt", "CopyrightDifferentYearTest2.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2021. All rights reserved."
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tag(WRONG_COPYRIGHT_YEAR)
-    fun `copyright invalid pattern, but valid in code`() {
+    fun `copyright invalid pattern, but valid in code`(@TempDir tempDir: Path) {
         fixAndCompare("CopyrightInvalidPatternValidCodeExpected.kt", "CopyrightInvalidPatternValidCodeTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tag(WRONG_COPYRIGHT_YEAR)
-    fun `copyright invalid pattern, update actual year in it and auto-correct`() {
+    fun `copyright invalid pattern, update actual year in it and auto-correct`(@TempDir tempDir: Path) {
         fixAndCompare("CopyrightAbsentInvalidPatternExpected.kt", "CopyrightAbsentInvalidPatternTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tag(WRONG_COPYRIGHT_YEAR)
-    fun `should not raise npe`() {
+    fun `should not raise npe`(@TempDir tempDir: Path) {
         fixAndCompare("CopyrightShouldNotTriggerNPEExpected.kt", "CopyrightShouldNotTriggerNPETest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2021. All rights reserved."
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
-    fun `copyright multiline`() {
+    fun `copyright multiline`(@TempDir tempDir: Path) {
         fixAndCompare("MultilineCopyrightExample.kt", "MultilineCopyrightTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
@@ -161,13 +164,13 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 |    limitations under the License.
                 """.trimMargin()
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
-    fun `should not trigger if copyright text have different indents`() {
+    fun `should not trigger if copyright text have different indents`(@TempDir tempDir: Path) {
         fixAndCompare("MultilineCopyrightNotTriggerExample.kt", "MultilineCopyrightNotTriggerTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
@@ -179,7 +182,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                     |   You may obtain a copy of the License at
             """.trimMargin()
             ))),
-            replacements = currentYearReplacement,
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
         )
     }
 
