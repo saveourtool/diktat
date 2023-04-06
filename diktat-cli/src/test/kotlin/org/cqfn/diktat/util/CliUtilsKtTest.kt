@@ -1,11 +1,9 @@
 package org.cqfn.diktat.util
 
-import mu.KotlinLogging
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.nio.file.FileSystems
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectory
@@ -77,41 +75,7 @@ class CliUtilsKtTest {
             .isEmpty()
     }
 
-    @Test
-    fun notEmptyRoots() {
-        val fromFile = File.listRoots()
-            .also {
-                log.info { "listRoots is empty: ${it.iterator().hasNext()}" }
-            }
-            .iterator()
-            .asSequence()
-            .map {
-                it.toPath().absolutePathString()
-            }
-            .onEach {
-                log.info { "listRoots: $it" }
-            }
-            .toList()
-
-        val fromFileSystem = FileSystems.getDefault().rootDirectories
-            .also {
-                log.info { "rootDirectory is empty: ${it.iterator().hasNext()}" }
-            }
-            .asSequence()
-            .map { it.absolutePathString() }
-            .onEach {
-                log.info { "rootDirectory: $it" }
-            }
-            .toList()
-
-        assert(fromFileSystem.isEmpty() && fromFile.isEmpty()) {
-            "FileSystems.getDefault().rootDirectories is not empty: ${fromFileSystem.joinToString()} and File.listRoots is not empty: ${fromFile.joinToString()}"
-        }
-    }
-
     companion object {
-        private val log = KotlinLogging.logger {}
-
         private fun Path.resolveAndCreateDirectory(name: String): Path = resolve(name).also {
             it.createDirectory()
         }

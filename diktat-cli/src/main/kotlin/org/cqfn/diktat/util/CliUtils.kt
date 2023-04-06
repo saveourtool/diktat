@@ -18,21 +18,11 @@ import kotlin.io.path.exists
 import kotlin.io.path.walk
 
 // all roots
-private val roots: Set<String> = run {
-    sequenceOf(
-        File.listRoots()
-            .asSequence()
-            .map {
-                it.toPath()
-            },
-        FileSystems.getDefault()
-            .rootDirectories
-            .asSequence()
-    )
-        .flatten()
-        .map { it.absolutePathString() }
-        .toSet()
-}
+private val roots: Set<String> = FileSystems.getDefault()
+    .rootDirectories
+    .asSequence()
+    .map { it.absolutePathString() }
+    .toSet()
 
 /**
  * Create a matcher and return a filter that uses it.
