@@ -34,6 +34,25 @@ fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): Strin
 fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRootDir).invariantSeparatorsPathString
 
 /**
+ * Enables ignoring autocorrected errors when in "fix" mode (i.e. when
+ * [com.pinterest.ktlint.core.KtLint.format] is invoked).
+ *
+ * Before version 0.47, _Ktlint_ only reported non-corrected errors in "fix"
+ * mode.
+ * Now, this has changed.
+ *
+ * @receiver the instance of _Ktlint_ parameters.
+ * @return the instance [DiktatCallback] that ignores corrected errors.
+ * @see com.pinterest.ktlint.core.KtLint.format
+ * @since 1.2.4
+ */
+private fun DiktatCallback.ignoreCorrectedErrors(): DiktatCallback = DiktatCallback { error, isCorrected ->
+    if (!isCorrected) {
+        this@ignoreCorrectedErrors(error, false)
+    }
+}
+
+/**
  * @param ruleSetSupplier
  * @param text
  * @param fileName
@@ -50,7 +69,7 @@ fun format(
     .fix(
         code = text,
         isScript = fileName.removeSuffix("_copy").endsWith("kts"),
-        callback = cb,
+        callback = cb.ignoreCorrectedErrors(),
     )
 
 /**
