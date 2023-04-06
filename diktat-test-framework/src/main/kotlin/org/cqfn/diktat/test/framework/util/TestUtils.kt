@@ -30,7 +30,6 @@ import kotlin.io.path.deleteIfExists
 import kotlin.io.path.div
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
-import kotlin.io.path.readLines
 import kotlin.io.path.readText
 
 private val logger = KotlinLogging.logger {}
