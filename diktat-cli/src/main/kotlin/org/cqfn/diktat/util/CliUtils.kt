@@ -4,7 +4,9 @@
 
 package org.cqfn.diktat.util
 
+import java.io.File
 import java.nio.file.FileSystem
+import java.nio.file.FileSystems
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.PathMatcher
@@ -13,7 +15,6 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.PathWalkOption
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
-import kotlin.io.path.pathString
 import kotlin.io.path.walk
 
 /**
@@ -44,9 +45,28 @@ private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGl
     getPathMatcher("glob:**/${glob.toUnixSeparator()}")
 }
 
-private fun FileSystem.isAbsoluteGlob(glob: String): Boolean {
-    rootDirectories.forEach { println("rootDirectory: ${it.absolutePathString()}") }
-    return glob.startsWith("**") || rootDirectories.any { glob.startsWith(it.absolutePathString(), true) }
+private fun isAbsoluteGlob(glob: String): Boolean {
+    val fromFile = File.listRoots()
+        .also {
+            println("listRoots is empty: ${it.iterator().hasNext()}")
+        }
+        .iterator()
+        .asSequence()
+        .map {
+            it.toPath().absolutePathString()
+        }
+        .onEach {
+            println("listRoots: $it")
+        }
+    val fromFileSystem = FileSystems.getDefault().rootDirectories
+        .also {
+            println("rootDirectory is empty: ${it.iterator().hasNext()}")
+        }
+        .asSequence()
+        .map { it.absolutePathString() }
+        .onEach { println("rootDirectory: $it") }
+
+    return glob.startsWith("**") || sequenceOf(fromFile, fromFileSystem).flatten().any { glob.startsWith(it, true) }
 }
 
-private fun String.toUnixSeparator(): String = replace(java.io.File.separatorChar, '/')
+private fun String.toUnixSeparator(): String = replace(File.separatorChar, '/')
