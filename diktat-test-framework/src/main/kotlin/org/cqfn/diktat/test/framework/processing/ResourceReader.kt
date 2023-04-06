@@ -1,12 +1,12 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.test.framework.util.readLinesOrNull
+import org.cqfn.diktat.test.framework.util.readTextOrNull
 import mu.KotlinLogging
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.toPath
-import kotlin.io.path.writeLines
+import kotlin.io.path.writeText
 
 /**
  * A base interface to read resources for testing purposes
@@ -48,20 +48,18 @@ interface ResourceReader : Function1<String, Path?> {
                 ?.let { originalFile ->
                     tempDir.resolve(resourceName)
                         .also { resultFile ->
-                            originalFile.readLinesOrNull()?.replaceAll(replacements)
+                            originalFile.readTextOrNull()?.replaceAll(replacements)
                                 ?.let {
                                     resultFile.parent.createDirectories()
-                                    resultFile.writeLines(it)
+                                    resultFile.writeText(it)
                                 }
                         }
                 }
         }
 
-        private fun List<String>.replaceAll(replacements: Map<String, String>): List<String> = map { line ->
-            replacements.entries
-                .fold(line) { result, replacement ->
-                    result.replace(replacement.key, replacement.value)
-                }
-        }
+        private fun String.replaceAll(replacements: Map<String, String>): String = replacements.entries
+            .fold(this) { result, replacement ->
+                result.replace(replacement.key, replacement.value)
+            }
     }
 }

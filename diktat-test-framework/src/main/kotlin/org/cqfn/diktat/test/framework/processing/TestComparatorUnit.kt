@@ -1,10 +1,12 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.cqfn.diktat.test.framework.util.readLinesOrNull
+import org.cqfn.diktat.test.framework.util.readTextOrNull
 import mu.KotlinLogging
+import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
+import kotlin.io.path.readText
 
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
@@ -84,16 +86,14 @@ class TestComparatorUnit(
                 expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
         }
 
-        val actualResult = function(testFile)
-
-        val actualFileContent = if (trimLastEmptyLine) {
-            actualResult.split("\n").dropLast(1)
-        } else {
-            // fixme: actualResult is separated by KtLint#determineLneSeparator, should be split by it here too
-            actualResult.split("\n")
+        val actualFileContent = function(testFile)
+        if (trimLastEmptyLine) {
+            log.warn(Exception()) {
+                "trimLastEmptyLine is required"
+            }
         }
 
-        val expectedFileContent = expectedFile.readLinesOrNull().orEmpty()
+        val expectedFileContent = expectedFile.readTextOrNull().orEmpty()
 
         val comparator = FileComparator(
             expectedFile.name,
@@ -104,8 +104,8 @@ class TestComparatorUnit(
         return FileComparisonResult(
             comparator.compareFilesEqual(),
             comparator.delta,
-            actualFileContent.joinToString("\n"),
-            expectedFileContent.joinToString("\n"))
+            actualFileContent,
+            expectedFileContent)
     }
 
     private companion object {

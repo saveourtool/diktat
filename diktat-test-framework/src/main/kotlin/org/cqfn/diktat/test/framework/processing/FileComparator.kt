@@ -1,22 +1,22 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.cqfn.diktat.test.framework.util.readTextOrNull
 import io.github.petertrr.diffutils.diff
 import io.github.petertrr.diffutils.patch.ChangeDelta
 import io.github.petertrr.diffutils.text.DiffRowGenerator
 import mu.KotlinLogging
 
 import java.io.File
-import java.io.IOException
-import java.nio.file.Path
-import kotlin.io.path.readLines
+import java.nio.charset.StandardCharsets
+import kotlin.io.path.readText
 
 /**
  * A class that is capable of comparing files content
  */
 class FileComparator(
     private val fileName: String,
-    private val expectedResultList: List<String>,
-    private val actualResultList: List<String>,
+    private val expectedResult: String,
+    private val actualResult: String,
 ) {
     private val diffGenerator = DiffRowGenerator(
         columnWidth = Int.MAX_VALUE,
@@ -31,14 +31,17 @@ class FileComparator(
      * delta in files
      */
     val delta: String? by lazy {
-        if (expectedResultList.isEmpty()) {
+        if (expectedResult.isEmpty()) {
             return@lazy null
         }
         val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
-        val expectWithoutWarn = expectedResultList.filterNot { line ->
-            line.contains(regex)
-        }
-        val patch = diff(expectWithoutWarn, actualResultList)
+        val expectWithoutWarn = expectedResult
+            .split("\n")
+            .filterNot { line ->
+                line.contains(regex)
+            }
+            .joinToString("\n")
+        val patch = diff(expectWithoutWarn, actualResult, null)
 
         if (patch.deltas.isEmpty()) {
             return@lazy null
@@ -61,11 +64,11 @@ class FileComparator(
 
     constructor(
         expectedResultFile: File,
-        actualResultList: List<String>
+        actualResult: String
     ) : this(
         fileName = expectedResultFile.name,
-        expectedResultList = readFile(expectedResultFile.toPath()),
-        actualResultList = actualResultList,
+        expectedResult = expectedResultFile.toPath().readTextOrNull().orEmpty(),
+        actualResult = actualResult,
     )
 
     constructor(
@@ -73,8 +76,8 @@ class FileComparator(
         actualResultFile: File
     ) : this(
         fileName = expectedResultFile.name,
-        expectedResultList = readFile(expectedResultFile.toPath()),
-        actualResultList = readFile(actualResultFile.toPath()),
+        expectedResult = expectedResultFile.toPath().readTextOrNull().orEmpty(),
+        actualResult = actualResultFile.toPath().readTextOrNull().orEmpty(),
     )
 
     /**
@@ -88,7 +91,7 @@ class FileComparator(
     )
     fun compareFilesEqual(): Boolean {
         try {
-            if (expectedResultList.isEmpty()) {
+            if (expectedResult.isEmpty()) {
                 return false
             }
             val joinedDeltas = delta ?: return true
@@ -107,18 +110,5 @@ class FileComparator(
 
     companion object {
         private val log = KotlinLogging.logger {}
-
-        /**
-         * @param file file where to write these list to, separated with newlines.
-         * @return a list of lines from the file, or an empty list if an I/O error
-         *   has occurred.
-         */
-        private fun readFile(file: Path): List<String> =
-            try {
-                file.readLines()
-            } catch (e: IOException) {
-                log.error("Not able to read file: $file")
-                emptyList()
-            }
     }
 }
