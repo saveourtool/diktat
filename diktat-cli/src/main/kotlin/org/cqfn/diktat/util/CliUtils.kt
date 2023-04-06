@@ -17,6 +17,23 @@ import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 import kotlin.io.path.walk
 
+// all roots
+private val roots: Set<String> = run {
+    sequenceOf(
+        File.listRoots()
+            .asSequence()
+            .map {
+                it.toPath()
+            },
+        FileSystems.getDefault()
+            .rootDirectories
+            .asSequence()
+    )
+        .flatten()
+        .map { it.absolutePathString() }
+        .toSet()
+}
+
 /**
  * Create a matcher and return a filter that uses it.
  *
@@ -45,30 +62,6 @@ private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGl
     getPathMatcher("glob:**/${glob.toUnixSeparator()}")
 }
 
-private fun isAbsoluteGlob(glob: String): Boolean {
-    val fromFile = File.listRoots()
-        .also {
-            println("listRoots is empty: ${it.iterator().hasNext()}")
-        }
-        .iterator()
-        .asSequence()
-        .map {
-            it.toPath().absolutePathString()
-        }
-        .onEach {
-            println("listRoots: $it")
-        }
-        .toList()
-    val fromFileSystem = FileSystems.getDefault().rootDirectories
-        .also {
-            println("rootDirectory is empty: ${it.iterator().hasNext()}")
-        }
-        .asSequence()
-        .map { it.absolutePathString() }
-        .onEach { println("rootDirectory: $it") }
-        .toList()
-
-    return glob.startsWith("**") || sequenceOf(fromFile, fromFileSystem).flatten().any { glob.startsWith(it, true) }
-}
+private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }
 
 private fun String.toUnixSeparator(): String = replace(File.separatorChar, '/')
