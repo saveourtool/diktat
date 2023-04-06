@@ -280,7 +280,7 @@ fun String?.isWindows(): Boolean {
  *   has occurred.
  */
 fun Path.readTextOrNull(): String? = try {
-    readText(StandardCharsets.UTF_8)
+    readText(StandardCharsets.UTF_8).replace("\r\n", "\n").replace("\r", "\n")
 } catch (e: IOException) {
     logger.error(e) { "Not able to read file: $this" }
     null
