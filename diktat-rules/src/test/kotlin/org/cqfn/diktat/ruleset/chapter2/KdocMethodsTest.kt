@@ -16,6 +16,8 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class KdocMethodsTest : LintTestBase(::KdocMethods) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}"
@@ -77,24 +79,28 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG),
         Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     )
-    fun `Warning should not be triggered for functions in tests`() {
+    fun `Warning should not be triggered for functions in tests`(@TempDir tempDir: Path) {
         val validCode = "@Test $funCode"
         val complexAnnotationCode = "@Anno(test = [\"args\"]) $funCode"
 
         // do not force KDoc on annotated function
-        lintMethod(validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        lintMethodWithFile(validCode, tempDir = tempDir, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
         // no false positive triggers on annotations
-        lintMethod(complexAnnotationCode,
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
+        lintMethodWithFile(complexAnnotationCode,
+            tempDir = tempDir,
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
         )
         // should check all .kt files unless both conditions on location and name are true
-        lintMethod(funCode,
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
-            fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
+        lintMethodWithFile(funCode,
+            tempDir = tempDir,
+            fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt",
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
         )
         // should allow to set custom test dirs
-        lintMethod(funCode, fileName = "src/jvmTest/kotlin/org/cqfn/diktat/ExampleTest.kt",
+        lintMethodWithFile(funCode,
+            tempDir = tempDir,
+            fileName = "src/jvmTest/kotlin/org/cqfn/diktat/ExampleTest.kt",
             rulesConfigList = listOf(RulesConfig(DIKTAT_COMMON, true, mapOf("testDirs" to "test,jvmTest")))
         )
     }

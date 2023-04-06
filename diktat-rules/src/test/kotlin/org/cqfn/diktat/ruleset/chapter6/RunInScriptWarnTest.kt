@@ -9,14 +9,16 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class RunInScriptWarnTest : LintTestBase(::RunInScript) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${RunInScript.NAME_ID}"
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check simple example`() {
-        lintMethod(
+    fun `check simple example`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 class A {}
 
@@ -44,19 +46,20 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 }
 
             """.trimMargin(),
+            tempDir = tempDir,
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
             LintError(10, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
             LintError(12, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo( //dfdg...", true),
             LintError(15, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} println(\"hello\")", true),
             LintError(17, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} w.map { it -> it }", true),
-            LintError(19, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} tasks.register(\"a\") {...", true),
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+            LintError(19, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} tasks.register(\"a\") {...", true)
         )
     }
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check correct examples`() {
-        lintMethod(
+    fun `check correct examples`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 run {
                     println("hello")
@@ -68,14 +71,15 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 }
 
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check correct with custom wrapper`() {
-        lintMethod(
+    fun `check correct with custom wrapper`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 custom {
                     println("hello")
@@ -87,14 +91,15 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                     println("hello")
                 }
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check gradle file`() {
-        lintMethod(
+    fun `check gradle file`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 class A {}
 
@@ -126,15 +131,16 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 })
 
             """.trimMargin(),
-            LintError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true),
-            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
+            tempDir = tempDir,
+            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts",
+            LintError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true)
         )
     }
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check gradle script with eq expression`() {
-        lintMethod(
+    fun `check gradle script with eq expression`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 version = "0.1.0-SNAPSHOT"
 
@@ -146,14 +152,15 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
 
                 foo().goo()
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
         )
     }
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check kts script with eq expression`() {
-        lintMethod(
+    fun `check kts script with eq expression`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 version = "0.1.0-SNAPSHOT"
 
@@ -163,9 +170,10 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
 
                 foo/*df*/()
             """.trimMargin(),
+            tempDir = tempDir,
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
             LintError(1, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} version = \"0.1.0-SNAPSHOT\"", true),
-            LintError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+            LintError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true)
         )
     }
 }

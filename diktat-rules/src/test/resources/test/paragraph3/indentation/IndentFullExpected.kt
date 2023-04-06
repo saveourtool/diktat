@@ -90,4 +90,3 @@ enum class Enumeration {
 
 fun veryLongExpressionBodyMethod() =
         "abc"
-

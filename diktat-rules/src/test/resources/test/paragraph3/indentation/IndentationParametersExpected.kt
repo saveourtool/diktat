@@ -10,4 +10,3 @@ fun test(
     val test = Test(param1, param2,
             param3)
 }
-

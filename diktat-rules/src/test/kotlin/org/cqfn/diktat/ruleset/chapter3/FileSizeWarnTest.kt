@@ -33,7 +33,7 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
     fun `file smaller then max`() {
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
-        lintMethod(file.readText(), fileName = file.absolutePath, rulesConfigList = rulesConfigListSmall)
+        lintMethodWithFile(file.toPath(), rulesConfigList = rulesConfigListSmall)
     }
 
     @Test
@@ -45,10 +45,9 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
             .readText()
             .split("\n")
             .size
-        lintMethod(file.readText(),
+        lintMethodWithFile(file.toPath(),
             LintError(1, 1, ruleId,
                 "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
-            fileName = file.absolutePath,
             rulesConfigList = rulesConfigListLarge)
     }
 
@@ -57,7 +56,7 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
     fun `use default values`() {
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
-        lintMethod(file.readText(), fileName = file.absolutePath, rulesConfigList = rulesConfigListEmpty)
+        lintMethodWithFile(file.toPath(), rulesConfigList = rulesConfigListEmpty)
     }
 
     @Test
@@ -66,10 +65,10 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSize2000.kt")
         val file = File(path!!.file)
         val size = generate2000lines() + 1
-        lintMethod(file.readText(),
+        lintMethodWithFile(file.toPath(),
             LintError(1, 1, ruleId,
                 "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
-            fileName = file.absolutePath, rulesConfigList = rulesConfigListLarge)
+            rulesConfigList = rulesConfigListLarge)
     }
 
     private fun generate2000lines(): Int {

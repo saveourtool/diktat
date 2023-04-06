@@ -10,6 +10,8 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${MagicNumberRule.NAME_ID}"
@@ -186,8 +188,8 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
 
     @Test
     @Tag(WarningNames.MAGIC_NUMBER)
-    fun `check ignore numbers in test`() {
-        lintMethod(
+    fun `check ignore numbers in test`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |fun f1oo() {
                 |   val m = -1
@@ -205,6 +207,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   return 32
                 |}
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/test/kotlin/org/cqfn/diktat/test/hehe/MagicNumberTest.kt",
             rulesConfigList = rulesConfigIgnoreNumbersMagicNumber,
         )

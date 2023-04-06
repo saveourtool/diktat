@@ -9,6 +9,8 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidUtilityClass.NAME_ID}"
@@ -99,8 +101,8 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
 
     @Test
     @Tag(WarningNames.AVOID_USING_UTILITY_CLASS)
-    fun `check test-class`() {
-        lintMethod(
+    fun `check test-class`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                     |class StringUtils {
                     |   fun goo(tex: String): Int {
@@ -108,10 +110,11 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
+            LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
         )
-        lintMethod(
+        lintMethodWithFile(
             """
                     |@Test
                     |class StringUtils1 {
@@ -120,9 +123,10 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
         )
-        lintMethod(
+        lintMethodWithFile(
             """
                     |class StringUtils2 {
                     |   fun goo(tex: String): Int {
@@ -130,6 +134,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/test/kotlin/org/cqfn/diktat/UtilTest.kt"
         )
     }
