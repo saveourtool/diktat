@@ -11,6 +11,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.Paths
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.PathWalkOption
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 import kotlin.io.path.pathString
 import kotlin.io.path.walk
@@ -43,6 +44,9 @@ private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGl
     getPathMatcher("glob:**/${glob.toUnixSeparator()}")
 }
 
-private fun FileSystem.isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || rootDirectories.any { glob.startsWith(it.pathString, true) }
+private fun FileSystem.isAbsoluteGlob(glob: String): Boolean {
+    rootDirectories.forEach { println("rootDirectory: ${it.absolutePathString()}") }
+    return glob.startsWith("**") || rootDirectories.any { glob.startsWith(it.absolutePathString(), true) }
+}
 
 private fun String.toUnixSeparator(): String = replace(java.io.File.separatorChar, '/')
