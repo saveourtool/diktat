@@ -12,12 +12,14 @@ import java.nio.file.Path
 
 /**
  * A factory to create [DiktatRunner]
+ *
+ * @property diktatReporterFactory a factory for [DiktatReporter]
  */
 class DiktatRunnerFactory(
     private val diktatRuleSetFactory: DiktatRuleSetFactory,
     private val diktatProcessorFactory: DiktatProcessorFactory,
     private val diktatBaselineFactory: DiktatBaselineFactory,
-    private val diktatReporterFactory: DiktatReporterFactory,
+    val diktatReporterFactory: DiktatReporterFactory,
 ) : Function1<DiktatRunnerArguments, DiktatRunner> {
     /**
      * @param args
@@ -27,7 +29,11 @@ class DiktatRunnerFactory(
         val diktatRuleSet = diktatRuleSetFactory.create(args.configFileName)
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
-        val (reporter, closer) = resolveReporter(args.reporterType, args.reporterOutput, args.sourceRootDir)
+        val (reporter, closer) = resolveReporter(
+            args.reporterType, args.reporterOutput,
+            args.colorNameInPlain, args.groupByFileInPlain,
+            args.sourceRootDir
+        )
         return DiktatRunner(
             diktatProcessor = processor,
             diktatBaseline = baseline,
@@ -53,6 +59,8 @@ class DiktatRunnerFactory(
     private fun resolveReporter(
         reporterType: String,
         reporterOutput: OutputStream?,
+        colorNameInPlain: String?,
+        groupByFileInPlain: Boolean?,
         sourceRootDir: Path,
     ): Pair<DiktatReporter, DiktatProcessorListener> {
         val (outputStream, closeListener) = reporterOutput
@@ -60,7 +68,17 @@ class DiktatRunnerFactory(
             ?: run {
                 System.`out` to DiktatProcessorListener.empty
             }
-        val actualReporter = diktatReporterFactory(reporterType, outputStream, sourceRootDir)
+        val actualReporter = if (reporterType == diktatReporterFactory.plainId) {
+            diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
+        } else {
+            require(colorNameInPlain == null) {
+                "colorization is applicable only for plain reporter"
+            }
+            require(groupByFileInPlain == null) {
+                "groupByFile is applicable only for plain reporter"
+            }
+            diktatReporterFactory(reporterType, outputStream, sourceRootDir)
+        }
         return actualReporter to closeListener
     }
 }

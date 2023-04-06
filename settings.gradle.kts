@@ -41,6 +41,7 @@ include("diktat-rules")
 include("diktat-ruleset")
 include("diktat-test-framework")
 include("diktat-dev-ksp")
+include("diktat-cli")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

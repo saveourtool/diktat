@@ -29,9 +29,9 @@ jupiter-itf-extension = "0.12.0"
 # FIXME: need to migrate to mockito
 mockito-all = "1.10.19"
 
-# main class in executable jar
+# executable jar
 kotlinx-cli = "0.3.5"
-
+gradle-shadow = "7.1.2"
 
 # copied from save-cloud
 jetbrains-annotations = "24.0.1"
@@ -52,7 +52,7 @@ commons-compress = "1.22"
 zip4j = "2.11.5"
 ktoml = "0.4.1"
 springdoc = "1.6.15"
-spotless = "6.17.0"
+spotless = "6.18.0"
 arrow-kt = "1.1.5"
 publish = "1.3.0"
 download = "5.4.0"
@@ -69,6 +69,7 @@ talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "1.5.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.gradle.spotless", version.ref = "spotless" }
 download = { id = "de.undercouch.download", version.ref = "download" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "gradle-shadow" }
 
 [libraries]
 save-common = { module = "com.saveourtool.save:save-common", version.ref = "save-cli" }

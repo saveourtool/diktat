@@ -63,7 +63,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         outputStream: OutputStream,
         sourceRootDir: Path,
         colorName: String?,
-        groupByFile: Boolean,
+        groupByFile: Boolean?,
     ): DiktatReporter {
         val opt = buildMap<String, Any> {
             colorName?.let {
@@ -73,9 +73,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
                 put("color", false)
                 put("color_name", Color.DARK_GRAY)
             }
-            if (groupByFile) {
-                put("group_by_file", true)
-            }
+            groupByFile?.let { put("group_by_file", it) }
         }.mapValues { it.value.toString() }
         return plainReporterProvider.get(outputStream.asPrintStream(), opt).wrap(sourceRootDir)
     }
