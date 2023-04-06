@@ -79,7 +79,11 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Test
     @Tags(Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE), Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT))
     fun `header KDoc should be moved before package - appended copyright`(@TempDir tempDir: Path) {
-        fixAndCompare("MisplacedHeaderKdocAppendedCopyrightExpected.kt", "MisplacedHeaderKdocAppendedCopyrightTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
+        fixAndCompare(
+            "MisplacedHeaderKdocAppendedCopyrightExpected.kt",
+            "MisplacedHeaderKdocAppendedCopyrightTest.kt",
+            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+        )
     }
 
     @Test
