@@ -2,11 +2,9 @@ package org.cqfn.diktat.test.framework.processing
 
 import org.cqfn.diktat.test.framework.util.readTextOrNull
 import mu.KotlinLogging
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
-import kotlin.io.path.readText
 
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
@@ -28,8 +26,6 @@ class TestComparatorUnit(
      *   `newlineAtEnd` is `true`), then the file should end with **two**
      *   consecutive linebreaks.
      * @param testFileStr the name of the resource which has the original content.
-     * @param trimLastEmptyLine whether the last (empty) line should be
-     *   discarded when reading the content of [testFileStr].
      * @param resourceReader [ResourceReader] to read resource content
      * @return the result of file comparison by their content.
      * @see compareFilesFromFileSystem
@@ -38,7 +34,6 @@ class TestComparatorUnit(
     fun compareFilesFromResources(
         expectedResult: String,
         testFileStr: String,
-        trimLastEmptyLine: Boolean = true,
         resourceReader: ResourceReader = ResourceReader.default,
     ): FileComparisonResult {
         val expectedPath = resourceReader("$resourceFilePath/$expectedResult")
@@ -55,7 +50,6 @@ class TestComparatorUnit(
         return compareFilesFromFileSystem(
             expectedPath,
             testPath,
-            trimLastEmptyLine,
         )
     }
 
@@ -66,8 +60,6 @@ class TestComparatorUnit(
      *   an empty string (which is the case if `newlineAtEnd` is `true`), then
      *   the file should end with **two** consecutive linebreaks.
      * @param testFile the file which has the original content.
-     * @param trimLastEmptyLine whether the last (empty) line should be
-     *   discarded when reading the content of [testFile].
      * @return the result of file comparison by their content.
      * @see compareFilesFromResources
      */
@@ -75,7 +67,6 @@ class TestComparatorUnit(
     fun compareFilesFromFileSystem(
         expectedFile: Path,
         testFile: Path,
-        trimLastEmptyLine: Boolean = false,
     ): FileComparisonResult {
         if (!testFile.isRegularFile() || !expectedFile.isRegularFile()) {
             log.error("Not able to find files for running test: $expectedFile and $testFile")
@@ -87,12 +78,6 @@ class TestComparatorUnit(
         }
 
         val actualFileContent = function(testFile)
-        if (trimLastEmptyLine) {
-            log.warn(Exception()) {
-                "trimLastEmptyLine is required"
-            }
-        }
-
         val expectedFileContent = expectedFile.readTextOrNull().orEmpty()
 
         val comparator = FileComparator(

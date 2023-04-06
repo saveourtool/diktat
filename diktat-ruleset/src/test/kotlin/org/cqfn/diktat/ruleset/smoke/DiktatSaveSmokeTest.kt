@@ -35,7 +35,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         config: Path,
         expected: String,
         test: String,
-        trimLastEmptyLine: Boolean,
     ) {
         saveSmokeTest(config, test)
     }

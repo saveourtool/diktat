@@ -21,11 +21,10 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         config: Path,
         expected: String,
         test: String,
-        trimLastEmptyLine: Boolean,
     ) {
         Assertions.assertTrue(
             getTestComparatorUnit(config)
-                .compareFilesFromResources(expected, test, trimLastEmptyLine)
+                .compareFilesFromResources(expected, test)
                 .isSuccessful
         )
     }

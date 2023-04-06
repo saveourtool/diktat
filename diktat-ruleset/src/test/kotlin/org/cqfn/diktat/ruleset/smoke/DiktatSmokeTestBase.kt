@@ -315,7 +315,7 @@ abstract class DiktatSmokeTestBase {
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
         val tmpFilePath = "../../../build.gradle.kts"
-        fixAndCompare(configFilePath, tmpFilePath, tmpFilePath, false)
+        fixAndCompare(configFilePath, tmpFilePath, tmpFilePath)
         assertUnfixedLintErrors { unfixedLintErrors ->
             assertThat(unfixedLintErrors).isEmpty()
         }
@@ -367,7 +367,6 @@ abstract class DiktatSmokeTestBase {
         config: Path,
         expected: String,
         test: String,
-        trimLastEmptyLine: Boolean = true,
     )
 
     abstract fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit)

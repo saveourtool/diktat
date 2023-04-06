@@ -44,8 +44,6 @@ open class FixTestBase(
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
      * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
-     * @param trimLastEmptyLine whether the last (empty) line should be
-     *   discarded when reading the content of [testPath].
      * @param resourceReader [ResourceReader] to read resource content.
      * @see fixAndCompareContent
      */
@@ -53,12 +51,11 @@ open class FixTestBase(
         expectedPath: String,
         testPath: String,
         overrideRulesConfigList: List<RulesConfig>? = null,
-        trimLastEmptyLine: Boolean = false,
         resourceReader: ResourceReader = ResourceReader.default,
     ) {
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
-            .compareFilesFromResources(expectedPath, testPath, trimLastEmptyLine, resourceReader)
+            .compareFilesFromResources(expectedPath, testPath, resourceReader)
         Assertions.assertTrue(
             result.isSuccessful
         ) {
@@ -98,7 +95,7 @@ open class FixTestBase(
 
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         return testComparatorUnit
-            .compareFilesFromFileSystem(expected, actual, false)
+            .compareFilesFromFileSystem(expected, actual)
     }
 
     companion object {
