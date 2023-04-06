@@ -8,6 +8,7 @@ import mu.KotlinLogging
 
 import java.io.File
 import java.io.IOException
+import java.nio.charset.StandardCharsets
 import java.nio.file.FileVisitResult
 import java.nio.file.FileVisitResult.CONTINUE
 import java.nio.file.Files
@@ -29,6 +30,7 @@ import kotlin.io.path.deleteIfExists
 import kotlin.io.path.div
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
+import kotlin.io.path.readText
 
 private val logger = KotlinLogging.logger {}
 
@@ -270,6 +272,18 @@ fun String?.isWindows(): Boolean {
     }
 
     return this != null && startsWith("Windows")
+}
+
+/**
+ * @receiver the file whose content is to be read.
+ * @return file content as a single [String], or null if an I/O error
+ *   has occurred.
+ */
+fun Path.readTextOrNull(): String? = try {
+    readText(StandardCharsets.UTF_8).replace("\r\n", "\n").replace("\r", "\n")
+} catch (e: IOException) {
+    logger.error(e) { "Not able to read file: $this" }
+    null
 }
 
 /**

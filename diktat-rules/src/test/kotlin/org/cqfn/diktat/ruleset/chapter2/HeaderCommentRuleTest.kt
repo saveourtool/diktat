@@ -14,6 +14,8 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 import java.time.LocalDate
 
@@ -476,28 +478,28 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
-    fun `header KDoc in gradle script`() {
-        lintMethod(
+    fun `header KDoc in gradle script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |version = "0.1.0-SNAPSHOT"
                 |
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
-
         )
     }
 
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
-    fun `header KDoc in kts script`() {
-        lintMethod(
+    fun `header KDoc in kts script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |val version = "0.1.0-SNAPSHOT"
                 |
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 0 declared classes and/or objects"),
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
-
+            tempDir = tempDir,
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
+            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 0 declared classes and/or objects")
         )
     }
 }

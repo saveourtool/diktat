@@ -8,6 +8,7 @@ import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 import org.cqfn.diktat.test.framework.util.inheritJavaHome
 import org.cqfn.diktat.test.framework.util.isWindows
 import org.cqfn.diktat.test.framework.util.temporaryDirectory
+import generated.KTLINT_VERSION
 
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.fail
@@ -34,7 +35,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         config: Path,
         expected: String,
         test: String,
-        trimLastEmptyLine: Boolean,
     ) {
         saveSmokeTest(config, test)
     }

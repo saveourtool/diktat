@@ -16,6 +16,8 @@ import generated.WarningNames
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${FileStructureRule.NAME_ID}"
@@ -564,8 +566,8 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
 
     @Test
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
-    fun `error in moving blocking at the first place`() {
-        lintMethod(
+    fun `error in moving blocking at the first place`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 // Without suppressing these, version catalog usage in `plugins` is marked as an error in IntelliJ:
                 // https://youtrack.jetbrains.com/issue/KTIJ-19369
@@ -574,8 +576,9 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                     id(libs.plugins.kotlinJvm.get().pluginId)
                 }
             """.trimIndent(),
-            expectedLintErrors = arrayOf(LintError(3, 1, ruleId, "${Warnings.FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Suppress(\"DSL_SCOPE_VIOLATION\")", true)),
             fileName = "build.gradle.kts",
+            tempDir = tempDir,
+            expectedLintErrors = arrayOf(LintError(3, 1, ruleId, "${Warnings.FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Suppress(\"DSL_SCOPE_VIOLATION\")", true)),
         )
     }
 }

@@ -12,12 +12,15 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXT
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.INDENTATION_SIZE
 import org.cqfn.diktat.util.LintTestBase
+import org.cqfn.diktat.util.TEST_FILE_NAME
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 /**
  * Legacy indentation tests.
@@ -85,34 +88,38 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `should warn if no new line at the end of file`() {
-        lintMethod(
+    fun `should warn if no new line at the end of file`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                     |class Example {
                     |    val zero = 0
                     |}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+            tempDir = tempDir,
+            fileName = TEST_FILE_NAME,
+            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file $TEST_FILE_NAME", true)
         )
     }
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `should warn if no new line at the end of file, last child whitespace`() {
-        lintMethod(
+    fun `should warn if no new line at the end of file, last child whitespace`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |class Example {
                 |    val zero = 0
                 |}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+            tempDir = tempDir,
+            fileName = TEST_FILE_NAME,
+            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file $TEST_FILE_NAME", true)
         )
     }
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `should warn if too many blank lines at the end of file`() {
-        lintMethod(
+    fun `should warn if too many blank lines at the end of file`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                     |class Example {
                     |    val zero = 0
@@ -120,7 +127,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |
                     |
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file TestFileName.kt", true)
+            tempDir = tempDir,
+            fileName = TEST_FILE_NAME,
+            LintError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file $TEST_FILE_NAME", true)
         )
     }
 
@@ -693,24 +702,26 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `check script`() {
-        lintMethod(
+    fun `check script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |val q = 1
                 |
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `check gradle script`() {
-        lintMethod(
+    fun `check gradle script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |projectName = "diKTat"
                 |
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/build.gradle.kts"
         )
     }

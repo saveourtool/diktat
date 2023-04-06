@@ -15,7 +15,6 @@ internal const val BUILD_DIRECTORY = "build/libs"
 internal const val DIKTAT_FAT_JAR = "diktat.jar"
 internal const val DIKTAT_FAT_JAR_GLOB = "diktat-*.jar"
 internal const val KTLINT_FAT_JAR = "ktlint"
-internal const val KTLINT_VERSION = "0.48.2"
 
 private val logger = KotlinLogging.logger {}
 

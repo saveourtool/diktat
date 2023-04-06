@@ -4,7 +4,7 @@ import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
+import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.w
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
 import com.pinterest.ktlint.core.Code
 import com.pinterest.ktlint.core.KtLintRuleEngine

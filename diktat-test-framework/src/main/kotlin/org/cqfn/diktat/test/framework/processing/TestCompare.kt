@@ -78,7 +78,7 @@ open class TestCompare : TestBase {
     private fun processToStdOut(): Boolean {
         this.testResult = executeCommand("cmd /c ${testConfig.executionCommand} $testFile")
 
-        return FileComparator(expectedResult, getExecutionResult()).compareFilesEqual()
+        return FileComparator(expectedResult, getExecutionResult().joinToString("\n")).compareFilesEqual()
     }
 
     private fun buildFullPathToResource(resourceFile: String, resourceAbsolutePath: String): File {

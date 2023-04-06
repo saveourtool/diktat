@@ -27,7 +27,7 @@ interface DiktatProcessor {
     fun fix(
         code: String,
         isScript: Boolean,
-        callback: DiktatCallback
+        callback: DiktatCallback,
     ): String
 
     /**
@@ -48,6 +48,6 @@ interface DiktatProcessor {
     fun check(
         code: String,
         isScript: Boolean,
-        callback: DiktatCallback
+        callback: DiktatCallback,
     )
 }
