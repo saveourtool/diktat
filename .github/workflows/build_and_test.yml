@@ -152,8 +152,9 @@ jobs:
       - name: Run diKTat from cli on windows (absolute paths)
         continue-on-error: true
         if: runner.os == 'Windows'
+        # cannot use '&>out.txt' since it's Windows
         run: |
-          ${{ env.DIKTAT_RUN }} "%cd%/examples/maven/src/main/kotlin/Test.kt" &>out.txt
+          ${{ env.DIKTAT_RUN }} "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
         shell: cmd
 
       - name: Check output (absolute paths)
