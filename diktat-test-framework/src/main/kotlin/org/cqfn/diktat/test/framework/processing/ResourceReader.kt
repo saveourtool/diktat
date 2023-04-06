@@ -25,28 +25,25 @@ interface ResourceReader : Function1<String, Path?> {
          * Default implementation of [ResourceReader]
          */
         val default: ResourceReader = object : ResourceReader {
-            override fun invoke(resourceName: String): Path? {
-                return javaClass.classLoader.getResource(resourceName)
-                    ?.toURI()
-                    ?.toPath()
-                    .also {
-                        if (it == null || !it.isRegularFile()) {
-                            log.error { "Not able to find file for running test: $resourceName" }
-                        }
+            override fun invoke(resourceName: String): Path? = javaClass.classLoader.getResource(resourceName)
+                ?.toURI()
+                ?.toPath()
+                .also {
+                    if (it == null || !it.isRegularFile()) {
+                        log.error { "Not able to find file for running test: $resourceName" }
                     }
-            }
+                }
         }
 
         /**
          * @param tempDir the temporary directory (usually injected by _JUnit_).
          * @param replacements a map of replacements which will be applied to actual and expected content before comparing.
-         *
          * @return Instance of [ResourceReader] with replacements of content
          */
         fun withReplacements(
             tempDir: Path,
             replacements: Map<String, String>,
-        ): ResourceReader  = object : ResourceReader {
+        ): ResourceReader = object : ResourceReader {
             override fun invoke(resourceName: String): Path? = default.invoke(resourceName)
                 ?.let { originalFile ->
                     tempDir.resolve(resourceName)
@@ -68,4 +65,3 @@ interface ResourceReader : Function1<String, Path?> {
         }
     }
 }
-

@@ -274,6 +274,18 @@ fun String?.isWindows(): Boolean {
 }
 
 /**
+ * @receiver the file whose content is to be read.
+ * @return file content as a list of lines, or null if an I/O error
+ *   has occurred.
+ */
+fun Path.readLinesOrNull(): List<String>? = try {
+    readLines()
+} catch (e: IOException) {
+    logger.error(e) { "Not able to read file: $this" }
+    null
+}
+
+/**
  * Retries the execution of the [block].
  *
  * @param attempts the number of attempts (must be positive).
@@ -330,16 +342,4 @@ fun checkForkedJavaHome() {
             "Make sure JAVA_HOME ($forkedJavaHome) points to a Java 8 or Java 11 home. Java 17 is not yet supported."
         }
     }
-}
-
-/**
- * @receiver the file whose content is to be read.
- * @return file content as a list of lines, or null if an I/O error
- *   has occurred.
- */
-fun Path.readLinesOrNull(): List<String>? = try {
-    readLines()
-} catch (e: IOException) {
-    logger.error(e) { "Not able to read file: $this" }
-    null
 }

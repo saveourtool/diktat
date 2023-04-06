@@ -17,7 +17,6 @@ import java.nio.file.Path
 
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readLines
-import kotlin.io.path.readText
 
 private typealias KtLintCallback = (LintError, Boolean) -> Unit
 
