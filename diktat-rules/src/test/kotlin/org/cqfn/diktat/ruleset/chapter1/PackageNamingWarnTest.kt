@@ -16,6 +16,8 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:${PackageNaming.NAME_ID}"
@@ -73,8 +75,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
-    fun `don't add the package name to the file in buildSrc path`() {
-        lintMethod(
+    fun `don't add the package name to the file in buildSrc path`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 import org.cqfn.diktat.a.b.c
 
@@ -84,7 +86,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            fileName = "~/diktat/buildSrc/src/main/kotlin/Version.kt",
+            tempDir = tempDir,
+            fileName = "diktat/buildSrc/src/main/kotlin/Version.kt",
             rulesConfigList = rulesConfigList
         )
     }
@@ -93,7 +96,6 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
     fun `package name should be in a lower case (check)`() {
         lintMethod(
-
             """
                 package /* AAA */ org.cqfn.diktat.SPECIALTEST.test
 
@@ -195,8 +197,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
-    fun `test source config`() {
-        lintMethod(
+    fun `test source config`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
 
             """
                 package org.cqfn.diktat.domain
@@ -209,11 +211,12 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            fileName = "~/diktat/diktat-rules/src/nativeMain/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            tempDir = tempDir,
+            fileName = "diktat/diktat-rules/src/nativeMain/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
             rulesConfigList = rulesConfigSourceDirectories
         )
 
-        lintMethod(
+        lintMethodWithFile(
 
             """
                 package org.cqfn.diktat.domain
@@ -226,16 +229,17 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
+            tempDir = tempDir,
+            fileName = "diktat/diktat-rules/src/main/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.main.kotlin.org.cqfn.diktat.domain", true),
-            fileName = "~/diktat/diktat-rules/src/main/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
             rulesConfigList = rulesConfigSourceDirectories
         )
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
-    fun `test directories for test config`() {
-        lintMethod(
+    fun `test directories for test config`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
 
             """
                 package org.cqfn.diktat.domain
@@ -248,11 +252,12 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            fileName = "~/diktat/diktat-rules/src/nativeTest/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            tempDir = tempDir,
+            fileName = "diktat/diktat-rules/src/nativeTest/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
             rulesConfigList = rulesConfigSourceDirectories
         )
 
-        lintMethod(
+        lintMethodWithFile(
 
             """
                 package org.cqfn.diktat.domain
@@ -265,49 +270,54 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
+            tempDir = tempDir,
+            fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.test.kotlin.org.cqfn.diktat.domain", true),
-            fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
             rulesConfigList = rulesConfigSourceDirectories
         )
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `regression - incorrect warning on file under test directory`() {
-        lintMethod(
+    fun `regression - incorrect warning on file under test directory`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                     package org.cqfn.diktat.ruleset.chapter1
             """.trimIndent(),
-            fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+            tempDir = tempDir,
+            fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             rulesConfigList = rulesConfigList
         )
 
-        lintMethod(
+        lintMethodWithFile(
             """
                     package org.cqfn.diktat.chapter1
             """.trimIndent(),
+            tempDir = tempDir,
+            fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
-            fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `regression - should not remove special words from file path`() {
-        lintMethod(
+    fun `regression - should not remove special words from file path`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                     |package org.cqfn.diktat.test.processing
             """.trimMargin(),
-            fileName = "/home/testu/project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt",
+            tempDir = tempDir,
+            fileName = "project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt",
             rulesConfigList = rulesConfigList
         )
 
-        lintMethod(
+        lintMethodWithFile(
             """
                     |package kotlin.collections
             """.trimMargin(),
-            fileName = "/home/testu/project/module/src/main/kotlin/kotlin/collections/Collections.kt",
+            tempDir = tempDir,
+            fileName = "project/module/src/main/kotlin/kotlin/collections/Collections.kt",
             rulesConfigList = listOf(
                 RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "kotlin"))
             )
@@ -316,13 +326,14 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `should respect KMP project structure - positive example`() {
+    fun `should respect KMP project structure - positive example`(@TempDir tempDir: Path) {
         listOf("main", "test", "jvmMain", "jvmTest", "androidMain", "androidTest", "iosMain", "iosTest", "jsMain", "jsTest", "commonMain", "commonTest").forEach {
-            lintMethod(
+            lintMethodWithFile(
                 """
                     |package org.cqfn.diktat
                 """.trimMargin(),
-                fileName = "/home/testu/project/src/$it/kotlin/org/cqfn/diktat/Example.kt",
+                tempDir = tempDir,
+                fileName = "project/src/$it/kotlin/org/cqfn/diktat/Example.kt",
                 rulesConfigList = rulesConfigList
             )
         }
@@ -330,14 +341,15 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `should respect KMP project structure`() {
+    fun `should respect KMP project structure`(@TempDir tempDir: Path) {
         listOf("main", "test", "jvmMain", "jvmTest", "androidMain", "androidTest", "iosMain", "iosTest", "jsMain", "jsTest", "commonMain", "commonTest").forEach {
-            lintMethod(
+            lintMethodWithFile(
                 """
                     |package org.cqfn.diktat
                 """.trimMargin(),
+                tempDir = tempDir,
+                fileName = "project/src/$it/kotlin/org/cqfn/diktat/example/Example.kt",
                 LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
-                fileName = "/home/testu/project/src/$it/kotlin/org/cqfn/diktat/example/Example.kt",
                 rulesConfigList = rulesConfigList
             )
         }
@@ -345,50 +357,54 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `should respect KMP project structure - illegal source set name`() {
-        lintMethod(
+    fun `should respect KMP project structure - illegal source set name`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |package org.cqfn.diktat
             """.trimMargin(),
+            tempDir = tempDir,
+            fileName = "project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.myProjectMain.kotlin.org.cqfn.diktat.example", true),
-            fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
             rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `should warn if there is empty domain name`() {
-        lintMethod(
+    fun `should warn if there is empty domain name`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |package org.cqfn.diktat
             """.trimMargin(),
+            tempDir = tempDir,
+            fileName = "project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
-            fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
             rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `shouldn't trigger if path contains dot`() {
-        lintMethod(
+    fun `shouldn't trigger if path contains dot`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |package org.cqfn.diktat.test.utils
             """.trimMargin(),
-            fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/test.utils/Example.kt",
+            tempDir = tempDir,
+            fileName = "project/src/main/kotlin/org/cqfn/diktat/test.utils/Example.kt",
         )
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `shouldn't trigger for gradle script`() {
-        lintMethod(
+    fun `shouldn't trigger for gradle script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |import org.cqfn.diktat.generation.docs.generateAvailableRules
             """.trimMargin(),
-            fileName = "/home/testu/project/build.gradle.kts",
+            tempDir = tempDir,
+            fileName = "project/build.gradle.kts",
         )
     }
 }

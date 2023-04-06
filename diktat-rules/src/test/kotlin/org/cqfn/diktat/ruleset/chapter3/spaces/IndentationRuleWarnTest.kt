@@ -18,6 +18,8 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 /**
  * Legacy indentation tests.
@@ -693,24 +695,26 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `check script`() {
-        lintMethod(
+    fun `check script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |val q = 1
                 |
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `check gradle script`() {
-        lintMethod(
+    fun `check gradle script`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |projectName = "diKTat"
                 |
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/build.gradle.kts"
         )
     }

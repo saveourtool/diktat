@@ -317,7 +317,7 @@ abstract class DiktatSmokeTestBase {
         val tmpFilePath = "../../../build.gradle.kts"
         fixAndCompare(configFilePath, tmpFilePath, tmpFilePath, false)
         assertUnfixedLintErrors { unfixedLintErrors ->
-            Assertions.assertTrue(unfixedLintErrors.isEmpty())
+            assertThat(unfixedLintErrors).isEmpty()
         }
     }
 
