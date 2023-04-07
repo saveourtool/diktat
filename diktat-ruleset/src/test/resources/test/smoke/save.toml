@@ -1,5 +1,5 @@
 [general]
-execCmd="java -showversion -jar ktlint --debug --verbose -R diktat.jar"
+execCmd="java -showversion -jar ktlint --log-level=debug -R diktat.jar"
 tags = ["smokeTest"]
 description = "SmokeTest"
 suiteName = "SmokeTest"

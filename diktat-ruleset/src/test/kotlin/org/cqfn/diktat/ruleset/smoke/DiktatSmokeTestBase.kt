@@ -238,8 +238,8 @@ abstract class DiktatSmokeTestBase {
                 /*
                  * This 2nd `MISSING_KDOC_ON_FUNCTION` is a duplicate caused by
                  * https://github.com/saveourtool/diktat/issues/1538.
-                 * LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
                  */
+                LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
                 LintError(9, 3, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
                         " empty blocks are forbidden unless it is function with override keyword", false),
                 LintError(12, 10, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
