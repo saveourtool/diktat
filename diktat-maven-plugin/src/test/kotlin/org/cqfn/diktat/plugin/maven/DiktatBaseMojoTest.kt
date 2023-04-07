@@ -11,7 +11,6 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.Assertions
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.createTempFile
 import kotlin.io.path.div
@@ -19,7 +18,6 @@ import kotlin.io.path.div
 /**
  * Tests for mojo configuration. NB: this tests are using Junit4, because maven-plugin-testing-harness doesn't support 5.
  */
-@OptIn(ExperimentalPathApi::class)
 @Suppress("LongMethod", "TOO_LONG_FUNCTION")
 @Ignore
 class DiktatBaseMojoTest {
@@ -74,7 +72,6 @@ class DiktatBaseMojoTest {
         val mavenProject = projectBuilder.build(pom, buildingRequest).project
 
         val diktatCheckMojo = mojoRule.lookupConfiguredMojo(mavenProject, "check") as DiktatCheckMojo
-        Assertions.assertFalse(diktatCheckMojo.debug)
         Assertions.assertEquals("diktat-analysis.yml", diktatCheckMojo.diktatConfigFile)
         Assertions.assertIterableEquals(listOf(pom.parentFile.toPath() / "src"), diktatCheckMojo.inputs.map { Path(it) })
         Assertions.assertTrue(diktatCheckMojo.excludes.isEmpty())
@@ -100,7 +97,6 @@ class DiktatBaseMojoTest {
                                 <groupId>org.cqfn.diktat</groupId>
                                 <artifactId>diktat-maven-plugin</artifactId>
                                 <configuration>
-                                    <debug>true</debug>
                                     <diktatConfigFile>my-diktat-config.yml</diktatConfigFile>
                                     <inputs>
                                         <input>${'$'}{project.basedir}/src/main/kotlin</input>
@@ -126,7 +122,6 @@ class DiktatBaseMojoTest {
         val mavenProject = projectBuilder.build(pom, buildingRequest).project
 
         val diktatCheckMojo = mojoRule.lookupConfiguredMojo(mavenProject, "check") as DiktatCheckMojo
-        Assertions.assertTrue(diktatCheckMojo.debug)
         Assertions.assertEquals("my-diktat-config.yml", diktatCheckMojo.diktatConfigFile)
         Assertions.assertIterableEquals(
             listOf(pom.parentFile.toPath() / "src/main/kotlin", pom.parentFile.toPath() / "src/test/kotlin"),

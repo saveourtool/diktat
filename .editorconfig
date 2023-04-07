@@ -1,3 +1,6 @@
+# https://editorconfig.org
+root = true
+
 [*]
 charset = utf-8
 indent_size = 4
@@ -99,3 +102,9 @@ ij_kotlin_while_on_new_line = false
 ij_kotlin_wrap_elvis_expressions = 1
 ij_kotlin_wrap_expression_body_functions = 1
 ij_kotlin_wrap_first_method_in_call_chain = false
+
+# disable ktlint rules
+ktlint_standard = disabled
+ktlint_experimental = disabled
+ktlint_test = disabled
+ktlint_custom = disabled

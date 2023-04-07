@@ -1,6 +1,7 @@
 package org.cqfn.diktat.test.framework.processing
 
 import org.cqfn.diktat.test.framework.util.readTextOrNull
+import org.cqfn.diktat.test.framework.util.toUnixEndLines
 import mu.KotlinLogging
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
@@ -77,7 +78,7 @@ class TestComparatorUnit(
                 expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
         }
 
-        val actualFileContent = function(testFile)
+        val actualFileContent = function(testFile).toUnixEndLines()
         val expectedFileContent = expectedFile.readTextOrNull().orEmpty()
 
         val comparator = FileComparator(

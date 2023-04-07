@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.AstNodePredicate
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
@@ -106,7 +107,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun ASTNode.findLatestTreePrevMatching(predicate: (ASTNode) -> Boolean): ASTNode {
+    private fun ASTNode.findLatestTreePrevMatching(predicate: AstNodePredicate): ASTNode {
         val result = this.treePrev
         return if (predicate(result)) result else result.findLatestTreePrevMatching(predicate)
     }

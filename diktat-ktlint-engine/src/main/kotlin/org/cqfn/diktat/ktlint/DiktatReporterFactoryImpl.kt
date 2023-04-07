@@ -7,8 +7,8 @@ import com.pinterest.ktlint.core.ReporterProvider
 import com.pinterest.ktlint.reporter.checkstyle.CheckStyleReporterProvider
 import com.pinterest.ktlint.reporter.html.HtmlReporterProvider
 import com.pinterest.ktlint.reporter.json.JsonReporterProvider
+import com.pinterest.ktlint.reporter.plain.Color
 import com.pinterest.ktlint.reporter.plain.PlainReporterProvider
-import com.pinterest.ktlint.reporter.plain.internal.Color
 import com.pinterest.ktlint.reporter.sarif.SarifReporterProvider
 import java.io.OutputStream
 import java.io.PrintStream

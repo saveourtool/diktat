@@ -35,6 +35,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 import org.cqfn.diktat.ruleset.utils.lastIndent
 import org.cqfn.diktat.ruleset.utils.leadingSpaceCount
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.visit
 
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
@@ -65,7 +66,6 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.visit
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -186,7 +186,6 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkIndentation(node: ASTNode) =
         with(IndentContext(configuration)) {
-            @Suppress("Deprecation")
             node.visit { astNode ->
                 checkAndReset(astNode)
                 val indentationIncrement = astNode.getIndentationIncrement()

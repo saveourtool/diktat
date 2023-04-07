@@ -275,12 +275,17 @@ fun String?.isWindows(): Boolean {
 }
 
 /**
+ * @return original [String] with unix end lines
+ */
+fun String.toUnixEndLines(): String = replace("\r\n", "\n").replace("\r", "\n")
+
+/**
  * @receiver the file whose content is to be read.
  * @return file content as a single [String], or null if an I/O error
  *   has occurred.
  */
 fun Path.readTextOrNull(): String? = try {
-    readText(StandardCharsets.UTF_8).replace("\r\n", "\n").replace("\r", "\n")
+    readText(StandardCharsets.UTF_8).toUnixEndLines()
 } catch (e: IOException) {
     logger.error(e) { "Not able to read file: $this" }
     null

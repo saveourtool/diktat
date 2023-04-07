@@ -60,6 +60,9 @@ tasks {
     build {
         dependsOn(shadowJar)
     }
+    test {
+        dependsOn(shadowJar)
+    }
 }
 
 publishing {

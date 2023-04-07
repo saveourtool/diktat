@@ -1,19 +1,21 @@
 package org.cqfn.diktat.ktlint
 
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.unwrap
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class KtLintRuleSetWrapperTest {
+class KtLintRuleWrapperTest {
     @Test
     fun `check KtLintRuleSetWrapper with duplicate`() {
         val rule = mockRule("rule")
@@ -27,12 +29,12 @@ class KtLintRuleSetWrapperTest {
         val rule1 = mockRule(id = "rule-first")
         val rule2 = mockRule(id = "rule-second")
 
-        val orderedRuleSet = DiktatRuleSet(listOf(rule1, rule2)).toKtLint()
+        val orderedRuleProviders = DiktatRuleSet(listOf(rule1, rule2)).toKtLint()
 
-        val orderedRuleSetIterator = orderedRuleSet.rules.iterator()
-        val orderedRule1 = orderedRuleSetIterator.next()
-        val orderedRule2 = orderedRuleSetIterator.next()
-        Assertions.assertFalse(orderedRuleSetIterator.hasNext(), "Extra elements after ordering")
+        val orderedRuleProviderIterator = orderedRuleProviders.iterator()
+        val orderedRule1 = orderedRuleProviderIterator.next().createNewRuleInstance()
+        val orderedRule2 = orderedRuleProviderIterator.next().createNewRuleInstance()
+        Assertions.assertFalse(orderedRuleProviderIterator.hasNext(), "Extra elements after ordering")
 
         Assertions.assertEquals(rule1, orderedRule1.unwrap(), "First rule is modified")
 
@@ -74,18 +76,18 @@ class KtLintRuleSetWrapperTest {
         /*
          * Make sure OrderedRuleSet preserves the order.
          */
-        val ruleSet = DiktatRuleSet(rules).toKtLint()
-        assertThat(ruleSet.rules.map(Rule::id)).containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.qualifiedWithRuleSetId() })
+        val ruleProviders = DiktatRuleSet(rules).toKtLint()
+        assertThat(ruleProviders.map(RuleProvider::createNewRuleInstance).map(Rule::id))
+            .containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.qualifiedWithRuleSetId() })
 
         @Language("kotlin")
         val code = "fun foo() { }"
 
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                fileName = "TestFileName.kt",
-                text = code,
-                ruleSets = listOf(ruleSet),
-                cb = { _, _ -> },
+        KtLintRuleEngine(
+            ruleProviders = ruleProviders
+        ).lint(
+            code = Code.CodeSnippet(
+                content = code
             )
         )
 
@@ -123,20 +125,13 @@ class KtLintRuleSetWrapperTest {
          *            |
          *            V
          * C(File) -> C(Node) -> C(Leaf)
-         *
-         * val expectedRuleInvocationOrder = rules.asSequence()
-         *     .map(Rule::id)
-         *     .flatMap { ruleId ->
-         *         generateSequence { ruleId }.take(astNodeCount)
-         *     }
-         *     .toList()
          */
-        val expectedRuleInvocationOrder = generateSequence {
-            rules.map(DiktatRule::id)
-        }
-            .take(astNodeCount)
-            .flatten()
-            .toList()
+         val expectedRuleInvocationOrder = rules.asSequence()
+              .map(DiktatRule::id)
+              .flatMap { ruleId ->
+                  generateSequence { ruleId }.take(astNodeCount)
+              }
+              .toList()
 
         assertThat(actualRuleInvocationOrder)
             .containsExactlyElementsOf(expectedRuleInvocationOrder)

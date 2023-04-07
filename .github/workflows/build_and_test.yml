@@ -113,7 +113,7 @@ jobs:
         if: matrix.type == 'ktlint'
         run: |
           filename=$(ls -1 diktat-*.jar | head -n1)
-          echo DIKTAT_RUN="java -jar ktlint -R \"$filename\" --disabled_rules=standard,experimental,test,custom" >> $GITHUB_ENV
+          echo DIKTAT_RUN="java -jar ktlint -R \"$filename\"" >> $GITHUB_ENV
         shell: bash
 
       - name: Download diktat cli jar
