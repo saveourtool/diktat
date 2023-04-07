@@ -22,7 +22,7 @@ class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
         baselineFile: Path,
         sourceRootDir: Path,
     ): DiktatBaseline? = loadBaseline(baselineFile.absolutePathString())
-        .takeUnless { it.status == Baseline.Status.VALID }
+        .takeIf { it.status == Baseline.Status.VALID }
         ?.let { ktLintBaseline ->
             DiktatBaseline { file ->
                 ktLintBaseline.lintErrorsPerFile[file.relativePathStringTo(sourceRootDir)]
