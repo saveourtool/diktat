@@ -78,12 +78,12 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                      * On Windows, ktlint is often unable to relativize paths
                      * (see https://github.com/pinterest/ktlint/issues/1608).
                      *
+                     * Also, ktlint needs `.editorconfig` to disable standard rules
+                     *
                      * So let's force the temporary directory to be the
                      * sub-directory of the project root.
                      */
-                    if (System.getProperty("os.name").isWindows()) {
-                        temporaryDirectory(baseDirectoryPath / WINDOWS_TEMP_DIRECTORY)
-                    }
+                    temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
                 }
 
                 val saveProcess = processBuilder.start()
@@ -131,7 +131,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         private val logger = KotlinLogging.logger {}
         private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
         private const val SAVE_VERSION: String = "0.3.4"
-        private const val WINDOWS_TEMP_DIRECTORY = ".save-cli"
+        private const val TEMP_DIRECTORY = ".save-cli"
         private val baseDirectoryPath = Path(BASE_DIRECTORY).absolute()
 
         private fun getSaveForCurrentOs(): String {
@@ -191,15 +191,13 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
             val diktat = baseDirectoryPath / DIKTAT_FAT_JAR
             val save = baseDirectoryPath / getSaveForCurrentOs()
             val ktlint = baseDirectoryPath / KTLINT_FAT_JAR
+            val tempDirectory = baseDirectoryPath / TEMP_DIRECTORY
 
             diktat.deleteIfExistsSilently()
             ktlint.deleteIfExistsSilently()
             save.deleteIfExistsSilently()
 
-            if (System.getProperty("os.name").isWindows()) {
-                val tempDirectory = baseDirectoryPath / WINDOWS_TEMP_DIRECTORY
-                tempDirectory.deleteIfExistsRecursively()
-            }
+            tempDirectory.deleteIfExistsRecursively()
         }
     }
 }
