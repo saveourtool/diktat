@@ -105,12 +105,4 @@ open class FixTestBase(
             log.warn { "Received linting error: $error" }
         }
     }
-
-    companion object {
-        private val log = KotlinLogging.logger { }
-
-        private val defaultCallback = DiktatCallback { error, _ ->
-            log.warn { "Received linting error: $error" }
-        }
-    }
 }
