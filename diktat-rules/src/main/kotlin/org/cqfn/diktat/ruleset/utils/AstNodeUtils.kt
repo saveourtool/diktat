@@ -35,38 +35,35 @@ import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.INTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.LATEINIT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LATEINIT_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.lexer.KtTokens.OROR
-import org.jetbrains.kotlin.KtNodeTypes.OVERRIDE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
-import org.jetbrains.kotlin.KtNodeTypes.PRIVATE_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.PROTECTED_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.PUBLIC_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PUBLIC_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isLeaf
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isRoot
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiComment
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
@@ -75,6 +72,7 @@ import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.util.Locale
 
@@ -89,6 +87,39 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
         require(oldNodes.size == newNodes.size)
     }
 }
+
+
+fun ASTNode.isRoot(): Boolean = elementType == KtFileElementType.INSTANCE
+
+fun ASTNode.isLeaf(): Boolean = firstChildNode == null
+
+fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this != null && elementType == WHITE_SPACE && textContains('\n')
+
+fun ASTNode.parent(
+    strict: Boolean = true,
+    predicate: (ASTNode) -> Boolean,
+): ASTNode? {
+    var n: ASTNode? = if (strict) this.treeParent else this
+    while (n != null) {
+        if (predicate(n)) {
+            return n
+        }
+        n = n.treeParent
+    }
+    return null
+}
+
+/**
+ * @param elementType [IElementType]
+ */
+fun ASTNode.parent(
+    elementType: IElementType,
+    strict: Boolean = true,
+): ASTNode? = parent(strict) { it.elementType == elementType }
+
+fun ASTNode?.isWhiteSpace(): Boolean = this != null && elementType == WHITE_SPACE
+
+fun ASTNode.isPartOfComment(): Boolean = parent(strict = false) { it.psi is PsiComment } != null
 
 /**
  * @return the highest parent node of the tree
@@ -179,7 +210,7 @@ fun ASTNode.isAnonymousFunction(): Boolean {
 /**
  * Checks if the symbols in this node are at the end of line
  */
-fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewline() ?: true
+fun ASTNode.isEol() = parent(false) { it.treeNext != null }?.isFollowedByNewline() ?: true
 
 /**
  * Checks if there is a newline after symbol corresponding to this element. We can't always check only this node itself, because
@@ -188,7 +219,7 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  * Therefore, to check if they are followed by newline we need to check their parents.
  */
 fun ASTNode.isFollowedByNewline() =
-    parent({ it.treeNext != null }, strict = false)?.let {
+    parent(false) { it.treeNext != null }?.let {
         val probablyWhitespace = it.treeNext
         it.isFollowedByNewlineCheck() ||
                 (probablyWhitespace.elementType == WHITE_SPACE && probablyWhitespace.treeNext.run {
@@ -200,14 +231,14 @@ fun ASTNode.isFollowedByNewline() =
  * This function is similar to isFollowedByNewline(), but there may be a comment after the node
  */
 fun ASTNode.isFollowedByNewlineWithComment() =
-    parent({ it.treeNext != null }, strict = false)
+    parent(false) { it.treeNext != null }
         ?.treeNext?.run {
         when (elementType) {
             WHITE_SPACE -> text.contains("\n")
             EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
             else -> false
         } ||
-                parent({ it.treeNext != null }, strict = false)?.let {
+                parent(false) { it.treeNext != null }?.let {
                     it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
                 } ?: false
     } ?: false
@@ -217,7 +248,7 @@ fun ASTNode.isFollowedByNewlineWithComment() =
  * Or if there is nothing before, it cheks, that there are empty imports and package before (Every FILE node has children of type IMPORT_LIST and PACKAGE)
  */
 fun ASTNode.isBeginByNewline() =
-    parent({ it.treePrev != null }, strict = false)?.let {
+    parent(false) { it.treePrev != null }?.let {
         it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n") ||
                 (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
     } ?: false
@@ -254,7 +285,7 @@ fun ASTNode.hasParent(type: IElementType) = parent(type) != null
  * check text because some nodes have empty BLOCK element inside (lambda)
  */
 fun ASTNode?.isBlockEmpty() = this?.let {
-    if (this.elementType == ElementType.WHEN) {
+    if (this.elementType == KtNodeTypes.WHEN) {
         val firstIndex = this.text.indexOf("{")
         this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
     } else {
@@ -335,8 +366,8 @@ fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
     parent?.let {
         val grandParent = parent.treeParent
-        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
-            grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD)
+        if (grandParent != null && grandParent.elementType == KtNodeTypes.OBJECT_DECLARATION) {
+            grandParent.findLeafWithSpecificType(KtTokens.COMPANION_KEYWORD)
                 ?.run {
                     return true
                 }
@@ -359,9 +390,9 @@ fun ASTNode.isConstant() = (this.isNodeFromFileLevel() || this.isNodeFromObject(
  */
 fun ASTNode.isNodeFromObject(): Boolean {
     val parent = this.treeParent
-    if (parent != null && parent.elementType == ElementType.CLASS_BODY) {
+    if (parent != null && parent.elementType == KtNodeTypes.CLASS_BODY) {
         val grandParent = parent.treeParent
-        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
+        if (grandParent != null && grandParent.elementType == KtNodeTypes.OBJECT_DECLARATION) {
             return true
         }
     }
@@ -380,7 +411,7 @@ fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == KtFi
  */
 fun ASTNode.isValProperty() =
     this.getChildren(null)
-        .any { it.elementType == ElementType.VAL_KEYWORD }
+        .any { it.elementType == KtTokens.VAL_KEYWORD }
 
 /**
  * Checks whether this node of type PROPERTY has `const` modifier
@@ -402,7 +433,7 @@ fun ASTNode.hasModifier(modifier: IElementType) = this.findChildByType(MODIFIER_
  */
 fun ASTNode.isVarProperty() =
     this.getChildren(null)
-        .any { it.elementType == ElementType.VAR_KEYWORD }
+        .any { it.elementType == KtTokens.VAR_KEYWORD }
 
 /**
  * Replaces text of [this] node with lowercase text
@@ -543,7 +574,7 @@ fun ASTNode.isSuppressed(
     rule: Rule,
     configs: List<RulesConfig>
 ) =
-    this.parent(hasAnySuppressorForInspection(warningName, rule, configs), strict = false) != null
+    this.parent(false, hasAnySuppressorForInspection(warningName, rule, configs)) != null
 
 /**
  * Checks node has `override` modifier
@@ -620,16 +651,16 @@ fun ASTNode.moveChildBefore(
  */
 @Suppress("UnsafeCallOnNullableType", "FUNCTION_NAME_INCORRECT_CASE", "WRONG_NEWLINES")
 fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
-    ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
-        this.findChildByType(ElementType.BLOCK)?.findChildByType(LBRACE)
-    ElementType.WHEN -> this.findChildByType(LBRACE)!!
+    KtNodeTypes.THEN, KtNodeTypes.ELSE, KtNodeTypes.FUN, KtNodeTypes.TRY, KtNodeTypes.CATCH, KtNodeTypes.FINALLY ->
+        this.findChildByType(KtNodeTypes.BLOCK)?.findChildByType(LBRACE)
+    KtNodeTypes.WHEN -> this.findChildByType(LBRACE)!!
     in loopType ->
-        this.findChildByType(ElementType.BODY)
-            ?.findChildByType(ElementType.BLOCK)
+        this.findChildByType(KtNodeTypes.BODY)
+            ?.findChildByType(KtNodeTypes.BLOCK)
             ?.findChildByType(LBRACE)
-    ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)
+    KtNodeTypes.CLASS, KtNodeTypes.OBJECT_DECLARATION -> this.findChildByType(KtNodeTypes.CLASS_BODY)
         ?.findChildByType(LBRACE)
-    ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
+    KtNodeTypes.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
     else -> null
 }
 
@@ -640,8 +671,8 @@ fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
  */
 fun ASTNode.isSingleLineIfElse(): Boolean {
     val elseNode = (psi as KtIfExpression).`else`?.node
-    val hasSingleElse = elseNode != null && elseNode.elementType != ElementType.IF
-    return treeParent.elementType != ElementType.ELSE && hasSingleElse && text.lines().size == 1
+    val hasSingleElse = elseNode != null && elseNode.elementType != KtNodeTypes.IF
+    return treeParent.elementType != KtNodeTypes.ELSE && hasSingleElse && text.lines().size == 1
 }
 
 /**
@@ -730,7 +761,7 @@ fun ASTNode.extractLineOfText(): String {
         .takeWhileInclusive { it.size <= 1 }
         .forEach { text.add(0, it.last()) }
     text.add(this.text)
-    val nextNode = parent({ it.treeNext != null }, false) ?: this
+    val nextNode = parent(false) { it.treeNext != null } ?: this
     nextNode.siblings(true)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
@@ -743,8 +774,8 @@ fun ASTNode.extractLineOfText(): String {
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?.getAllChildrenWithType(ANNOTATION_ENTRY)
-    ?.flatMap { it.findAllDescendantsWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
-    ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
+    ?.flatMap { it.findAllDescendantsWithSpecificType(KtNodeTypes.CONSTRUCTOR_CALLEE) }
+    ?.any { it.findLeafWithSpecificType(KtTokens.IDENTIFIER)?.text == "Test" }
     ?: false
 
 /**

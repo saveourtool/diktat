@@ -259,7 +259,7 @@
     valueParameter: false
     # REFERENCE_EXPRESSION
     indices: false
-    # WHEN_CONDITION_EXPRESSION
+    # WHEN_CONDITION_WITH_EXPRESSION
     whenConditions: false
     # STRING_TEMPLATE
     collectionLiteral: false
