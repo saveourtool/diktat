@@ -9,7 +9,7 @@ timeOutMillis = 3600000
 
 ["fix and warn"]
     ["fix and warn".fix]
-        execFlags="--disabled_rules=standard,experimental,test,custom -F"
+        execFlags="-F"
     ["fix and warn".warn]
         lineCaptureGroup = 1
         columnCaptureGroup = 2
