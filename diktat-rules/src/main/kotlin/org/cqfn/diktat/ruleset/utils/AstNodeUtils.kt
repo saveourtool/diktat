@@ -18,7 +18,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
@@ -66,13 +65,25 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.util.Locale
+
+/**
+ * AST node visitor which accepts the node and, optionally, returns a value.
+ */
+typealias AstNodeVisitor<T> = (node: ASTNode) -> T
+
+/**
+ * The predicate which accepts a node and returns a `boolean` value.
+ */
+typealias AstNodePredicate = AstNodeVisitor<Boolean>
 
 /**
  * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
@@ -458,8 +469,8 @@ fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSe
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
-                                      excludeChildrenCondition: ((ASTNode) -> Boolean) = { false },
-                                      condition: (ASTNode) -> Boolean,
+                                      excludeChildrenCondition: AstNodePredicate = { false },
+                                      condition: AstNodePredicate,
 ): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null)
@@ -490,7 +501,7 @@ fun ASTNode.findChildrenMatching(elementType: IElementType? = null,
  * Check if this node has any children of optional type matching the predicate
  */
 fun ASTNode.hasChildMatching(elementType: IElementType? = null,
-                             predicate: (ASTNode) -> Boolean): Boolean =
+                             predicate: AstNodePredicate): Boolean =
     findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
@@ -785,7 +796,7 @@ fun ASTNode.findAllNodesOnLine(
  */
 fun ASTNode.findAllNodesWithConditionOnLine(
     line: Int,
-    condition: (ASTNode) -> Boolean
+    condition: AstNodePredicate
 ): List<ASTNode>? = this.findAllNodesOnLine(line)?.filter(condition)
 
 /**
@@ -793,10 +804,24 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFilePath(): String = getRootNode().also {
-    require(it.elementType == FILE) { "Root node type is not FILE, but ${KtLint.FILE_PATH_USER_DATA_KEY} is present in user_data only in FILE nodes" }
-}.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
-    requireNotNull(it) { "File path is not present in user data" }
+fun ASTNode.getFilePath(): String = run {
+    @Suppress("Deprecation")
+    val key = com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
+    val rootNode = getRootNode()
+        .also {
+            require(it.elementType == KtFileElementType.INSTANCE) { "Root node type is not FILE, but $key can present in user_data only in FILE nodes" }
+        }
+
+    rootNode.getUserData(key)
+        ?: run {
+            // KtLint doesn't set file path for snippets
+            // will take a file name from KtFile
+            // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
+            // raised: https://github.com/pinterest/ktlint/issues/1921
+            requireNotNull(rootNode.psi as? KtFile) {
+                "Root node type is not ${KtFile::class}"
+            }.name
+        }
 }
 
 /**
@@ -898,6 +923,35 @@ fun ASTNode.isBooleanExpression(): Boolean =
             }
         }
     }
+
+/**
+ * Before _KtLint_ **0.48**, this extension used to reside in the
+ * `com.pinterest.ktlint.core.ast` package.
+ * Because _KtLint_ **0.47** has changed the way syntax nodes are traversed (see
+ * the diagrams [here](https://github.com/saveourtool/diktat/issues/1538)), the
+ * codebase of _KtLint_ no longer needs it: in most cases, it's sufficient to
+ * invoke
+ *
+ * ```kotlin
+ * visitor(this)
+ * ```
+ *
+ * and rely on _KtLint_ to invoke the same visitor (which is usually a `Rule`)
+ * on this node's children.
+ * Still, _Diktat_ sometimes needs exactly this old behaviour.
+ *
+ * @param visitor the visitor to recursively traverse this node as well as its
+ *   children.
+ * @since 1.2.5
+ */
+fun ASTNode.visit(visitor: AstNodeVisitor<Unit>) {
+    visitor(this)
+    @Suppress("NULLABLE_PROPERTY_TYPE")
+    val filter: TokenSet? = null
+    getChildren(filter).forEach { child ->
+        child.visit(visitor)
+    }
+}
 
 /**
  * @return whether this PSI element is a long string template entry.

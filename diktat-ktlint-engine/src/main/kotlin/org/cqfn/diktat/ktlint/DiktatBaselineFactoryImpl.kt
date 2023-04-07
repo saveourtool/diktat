@@ -6,7 +6,8 @@ import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
 import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.wrap
-import com.pinterest.ktlint.core.internal.loadBaseline
+import com.pinterest.ktlint.core.api.Baseline
+import com.pinterest.ktlint.core.api.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import java.io.PrintStream
 import java.nio.file.Path
@@ -16,17 +17,15 @@ import kotlin.io.path.outputStream
 /**
  * A factory to create or generate [DiktatBaseline] using `KtLint`
  */
-@Suppress("DEPRECATION")
 class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
     override fun tryToLoad(
         baselineFile: Path,
         sourceRootDir: Path,
     ): DiktatBaseline? = loadBaseline(baselineFile.absolutePathString())
-        .takeUnless { it.baselineGenerationNeeded }
+        .takeIf { it.status == Baseline.Status.VALID }
         ?.let { ktLintBaseline ->
             DiktatBaseline { file ->
-                ktLintBaseline.baselineRules
-                    ?.get(file.relativePathStringTo(sourceRootDir))
+                ktLintBaseline.lintErrorsPerFile[file.relativePathStringTo(sourceRootDir)]
                     .orEmpty()
                     .map { it.wrap() }
                     .toSet()

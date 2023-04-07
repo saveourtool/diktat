@@ -1,0 +1,8 @@
+# https://editorconfig.org
+root = true
+[{*.kt,*.kts}]
+# disable ktlint rules
+ktlint_standard = disabled
+ktlint_experimental = disabled
+ktlint_test = disabled
+ktlint_custom = disabled

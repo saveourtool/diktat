@@ -1,8 +1,10 @@
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatRule
+import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleProvider
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 private typealias EmitType = (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
@@ -18,17 +20,26 @@ class KtLintRuleWrapper(
     id = rule.id.qualifiedWithRuleSetId(DIKTAT_RULE_SET_ID),
     visitorModifiers = createVisitorModifiers(rule, prevRule),
 ) {
-    @Deprecated(
-        "Marked for deletion in ktlint 0.48.0",
-        replaceWith = ReplaceWith("beforeVisitChildNodes(node, autoCorrect, emit)"),
-    )
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType,
     ) = rule.invoke(node, autoCorrect, emit)
 
     companion object {
+        private fun Sequence<DiktatRule>.wrapRules(): Sequence<Rule> = runningFold(null as KtLintRuleWrapper?) { prevRule, diktatRule ->
+            KtLintRuleWrapper(diktatRule, prevRule)
+        }.filterNotNull()
+
+        /**
+         * @return [Set] of __KtLint__'s [RuleProvider]s created from [DiktatRuleSet]
+         */
+        fun DiktatRuleSet.toKtLint(): Set<RuleProvider> = rules
+            .asSequence()
+            .wrapRules()
+            .map { it.asProvider() }
+            .toSet()
+
         private fun createVisitorModifiers(
             rule: DiktatRule,
             prevRule: KtLintRuleWrapper?,
@@ -51,5 +62,10 @@ class KtLintRuleWrapper(
          * @return a rule to which a logic is delegated
          */
         internal fun Rule.unwrap(): DiktatRule = (this as? KtLintRuleWrapper)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
+
+        /**
+         * @return wraps [Rule] to [RuleProvider]
+         */
+        internal fun Rule.asProvider(): RuleProvider = RuleProvider { this }
     }
 }

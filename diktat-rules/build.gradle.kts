@@ -35,17 +35,12 @@ dependencies {
     testImplementation(libs.kotlin.reflect)
 }
 
-kotlin {
-    sourceSets.main {
-        kotlin.srcDir("build/generated/ksp/main/kotlin")
+project.afterEvaluate {
+    tasks.named("kspKotlin") {
+        // not clear issue that :kspKotlin is up-to-date, but generated files are missed
+        outputs.upToDateWhen { false }
     }
-}
-
-idea {
-    module {
-        // Not using += due to https://github.com/gradle/gradle/issues/8749
-        sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin")  // or tasks["kspKotlin"].destination
-        testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
-        generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
+    tasks.named("test") {
+        dependsOn(tasks.named("kspKotlin"))
     }
 }

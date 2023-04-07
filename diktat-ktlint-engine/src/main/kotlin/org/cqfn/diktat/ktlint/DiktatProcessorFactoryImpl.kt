@@ -5,85 +5,56 @@ import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
-import org.cqfn.diktat.ktlint.KtLintRuleSetWrapper.Companion.toKtLint
-import org.cqfn.diktat.util.isKotlinScript
-
-import com.pinterest.ktlint.core.KtLint
+import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.api.EditorConfigOverride
-
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.readText
-
-private typealias KtLintCallback = (LintError, Boolean) -> Unit
+private typealias FormatCallback = (LintError, Boolean) -> Unit
+private typealias LintCallback = (LintError) -> Unit
 
 /**
  * A factory to create [DiktatProcessor] using [DiktatProcessorFactory] and `KtLint` as engine
  */
 class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
-    override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor = object : DiktatProcessor {
-        override fun fix(file: Path, callback: DiktatCallback): String = KtLint.format(file.toKtLintParams(diktatRuleSet, callback))
-        override fun fix(
-            code: String,
-            isScript: Boolean,
-            callback: DiktatCallback
-        ): String = KtLint.format(code.toKtLintParams(isScript, diktatRuleSet, callback))
-        override fun check(file: Path, callback: DiktatCallback) = KtLint.lint(file.toKtLintParams(diktatRuleSet, callback))
-        override fun check(
-            code: String,
-            isScript: Boolean,
-            callback: DiktatCallback
-        ) = KtLint.lint(code.toKtLintParams(isScript, diktatRuleSet, callback))
+    override fun invoke(diktatRuleSet: DiktatRuleSet): DiktatProcessor {
+        val ktLintRuleEngine = diktatRuleSet.toKtLintEngine()
+        return object : DiktatProcessor {
+            override fun fix(
+                file: Path,
+                callback: DiktatCallback,
+            ): String = ktLintRuleEngine.format(file.toKtLint(), callback.toKtLintForFormat())
+            override fun fix(
+                code: String,
+                isScript: Boolean,
+                callback: DiktatCallback
+            ): String = ktLintRuleEngine.format(code.toKtLint(isScript), callback.toKtLintForFormat())
+            override fun check(
+                file: Path,
+                callback: DiktatCallback,
+            ) = ktLintRuleEngine.lint(file.toKtLint(), callback.toKtLintForLint())
+            override fun check(
+                code: String,
+                isScript: Boolean,
+                callback: DiktatCallback
+            ) = ktLintRuleEngine.lint(code.toKtLint(isScript), callback.toKtLintForLint())
+        }
     }
 
     companion object {
-        private fun Path.toKtLintParams(
-            diktatRuleSet: DiktatRuleSet,
-            callback: DiktatCallback,
-        ): KtLint.ExperimentalParams = ktLintParams(
-            fileName = absolutePathString(),
-            text = readText(StandardCharsets.UTF_8).replace("\r\n", "\n").replace("\r", "\n"),
-            isScript = isKotlinScript(),
-            diktatRuleSet = diktatRuleSet,
-            callback = callback,
-        )
+        private fun DiktatRuleSet.toKtLintEngine(): KtLintRuleEngine = KtLintRuleEngine(ruleProviders = toKtLint())
 
-        private fun String.toKtLintParams(
-            isScript: Boolean,
-            diktatRuleSet: DiktatRuleSet,
-            callback: DiktatCallback,
-        ): KtLint.ExperimentalParams = ktLintParams(
-            fileName = if (isScript) "test.kts" else "test.kt",
-            text = this,
-            isScript = isScript,
-            diktatRuleSet = diktatRuleSet,
-            callback = callback,
-        )
+        private fun Path.toKtLint(): Code = Code.CodeFile(this.toFile())
 
-        private fun ktLintParams(
-            fileName: String,
-            text: String,
-            isScript: Boolean,
-            diktatRuleSet: DiktatRuleSet,
-            callback: DiktatCallback,
-        ): KtLint.ExperimentalParams = KtLint.ExperimentalParams(
-            fileName = fileName,
-            text = text,
-            ruleSets = setOf(diktatRuleSet.toKtLint()),
-            userData = emptyMap(),
-            cb = callback.toKtLint(),
-            script = isScript,
-            editorConfigPath = null,
-            debug = false,  // we do not use it
-            editorConfigOverride = EditorConfigOverride.emptyEditorConfigOverride,
-            isInvokedFromCli = false
-        )
+        private fun String.toKtLint(isScript: Boolean): Code = Code.CodeSnippet(this, isScript)
 
-        private fun DiktatCallback.toKtLint(): KtLintCallback = { error, isCorrected ->
+        private fun DiktatCallback.toKtLintForFormat(): FormatCallback = { error, isCorrected ->
             this(error.wrap(), isCorrected)
+        }
+
+        private fun DiktatCallback.toKtLintForLint(): LintCallback = { error ->
+            this(error.wrap(), false)
         }
     }
 }
