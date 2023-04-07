@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
-import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -68,7 +67,7 @@ abstract class DiktatRule(
                 log.error(
                     """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/.
                        As a workaround you can disable these inspections in yml config: <$inspections>.
-                       Root cause of the problem is in [${node.getFilePath()}] file.
+                       Root cause of the problem is in [] file.
                     """.trimIndent(), internalError
                 )
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw

@@ -23,10 +23,13 @@ fun ASTNode.isRoot(): Boolean = elementType == KtFileElementType.INSTANCE
  */
 fun ASTNode.isLeaf(): Boolean = firstChildNode == null
 
+/**
+ * @return
+ */
 fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this != null && elementType == KtTokens.WHITE_SPACE && textContains('\n')
 
 /**
- * @param strict true if it needs to check current [ASTNode]
+ * @param strict true if it doesn't need to check current [ASTNode]
  * @param predicate
  * @return first parent which meets [predicate] condition
  */
@@ -41,6 +44,7 @@ fun ASTNode.parent(
 
 /**
  * @param elementType [IElementType]
+ * @param strict
  */
 fun ASTNode.parent(
     elementType: IElementType,
@@ -73,61 +77,11 @@ inline fun ASTNode.prevSibling(predicate: (ASTNode) -> Boolean = { true }): ASTN
  */
 fun ASTNode.nextCodeSibling(): ASTNode? = nextSibling { !it.isNotCode() }
 
+/**
+ * @param predicate
+ * @return
+ */
 inline fun ASTNode.nextSibling(predicate: (ASTNode) -> Boolean = { true }): ASTNode? = siblings(true).firstOrNull(predicate)
-
-private fun ASTNode.nextLeaf(
-    includeEmpty: Boolean = false,
-    skipSubtree: Boolean = false,
-): ASTNode? {
-    var n = if (skipSubtree) this.lastChildLeafOrSelf().nextLeafAny() else this.nextLeafAny()
-    if (!includeEmpty) {
-        while (n != null && n.textLength == 0) {
-            n = n.nextLeafAny()
-        }
-    }
-    return n
-}
-
-private fun ASTNode.lastChildLeafOrSelf(): ASTNode {
-    var n = this
-    if (n.lastChildNode != null) {
-        do {
-            n = n.lastChildNode
-        } while (n.lastChildNode != null)
-        return n
-    }
-    return n
-}
-
-private fun ASTNode.nextLeafAny(): ASTNode? {
-    var n = this
-    if (n.firstChildNode != null) {
-        do {
-            n = n.firstChildNode
-        } while (n.firstChildNode != null)
-        return n
-    }
-    return n.nextLeafStrict()
-}
-
-private fun ASTNode.nextLeafStrict(): ASTNode? {
-    val nextSibling: ASTNode? = treeNext
-    if (nextSibling != null) {
-        return nextSibling.firstChildLeafOrSelf()
-    }
-    return treeParent?.nextLeafStrict()
-}
-
-private fun ASTNode.firstChildLeafOrSelf(): ASTNode {
-    var n = this
-    if (n.firstChildNode != null) {
-        do {
-            n = n.firstChildNode
-        } while (n.firstChildNode != null)
-        return n
-    }
-    return n
-}
 
 /**
  * @param includeEmpty
@@ -144,10 +98,64 @@ fun ASTNode.nextCodeLeaf(
         it.isNotCode()
     }
 
-private fun ASTNode.isNotCode(): Boolean = isWhiteSpace() || isPartOfComment()
-
 /**
  * @param elementType
  * @return true if current [ASTNode] has a parent with [elementType]
  */
 fun ASTNode.isPartOf(elementType: IElementType): Boolean = parent(elementType, strict = false) != null
+
+private fun ASTNode.nextLeaf(
+    includeEmpty: Boolean = false,
+    skipSubtree: Boolean = false,
+): ASTNode? {
+    var n = if (skipSubtree) this.lastChildLeafOrSelf().nextLeafAny() else this.nextLeafAny()
+    if (!includeEmpty) {
+        while (n != null && n.textLength == 0) {
+            n = n.nextLeafAny()
+        }
+    }
+    return n
+}
+
+private fun ASTNode.lastChildLeafOrSelf(): ASTNode {
+    var n = this
+    n.lastChildNode?.let {
+        do {
+            n = n.lastChildNode
+        } while (n.lastChildNode != null)
+        return n
+    }
+    return n
+}
+
+private fun ASTNode.nextLeafAny(): ASTNode? {
+    var n = this
+    n.firstChildNode?.let {
+        do {
+            n = n.firstChildNode
+        } while (n.firstChildNode != null)
+        return n
+    }
+    return n.nextLeafStrict()
+}
+
+private fun ASTNode.nextLeafStrict(): ASTNode? {
+    val nextSibling: ASTNode? = treeNext
+    nextSibling?.let {
+        return nextSibling.firstChildLeafOrSelf()
+    }
+    return treeParent?.nextLeafStrict()
+}
+
+private fun ASTNode.firstChildLeafOrSelf(): ASTNode {
+    var n = this
+    n.firstChildNode?.let {
+        do {
+            n = n.firstChildNode
+        } while (n.firstChildNode != null)
+        return n
+    }
+    return n
+}
+
+private fun ASTNode.isNotCode(): Boolean = isWhiteSpace() || isPartOfComment()

@@ -141,8 +141,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             elseFromExistingCode
         }
 
-        val (numberOfStatementsInElseBlock, isAssignmentInNewElseBlock) = (condition.treeParent.psi as KtIfExpression)
-            .let {
+        val (numberOfStatementsInElseBlock, isAssignmentInNewElseBlock) = (condition.treeParent.psi as? KtIfExpression)
+            ?.let {
                 if (isEqualToNull) {
                     it.then
                 } else {

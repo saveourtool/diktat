@@ -806,19 +806,16 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  */
 fun ASTNode.getFilePath(): String = run {
     // https://github.com/pinterest/ktlint/issues/1921
-    val key = Key<String>("FILE_PATH")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
+    val key: Key<String> = (Key.findKeyByName("FILE_PATH") as? Key<String>)!!
     val rootNode = getRootNode()
-        .also {
-            require(it.elementType == KtFileElementType.INSTANCE) { "Root node type is not FILE, but $key can present in user_data only in FILE nodes" }
-        }
-
     rootNode.getUserData(key)
         ?: run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
             requireNotNull(rootNode.psi as? KtFile) {
-                "Root node type is not ${KtFile::class}"
+                "Root node type is not ${KtFile::class}, but ${rootNode.javaClass}. Tree: ${this.prettyPrint()}. Parent: ${this.parents().last()}, ${this.parents().last().javaClass}, ${this.parents().last().prettyPrint()}"
             }.name
         }
 }
