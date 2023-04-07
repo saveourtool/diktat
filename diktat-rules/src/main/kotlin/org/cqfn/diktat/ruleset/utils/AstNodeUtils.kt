@@ -803,16 +803,22 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFilePath(): String = getRootNode()
-    .takeIf {
-        it.elementType == FILE
+fun ASTNode.getFilePath(): String = run {
+//    It doesn't work since, KtLint create KtFile using file name, not a file path
+//    getRootNode().psi
+//        ?.let { it as? KtFile }
+//        ?.name
+//        .let {
+//            requireNotNull(it) { "Root node type is not FILE, but only ${KtFile::class} has file name" }
+//        }
+    @Suppress("Deprecation")
+    val key = com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
+    getRootNode().also {
+        require(it.elementType == FILE) { "Root node type is not FILE, but $key is present in user_data only in FILE nodes" }
+    }.getUserData(key).let {
+        requireNotNull(it) { "File path is not present in user data" }
     }
-    ?.psi
-    ?.let { it as? KtFile }
-    ?.name
-    .let {
-        requireNotNull(it) { "Root node type is not FILE, but only ${KtFile::class} has file name" }
-    }
+}
 
 /**
  * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)

@@ -36,8 +36,19 @@ dependencies {
 }
 
 kotlin {
-    sourceSets.main {
-        kotlin.srcDir("build/generated/ksp/main/kotlin")
+    sourceSets {
+        main {
+            kotlin.srcDir("build/generated/ksp/main/kotlin")
+        }
+        test {
+            kotlin.srcDir("build/generated/ksp/test/kotlin")
+        }
+    }
+}
+
+project.afterEvaluate {
+    tasks.named("compileTestKotlin") {
+        dependsOn(tasks.named("kspKotlin"))
     }
 }
 
