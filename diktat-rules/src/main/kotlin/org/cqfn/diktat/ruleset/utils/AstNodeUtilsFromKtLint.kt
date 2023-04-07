@@ -9,29 +9,34 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiComment
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
-
-/// KtLint's extensions
-
+/**
+ * @return true if current [ASTNode] is root
+ */
 fun ASTNode.isRoot(): Boolean = elementType == KtFileElementType.INSTANCE
 
+/**
+ * @return true if current [ASTNode] is a leaf
+ */
 fun ASTNode.isLeaf(): Boolean = firstChildNode == null
 
 fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this != null && elementType == KtTokens.WHITE_SPACE && textContains('\n')
 
+/**
+ * @param strict true if it needs to check current [ASTNode]
+ * @param predicate
+ * @return first parent which meets [predicate] condition
+ */
 fun ASTNode.parent(
     strict: Boolean = true,
     predicate: (ASTNode) -> Boolean,
-): ASTNode? {
-    var n: ASTNode? = if (strict) this.treeParent else this
-    while (n != null) {
-        if (predicate(n)) {
-            return n
-        }
-        n = n.treeParent
-    }
-    return null
+): ASTNode? = if (!strict && predicate(this)) {
+    this
+} else {
+    parents().firstOrNull(predicate)
 }
 
 /**
@@ -42,35 +47,33 @@ fun ASTNode.parent(
     strict: Boolean = true,
 ): ASTNode? = parent(strict) { it.elementType == elementType }
 
-fun ASTNode?.isWhiteSpace(): Boolean = this != null && elementType == KtTokens.WHITE_SPACE
+/**
+ * @return true if current [ASTNode] is [KtTokens.WHITE_SPACE]
+ */
+fun ASTNode?.isWhiteSpace(): Boolean = this?.elementType == KtTokens.WHITE_SPACE
 
+/**
+ * @return true if current [ASTNode] is not part of a comment
+ */
 fun ASTNode.isPartOfComment(): Boolean = parent(strict = false) { it.psi is PsiComment } != null
 
-fun ASTNode.prevCodeSibling(): ASTNode? = prevSibling { it.elementType != KtTokens.WHITE_SPACE && !it.isPartOfComment() }
+/**
+ * @return previous sibling [ASTNode] which is code
+ */
+fun ASTNode.prevCodeSibling(): ASTNode? = prevSibling { !it.isNotCode() }
 
-inline fun ASTNode.prevSibling(predicate: (ASTNode) -> Boolean = { true }): ASTNode? {
-    var n = this.treePrev
-    while (n != null) {
-        if (predicate(n)) {
-            return n
-        }
-        n = n.treePrev
-    }
-    return null
-}
+/**
+ * @param predicate
+ * @return previous sibling [ASTNode] which matches [predicate]
+ */
+inline fun ASTNode.prevSibling(predicate: (ASTNode) -> Boolean = { true }): ASTNode? = siblings(false).firstOrNull(predicate)
 
-fun ASTNode.nextCodeSibling(): ASTNode? = nextSibling { it.elementType != KtTokens.WHITE_SPACE && !it.isPartOfComment() }
+/**
+ * @return next sibling [ASTNode] which is code
+ */
+fun ASTNode.nextCodeSibling(): ASTNode? = nextSibling { !it.isNotCode() }
 
-inline fun ASTNode.nextSibling(predicate: (ASTNode) -> Boolean = { true }): ASTNode? {
-    var n = this.treeNext
-    while (n != null) {
-        if (predicate(n)) {
-            return n
-        }
-        n = n.treeNext
-    }
-    return null
-}
+inline fun ASTNode.nextSibling(predicate: (ASTNode) -> Boolean = { true }): ASTNode? = siblings(true).firstOrNull(predicate)
 
 private fun ASTNode.nextLeaf(
     includeEmpty: Boolean = false,
@@ -126,15 +129,25 @@ private fun ASTNode.firstChildLeafOrSelf(): ASTNode {
     return n
 }
 
+/**
+ * @param includeEmpty
+ * @param skipSubtree
+ * @return next [ASTNode] which is a code leaf
+ */
 fun ASTNode.nextCodeLeaf(
     includeEmpty: Boolean = false,
     skipSubtree: Boolean = false,
-): ASTNode? {
-    var n = nextLeaf(includeEmpty, skipSubtree)
-    while (n != null && (n.elementType == KtTokens.WHITE_SPACE || n.isPartOfComment())) {
-        n = n.nextLeaf(includeEmpty, skipSubtree)
-    }
-    return n
+): ASTNode? = generateSequence(nextLeaf(includeEmpty, skipSubtree)) {
+    it.nextLeaf(includeEmpty, skipSubtree)
 }
+    .firstOrNull {
+        it.isNotCode()
+    }
 
+private fun ASTNode.isNotCode(): Boolean = isWhiteSpace() || isPartOfComment()
+
+/**
+ * @param elementType
+ * @return true if current [ASTNode] has a parent with [elementType]
+ */
 fun ASTNode.isPartOf(elementType: IElementType): Boolean = parent(elementType, strict = false) != null

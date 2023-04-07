@@ -5,13 +5,13 @@ import org.cqfn.diktat.ruleset.constants.Warnings.CUSTOM_GETTERS_SETTERS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import org.jetbrains.kotlin.lexer.KtTokens.GET_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.GET_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR
 import org.jetbrains.kotlin.lexer.KtTokens.SET_KEYWORD
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
  * Inspection that checks that no custom getters and setters are used for properties.

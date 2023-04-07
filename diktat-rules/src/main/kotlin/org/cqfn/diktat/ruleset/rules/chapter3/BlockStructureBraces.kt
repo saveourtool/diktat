@@ -6,6 +6,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.BODY
@@ -15,28 +16,27 @@ import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_INITIALIZER
 import org.jetbrains.kotlin.KtNodeTypes.DO_WHILE
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
-import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.FINALLY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
 import org.jetbrains.kotlin.KtNodeTypes.IF
-import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
-import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
 import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.TRY
 import org.jetbrains.kotlin.KtNodeTypes.WHEN
-import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
-import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.lexer.KtTokens.CATCH_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.FINALLY_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.lexer.KtTokens.WHILE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
 

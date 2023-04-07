@@ -8,23 +8,23 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isClassEnum
-
-import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
-import org.jetbrains.kotlin.lexer.KtTokens.COMMA
-import org.jetbrains.kotlin.lexer.KtTokens.CONST_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
-import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
-import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
 import org.cqfn.diktat.ruleset.utils.isPartOfComment
 import org.cqfn.diktat.ruleset.utils.isWhiteSpace
 import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import org.cqfn.diktat.ruleset.utils.nextSibling
+
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
+import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.lexer.KtTokens.COMMA
+import org.jetbrains.kotlin.lexer.KtTokens.CONST_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 

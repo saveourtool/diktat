@@ -6,10 +6,10 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_NUMERICAL_VALUES_SEPARATED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import org.jetbrains.kotlin.lexer.KtTokens.FLOAT_LITERAL
-import org.jetbrains.kotlin.lexer.KtTokens.INTEGER_LITERAL
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.lexer.KtTokens.FLOAT_LITERAL
+import org.jetbrains.kotlin.lexer.KtTokens.INTEGER_LITERAL
 
 import java.lang.StringBuilder
 
