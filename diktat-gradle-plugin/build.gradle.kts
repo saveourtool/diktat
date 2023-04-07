@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
-    id("org.cqfn.diktat.buildutils.diktat-version-file-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
     id("org.gradle.test-retry") version "1.5.2"
     id("com.gradle.plugin-publish") version "1.1.0"
@@ -13,18 +12,17 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation(projects.diktatRunner.diktatRunnerKtlintEngine)
-    implementation(libs.ktlint.core)
-    implementation(libs.ktlint.reporter.plain)
-    implementation(libs.ktlint.reporter.sarif)
-    implementation(libs.ktlint.reporter.json)
-    implementation(libs.ktlint.reporter.html)
-    implementation(libs.ktlint.reporter.baseline)
+
+    implementation(projects.diktatRules)
+    implementation(projects.diktatKtlintEngine)
     // merge sarif reports
     implementation(libs.sarif4k.jvm)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.ktlint.reporter.json)
+    testImplementation(libs.ktlint.reporter.plain)
+    testImplementation(libs.ktlint.reporter.sarif)
 }
 
 tasks.withType<KotlinCompile> {

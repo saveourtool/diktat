@@ -13,7 +13,7 @@ class DiktatReporterImpl(
     private val ktLintReporter: Reporter,
     private val sourceRootDir: Path,
 ) : DiktatReporter {
-    override fun beforeAll(): Unit = ktLintReporter.beforeAll()
+    override fun beforeAll(files: Collection<Path>): Unit = ktLintReporter.beforeAll()
     override fun before(file: Path): Unit = ktLintReporter.before(file.relativePathStringTo(sourceRootDir))
     override fun onError(
         file: Path,
@@ -21,7 +21,7 @@ class DiktatReporterImpl(
         isCorrected: Boolean,
     ): Unit = ktLintReporter.onLintError(file.relativePathStringTo(sourceRootDir), error.unwrap(), isCorrected)
     override fun after(file: Path): Unit = ktLintReporter.after(file.relativePathStringTo(sourceRootDir))
-    override fun afterAll(): Unit = ktLintReporter.beforeAll()
+    override fun afterAll(): Unit = ktLintReporter.afterAll()
 
     companion object {
         /**
@@ -33,7 +33,7 @@ class DiktatReporterImpl(
         /**
          * @return __KtLint__'s [Reporter]
          */
-        internal fun DiktatReporter.unwrap(): Reporter = (this as? DiktatReporterImpl)?.ktLintReporter
+        fun DiktatReporter.unwrap(): Reporter = (this as? DiktatReporterImpl)?.ktLintReporter
             ?: error("Unsupported wrapper of ${DiktatReporter::class.java.simpleName}: ${this::class.java.canonicalName}")
     }
 }

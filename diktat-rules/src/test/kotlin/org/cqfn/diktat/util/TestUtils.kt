@@ -116,15 +116,12 @@ internal fun applyToCode(@Language("kotlin") code: String,
             DiktatRuleSet(listOf(object : DiktatRule {
                 override val id: String
                     get() = "astnode-utils-test"
-
                 override fun invoke(node: ASTNode, autoCorrect: Boolean, emitter: DiktatErrorEmitter) {
                     applyToNode(node, counter)
                 }
             }))
         },
         text = code,
-        fileName = "test.ks",
-        cb = { _, _ -> }
     )
     assertThat(counter.get())
         .`as`("Number of expected asserts")

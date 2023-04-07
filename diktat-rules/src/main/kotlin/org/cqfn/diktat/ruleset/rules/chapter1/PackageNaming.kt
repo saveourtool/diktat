@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.util.isKotlinScript
 
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION

@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 @Suppress("LargeClass")
 class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
@@ -1168,13 +1170,14 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.COMPLEX_EXPRESSION)
-    fun `COMPLEX_EXPRESSION shouldn't trigger for declarations in kts`() {
-        lintMethod(
+    fun `COMPLEX_EXPRESSION shouldn't trigger for declarations in kts`(@TempDir tempDir: Path) {
+        lintMethodWithFile(
             """
                 |dependencies {
                 |    implementation(libs.spring.cloud.starter.gateway)
                 |}
             """.trimMargin(),
+            tempDir = tempDir,
             fileName = "build.gradle.kts"
         )
     }

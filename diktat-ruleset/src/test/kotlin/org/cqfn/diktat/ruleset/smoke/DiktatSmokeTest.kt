@@ -21,11 +21,10 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         config: Path,
         expected: String,
         test: String,
-        trimLastEmptyLine: Boolean,
     ) {
         Assertions.assertTrue(
             getTestComparatorUnit(config)
-                .compareFilesFromResources(expected, test, trimLastEmptyLine)
+                .compareFilesFromResources(expected, test)
                 .isSuccessful
         )
     }
@@ -41,11 +40,10 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceFilePath = RESOURCE_FILE_PATH,
-        function = { expectedText, testFilePath ->
+        function = { testFile ->
             format(
                 ruleSetSupplier = { DiktatRuleSetProvider(config.absolutePathString()).invoke() },
-                text = expectedText,
-                fileName = testFilePath,
+                file = testFile,
                 cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
             )
         },

@@ -4,7 +4,8 @@
 
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.DiktatProcessCommand
+import org.cqfn.diktat.DiktatRunner
+import org.cqfn.diktat.DiktatRunnerArguments
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 
 import org.apache.maven.plugins.annotations.Mojo
@@ -15,9 +16,10 @@ import org.apache.maven.plugins.annotations.Mojo
 @Mojo(name = "check")
 @Suppress("unused")
 class DiktatCheckMojo : DiktatBaseMojo() {
-    override fun runAction(command: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit) {
-        command.check()
-    }
+    override fun runAction(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments,
+    ): Int = runner.checkAll(args)
 }
 
 /**
@@ -27,8 +29,10 @@ class DiktatCheckMojo : DiktatBaseMojo() {
 @Mojo(name = "fix")
 @Suppress("unused")
 class DiktatFixMojo : DiktatBaseMojo() {
-    override fun runAction(command: DiktatProcessCommand, formattedContentConsumer: (String) -> Unit) {
-        val formattedText = command.fix()
-        formattedContentConsumer(formattedText)
+    override fun runAction(
+        runner: DiktatRunner,
+        args: DiktatRunnerArguments,
+    ): Int = runner.fixAll(args) { updatedFile ->
+        log.info("Original and formatted content differ, writing to ${updatedFile.fileName}...")
     }
 }

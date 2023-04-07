@@ -65,4 +65,3 @@ data class Example(val field1: Type1,
                   some text $foo $bar another text
             """.trimIndent()
 }
-

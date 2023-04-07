@@ -7,8 +7,8 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.isKotlinScript
 import org.cqfn.diktat.ruleset.utils.isPascalCase
+import org.cqfn.diktat.util.isKotlinScript
 
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE

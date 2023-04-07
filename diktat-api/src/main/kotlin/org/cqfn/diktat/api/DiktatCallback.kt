@@ -12,4 +12,11 @@ fun interface DiktatCallback : Function2<DiktatError, Boolean, Unit> {
      * @param isCorrected true if the error fixed by diktat
      */
     override fun invoke(error: DiktatError, isCorrected: Boolean)
+
+    companion object {
+        /**
+         * [DiktatCallback] that does nothing
+         */
+        val empty: DiktatCallback = DiktatCallback { _, _ -> }
+    }
 }

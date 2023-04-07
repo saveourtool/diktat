@@ -14,13 +14,14 @@ dependencies {
     api(projects.diktatApi)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlin.compiler.embeddable)
-    // a temporary added
+    // a temporary solution to avoid a lot of changes in diktat-rules
     implementation(projects.diktatKtlintEngine)
     // guava is used for string case utils
     implementation(libs.guava)
     implementation(libs.kotlin.logging)
     testImplementation(projects.diktatTestFramework)
     testImplementation(projects.diktatKtlintEngine)
+    testImplementation(libs.log4j2.slf4j)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

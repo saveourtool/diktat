@@ -1,3 +1,5 @@
+import org.gradle.accessors.dm.LibrariesForLibs
+
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
@@ -9,6 +11,7 @@ project.description = "This module builds diktat-api implementation using ktlint
 dependencies {
     api(projects.diktatApi)
     implementation(projects.diktatCommon)
+    // a temporary solution to avoid a lot of changes in diktat-rules
     api(libs.ktlint.core)
     implementation(libs.ktlint.reporter.baseline)
     implementation(libs.ktlint.reporter.checkstyle)
@@ -22,4 +25,37 @@ dependencies {
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)
     testImplementation(libs.mockito)
+}
+
+val ktlintVersion: String = the<LibrariesForLibs>()
+    .versions
+    .ktlint
+    .get()
+
+val generateKtlintVersionFile by tasks.registering {
+    val outputDir = File("$buildDir/generated/src")
+    val versionsFile = outputDir.resolve("generated/KtLintVersion.kt")
+
+    inputs.property("ktlint version", ktlintVersion)
+    outputs.dir(outputDir)
+
+    doFirst {
+        versionsFile.parentFile.mkdirs()
+        versionsFile.writeText(
+            """
+            package generated
+
+            const val KTLINT_VERSION = "$ktlintVersion"
+
+            """.trimIndent()
+        )
+    }
+}
+
+kotlin.sourceSets.getByName("main") {
+    kotlin.srcDir(
+        generateKtlintVersionFile.map {
+            it.outputs.files.singleFile
+        }
+    )
 }
