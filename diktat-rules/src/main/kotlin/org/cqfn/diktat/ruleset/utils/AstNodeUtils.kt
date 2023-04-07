@@ -71,6 +71,7 @@ import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.util.Locale
 
@@ -804,20 +805,22 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = run {
-//    It doesn't work since, KtLint create KtFile using file name, not a file path
-//    getRootNode().psi
-//        ?.let { it as? KtFile }
-//        ?.name
-//        .let {
-//            requireNotNull(it) { "Root node type is not FILE, but only ${KtFile::class} has file name" }
-//        }
     @Suppress("Deprecation")
     val key = com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
-    getRootNode().also {
-        require(it.elementType == FILE) { "Root node type is not FILE, but $key is present in user_data only in FILE nodes" }
-    }.getUserData(key).let {
-        requireNotNull(it) { "File path is not present in user data" }
-    }
+    val rootNode = getRootNode()
+        .also {
+            require(it.elementType == KtFileElementType.INSTANCE) { "Root node type is not FILE, but $key can present in user_data only in FILE nodes" }
+        }
+
+    rootNode.getUserData(key)
+        ?: run {
+            // KtLint doesn't set file path for snippets
+            // will take a file name from KtFile
+            // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
+            requireNotNull(rootNode.let { it as? KtFile }) {
+                "Root node type is not ${KtFile::class}"
+            }.name
+        }
 }
 
 /**

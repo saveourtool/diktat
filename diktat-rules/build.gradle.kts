@@ -34,29 +34,3 @@ dependencies {
     ksp(projects.diktatDevKsp)
     testImplementation(libs.kotlin.reflect)
 }
-
-kotlin {
-    sourceSets {
-        main {
-            kotlin.srcDir("build/generated/ksp/main/kotlin")
-        }
-        test {
-            kotlin.srcDir("build/generated/ksp/test/kotlin")
-        }
-    }
-}
-
-project.afterEvaluate {
-    tasks.named("compileTestKotlin") {
-        dependsOn(tasks.named("kspKotlin"))
-    }
-}
-
-idea {
-    module {
-        // Not using += due to https://github.com/gradle/gradle/issues/8749
-        sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin")  // or tasks["kspKotlin"].destination
-        testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
-        generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
-    }
-}
