@@ -817,7 +817,7 @@ fun ASTNode.getFilePath(): String = run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
-            requireNotNull(rootNode.let { it as? KtFile }) {
+            requireNotNull(rootNode.psi as? KtFile) {
                 "Root node type is not ${KtFile::class}"
             }.name
         }

@@ -34,3 +34,13 @@ dependencies {
     ksp(projects.diktatDevKsp)
     testImplementation(libs.kotlin.reflect)
 }
+
+project.afterEvaluate {
+    tasks.named("kspKotlin") {
+        // not clear issue that :kspKotlin is up-to-date, but generated files are missed
+        outputs.upToDateWhen { false }
+    }
+    tasks.named("test") {
+        dependsOn(tasks.named("kspKotlin"))
+    }
+}
