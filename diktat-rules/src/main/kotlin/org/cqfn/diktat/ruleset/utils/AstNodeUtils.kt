@@ -55,6 +55,7 @@ import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.openapi.util.Key
 import org.jetbrains.kotlin.com.intellij.psi.PsiComment
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
@@ -839,8 +840,8 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = run {
-    @Suppress("Deprecation")
-    val key = com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
+    // https://github.com/pinterest/ktlint/issues/1921
+    val key = Key<String>("FILE_PATH")
     val rootNode = getRootNode()
         .also {
             require(it.elementType == KtFileElementType.INSTANCE) { "Root node type is not FILE, but $key can present in user_data only in FILE nodes" }
@@ -851,7 +852,6 @@ fun ASTNode.getFilePath(): String = run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
-            // raised: https://github.com/pinterest/ktlint/issues/1921
             requireNotNull(rootNode.psi as? KtFile) {
                 "Root node type is not ${KtFile::class}"
             }.name
