@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_INITIALIZER
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.OPEN_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.OPEN_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR

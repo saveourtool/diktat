@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.lexer.KtTokens.RANGE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
-import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.utils.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
@@ -53,18 +53,18 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkNumber(node: ASTNode, configuration: MagicNumberConfiguration) {
         val nodeText = node.treePrev?.let { if (it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text } ?: node.text
         val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
-        val isHashFunction = node.parent({ it.elementType == FUN && it.isHashFun() }) != null
-        val isConstant = node.parent({ it.elementType == PROPERTY && it.isConstant() }) != null
-        val isPropertyDeclaration = !isConstant && node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
-        val isLocalVariable = node.parent({ it.elementType == PROPERTY && it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
-        val isValueParameter = node.parent({ it.elementType == VALUE_PARAMETER }) != null
-        val isCompanionObjectProperty = node.parent({ it.elementType == PROPERTY && it.isNodeFromCompanionObject() }) != null
-        val isEnums = node.parent({ it.elementType == ENUM_ENTRY }) != null
+        val isHashFunction = node.parent { it.elementType == FUN && it.isHashFun() } != null
+        val isConstant = node.parent { it.elementType == PROPERTY && it.isConstant() } != null
+        val isPropertyDeclaration = !isConstant && node.parent { it.elementType == PROPERTY && !it.isNodeFromCompanionObject() } != null
+        val isLocalVariable = node.parent { it.elementType == PROPERTY && it.isVarProperty() && (it.psi as KtProperty).isLocal } != null
+        val isValueParameter = node.parent { it.elementType == VALUE_PARAMETER } != null
+        val isCompanionObjectProperty = node.parent { it.elementType == PROPERTY && it.isNodeFromCompanionObject() } != null
+        val isEnums = node.parent { it.elementType == ENUM_ENTRY } != null
         val isRanges = node.treeParent.run {
             this.elementType == BINARY_EXPRESSION &&
                     this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
         }
-        val isExtensionFunctions = node.parent({ it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() }) != null &&
+        val isExtensionFunctions = node.parent { it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() } != null &&
                 node.parents().none { it.elementType == PROPERTY }
         val result = listOf(isHashFunction, isPropertyDeclaration, isLocalVariable, isValueParameter, isConstant,
             isCompanionObjectProperty, isEnums, isRanges, isExtensionFunctions).zip(mapConfiguration.map { configuration.getParameter(it.key) })

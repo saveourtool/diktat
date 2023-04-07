@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.utils.search.default
 import org.cqfn.diktat.util.applyToCode
 
 import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -25,7 +26,7 @@ class VariablesSearchTest {
                 }
             }
         """.trimIndent(), 0) { node, _ ->
-            if (node.elementType != ElementType.FILE) {
+            if (node.elementType != KtFileElementType.INSTANCE) {
                 val thrown = Assertions.assertThrows(IllegalArgumentException::class.java) {
                     val variablesSearchAbstract: VariablesSearch = Mockito.mock(VariablesSearch::class.java, Mockito.CALLS_REAL_METHODS)
                     val nodeField = VariablesSearch::class.java.getDeclaredField("node")

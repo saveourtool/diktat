@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.TYPEALIAS
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD

@@ -8,33 +8,40 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_BLANK_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.*
-
+import org.cqfn.diktat.ruleset.utils.commentType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findChildrenMatching
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.numNewLines
+import org.cqfn.diktat.ruleset.utils.prevNodeUntilNode
+import org.cqfn.diktat.ruleset.utils.prevSibling
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
-import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
-import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
-import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IF
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
-import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
-import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 
 /**
  * This class handles rule 2.6
@@ -75,10 +82,11 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkBlankLineAfterKdoc(node: ASTNode) {
         commentType.forEach {
             val kdoc = node.getFirstChildWithType(it)
-            val nodeAfterKdoc = kdoc?.treeNext
-            if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
-                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
-                    nodeAfterKdoc.leaveOnlyOneNewLine()
+            kdoc?.treeNext?.let { nodeAfterKdoc ->
+                if (nodeAfterKdoc.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
+                    WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+                        nodeAfterKdoc.leaveOnlyOneNewLine()
+                    }
                 }
             }
         }
@@ -301,13 +309,13 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             } else {
                 checkFirstCommentSpaces(node.treeParent)
             }
-        } else if (node.treeParent.elementType != FILE && !node.treeParent.treePrev.isWhiteSpace()) {
+        } else if (node.treeParent.elementType != KtFileElementType.INSTANCE && !node.treeParent.treePrev.isWhiteSpace()) {
             // fixme: we might face more issues because newline node is inserted in a wrong place which causes consecutive
             // white spaces to be split among nodes on different levels. But this requires investigation.
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
-        } else if (node.treeParent.elementType != FILE &&
+        } else if (node.treeParent.elementType != KtFileElementType.INSTANCE &&
                 (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2)) {
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 (node.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n\n")
@@ -335,7 +343,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     } else if (node.treeParent?.treeParent?.elementType == KtFileElementType.INSTANCE && node.treeParent.prevSibling { it.text.isNotBlank() } == null) {
         // `treeParent` is the first not-empty node in a file
         true
-    } else if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&
+    } else if (node.treeParent.elementType != KtFileElementType.INSTANCE && node.treeParent.treePrev != null &&
             node.treeParent.treePrev.treePrev != null) {
         // When comment inside of a PROPERTY
         node.treeParent

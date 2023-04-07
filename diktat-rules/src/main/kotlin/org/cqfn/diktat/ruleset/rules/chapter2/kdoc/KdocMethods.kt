@@ -31,7 +31,6 @@ import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtNodeTypes.ACTUAL_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CATCH
@@ -40,9 +39,6 @@ import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.lexer.KtTokens.EQ
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.SECTION
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TAG_NAME
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TEXT
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THIS_EXPRESSION
@@ -52,8 +48,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
@@ -82,7 +81,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     override fun logic(node: ASTNode) {
         val isModifierAccessibleOutsideOrActual: Boolean by lazy {
             node.getFirstChildWithType(MODIFIER_LIST).run {
-                isAccessibleOutside() && this?.hasChildOfType(ACTUAL_KEYWORD) != true
+                isAccessibleOutside() && this?.hasChildOfType(KtTokens.ACTUAL_KEYWORD) != true
             }
         }
         if (node.elementType == FUN && isModifierAccessibleOutsideOrActual && !node.isOverridden()) {
@@ -92,7 +91,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter() && !node.isAnonymousFunction()) {
                 checkSignatureDescription(node)
             }
-        } else if (node.elementType == KDOC_SECTION) {
+        } else if (node.elementType == KDocElementTypes.KDOC_SECTION) {
             checkKdocBody(node)
         }
     }
@@ -228,9 +227,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                     ?: kdocTags?.find { it.knownTag == KDocKnownTag.THROWS }
                 missingParameters.forEach {
                     kdoc?.insertTagBefore(beforeTag?.node) {
-                        addChild(LeafPsiElement(KDOC_TAG_NAME, "@param"))
+                        addChild(LeafPsiElement(KDocTokens.TAG_NAME, "@param"))
                         addChild(PsiWhiteSpaceImpl(" "))
-                        addChild(LeafPsiElement(KDOC_TEXT, it))
+                        addChild(LeafPsiElement(KDocTokens.TEXT, it))
                     }
                 }
             }
@@ -246,7 +245,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             node.startOffset, node) {
             val beforeTag = kdocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             kdoc?.insertTagBefore(beforeTag?.node) {
-                addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
+                addChild(LeafPsiElement(KDocTokens.TAG_NAME, "@return"))
             }
         }
     }
@@ -260,9 +259,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
             missingExceptions.forEach {
                 kdoc?.insertTagBefore(null) {
-                    addChild(LeafPsiElement(KDOC_TAG_NAME, "@throws"))
-                    addChild(LeafPsiElement(KDOC_TEXT, " "))
-                    addChild(LeafPsiElement(KDOC_TEXT, it))
+                    addChild(LeafPsiElement(KDocTokens.TAG_NAME, "@throws"))
+                    addChild(LeafPsiElement(KDocTokens.TEXT, " "))
+                    addChild(LeafPsiElement(KDocTokens.TEXT, it))
                 }
             }
         }
@@ -289,7 +288,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkKdocBody(node: ASTNode) {
-        val kdocTextNodes = node.getChildren(TokenSet.create(KDOC_TEXT))
+        val kdocTextNodes = node.getChildren(TokenSet.create(KDocTokens.TEXT))
         if (kdocTextNodes.size == 1) {
             val kdocText = kdocTextNodes
                 .first()
@@ -315,12 +314,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             DOT_QUALIFIED_EXPRESSION,
             CALL_EXPRESSION,
             REFERENCE_EXPRESSION,
-            ElementType.BINARY_EXPRESSION,
-            ElementType.LAMBDA_EXPRESSION,
-            ElementType.CALLABLE_REFERENCE_EXPRESSION,
-            ElementType.SAFE_ACCESS_EXPRESSION,
-            ElementType.WHEN_CONDITION_EXPRESSION,
-            ElementType.COLLECTION_LITERAL_EXPRESSION,
+            KtNodeTypes.BINARY_EXPRESSION,
+            KtNodeTypes.LAMBDA_EXPRESSION,
+            KtNodeTypes.CALLABLE_REFERENCE_EXPRESSION,
+            KtNodeTypes.SAFE_ACCESS_EXPRESSION,
+            KtNodeTypes.WHEN_CONDITION_EXPRESSION,
+            KtNodeTypes.COLLECTION_LITERAL_EXPRESSION,
         )
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }

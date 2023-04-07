@@ -65,7 +65,7 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -79,6 +79,7 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract

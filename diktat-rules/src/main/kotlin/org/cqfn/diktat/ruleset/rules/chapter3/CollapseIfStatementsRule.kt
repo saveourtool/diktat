@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.lexer.KtTokens.RPAR
 import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -138,7 +138,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         // we need to put it to the brackets, according algebra of logic
         val mergeCondition =
             if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
-                    nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
+                    nestedCondition?.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
             ) {
                 "if ($parentConditionText &&$commentsText($nestedConditionText)) {}"
             } else {

@@ -23,14 +23,13 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
-
 import org.jetbrains.kotlin.KtNodeTypes
+
 import org.jetbrains.kotlin.KtNodeTypes.CATCH
-import org.jetbrains.kotlin.KtNodeTypes.CATCH_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.CATCH_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION_ENTRY
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
@@ -39,13 +38,12 @@ import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
@@ -103,17 +101,17 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         // isVariable is used as a workaround to check corner case with variables that have length == 1
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
-            ElementType.CLASS -> Pair(checkClassNamings(node), false)
+            KtNodeTypes.CLASS -> Pair(checkClassNamings(node), false)
             // covers "object" code blocks
-            ElementType.OBJECT_DECLARATION -> Pair(checkObjectNaming(node), false)
+            KtNodeTypes.OBJECT_DECLARATION -> Pair(checkObjectNaming(node), false)
             // covers variables (val/var), constants (const val) and parameters for lambdas
-            ElementType.PROPERTY, ElementType.VALUE_PARAMETER -> Pair(checkVariableName(node), true)
+            KtNodeTypes.PROPERTY, KtNodeTypes.VALUE_PARAMETER -> Pair(checkVariableName(node), true)
             // covers case of enum values
-            ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
+            KtNodeTypes.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
             // covers global functions, extensions and class methods
-            ElementType.FUN -> Pair(checkFunctionName(node), false)
+            KtNodeTypes.FUN -> Pair(checkFunctionName(node), false)
             // covers case of typeAlias values
-            ElementType.TYPEALIAS -> Pair(checkTypeAliases(node), false)
+            KtNodeTypes.TYPEALIAS -> Pair(checkTypeAliases(node), false)
             else -> Pair(null, false)
         }
 
@@ -131,7 +129,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             // node is a symbol declaration with present identifier
             val identifierText = identifier.text
             if (identifierText.startsWith('`') && identifierText.endsWith('`')) {
-                val isTestFun = node.elementType == ElementType.FUN && node.hasTestAnnotation()
+                val isTestFun = node.elementType == KtNodeTypes.FUN && node.hasTestAnnotation()
                 if (!isTestFun) {
                     BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset, identifier)
                 }
@@ -156,7 +154,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         var namesOfVariables = extractVariableIdentifiers(node)
         // Only local private properties will be autofix in order not to break code if there are usages in other files.
         // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
-        val isPublicOrNonLocalProperty = if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { !isLocal && !isPrivate() } else false
+        val isPublicOrNonLocalProperty = if (node.elementType == KtNodeTypes.PROPERTY) (node.psi as KtProperty).run { !isLocal && !isPrivate() } else false
         val isNonPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
             hasValOrVar() && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true && !isPrivate()
         } ?: false
@@ -170,7 +168,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 // check if identifier of a property has a confusing name
                 if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
-                        node.elementType == ElementType.PROPERTY
+                        node.elementType == KtNodeTypes.PROPERTY
                 ) {
                     warnConfusingName(variableName)
                 }
@@ -188,7 +186,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                         // FixMe: cover fixes with tests
                         val correctVariableName = variableName.text.toLowerCamelCase()
                         variableName
-                            .parent({ it.elementType == KtFileElementType.INSTANCE })
+                            .parent { it.elementType == KtFileElementType.INSTANCE }
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
                             ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }
@@ -300,7 +298,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val classNameNode = node.getIdentifierName() ?: return
         // getting super class name
         val superClassName: String? = node
-            .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
+            .getFirstChildWithType(KtNodeTypes.SUPER_TYPE_LIST)
             ?.findLeafWithSpecificType(TYPE_REFERENCE)
             ?.text
 
@@ -335,7 +333,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
      * to check all variables will need to check all IDENTIFIERS in ENUM_ENTRY
      */
     private fun checkEnumValues(node: ASTNode): List<ASTNode> {
-        val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
+        val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == KtTokens.IDENTIFIER }
         enumValues.forEach { value ->
             val configuration = IdentifierNamingConfiguration(
                 configRules.getRuleConfig(ENUM_VALUE)?.configuration

@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * Rule that checks number of lines in a file
@@ -24,7 +25,7 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             checkFileSize(node, configuration.maxSize)
         }
     }

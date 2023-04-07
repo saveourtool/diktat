@@ -5,11 +5,11 @@ import org.cqfn.diktat.util.applyToCode
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
-import org.jetbrains.kotlin.KtNodeTypes.CLASS_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.CLASS_KEYWORD
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_DIRECTIVE
-import org.jetbrains.kotlin.KtNodeTypes.IMPORT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IMPORT_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -64,7 +65,7 @@ class KotlinParserTest {
             |}
             """.trimMargin()
         val node = KotlinParser().createNode(code, true)
-        Assertions.assertEquals(FILE, node.elementType)
+        Assertions.assertEquals(KtFileElementType.INSTANCE, node.elementType)
         Assertions.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
     }
 
@@ -149,7 +150,7 @@ class KotlinParserTest {
             |package org.cqfn.diktat.ruleset.utils
             """.trimMargin()
         val node = KotlinParser().createNode(packageCode, true)
-        Assertions.assertEquals(FILE, node.elementType)
+        Assertions.assertEquals(KtFileElementType.INSTANCE, node.elementType)
         Assertions.assertEquals(packageCode, node.text)
         Assertions.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
     }
@@ -187,7 +188,7 @@ class KotlinParserTest {
             |import org.junit.jupiter.api.Tests
             """.trimMargin()
         val node = KotlinParser().createNode(code, true)
-        Assertions.assertEquals(FILE, node.elementType)
+        Assertions.assertEquals(KtFileElementType.INSTANCE, node.elementType)
         Assertions.assertEquals(code, node.text)
         Assertions.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
     }

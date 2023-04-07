@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.utils.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -65,7 +65,7 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
                 .findChildByType(PRIMARY_CONSTRUCTOR)
                 ?.findChildByType(VALUE_PARAMETER_LIST)
                 ?.children()
-                ?.filter { it.elementType == ElementType.VALUE_PARAMETER }
+                ?.filter { it.elementType == KtNodeTypes.VALUE_PARAMETER }
                 ?.map { it.psi as KtParameter }
                 ?.map { it.name }
                 ?.toList()

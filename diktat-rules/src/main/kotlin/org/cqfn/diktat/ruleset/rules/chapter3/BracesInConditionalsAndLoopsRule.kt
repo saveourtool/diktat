@@ -10,19 +10,19 @@ import org.cqfn.diktat.ruleset.utils.loopType
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.DO_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.DO_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.IF
-import org.jetbrains.kotlin.KtNodeTypes.IF_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IF_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN
-import org.jetbrains.kotlin.KtNodeTypes.WHILE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHILE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -181,7 +181,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         secondChild: ASTNode?,
         indent: Int
     ) {
-        val emptyBlock = CompositeElement(ElementType.BLOCK_CODE_FRAGMENT)
+        val emptyBlock = CompositeElement(KtNodeTypes.BLOCK_CODE_FRAGMENT)
         addChild(emptyBlock, firstChild)
         addChild(PsiWhiteSpaceImpl(" "), emptyBlock)
         emptyBlock.addChild(LeafPsiElement(LBRACE, "{"))

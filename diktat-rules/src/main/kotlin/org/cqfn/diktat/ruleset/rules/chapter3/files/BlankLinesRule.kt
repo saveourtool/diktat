@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.KtNodeTypes.SCRIPT
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks usage of blank lines in code.
@@ -63,7 +64,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleTooManyBlankLines(node: ASTNode) {
         TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
-            if (node.treeParent.elementType != FILE && (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node ||
+            if (node.treeParent.elementType != KtFileElementType.INSTANCE && (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node ||
                     node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
                 node.leaveExactlyNumNewLines(1)
             } else {

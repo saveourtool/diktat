@@ -25,7 +25,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
+        if (node.elementType == KtNodeTypes.LAMBDA_EXPRESSION) {
             checkLambda(node, configuration)
         }
     }

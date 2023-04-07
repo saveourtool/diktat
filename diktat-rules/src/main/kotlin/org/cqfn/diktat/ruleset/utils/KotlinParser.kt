@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
-import org.jetbrains.kotlin.KtNodeTypes.IMPORT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IMPORT_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback

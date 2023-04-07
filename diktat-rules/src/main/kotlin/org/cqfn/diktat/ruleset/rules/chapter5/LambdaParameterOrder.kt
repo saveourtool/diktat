@@ -22,7 +22,7 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
     listOf(LAMBDA_IS_NOT_LAST_PARAMETER)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.FUN) {
+        if (node.elementType == KtNodeTypes.FUN) {
             checkArguments(node)
         }
     }

@@ -12,15 +12,16 @@ import org.jetbrains.kotlin.KtNodeTypes.BREAK
 import org.jetbrains.kotlin.KtNodeTypes.CONDITION
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
 import org.jetbrains.kotlin.KtNodeTypes.IF
-import org.jetbrains.kotlin.KtNodeTypes.IF_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IF_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.NULL
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.utils.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -75,7 +76,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             if (isNullCheckBinaryExpression(condition)) {
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
-                    ElementType.EQEQ, ElementType.EQEQEQ ->
+                    KtTokens.EQEQ, KtTokens.EQEQEQ ->
                         warnAndFixOnNullCheck(
                             condition,
                             isFixable(node, true),
@@ -84,7 +85,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                             fixNullInIfCondition(node, condition, true)
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
-                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
+                    KtTokens.EXCLEQ, KtTokens.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(
                             condition,
                             isFixable(node, false),
@@ -217,7 +218,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 val grandParent = parent.treeParent
                 if (grandParent != null && grandParent.elementType == VALUE_ARGUMENT_LIST && isRequireFun(grandParent.treePrev)) {
                     @Suppress("COLLAPSE_IF_STATEMENTS")
-                    if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
+                    if (listOf(KtTokens.EXCLEQ, KtTokens.EXCLEQEQEQ).contains(condition.operationToken)) {
                         warnAndFixOnNullCheck(
                             condition,
                             true,
@@ -257,7 +258,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         // check that binary expression has `null` as right or left operand
         setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
                 // checks that it is the comparison condition
-                setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
+                setOf(KtTokens.EQEQ, KtTokens.EQEQEQ, KtTokens.EXCLEQ, KtTokens.EXCLEQEQEQ)
                     .contains(condition.operationToken) &&
                 // no need to raise warning or fix null checks in complex expressions
                 !condition.isComplexCondition() &&

@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.lexer.KtTokens.ARROW
@@ -29,7 +30,6 @@ import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IN_RANGE
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IS_PATTERN
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement

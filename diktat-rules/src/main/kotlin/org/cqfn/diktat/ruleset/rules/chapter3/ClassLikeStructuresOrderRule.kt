@@ -17,20 +17,20 @@ import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
-import org.jetbrains.kotlin.KtNodeTypes.LATEINIT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LATEINIT_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
-import org.jetbrains.kotlin.KtNodeTypes.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.psi.psiUtil.children
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.nextSibling
+import org.cqfn.diktat.ruleset.utils.parent
+import org.cqfn.diktat.ruleset.utils.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -123,7 +123,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                     .last()
                     .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
                     .any { ref ->
-                        ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
+                        ref.parent { it == classNode } == null && ref.text.contains(identifierNode.text)
                     }
             } ?: false
         }

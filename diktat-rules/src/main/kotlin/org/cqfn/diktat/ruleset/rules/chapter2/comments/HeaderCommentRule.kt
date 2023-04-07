@@ -16,21 +16,21 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isGradleScript
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
-import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpace
 import mu.KotlinLogging
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.time.LocalDate
@@ -69,8 +69,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
             ?: run {
-                val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
-                        node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
+                val numDeclaredClassesAndObjects = node.getAllChildrenWithType(KtNodeTypes.CLASS).size +
+                        node.getAllChildrenWithType(KtNodeTypes.OBJECT_DECLARATION).size
                 if (numDeclaredClassesAndObjects != 1) {
                     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode,
                         "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
@@ -156,7 +156,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
                 !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
 
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
-        val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
+        val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(KtTokens.EOL_COMMENT))
             .any { commentNode ->
                 copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
             }

@@ -59,11 +59,11 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.nextCodeLeaf
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
+import org.cqfn.diktat.ruleset.utils.nextCodeLeaf
+import org.cqfn.diktat.ruleset.utils.parent
+import org.cqfn.diktat.ruleset.utils.prevSibling
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
@@ -85,6 +85,7 @@ import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks usage of whitespaces for horizontal code separation
@@ -221,7 +222,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
-                .parent({ it.elementType == VALUE_ARGUMENT })
+                .parent { it.elementType == VALUE_ARGUMENT }
                 .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
             // Handling this case: `foo({ it.bar() }, 2, 3)`
@@ -384,7 +385,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
-        positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
+        positionByOffset = this.findParentNodeWithSpecificType(KtFileElementType.INSTANCE)!!.calculateLineColByOffset()
         val offset = positionByOffset(this.startOffset).second
         return offset + this.text.length >= configuration.lineLength
     }
@@ -413,7 +414,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Function that returns `treePrev` of this node, or if this.treePrev is null, `treePrev` of first parent node that has it
      */
-    private fun ASTNode.selfOrParentsTreePrev() = parent({ it.treePrev != null }, strict = false)?.treePrev
+    private fun ASTNode.selfOrParentsTreePrev() = parent(false) { it.treePrev != null }?.treePrev
 
     /**
      * This method counts spaces in this node. Null is returned in following cases:

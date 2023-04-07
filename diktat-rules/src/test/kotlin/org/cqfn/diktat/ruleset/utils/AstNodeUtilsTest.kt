@@ -27,13 +27,14 @@ import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isLeaf
-import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.nextSibling
+import org.cqfn.diktat.ruleset.utils.isLeaf
+import org.cqfn.diktat.ruleset.utils.nextCodeSibling
+import org.cqfn.diktat.ruleset.utils.nextSibling
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -48,7 +49,7 @@ class AstNodeUtilsTest {
                 val x = 0
             }
         """.trimIndent()
-        PrettyPrintingVisitor.assertStringRepr(FILE, code, 0, 2, """
+        PrettyPrintingVisitor.assertStringRepr(KtFileElementType.INSTANCE, code, 0, 2, """
             |kotlin.FILE: "class Test {
             |    val x = 0
             |}"
@@ -67,7 +68,7 @@ class AstNodeUtilsTest {
             |
         """.trimMargin())
 
-        PrettyPrintingVisitor.assertStringRepr(FILE, """val x = 0""", expected = """
+        PrettyPrintingVisitor.assertStringRepr(KtFileElementType.INSTANCE, """val x = 0""", expected = """
             |kotlin.FILE: "val x = 0"
             |- PACKAGE_DIRECTIVE: ""
             |- IMPORT_LIST: ""
@@ -409,7 +410,7 @@ class AstNodeUtilsTest {
 
         """.trimIndent()
         applyToCode(code, 8) { node, counter ->
-            if (node.elementType != FILE) {
+            if (node.elementType != KtFileElementType.INSTANCE) {
                 node.getChildren(null).forEach {
                     Assertions.assertFalse(it.isNodeFromFileLevel())
                     counter.incrementAndGet()
@@ -584,7 +585,7 @@ class AstNodeUtilsTest {
         }
 
         listResults.forEach { node ->
-            if (node.findParentNodeWithSpecificType(ElementType.CATCH) == null) {
+            if (node.findParentNodeWithSpecificType(KtNodeTypes.CATCH) == null) {
                 val identifiers = listOf("Test", "foo", "a")
                 Assertions.assertTrue(identifiers.contains(node.text)) { "Identifier <${node.text}> expected not to have CATCH parent node" }
             } else {

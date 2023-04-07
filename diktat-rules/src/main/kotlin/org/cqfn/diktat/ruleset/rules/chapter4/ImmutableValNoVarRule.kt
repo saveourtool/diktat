@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * Variables with `val` modifier - are immutable (read-only).
@@ -25,7 +26,7 @@ class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(SAY_NO_TO_VAR)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             // we will raise warning for cases when var property has no assignments
             val varNoAssignments = node
                 .findAllVariablesWithAssignments { it.name != null && it.isVar }

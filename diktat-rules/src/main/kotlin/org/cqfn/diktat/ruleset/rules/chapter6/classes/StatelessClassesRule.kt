@@ -9,20 +9,21 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
-import org.jetbrains.kotlin.KtNodeTypes.CLASS_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.CLASS_KEYWORD
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
-import org.jetbrains.kotlin.KtNodeTypes.INTERFACE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.INTERFACE_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
-import org.jetbrains.kotlin.KtNodeTypes.OBJECT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.OBJECT_KEYWORD
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.children
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks if class is stateless and if so changes it to object.

@@ -15,8 +15,8 @@ import org.cqfn.diktat.ruleset.utils.isLongStringTemplateEntry
 import org.cqfn.diktat.ruleset.utils.lastIndent
 
 import org.jetbrains.kotlin.lexer.KtTokens.ARROW
-import org.jetbrains.kotlin.KtNodeTypes.AS_KEYWORD
-import org.jetbrains.kotlin.KtNodeTypes.AS_SAFE
+import org.jetbrains.kotlin.lexer.KtTokens.AS_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.AS_SAFE
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_WITH_TYPE
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
@@ -28,9 +28,6 @@ import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
 import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.EQ
 import org.jetbrains.kotlin.KtNodeTypes.IS_EXPRESSION
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.END
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.LEADING_ASTERISK
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.SECTION
 import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.lexer.KtTokens.LPAR
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
@@ -42,12 +39,13 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.nextCodeSibling
+import org.cqfn.diktat.ruleset.utils.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -55,6 +53,7 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.KtWhenEntry
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -65,10 +64,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  */
 internal class AssignmentOperatorChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        val prevNode = whiteSpace.prevSibling?.node
-        if (prevNode?.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
-            return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                ?: indentError.expected) + IndentationAmount.valueOf(configuration.extendedIndentForExpressionBodies), true)
+        whiteSpace.prevSibling?.node?.let { prevNode ->
+            if (prevNode.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
+                return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
+                    ?: indentError.expected) + IndentationAmount.valueOf(configuration.extendedIndentForExpressionBodies), true)
+            }
         }
         return null
     }
@@ -165,7 +165,7 @@ internal class ExpressionIndentationChecker(configuration: IndentationConfig) : 
  */
 internal class KdocIndentationChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        if (whiteSpace.nextSibling.node.elementType in listOf(KDOC_LEADING_ASTERISK, KDOC_END, KDOC_SECTION)) {
+        if (whiteSpace.nextSibling.node.elementType in listOf(KDocTokens.LEADING_ASTERISK, KDocTokens.END, KDocElementTypes.KDOC_SECTION)) {
             val expectedIndent = indentError.expected + 1
             return CheckResult.from(indentError.actual, expectedIndent)
         }

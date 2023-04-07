@@ -67,12 +67,13 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.net.MalformedURLException
@@ -349,7 +350,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme json method
     private fun isKdocValid(node: ASTNode) = try {
-        if (node.elementType == KDOC_TEXT) {
+        if (node.elementType == KDocTokens.TEXT) {
             URL(node.text.split("\\s".toRegex()).last { it.isNotEmpty() })
         } else {
             URL(node.text.substring(node.text.indexOfFirst { it == ']' } + 2, node.textLength - 1))
@@ -552,8 +553,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
                 nodeOperationReference?.treeNext
             } else {
-                if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
-                    nodeOperationReference.treePrev
+                if (nodeOperationReference?.treePrev?.elementType == WHITE_SPACE) {
+                    nodeOperationReference?.treePrev
                 } else {
                     nodeOperationReference
                 }
@@ -591,8 +592,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
                     nodeOperationReference?.treeNext
                 } else {
-                    if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
-                        nodeOperationReference.treePrev
+                    if (nodeOperationReference?.treePrev?.elementType == WHITE_SPACE) {
+                        nodeOperationReference?.treePrev
                     } else {
                         nodeOperationReference
                     }

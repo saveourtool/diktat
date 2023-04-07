@@ -33,14 +33,14 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.VAR_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiCommentImpl
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -99,7 +99,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkParameterList(node: ASTNode?) {
         val kdocBeforeClass = node
-            ?.parent({ it.elementType == CLASS })
+            ?.parent { it.elementType == CLASS }
             ?.findChildByType(KDOC) ?: return
 
         val propertiesInKdoc = kdocBeforeClass
@@ -132,7 +132,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             null
         }
-        val kdocBeforeClass = valueParameterNode.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
+        val kdocBeforeClass = valueParameterNode.parent { it.elementType == CLASS }!!.findChildByType(KDOC)
 
         prevComment?.let {
             kdocBeforeClass?.let {
@@ -193,7 +193,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
                 "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
                 val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
-                val classNode = node.parent({ it.elementType == CLASS })!!
+                val classNode = node.parent { it.elementType == CLASS }!!
                 classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
                 classNode.addChild(newKdoc.findChildByType(KDOC)!!, classNode.firstChildNode)
             }
@@ -203,7 +203,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocWithProperty(valueParameterNode: ASTNode, prevComment: ASTNode) {
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, valueParameterNode) {
-            val classNode = valueParameterNode.parent({ it.elementType == CLASS })!!
+            val classNode = valueParameterNode.parent { it.elementType == CLASS }!!
             val newKdocText = if (prevComment.elementType == KDOC) {
                 prevComment.text
             } else if (prevComment.elementType == EOL_COMMENT) {
@@ -259,11 +259,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         propertyInClassKdoc: ASTNode?
     ) {
         propertyInClassKdoc?.let {
-            if (propertyInClassKdoc.hasChildOfType(KDOC_TEXT)) {
-                val kdocText = propertyInClassKdoc.findChildByType(KDOC_TEXT)!!
+            if (propertyInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
+                val kdocText = propertyInClassKdoc.findChildByType(KDocTokens.TEXT)!!
                 (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text} ${prevComment.text}")
             } else {
-                propertyInClassKdoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
+                propertyInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, prevComment.text), null)
             }
         }
             ?: run {
@@ -286,7 +286,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun insertTextInKdoc(kdocBeforeClass: ASTNode, insertText: String) {
         val allKdocText = kdocBeforeClass.text
-        val endKdoc = kdocBeforeClass.findChildByType(KDOC_END)!!.text
+        val endKdoc = kdocBeforeClass.findChildByType(KDocTokens.END)!!.text
         val newKdocText = StringBuilder(allKdocText).insert(allKdocText.indexOf(endKdoc), insertText).toString()
         kdocBeforeClass.treeParent.replaceChild(kdocBeforeClass, KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!)
     }
@@ -298,14 +298,14 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun appendKdocTagContent(
         kdocTagNode: ASTNode, content: String,
     ) {
-        kdocTagNode.findChildByType(KDOC_TEXT)?.let {
+        kdocTagNode.findChildByType(KDocTokens.TEXT)?.let {
             kdocTagNode.replaceChild(
                 it,
-                LeafPsiElement(KDOC_TEXT, "${it.text}$content"),
+                LeafPsiElement(KDocTokens.TEXT, "${it.text}$content"),
             )
         }
             ?: kdocTagNode.addChild(
-                LeafPsiElement(KDOC_TEXT, content),
+                LeafPsiElement(KDocTokens.TEXT, content),
                 null,
             )
     }
@@ -359,7 +359,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
         val name = node.getIdentifierName()
         val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
-            isAccessibleOutside() && this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) != true
+            isAccessibleOutside() && this?.hasChildOfType(KtTokens.ACTUAL_KEYWORD) != true
         }
 
         if (isModifierAccessibleOutsideOrActual && kdoc == null && !isTopLevelFunctionStandard(node)) {

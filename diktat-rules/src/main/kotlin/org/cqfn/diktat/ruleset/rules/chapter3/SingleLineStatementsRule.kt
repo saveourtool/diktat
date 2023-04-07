@@ -10,7 +10,7 @@ import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 
 import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
 import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
-import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.utils.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
@@ -36,7 +36,7 @@ class SingleLineStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                     } else {
                         if (!astNode.isBeginByNewline()) {
-                            val nextNode = astNode.parent({ parent -> parent.treeNext != null }, strict = false)?.treeNext
+                            val nextNode = astNode.parent(false) { parent -> parent.treeNext != null }?.treeNext
                             node.appendNewlineMergingWhiteSpace(nextNode, astNode)
                         }
                         node.removeChild(astNode)

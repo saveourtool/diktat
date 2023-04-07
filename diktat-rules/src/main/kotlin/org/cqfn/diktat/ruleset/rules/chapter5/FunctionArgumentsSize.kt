@@ -24,7 +24,7 @@ class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.FUN) {
+        if (node.elementType == KtNodeTypes.FUN) {
             checkFun(node, configuration.maxParameterSize)
         }
     }

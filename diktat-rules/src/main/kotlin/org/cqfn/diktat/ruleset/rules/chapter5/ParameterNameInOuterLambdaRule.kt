@@ -18,14 +18,14 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     listOf(PARAMETER_NAME_IN_OUTER_LAMBDA)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
+        if (node.elementType == KtNodeTypes.LAMBDA_EXPRESSION) {
             checkLambda(node)
         }
     }
 
     private fun checkLambda(node: ASTNode) {
         val hasInnerLambda = node
-            .findAllDescendantsWithSpecificType(ElementType.LAMBDA_EXPRESSION, false)
+            .findAllDescendantsWithSpecificType(KtNodeTypes.LAMBDA_EXPRESSION, false)
             .isNotEmpty()
         if (hasInnerLambda && doesLambdaContainIt(node)) {
             PARAMETER_NAME_IN_OUTER_LAMBDA.warn(

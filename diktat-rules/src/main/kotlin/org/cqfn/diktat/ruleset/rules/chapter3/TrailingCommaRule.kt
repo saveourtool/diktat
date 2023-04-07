@@ -6,6 +6,8 @@ import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.KtNodeTypes.COLLECTION_LITERAL_EXPRESSION
@@ -29,9 +31,6 @@ import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IN_RANGE
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IS_PATTERN
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
-import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement

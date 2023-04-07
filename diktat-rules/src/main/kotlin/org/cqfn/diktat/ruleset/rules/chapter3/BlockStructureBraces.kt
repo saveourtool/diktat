@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.TRY
 import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement

@@ -82,10 +82,10 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.nextCodeSibling
+import org.cqfn.diktat.ruleset.utils.parent
+import org.cqfn.diktat.ruleset.utils.prevCodeSibling
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -163,7 +163,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     val firstElem = it.firstChildNode
                     val isTextContainsParenthesized = isTextContainsFunctionCall(firstElem)
                     val isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
-                            (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
+                            nodeBeforeDotOrSafeAccess?.let { it.elementType == WHITE_SPACE || it.textContains('\n') } == false
                     isTextContainsParenthesized && (index > 0) && isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine
                 }
                 if (without.isNotEmpty()) {
@@ -248,7 +248,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 if (node.isInParentheses()) {
                     checkForComplexExpression(node)
                 }
-                val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
+                val isSingleLineIfElse = parent(true) { it.elementType == IF }?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
@@ -274,7 +274,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     }
                     if (isFollowedByNewline()) {
                         // remove newline after
-                        parent({ it.treeNext != null }, false)?.let {
+                        parent(false) { it.treeNext != null }?.let {
                             it.treeParent.removeChild(it.treeNext)
                         }
                     }
@@ -295,7 +295,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         val parent = node.treeParent
         if (parent.elementType in listOf(VALUE_ARGUMENT_LIST, VALUE_PARAMETER_LIST)) {
             val prevWhiteSpace = node
-                .parent({ it.treePrev != null }, strict = false)
+                .parent(false) { it.treePrev != null }
                 ?.treePrev
                 ?.takeIf { it.elementType == WHITE_SPACE }
             val isNotAnonymous = parent.treeParent.elementType in listOf(CALL_EXPRESSION, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR, FUN)
@@ -313,7 +313,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun handleComma(node: ASTNode) {
         val prevNewLine = node
-            .parent({ it.treePrev != null }, strict = false)
+            .parent(false) { it.treePrev != null }
             ?.treePrev
             ?.takeIf {
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
@@ -330,7 +330,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun handleColon(node: ASTNode) {
         val prevNewLine = node
-            .parent({ it.treePrev != null }, strict = false)
+            .parent(false) { it.treePrev != null }
             ?.treePrev
             ?.takeIf {
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
@@ -344,7 +344,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     // then we delete the new line on both sides of the colon
                     whiteSpace.treeParent?.let {
                         val nextNewLine = node
-                            .parent({ it.treeNext != null }, strict = false)
+                            .parent(false) { it.treeNext != null }
                             ?.treeNext
                             ?.takeIf {
                                 it.elementType == WHITE_SPACE && it.text.contains("\n")
@@ -607,7 +607,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme: there could be other cases when dot means something else
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
-            parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
+            parent(true) { it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE } != null
 
     private fun PsiElement.isFirstChildElementType(elementType: IElementType) =
         this.firstChild.node.elementType == elementType
@@ -692,7 +692,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * This method checks that complex expression should be replace with new variable
      */
-    private fun ASTNode.isInParentheses() = parent({ it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION })
+    private fun ASTNode.isInParentheses() = parent { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }
         ?.treeParent
         ?.elementType
         ?.let { it in parenthesesTypes }

@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.children
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**

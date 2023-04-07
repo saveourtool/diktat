@@ -20,8 +20,8 @@ import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CONDITION
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
 import org.jetbrains.kotlin.KtNodeTypes.PREFIX_EXPRESSION
-import com.pinterest.ktlint.core.ast.isLeaf
-import com.pinterest.ktlint.core.ast.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.isLeaf
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression

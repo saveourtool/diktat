@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.psi.KtFunction
 fun ASTNode.hasParameters(): Boolean {
     checkNodeIsFun(this)
     val argList = this.argList()
-    return argList != null && argList.hasChildOfType(ElementType.VALUE_PARAMETER)
+    return argList != null && argList.hasChildOfType(KtNodeTypes.VALUE_PARAMETER)
 }
 
 /**
@@ -65,10 +65,10 @@ fun ASTNode.isStandardMethod() = also(::checkNodeIsFun)
 
 private fun ASTNode.argList(): ASTNode? {
     checkNodeIsFun(this)
-    return this.getFirstChildWithType(ElementType.VALUE_PARAMETER_LIST)
+    return this.getFirstChildWithType(KtNodeTypes.VALUE_PARAMETER_LIST)
 }
 
 private fun checkNodeIsFun(node: ASTNode) =
-    require(node.elementType == ElementType.FUN) {
+    require(node.elementType == KtNodeTypes.FUN) {
         "This utility method operates on nodes of type ElementType.FUN only"
     }

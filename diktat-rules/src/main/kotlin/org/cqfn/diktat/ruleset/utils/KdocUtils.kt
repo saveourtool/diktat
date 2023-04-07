@@ -4,15 +4,13 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.SECTION
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
@@ -20,9 +18,9 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
  * @return a list of [KDocTag]s from this KDoc node
  */
 fun ASTNode.kDocTags(): List<KDocTag> {
-    require(this.elementType == ElementType.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
-    return this.getAllChildrenWithType(KDOC_SECTION).flatMap { sectionNode ->
-        sectionNode.getAllChildrenWithType(ElementType.KDOC_TAG)
+    require(this.elementType == KDocTokens.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
+    return this.getAllChildrenWithType(KDocElementTypes.KDOC_SECTION).flatMap { sectionNode ->
+        sectionNode.getAllChildrenWithType(KDocElementTypes.KDOC_TAG)
             .map { its -> its.psi as KDocTag }
     }
 }
@@ -47,8 +45,8 @@ fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
  */
 fun KDocTag.hasTrailingNewlineInTagBody() = node.lastChildNode.isWhiteSpaceWithNewline() ||
         node.reversedChildren()
-            .takeWhile { it.elementType == WHITE_SPACE || it.elementType == ElementType.KDOC_LEADING_ASTERISK }
-            .firstOrNull { it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            .takeWhile { it.elementType == WHITE_SPACE || it.elementType == KDocTokens.LEADING_ASTERISK }
+            .firstOrNull { it.elementType == KDocTokens.LEADING_ASTERISK }
             ?.takeIf { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE } != null
 
 /**
@@ -62,11 +60,11 @@ inline fun ASTNode.insertTagBefore(
     beforeTag: ASTNode?,
     consumer: CompositeElement.() -> Unit
 ) {
-    require(this.elementType == ElementType.KDOC && this.hasChildOfType(KDOC_SECTION)) { "kDoc tags can be inserted only into KDOC node" }
-    val kdocSection = this.getFirstChildWithType(KDOC_SECTION)!!
-    val newTag = CompositeElement(ElementType.KDOC_TAG)
+    require(this.elementType == KDocTokens.KDOC && this.hasChildOfType(KDocElementTypes.KDOC_SECTION)) { "kDoc tags can be inserted only into KDOC node" }
+    val kdocSection = this.getFirstChildWithType(KDocElementTypes.KDOC_SECTION)!!
+    val newTag = CompositeElement(KDocElementTypes.KDOC_TAG)
     val beforeTagLineStart = beforeTag?.prevSibling {
-        it.elementType == WHITE_SPACE && it.treeNext?.elementType == ElementType.KDOC_LEADING_ASTERISK
+        it.elementType == WHITE_SPACE && it.treeNext?.elementType == KDocTokens.LEADING_ASTERISK
     }
     val indent = this
         .getFirstChildWithType(WHITE_SPACE)
@@ -74,8 +72,8 @@ inline fun ASTNode.insertTagBefore(
         ?.split("\n")
         ?.last() ?: ""
     kdocSection.addChild(PsiWhiteSpaceImpl("\n$indent"), beforeTagLineStart)
-    kdocSection.addChild(LeafPsiElement(ElementType.KDOC_LEADING_ASTERISK, "*"), beforeTagLineStart)
-    kdocSection.addChild(LeafPsiElement(ElementType.KDOC_TEXT, " "), beforeTagLineStart)
+    kdocSection.addChild(LeafPsiElement(KDocTokens.LEADING_ASTERISK, "*"), beforeTagLineStart)
+    kdocSection.addChild(LeafPsiElement(KDocTokens.TEXT, " "), beforeTagLineStart)
     kdocSection.addChild(newTag, beforeTagLineStart)
     consumer(newTag)
 }

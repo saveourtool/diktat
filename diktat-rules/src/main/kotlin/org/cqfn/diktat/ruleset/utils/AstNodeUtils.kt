@@ -99,39 +99,6 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
     }
 }
 
-
-fun ASTNode.isRoot(): Boolean = elementType == KtFileElementType.INSTANCE
-
-fun ASTNode.isLeaf(): Boolean = firstChildNode == null
-
-fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this != null && elementType == WHITE_SPACE && textContains('\n')
-
-fun ASTNode.parent(
-    strict: Boolean = true,
-    predicate: (ASTNode) -> Boolean,
-): ASTNode? {
-    var n: ASTNode? = if (strict) this.treeParent else this
-    while (n != null) {
-        if (predicate(n)) {
-            return n
-        }
-        n = n.treeParent
-    }
-    return null
-}
-
-/**
- * @param elementType [IElementType]
- */
-fun ASTNode.parent(
-    elementType: IElementType,
-    strict: Boolean = true,
-): ASTNode? = parent(strict) { it.elementType == elementType }
-
-fun ASTNode?.isWhiteSpace(): Boolean = this != null && elementType == WHITE_SPACE
-
-fun ASTNode.isPartOfComment(): Boolean = parent(strict = false) { it.psi is PsiComment } != null
-
 /**
  * @return the highest parent node of the tree
  */
@@ -1161,7 +1128,7 @@ private fun hasAnySuppressorForInspection(
     rule: Rule,
     configs: List<RulesConfig>
 ) = { node: ASTNode ->
-    val annotationsForNode = if (node.elementType != FILE) {
+    val annotationsForNode = if (node.elementType != KtFileElementType.INSTANCE) {
         node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
     } else {
         node.findChildByType(FILE_ANNOTATION_LIST)
