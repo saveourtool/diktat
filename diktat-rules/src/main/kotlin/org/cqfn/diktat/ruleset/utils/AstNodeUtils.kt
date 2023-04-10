@@ -806,10 +806,13 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  */
 fun ASTNode.getFilePathSafely(): String? = run {
     // https://github.com/pinterest/ktlint/issues/1921
-    @Suppress("UNCHECKED_CAST", "DEPRECATION")
-    val key: Key<String> = (Key.findKeyByName("FILE_PATH") as? Key<String>)!!
+    @Suppress("DEPRECATION")
+    val key = requireNotNull(Key.findKeyByName("FILE_PATH")) {
+        "Key <FILE_PATH> is not registered"
+    }
     val rootNode = getRootNode()
     rootNode.getUserData(key)
+        ?.let { it as? String }
         ?: run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
