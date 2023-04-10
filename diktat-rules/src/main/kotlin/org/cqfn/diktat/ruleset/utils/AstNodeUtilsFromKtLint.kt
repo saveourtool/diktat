@@ -24,7 +24,7 @@ fun ASTNode.isRoot(): Boolean = elementType == KtFileElementType.INSTANCE
 fun ASTNode.isLeaf(): Boolean = firstChildNode == null
 
 /**
- * @return
+ * @return true if this [ASTNode] is [KtTokens.WHITE_SPACE] and contains '\n'
  */
 fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this != null && elementType == KtTokens.WHITE_SPACE && textContains('\n')
 
@@ -79,20 +79,16 @@ fun ASTNode.nextCodeSibling(): ASTNode? = nextSibling { !it.isNotCode() }
 
 /**
  * @param predicate
- * @return
+ * @return [ASTNode] next sibling which matches [predicate]
  */
 inline fun ASTNode.nextSibling(predicate: (ASTNode) -> Boolean = { true }): ASTNode? = siblings(true).firstOrNull(predicate)
 
 /**
- * @param includeEmpty
- * @param skipSubtree
  * @return next [ASTNode] which is a code leaf
  */
 fun ASTNode.nextCodeLeaf(
-    includeEmpty: Boolean = false,
-    skipSubtree: Boolean = false,
-): ASTNode? = generateSequence(nextLeaf(includeEmpty, skipSubtree)) {
-    it.nextLeaf(includeEmpty, skipSubtree)
+): ASTNode? = generateSequence(nextLeaf()) {
+    it.nextLeaf()
 }
     .firstOrNull {
         it.isNotCode()
@@ -104,58 +100,19 @@ fun ASTNode.nextCodeLeaf(
  */
 fun ASTNode.isPartOf(elementType: IElementType): Boolean = parent(elementType, strict = false) != null
 
-private fun ASTNode.nextLeaf(
-    includeEmpty: Boolean = false,
-    skipSubtree: Boolean = false,
-): ASTNode? {
-    var n = if (skipSubtree) this.lastChildLeafOrSelf().nextLeafAny() else this.nextLeafAny()
-    if (!includeEmpty) {
-        while (n != null && n.textLength == 0) {
-            n = n.nextLeafAny()
-        }
+private fun ASTNode.nextLeaf(): ASTNode? = generateSequence(nextLeafAny()) { nextLeafAny() }
+    .filter {
+        it.textLength == 0
     }
-    return n
-}
+    .firstOrNull()
 
-private fun ASTNode.lastChildLeafOrSelf(): ASTNode {
-    var n = this
-    n.lastChildNode?.let {
-        do {
-            n = n.lastChildNode
-        } while (n.lastChildNode != null)
-        return n
-    }
-    return n
-}
+private fun ASTNode.nextLeafAny(): ASTNode? = firstChildLeaf() ?: nextLeafStrict()
 
-private fun ASTNode.nextLeafAny(): ASTNode? {
-    var n = this
-    n.firstChildNode?.let {
-        do {
-            n = n.firstChildNode
-        } while (n.firstChildNode != null)
-        return n
-    }
-    return n.nextLeafStrict()
-}
+private fun ASTNode.nextLeafStrict(): ASTNode? = treeNext?.firstChildLeafOrSelf() ?: treeParent?.nextLeafStrict()
 
-private fun ASTNode.nextLeafStrict(): ASTNode? {
-    val nextSibling: ASTNode? = treeNext
-    nextSibling?.let {
-        return nextSibling.firstChildLeafOrSelf()
-    }
-    return treeParent?.nextLeafStrict()
-}
+private fun ASTNode.firstChildLeafOrSelf(): ASTNode = firstChildLeaf() ?: this
 
-private fun ASTNode.firstChildLeafOrSelf(): ASTNode {
-    var n = this
-    n.firstChildNode?.let {
-        do {
-            n = n.firstChildNode
-        } while (n.firstChildNode != null)
-        return n
-    }
-    return n
-}
+private fun ASTNode.firstChildLeaf(): ASTNode? = generateSequence(firstChildNode, ASTNode::getFirstChildNode)
+    .lastOrNull()
 
 private fun ASTNode.isNotCode(): Boolean = isWhiteSpace() || isPartOfComment()

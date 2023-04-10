@@ -800,11 +800,11 @@ fun ASTNode.findAllNodesWithConditionOnLine(
 ): List<ASTNode>? = this.findAllNodesOnLine(line)?.filter(condition)
 
 /**
- * Retrieves file name from user data of this node
+ * Safely retrieves file name from user data of this node
  *
- * @return name of the file [this] node belongs to
+ * @return name of the file [this] node belongs to or null
  */
-fun ASTNode.getFilePath(): String = run {
+fun ASTNode.getFilePathSafely(): String? = run {
     // https://github.com/pinterest/ktlint/issues/1921
     @Suppress("UNCHECKED_CAST", "DEPRECATION")
     val key: Key<String> = (Key.findKeyByName("FILE_PATH") as? Key<String>)!!
@@ -814,10 +814,17 @@ fun ASTNode.getFilePath(): String = run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
-            requireNotNull(rootNode.psi as? KtFile) {
-                "Root node type is not ${KtFile::class}, but ${rootNode.javaClass}. Tree: ${this.prettyPrint()}. Parent: ${this.parents().last()}, ${this.parents().last().javaClass}, ${this.parents().last().prettyPrint()}"
-            }.name
+            (rootNode.psi as? KtFile)?.name
         }
+}
+
+/**
+ * Retrieves file name from user data of this node
+ *
+ * @return name of the file [this] node belongs to
+ */
+fun ASTNode.getFilePath(): String = requireNotNull(getFilePathSafely()) {
+    "Failed to retrieve a file path for node ${this::javaClass}"
 }
 
 /**
