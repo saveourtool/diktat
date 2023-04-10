@@ -812,7 +812,8 @@ fun ASTNode.getFilePathSafely(): String? = run {
         ?.let { key ->
             rootNode.getUserData(key)
                 ?.let { it as? String }
-        } ?: run {
+        }
+        ?: run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
