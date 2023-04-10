@@ -805,19 +805,19 @@ fun ASTNode.findAllNodesWithConditionOnLine(
  * @return name of the file [this] node belongs to or null
  */
 fun ASTNode.getFilePathSafely(): String? = run {
-    // https://github.com/pinterest/ktlint/issues/1921
-    @Suppress("DEPRECATION")
-    val key = requireNotNull(Key.findKeyByName("FILE_PATH")) {
-        "Key <FILE_PATH> is not registered"
-    }
     val rootNode = getRootNode()
-    rootNode.getUserData(key)
-        ?.let { it as? String }
-        ?: run {
+
+    @Suppress("DEPRECATION")
+    Key.findKeyByName("FILE_PATH")
+        ?.let { key ->
+            rootNode.getUserData(key)
+                ?.let { it as? String }
+        } ?: run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
-            (rootNode.psi as? KtFile)?.name
+            // https://github.com/pinterest/ktlint/issues/1921
+            (rootNode.psi as? KtFile)?.virtualFilePath
         }
 }
 

@@ -26,7 +26,7 @@ fun ASTNode.isLeaf(): Boolean = firstChildNode == null
 /**
  * @return true if this [ASTNode] is [KtTokens.WHITE_SPACE] and contains '\n'
  */
-fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this != null && elementType == KtTokens.WHITE_SPACE && textContains('\n')
+fun ASTNode?.isWhiteSpaceWithNewline(): Boolean = this?.elementType == KtTokens.WHITE_SPACE && this?.textContains('\n') == true
 
 /**
  * @param strict true if it doesn't need to check current [ASTNode]
@@ -86,12 +86,9 @@ inline fun ASTNode.nextSibling(predicate: (ASTNode) -> Boolean = { true }): ASTN
 /**
  * @return next [ASTNode] which is a code leaf
  */
-fun ASTNode.nextCodeLeaf(
-): ASTNode? = generateSequence(nextLeaf()) {
-    it.nextLeaf()
-}
+fun ASTNode.nextCodeLeaf(): ASTNode? = generateSequence(nextLeaf()) { it.nextLeaf() }
     .firstOrNull {
-        it.isNotCode()
+        !it.isNotCode()
     }
 
 /**
@@ -100,11 +97,8 @@ fun ASTNode.nextCodeLeaf(
  */
 fun ASTNode.isPartOf(elementType: IElementType): Boolean = parent(elementType, strict = false) != null
 
-private fun ASTNode.nextLeaf(): ASTNode? = generateSequence(nextLeafAny()) { nextLeafAny() }
-    .filter {
-        it.textLength == 0
-    }
-    .firstOrNull()
+private fun ASTNode.nextLeaf(): ASTNode? = generateSequence(nextLeafAny()) { it.nextLeafAny() }
+    .firstOrNull { it.textLength != 0 }
 
 private fun ASTNode.nextLeafAny(): ASTNode? = firstChildLeaf() ?: nextLeafStrict()
 
