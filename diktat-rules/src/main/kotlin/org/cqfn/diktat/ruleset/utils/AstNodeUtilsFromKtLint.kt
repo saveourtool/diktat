@@ -64,7 +64,7 @@ fun ASTNode.isPartOfComment(): Boolean = parent(strict = false) { it.psi is PsiC
 /**
  * @return previous sibling [ASTNode] which is code
  */
-fun ASTNode.prevCodeSibling(): ASTNode? = prevSibling { !it.isNotCode() }
+fun ASTNode.prevCodeSibling(): ASTNode? = prevSibling { it.isCode() }
 
 /**
  * @param predicate
@@ -75,7 +75,7 @@ inline fun ASTNode.prevSibling(predicate: (ASTNode) -> Boolean = { true }): ASTN
 /**
  * @return next sibling [ASTNode] which is code
  */
-fun ASTNode.nextCodeSibling(): ASTNode? = nextSibling { !it.isNotCode() }
+fun ASTNode.nextCodeSibling(): ASTNode? = nextSibling { it.isCode() }
 
 /**
  * @param predicate
@@ -88,7 +88,7 @@ inline fun ASTNode.nextSibling(predicate: (ASTNode) -> Boolean = { true }): ASTN
  */
 fun ASTNode.nextCodeLeaf(): ASTNode? = generateSequence(nextLeaf()) { it.nextLeaf() }
     .firstOrNull {
-        !it.isNotCode()
+        it.isCode()
     }
 
 /**
@@ -109,4 +109,4 @@ private fun ASTNode.firstChildLeafOrSelf(): ASTNode = firstChildLeaf() ?: this
 private fun ASTNode.firstChildLeaf(): ASTNode? = generateSequence(firstChildNode, ASTNode::getFirstChildNode)
     .lastOrNull()
 
-private fun ASTNode.isNotCode(): Boolean = isWhiteSpace() || isPartOfComment()
+private fun ASTNode.isCode(): Boolean = !isWhiteSpace() && !isPartOfComment()
