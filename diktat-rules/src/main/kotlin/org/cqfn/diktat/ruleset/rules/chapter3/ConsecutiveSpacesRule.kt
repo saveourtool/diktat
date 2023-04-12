@@ -5,14 +5,14 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.parent
 
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.parent
+import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 
 /**
  * This visitor covers recommendation 3.8 of Huawei code style. It covers following recommendations:

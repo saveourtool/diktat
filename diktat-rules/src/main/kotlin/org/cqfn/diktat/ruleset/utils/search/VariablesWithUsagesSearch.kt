@@ -13,7 +13,7 @@ package org.cqfn.diktat.ruleset.utils.search
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 class VariablesWithUsagesSearch(fileNode: ASTNode,
                                 filterForVariables: (KtProperty) -> Boolean) : VariablesSearch(fileNode, filterForVariables) {
     override fun KtElement.getAllSearchResults(property: KtProperty) = this.node
-        .findAllDescendantsWithSpecificType(ElementType.REFERENCE_EXPRESSION)
+        .findAllDescendantsWithSpecificType(KtNodeTypes.REFERENCE_EXPRESSION)
         // filtering out all usages that are declared in the same context but are going before the variable declaration
         .filter { it.isGoingAfter(property.node) }
         .map { it.psi as KtNameReferenceExpression }

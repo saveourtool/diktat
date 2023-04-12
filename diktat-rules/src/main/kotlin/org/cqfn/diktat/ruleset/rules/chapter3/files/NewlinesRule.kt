@@ -24,75 +24,75 @@ import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.nextCodeSibling
+import org.cqfn.diktat.ruleset.utils.parent
+import org.cqfn.diktat.ruleset.utils.prevCodeSibling
 
-import com.pinterest.ktlint.core.ast.ElementType.ANDAND
-import com.pinterest.ktlint.core.ast.ElementType.ARROW
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.COLON
-import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
-import com.pinterest.ktlint.core.ast.ElementType.COMMA
-import com.pinterest.ktlint.core.ast.ElementType.CONDITION
-import com.pinterest.ktlint.core.ast.ElementType.DIV
-import com.pinterest.ktlint.core.ast.ElementType.DIVEQ
-import com.pinterest.ktlint.core.ast.ElementType.DOT
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.ELVIS
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE_RECEIVER
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.IF
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.MINUS
-import com.pinterest.ktlint.core.ast.ElementType.MINUSEQ
-import com.pinterest.ktlint.core.ast.ElementType.MUL
-import com.pinterest.ktlint.core.ast.ElementType.MULTEQ
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.OROR
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.PLUS
-import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
-import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RETURN
-import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHEN
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevCodeSibling
 import mu.KotlinLogging
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.CALLABLE_REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.CONDITION
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE_RECEIVER
+import org.jetbrains.kotlin.KtNodeTypes.IF
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.POSTFIX_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.RETURN
+import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
+import org.jetbrains.kotlin.lexer.KtTokens.ARROW
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.COLON
+import org.jetbrains.kotlin.lexer.KtTokens.COLONCOLON
+import org.jetbrains.kotlin.lexer.KtTokens.COMMA
+import org.jetbrains.kotlin.lexer.KtTokens.DIV
+import org.jetbrains.kotlin.lexer.KtTokens.DIVEQ
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
+import org.jetbrains.kotlin.lexer.KtTokens.MINUS
+import org.jetbrains.kotlin.lexer.KtTokens.MINUSEQ
+import org.jetbrains.kotlin.lexer.KtTokens.MUL
+import org.jetbrains.kotlin.lexer.KtTokens.MULTEQ
+import org.jetbrains.kotlin.lexer.KtTokens.OROR
+import org.jetbrains.kotlin.lexer.KtTokens.PLUS
+import org.jetbrains.kotlin.lexer.KtTokens.PLUSEQ
+import org.jetbrains.kotlin.lexer.KtTokens.RETURN_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
+import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
+import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -163,7 +163,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     val firstElem = it.firstChildNode
                     val isTextContainsParenthesized = isTextContainsFunctionCall(firstElem)
                     val isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine = nodeBeforeDotOrSafeAccess?.elementType != WHITE_SPACE ||
-                            (nodeBeforeDotOrSafeAccess.elementType != WHITE_SPACE && !nodeBeforeDotOrSafeAccess.textContains('\n'))
+                            nodeBeforeDotOrSafeAccess?.let { it.elementType == WHITE_SPACE || it.textContains('\n') } == false
                     isTextContainsParenthesized && (index > 0) && isNotWhiteSpaceBeforeDotOrSafeAccessContainNewLine
                 }
                 if (without.isNotEmpty()) {
@@ -248,7 +248,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 if (node.isInParentheses()) {
                     checkForComplexExpression(node)
                 }
-                val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
+                val isSingleLineIfElse = parent(true) { it.elementType == IF }?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
@@ -274,7 +274,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     }
                     if (isFollowedByNewline()) {
                         // remove newline after
-                        parent({ it.treeNext != null }, false)?.let {
+                        parent(false) { it.treeNext != null }?.let {
                             it.treeParent.removeChild(it.treeNext)
                         }
                     }
@@ -295,7 +295,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         val parent = node.treeParent
         if (parent.elementType in listOf(VALUE_ARGUMENT_LIST, VALUE_PARAMETER_LIST)) {
             val prevWhiteSpace = node
-                .parent({ it.treePrev != null }, strict = false)
+                .parent(false) { it.treePrev != null }
                 ?.treePrev
                 ?.takeIf { it.elementType == WHITE_SPACE }
             val isNotAnonymous = parent.treeParent.elementType in listOf(CALL_EXPRESSION, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR, FUN)
@@ -313,7 +313,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun handleComma(node: ASTNode) {
         val prevNewLine = node
-            .parent({ it.treePrev != null }, strict = false)
+            .parent(false) { it.treePrev != null }
             ?.treePrev
             ?.takeIf {
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
@@ -330,7 +330,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun handleColon(node: ASTNode) {
         val prevNewLine = node
-            .parent({ it.treePrev != null }, strict = false)
+            .parent(false) { it.treePrev != null }
             ?.treePrev
             ?.takeIf {
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
@@ -344,7 +344,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     // then we delete the new line on both sides of the colon
                     whiteSpace.treeParent?.let {
                         val nextNewLine = node
-                            .parent({ it.treeNext != null }, strict = false)
+                            .parent(false) { it.treeNext != null }
                             ?.treeNext
                             ?.takeIf {
                                 it.elementType == WHITE_SPACE && it.text.contains("\n")
@@ -607,7 +607,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme: there could be other cases when dot means something else
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
-            parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
+            parent(true) { it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE } != null
 
     private fun PsiElement.isFirstChildElementType(elementType: IElementType) =
         this.firstChild.node.elementType == elementType
@@ -692,7 +692,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * This method checks that complex expression should be replace with new variable
      */
-    private fun ASTNode.isInParentheses() = parent({ it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION })
+    private fun ASTNode.isInParentheses() = parent { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }
         ?.treeParent
         ?.elementType
         ?.let { it in parenthesesTypes }

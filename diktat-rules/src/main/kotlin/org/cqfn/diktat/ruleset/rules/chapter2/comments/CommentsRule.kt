@@ -6,18 +6,18 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.prevSibling
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.jetbrains.kotlin.resolve.ImportPath
 
 /**
@@ -34,7 +34,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     override fun logic(node: ASTNode) {
         ktPsiFactory = KtPsiFactory(node.psi.project, false)  // regarding markGenerated see KDoc in Kotlin sources
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             checkCommentedCode(node)
         }
     }

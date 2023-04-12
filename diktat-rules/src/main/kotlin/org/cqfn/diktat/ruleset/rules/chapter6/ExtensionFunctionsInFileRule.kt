@@ -6,21 +6,21 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens.EXTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks if there are any extension functions for the class in the same file, where it is defined
@@ -31,7 +31,7 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(EXTENSION_FUNCTION_WITH_CLASS)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val classNames = collectAllClassNames(node)
 
             collectAllExtensionFunctionsWithSameClassName(node, classNames).forEach {
@@ -45,10 +45,10 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
      * the [ignore list][ignoredModifierTypes].
      *
      * @throws IllegalArgumentException if [file] is not a
-     *   [FILE][ElementType.FILE] node.
+     *   [FILE][KtFileElementType.INSTANCE] node.
      */
     private fun collectAllClassNames(file: ASTNode): List<String> {
-        require(file.elementType == ElementType.FILE)
+        require(file.elementType == KtFileElementType.INSTANCE)
 
         val classes = file.findAllDescendantsWithSpecificType(CLASS)
 

@@ -7,21 +7,21 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.IF
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
-import com.pinterest.ktlint.core.ast.ElementType.THEN
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.IF
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.psiUtil.children
 
 import java.util.Stack
 
@@ -138,7 +138,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         // we need to put it to the brackets, according algebra of logic
         val mergeCondition =
             if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
-                    nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
+                    nestedCondition?.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
             ) {
                 "if ($parentConditionText &&$commentsText($nestedConditionText)) {}"
             } else {

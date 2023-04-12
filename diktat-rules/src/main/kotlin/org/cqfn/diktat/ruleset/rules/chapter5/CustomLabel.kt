@@ -5,12 +5,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.CUSTOM_LABEL
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.loopType
 
-import com.pinterest.ktlint.core.ast.ElementType.BREAK
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CONTINUE
-import com.pinterest.ktlint.core.ast.ElementType.LABEL_QUALIFIER
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RETURN
+import org.jetbrains.kotlin.KtNodeTypes.BREAK
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CONTINUE
+import org.jetbrains.kotlin.KtNodeTypes.LABEL_QUALIFIER
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.RETURN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.parents
 

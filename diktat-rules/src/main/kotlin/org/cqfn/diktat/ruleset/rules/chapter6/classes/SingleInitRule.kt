@@ -6,21 +6,21 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.parent
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.parent
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_INITIALIZER
+import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtParameter
@@ -65,7 +65,7 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
                 .findChildByType(PRIMARY_CONSTRUCTOR)
                 ?.findChildByType(VALUE_PARAMETER_LIST)
                 ?.children()
-                ?.filter { it.elementType == ElementType.VALUE_PARAMETER }
+                ?.filter { it.elementType == KtNodeTypes.VALUE_PARAMETER }
                 ?.map { it.psi as KtParameter }
                 ?.map { it.name }
                 ?.toList()

@@ -5,38 +5,38 @@ import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.nextSibling
+import org.cqfn.diktat.ruleset.utils.parent
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
-import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
-import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_INITIALIZER
+import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.COMPANION_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.CONST_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.LATEINIT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 
@@ -123,7 +123,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                     .last()
                     .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
                     .any { ref ->
-                        ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
+                        ref.parent { it == classNode } == null && ref.text.contains(identifierNode.text)
                     }
             } ?: false
         }

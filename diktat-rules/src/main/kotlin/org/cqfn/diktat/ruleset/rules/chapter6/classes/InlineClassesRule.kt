@@ -7,19 +7,19 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_CALLEE
-import com.pinterest.ktlint.core.ast.ElementType.FINAL_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
-import com.pinterest.ktlint.core.ast.children
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.CONSTRUCTOR_CALLEE
+import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.FINAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PUBLIC_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.VAR_KEYWORD
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
 
 /**

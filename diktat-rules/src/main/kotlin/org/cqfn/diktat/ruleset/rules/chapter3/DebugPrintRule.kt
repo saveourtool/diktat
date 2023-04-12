@@ -4,9 +4,10 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.lexer.KtTokens
 
 /**
  * This rule detects `print()` or `println()`.
@@ -25,13 +26,13 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // check kotlin.io.print()/kotlin.io.println()
     private fun checkPrintln(node: ASTNode) {
-        if (node.elementType == ElementType.CALL_EXPRESSION) {
-            val referenceExpression = node.findChildByType(ElementType.REFERENCE_EXPRESSION)?.text
-            val valueArgumentList = node.findChildByType(ElementType.VALUE_ARGUMENT_LIST)
+        if (node.elementType == KtNodeTypes.CALL_EXPRESSION) {
+            val referenceExpression = node.findChildByType(KtNodeTypes.REFERENCE_EXPRESSION)?.text
+            val valueArgumentList = node.findChildByType(KtNodeTypes.VALUE_ARGUMENT_LIST)
             if (referenceExpression in setOf("print", "println") &&
-                    node.treePrev?.elementType != ElementType.DOT &&
-                    valueArgumentList?.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
-                    node.findChildByType(ElementType.LAMBDA_ARGUMENT) == null) {
+                    node.treePrev?.elementType != KtTokens.DOT &&
+                    valueArgumentList?.getChildren(TokenSet.create(KtNodeTypes.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
+                    node.findChildByType(KtNodeTypes.LAMBDA_ARGUMENT) == null) {
                 Warnings.DEBUG_PRINT.warn(
                     configRules, emitWarn, isFixMode,
                     "found $referenceExpression()", node.startOffset, node,
@@ -42,17 +43,17 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // check kotlin.js.console.*()
     private fun checkJsConsole(node: ASTNode) {
-        if (node.elementType == ElementType.DOT_QUALIFIED_EXPRESSION) {
+        if (node.elementType == KtNodeTypes.DOT_QUALIFIED_EXPRESSION) {
             val isConsole = node.firstChildNode.let { referenceExpression ->
-                referenceExpression.elementType == ElementType.REFERENCE_EXPRESSION &&
-                        referenceExpression.firstChildNode.let { it.elementType == ElementType.IDENTIFIER && it.text == "console" }
+                referenceExpression.elementType == KtNodeTypes.REFERENCE_EXPRESSION &&
+                        referenceExpression.firstChildNode.let { it.elementType == KtTokens.IDENTIFIER && it.text == "console" }
             }
             if (isConsole) {
                 val logMethod = node.lastChildNode
-                    .takeIf { it.elementType == ElementType.CALL_EXPRESSION }
-                    ?.takeIf { it.findChildByType(ElementType.LAMBDA_ARGUMENT) == null }
+                    .takeIf { it.elementType == KtNodeTypes.CALL_EXPRESSION }
+                    ?.takeIf { it.findChildByType(KtNodeTypes.LAMBDA_ARGUMENT) == null }
                     ?.firstChildNode
-                    ?.takeIf { it.elementType == ElementType.REFERENCE_EXPRESSION }
+                    ?.takeIf { it.elementType == KtNodeTypes.REFERENCE_EXPRESSION }
                     ?.text
                 if (logMethod in setOf("error", "info", "log", "warn")) {
                     Warnings.DEBUG_PRINT.warn(

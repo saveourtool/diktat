@@ -5,11 +5,11 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
+import org.jetbrains.kotlin.KtNodeTypes.NULLABLE_TYPE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
@@ -22,7 +22,7 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
     listOf(LAMBDA_IS_NOT_LAST_PARAMETER)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.FUN) {
+        if (node.elementType == KtNodeTypes.FUN) {
             checkArguments(node)
         }
     }

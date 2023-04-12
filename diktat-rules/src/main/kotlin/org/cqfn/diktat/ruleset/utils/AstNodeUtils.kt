@@ -18,51 +18,51 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.ANDAND
-import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.DOT
-import com.pinterest.ktlint.core.ast.ElementType.ELVIS
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.OROR
-import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
-import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isLeaf
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isRoot
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.parent
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.ANNOTATED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.openapi.util.Key
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.CONST_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LATEINIT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.OROR
+import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PUBLIC_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
@@ -113,10 +113,10 @@ fun ASTNode.isTextLengthInRange(range: IntRange): Boolean = this.textLength in r
 /**
  * getting first child name with IDENTIFIER type
  *
- * @return node with type [ElementType.IDENTIFIER] or null if it is not present
+ * @return node with type [org.jetbrains.kotlin.KtNodeTypes.IDENTIFIER] or null if it is not present
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
-    this.getFirstChildWithType(ElementType.IDENTIFIER)
+    this.getFirstChildWithType(IDENTIFIER)
 
 /**
  * getting first child name with TYPE_PARAMETER_LIST type
@@ -124,7 +124,7 @@ fun ASTNode.getIdentifierName(): ASTNode? =
  * @return a node with type TYPE_PARAMETER_LIST or null if it is not present
  */
 fun ASTNode.getTypeParameterList(): ASTNode? =
-    this.getFirstChildWithType(ElementType.TYPE_PARAMETER_LIST)
+    this.getFirstChildWithType(TYPE_PARAMETER_LIST)
 
 /**
  * @return true if this node contains no error elements, false otherwise
@@ -186,7 +186,7 @@ fun ASTNode.isAnonymousFunction(): Boolean {
 /**
  * Checks if the symbols in this node are at the end of line
  */
-fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewline() ?: true
+fun ASTNode.isEol() = parent(false) { it.treeNext != null }?.isFollowedByNewline() ?: true
 
 /**
  * Checks if there is a newline after symbol corresponding to this element. We can't always check only this node itself, because
@@ -195,7 +195,7 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  * Therefore, to check if they are followed by newline we need to check their parents.
  */
 fun ASTNode.isFollowedByNewline() =
-    parent({ it.treeNext != null }, strict = false)?.let {
+    parent(false) { it.treeNext != null }?.let {
         val probablyWhitespace = it.treeNext
         it.isFollowedByNewlineCheck() ||
                 (probablyWhitespace.elementType == WHITE_SPACE && probablyWhitespace.treeNext.run {
@@ -207,14 +207,14 @@ fun ASTNode.isFollowedByNewline() =
  * This function is similar to isFollowedByNewline(), but there may be a comment after the node
  */
 fun ASTNode.isFollowedByNewlineWithComment() =
-    parent({ it.treeNext != null }, strict = false)
+    parent(false) { it.treeNext != null }
         ?.treeNext?.run {
         when (elementType) {
             WHITE_SPACE -> text.contains("\n")
             EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
             else -> false
         } ||
-                parent({ it.treeNext != null }, strict = false)?.let {
+                parent(false) { it.treeNext != null }?.let {
                     it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
                 } ?: false
     } ?: false
@@ -224,7 +224,7 @@ fun ASTNode.isFollowedByNewlineWithComment() =
  * Or if there is nothing before, it cheks, that there are empty imports and package before (Every FILE node has children of type IMPORT_LIST and PACKAGE)
  */
 fun ASTNode.isBeginByNewline() =
-    parent({ it.treePrev != null }, strict = false)?.let {
+    parent(false) { it.treePrev != null }?.let {
         it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n") ||
                 (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
     } ?: false
@@ -261,7 +261,7 @@ fun ASTNode.hasParent(type: IElementType) = parent(type) != null
  * check text because some nodes have empty BLOCK element inside (lambda)
  */
 fun ASTNode?.isBlockEmpty() = this?.let {
-    if (this.elementType == ElementType.WHEN) {
+    if (this.elementType == KtNodeTypes.WHEN) {
         val firstIndex = this.text.indexOf("{")
         this.text.substring(firstIndex - 1).replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
     } else {
@@ -342,8 +342,8 @@ fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
     parent?.let {
         val grandParent = parent.treeParent
-        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
-            grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD)
+        if (grandParent != null && grandParent.elementType == KtNodeTypes.OBJECT_DECLARATION) {
+            grandParent.findLeafWithSpecificType(KtTokens.COMPANION_KEYWORD)
                 ?.run {
                     return true
                 }
@@ -366,9 +366,9 @@ fun ASTNode.isConstant() = (this.isNodeFromFileLevel() || this.isNodeFromObject(
  */
 fun ASTNode.isNodeFromObject(): Boolean {
     val parent = this.treeParent
-    if (parent != null && parent.elementType == ElementType.CLASS_BODY) {
+    if (parent != null && parent.elementType == KtNodeTypes.CLASS_BODY) {
         val grandParent = parent.treeParent
-        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
+        if (grandParent != null && grandParent.elementType == KtNodeTypes.OBJECT_DECLARATION) {
             return true
         }
     }
@@ -380,14 +380,14 @@ fun ASTNode.isNodeFromObject(): Boolean {
  *
  * @return boolean result
  */
-fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
+fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == KtFileElementType.INSTANCE
 
 /**
  * Checks whether [this] node of type PROPERTY is `val`
  */
 fun ASTNode.isValProperty() =
     this.getChildren(null)
-        .any { it.elementType == ElementType.VAL_KEYWORD }
+        .any { it.elementType == KtTokens.VAL_KEYWORD }
 
 /**
  * Checks whether this node of type PROPERTY has `const` modifier
@@ -409,7 +409,7 @@ fun ASTNode.hasModifier(modifier: IElementType) = this.findChildByType(MODIFIER_
  */
 fun ASTNode.isVarProperty() =
     this.getChildren(null)
-        .any { it.elementType == ElementType.VAR_KEYWORD }
+        .any { it.elementType == KtTokens.VAR_KEYWORD }
 
 /**
  * Replaces text of [this] node with lowercase text
@@ -550,7 +550,7 @@ fun ASTNode.isSuppressed(
     rule: Rule,
     configs: List<RulesConfig>
 ) =
-    this.parent(hasAnySuppressorForInspection(warningName, rule, configs), strict = false) != null
+    this.parent(false, hasAnySuppressorForInspection(warningName, rule, configs)) != null
 
 /**
  * Checks node has `override` modifier
@@ -627,16 +627,16 @@ fun ASTNode.moveChildBefore(
  */
 @Suppress("UnsafeCallOnNullableType", "FUNCTION_NAME_INCORRECT_CASE", "WRONG_NEWLINES")
 fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
-    ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
-        this.findChildByType(ElementType.BLOCK)?.findChildByType(LBRACE)
-    ElementType.WHEN -> this.findChildByType(LBRACE)!!
+    KtNodeTypes.THEN, KtNodeTypes.ELSE, KtNodeTypes.FUN, KtNodeTypes.TRY, KtNodeTypes.CATCH, KtNodeTypes.FINALLY ->
+        this.findChildByType(KtNodeTypes.BLOCK)?.findChildByType(LBRACE)
+    KtNodeTypes.WHEN -> this.findChildByType(LBRACE)!!
     in loopType ->
-        this.findChildByType(ElementType.BODY)
-            ?.findChildByType(ElementType.BLOCK)
+        this.findChildByType(KtNodeTypes.BODY)
+            ?.findChildByType(KtNodeTypes.BLOCK)
             ?.findChildByType(LBRACE)
-    ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)
+    KtNodeTypes.CLASS, KtNodeTypes.OBJECT_DECLARATION -> this.findChildByType(KtNodeTypes.CLASS_BODY)
         ?.findChildByType(LBRACE)
-    ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
+    KtNodeTypes.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
     else -> null
 }
 
@@ -647,8 +647,8 @@ fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
  */
 fun ASTNode.isSingleLineIfElse(): Boolean {
     val elseNode = (psi as KtIfExpression).`else`?.node
-    val hasSingleElse = elseNode != null && elseNode.elementType != ElementType.IF
-    return treeParent.elementType != ElementType.ELSE && hasSingleElse && text.lines().size == 1
+    val hasSingleElse = elseNode != null && elseNode.elementType != KtNodeTypes.IF
+    return treeParent.elementType != KtNodeTypes.ELSE && hasSingleElse && text.lines().size == 1
 }
 
 /**
@@ -737,7 +737,7 @@ fun ASTNode.extractLineOfText(): String {
         .takeWhileInclusive { it.size <= 1 }
         .forEach { text.add(0, it.last()) }
     text.add(this.text)
-    val nextNode = parent({ it.treeNext != null }, false) ?: this
+    val nextNode = parent(false) { it.treeNext != null } ?: this
     nextNode.siblings(true)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
@@ -750,8 +750,8 @@ fun ASTNode.extractLineOfText(): String {
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?.getAllChildrenWithType(ANNOTATION_ENTRY)
-    ?.flatMap { it.findAllDescendantsWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
-    ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
+    ?.flatMap { it.findAllDescendantsWithSpecificType(KtNodeTypes.CONSTRUCTOR_CALLEE) }
+    ?.any { it.findLeafWithSpecificType(KtTokens.IDENTIFIER)?.text == "Test" }
     ?: false
 
 /**
@@ -800,28 +800,35 @@ fun ASTNode.findAllNodesWithConditionOnLine(
 ): List<ASTNode>? = this.findAllNodesOnLine(line)?.filter(condition)
 
 /**
- * Retrieves file name from user data of this node
+ * Safely retrieves file name from user data of this node
  *
- * @return name of the file [this] node belongs to
+ * @return name of the file [this] node belongs to or null
  */
-fun ASTNode.getFilePath(): String = run {
-    @Suppress("Deprecation")
-    val key = com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
+fun ASTNode.getFilePathSafely(): String? = run {
     val rootNode = getRootNode()
-        .also {
-            require(it.elementType == KtFileElementType.INSTANCE) { "Root node type is not FILE, but $key can present in user_data only in FILE nodes" }
-        }
 
-    rootNode.getUserData(key)
+    @Suppress("DEPRECATION")
+    Key.findKeyByName("FILE_PATH")
+        ?.let { key ->
+            rootNode.getUserData(key)
+                ?.let { it as? String }
+        }
         ?: run {
             // KtLint doesn't set file path for snippets
             // will take a file name from KtFile
             // it doesn't work for all cases since KtLint creates KtFile using a file name, not a file path
-            // raised: https://github.com/pinterest/ktlint/issues/1921
-            requireNotNull(rootNode.psi as? KtFile) {
-                "Root node type is not ${KtFile::class}"
-            }.name
+            // https://github.com/pinterest/ktlint/issues/1921
+            (rootNode.psi as? KtFile)?.virtualFilePath
         }
+}
+
+/**
+ * Retrieves file name from user data of this node
+ *
+ * @return name of the file [this] node belongs to
+ */
+fun ASTNode.getFilePath(): String = requireNotNull(getFilePathSafely()) {
+    "Failed to retrieve a file path for node ${this::javaClass}"
 }
 
 /**
@@ -1063,8 +1070,8 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
 
 private fun ASTNode.hasExplicitIt(): Boolean {
     require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-    val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
-        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+    val parameterList = findChildByType(FUNCTION_LITERAL)
+        ?.findChildByType(VALUE_PARAMETER_LIST)
         ?.psi
             as KtParameterList?
     return parameterList?.parameters
@@ -1114,7 +1121,7 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
     }
     val hasIt = lambdaNode
         .findAllNodesWithCondition(excludeChildrenCondition = excludeChildrenCondition) {
-            it.elementType == ElementType.REFERENCE_EXPRESSION
+            it.elementType == REFERENCE_EXPRESSION
         }
         .map { it.text }
         .contains("it")
@@ -1127,7 +1134,7 @@ private fun hasAnySuppressorForInspection(
     rule: Rule,
     configs: List<RulesConfig>
 ) = { node: ASTNode ->
-    val annotationsForNode = if (node.elementType != FILE) {
+    val annotationsForNode = if (node.elementType != KtFileElementType.INSTANCE) {
         node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
     } else {
         node.findChildByType(FILE_ANNOTATION_LIST)
@@ -1149,6 +1156,6 @@ private fun hasAnySuppressorForInspection(
 private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
     require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
     return null == lambdaNode
-        .findChildByType(ElementType.FUNCTION_LITERAL)
-        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+        .findChildByType(FUNCTION_LITERAL)
+        ?.findChildByType(VALUE_PARAMETER_LIST)
 }

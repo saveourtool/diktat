@@ -10,10 +10,10 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.util.isKotlinScript
 
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.io.File
 
@@ -34,7 +34,7 @@ class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var filePath: String
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             filePath = node.getFilePath()
             if (!filePath.isKotlinScript()) {
                 checkFileNaming(node)

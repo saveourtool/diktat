@@ -37,35 +37,34 @@ import org.cqfn.diktat.ruleset.utils.leadingSpaceCount
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.visit
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.ELSE
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
-import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_END
-import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_START
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.REGULAR_STRING_PART
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import com.pinterest.ktlint.core.ast.ElementType.THEN
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.lexer.KtTokens.CLOSING_QUOTE
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.ELSE
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACKET
+import org.jetbrains.kotlin.KtNodeTypes.LITERAL_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.lexer.KtTokens.LONG_TEMPLATE_ENTRY_END
+import org.jetbrains.kotlin.lexer.KtTokens.LONG_TEMPLATE_ENTRY_START
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
+import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACKET
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.lexer.KtTokens.REGULAR_STRING_PART
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
+import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.SHORT_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
+import org.jetbrains.kotlin.KtNodeTypes.THEN
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import mu.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -79,6 +78,7 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -107,7 +107,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             filePath = node.getFilePath()
 
             customIndentationCheckers = listOf(

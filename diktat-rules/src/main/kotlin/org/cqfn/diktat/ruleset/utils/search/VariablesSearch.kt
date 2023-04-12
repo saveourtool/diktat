@@ -12,7 +12,7 @@ import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtClassBody
@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  *  @param node root node of a type File that is used to search all declared properties (variables)
@@ -47,11 +48,11 @@ abstract class VariablesSearch(val node: ASTNode,
      */
     @Suppress("TYPE_ALIAS")
     fun collectVariables(): Map<KtProperty, List<KtNameReferenceExpression>> {
-        require(node.elementType == ElementType.FILE) {
+        require(node.elementType == KtFileElementType.INSTANCE) {
             "To collect all variables in a file you need to provide file root node"
         }
         return node
-            .findAllDescendantsWithSpecificType(ElementType.PROPERTY)
+            .findAllDescendantsWithSpecificType(KtNodeTypes.PROPERTY)
             .map { it.psi as KtProperty }
             .filter(filterForVariables)
             .associateWith { it.getSearchResults() }

@@ -21,29 +21,26 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildMatching
 import org.cqfn.diktat.ruleset.utils.hasTrailingNewlineInTagBody
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.nextSibling
+import org.cqfn.diktat.ruleset.utils.prevSibling
 import org.cqfn.diktat.ruleset.utils.reversedChildren
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 import java.time.format.DateTimeFormatter
@@ -118,9 +115,9 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isKdocNotEmpty(node: ASTNode): Boolean {
-        val isKdocNotEmpty = node.getFirstChildWithType(KDOC_SECTION)
+        val isKdocNotEmpty = node.getFirstChildWithType(KDocElementTypes.KDOC_SECTION)
             ?.hasChildMatching {
-                it.elementType != KDOC_LEADING_ASTERISK && it.elementType != WHITE_SPACE
+                it.elementType != KDocTokens.LEADING_ASTERISK && it.elementType != WHITE_SPACE
             } ?: false
         if (!isKdocNotEmpty) {
             KDOC_EMPTY_KDOC.warn(configRules, emitWarn, isFixMode,
@@ -142,7 +139,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     kdocSection.removeRange(deprecatedTagNode.prevSibling { it.elementType == WHITE_SPACE }!!,
                         deprecatedTagNode.nextSibling { it.elementType == WHITE_SPACE }
                     )
-                    node.treeParent.addChild(LeafPsiElement(ElementType.ANNOTATION,
+                    node.treeParent.addChild(LeafPsiElement(KtNodeTypes.ANNOTATION,
                         "@Deprecated(message = \"${kdocTag.getContent()}\")"), node.treeNext)
                     // copy to get all necessary indents
                     node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.clone() as PsiWhiteSpaceImpl, node.treeNext)
@@ -175,19 +172,19 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         }?.forEach { tag ->
             KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name!!}", tag.node.startOffset, tag.node) {
-                tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)
+                tag.node.findChildBefore(KDocTokens.TEXT, WHITE_SPACE)
                     ?.let { tag.node.replaceChild(it, LeafPsiElement(WHITE_SPACE, " ")) }
-                tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)
+                tag.node.findChildAfter(KDocTokens.TAG_NAME, WHITE_SPACE)
                     ?.let { tag.node.replaceChild(it, LeafPsiElement(WHITE_SPACE, " ")) }
             }
         }
     }
 
-    private fun findBeforeAndAfterSpaces(tag: KDocTag) = Pair(tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE).let {
+    private fun findBeforeAndAfterSpaces(tag: KDocTag) = Pair(tag.node.findChildBefore(KDocTokens.TEXT, WHITE_SPACE).let {
         it?.text != " " &&
                 !(it?.isWhiteSpaceWithNewline() ?: false)
     },
-        tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE).let {
+        tag.node.findChildAfter(KDocTokens.TAG_NAME, WHITE_SPACE).let {
             it?.text != " " &&
                     !(it?.isWhiteSpaceWithNewline() ?: false)
         }
@@ -244,9 +241,9 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
             .node
             .allSiblings(true)
             .let { it.subList(0, it.indexOf(firstBasicTag.node)) }
-            .any { it.elementType !in arrayOf(WHITE_SPACE, KDOC_LEADING_ASTERISK) && it.text.isNotBlank() }
+            .any { it.elementType !in arrayOf(WHITE_SPACE, KDocTokens.LEADING_ASTERISK) && it.text.isNotBlank() }
 
-        val previousTag = firstBasicTag.node.prevSibling { it.elementType == KDOC_TAG }
+        val previousTag = firstBasicTag.node.prevSibling { it.elementType == KDocElementTypes.KDOC_TAG }
         val hasEmptyLineBefore = previousTag?.hasEmptyLineAfter()
             ?: (firstBasicTag
                 .node
@@ -259,11 +256,11 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
             KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset, firstBasicTag.node) {
                 if (hasContentBefore) {
-                    previousTag?.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                    previousTag?.applyToPrevSibling(KDocTokens.LEADING_ASTERISK) {
                         previousTag.addChild(treePrev.clone() as ASTNode, null)
                         previousTag.addChild(this.clone() as ASTNode, null)
                     }
-                        ?: firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                        ?: firstBasicTag.node.applyToPrevSibling(KDocTokens.LEADING_ASTERISK) {
                             treeParent.addChild(treePrev.clone() as ASTNode, this)
                             treeParent.addChild(this.clone() as ASTNode, treePrev)
                         }
@@ -292,8 +289,8 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     // if there is a blank line in tag's body, we remove it and everything after it, so that the next white space is kept in place
                     // we look for the last LEADING_ASTERISK and take its previous node which should be WHITE_SPACE with newline
                     tag.node.reversedChildren()
-                        .takeWhile { it.elementType == WHITE_SPACE || it.elementType == KDOC_LEADING_ASTERISK }
-                        .firstOrNull { it.elementType == KDOC_LEADING_ASTERISK }
+                        .takeWhile { it.elementType == WHITE_SPACE || it.elementType == KDocTokens.LEADING_ASTERISK }
+                        .firstOrNull { it.elementType == KDocTokens.LEADING_ASTERISK }
                         ?.let { tag.node.removeRange(it.treePrev, null) }
                 } else {
                     // otherwise we remove redundant blank lines from white space node after tag
@@ -306,18 +303,18 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkNewLineAfterSpecialTags(node: ASTNode) {
         val presentSpecialTagNodes = node
-            .getFirstChildWithType(KDOC_SECTION)
-            ?.getAllChildrenWithType(KDOC_TAG)
+            .getFirstChildWithType(KDocElementTypes.KDOC_SECTION)
+            ?.getAllChildrenWithType(KDocElementTypes.KDOC_TAG)
             ?.filter { (it.psi as KDocTag).name in specialTagNames }
 
         val poorlyFormattedTagNodes = presentSpecialTagNodes?.filterNot { specialTagNode ->
             // empty line with just * followed by white space or end of block
-            specialTagNode.lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
+            specialTagNode.lastChildNode.elementType == KDocTokens.LEADING_ASTERISK &&
                     (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
                             specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
                     // and with no empty line before
                     specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
-                    specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
+                    specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDocTokens.LEADING_ASTERISK
         }
 
         if (poorlyFormattedTagNodes != null && poorlyFormattedTagNodes.isNotEmpty()) {
@@ -325,18 +322,18 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 poorlyFormattedTagNodes.joinToString(", ") { "@${(it.psi as KDocTag).name!!}" },
                 poorlyFormattedTagNodes.first().startOffset, node) {
                 poorlyFormattedTagNodes.forEach { node ->
-                    while (node.lastChildNode.elementType == KDOC_LEADING_ASTERISK && node.lastChildNode.treePrev.treePrev.elementType == KDOC_LEADING_ASTERISK) {
+                    while (node.lastChildNode.elementType == KDocTokens.LEADING_ASTERISK && node.lastChildNode.treePrev.treePrev.elementType == KDocTokens.LEADING_ASTERISK) {
                         node.removeChild(node.lastChildNode)  // KDOC_LEADING_ASTERISK
                         node.removeChild(node.lastChildNode)  // WHITE_SPACE
                     }
-                    if (node.treeParent.lastChildNode != node && node.lastChildNode.elementType != KDOC_LEADING_ASTERISK) {
+                    if (node.treeParent.lastChildNode != node && node.lastChildNode.elementType != KDocTokens.LEADING_ASTERISK) {
                         val indent = node
                             .prevSibling { it.elementType == WHITE_SPACE }
                             ?.text
                             ?.substringAfter('\n')
                             ?.count { it == ' ' } ?: 0
                         node.addChild(PsiWhiteSpaceImpl("\n${" ".repeat(indent)}"), null)
-                        node.addChild(LeafPsiElement(KDOC_LEADING_ASTERISK, "*"), null)
+                        node.addChild(LeafPsiElement(KDocTokens.LEADING_ASTERISK, "*"), null)
                     }
                 }
             }
@@ -356,14 +353,14 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme this method can be improved and extracted to utils
     private fun ASTNode.hasEmptyLineAfter(): Boolean {
-        require(this.elementType == KDOC_TAG) { "This check is only for KDOC_TAG" }
-        return lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
+        require(this.elementType == KDocElementTypes.KDOC_TAG) { "This check is only for KDOC_TAG" }
+        return lastChildNode.elementType == KDocTokens.LEADING_ASTERISK &&
                 (treeNext == null || treeNext.elementType == WHITE_SPACE && treeNext.text.count { it == '\n' } == 1)
     }
 
     private fun ASTNode.kDocBasicTags() = kDocTags().filter { basicTagsList.contains(it.knownTag) }
 
-    private fun ASTNode.previousAsterisk() = prevSibling { it.elementType == KDOC_LEADING_ASTERISK }
+    private fun ASTNode.previousAsterisk() = prevSibling { it.elementType == KDocTokens.LEADING_ASTERISK }
 
     private fun ASTNode.applyToPrevSibling(elementType: IElementType, consumer: ASTNode.() -> Unit) {
         prevSibling { it.elementType == elementType }?.apply(consumer)

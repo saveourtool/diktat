@@ -11,80 +11,80 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
+import org.cqfn.diktat.ruleset.utils.nextCodeLeaf
+import org.cqfn.diktat.ruleset.utils.parent
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.ARROW
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.COLON
-import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
-import com.pinterest.ktlint.core.ast.ElementType.COMMA
-import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_DELEGATION_CALL
-import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.DOT
-import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.ELVIS
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.GT
-import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.INIT_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.LT
-import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.QUEST
-import com.pinterest.ktlint.core.ast.ElementType.RANGE
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.ElementType.TRY_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_CONSTRAINT
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.nextCodeLeaf
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
 import mu.KotlinLogging
+import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.CALLABLE_REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.COLLECTION_LITERAL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CONSTRUCTOR_DELEGATION_CALL
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.NULLABLE_TYPE
+import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.POSTFIX_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_CONSTRAINT
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.lexer.KtTokens.ARROW
+import org.jetbrains.kotlin.lexer.KtTokens.CATCH_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.COLON
+import org.jetbrains.kotlin.lexer.KtTokens.COLONCOLON
+import org.jetbrains.kotlin.lexer.KtTokens.COMMA
+import org.jetbrains.kotlin.lexer.KtTokens.CONSTRUCTOR_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.DO_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.EXCLEXCL
+import org.jetbrains.kotlin.lexer.KtTokens.FINALLY_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.FOR_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.GT
+import org.jetbrains.kotlin.lexer.KtTokens.IF_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.INIT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACKET
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
+import org.jetbrains.kotlin.lexer.KtTokens.LT
+import org.jetbrains.kotlin.lexer.KtTokens.QUEST
+import org.jetbrains.kotlin.lexer.KtTokens.RANGE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACKET
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
+import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
+import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
+import org.jetbrains.kotlin.lexer.KtTokens.TRY_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHEN_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHILE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks usage of whitespaces for horizontal code separation
@@ -221,7 +221,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
-                .parent({ it.elementType == VALUE_ARGUMENT })
+                .parent { it.elementType == VALUE_ARGUMENT }
                 .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
             // Handling this case: `foo({ it.bar() }, 2, 3)`
@@ -384,7 +384,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.isNeedNewLineInOperatorReferences(): Boolean {
-        positionByOffset = this.findParentNodeWithSpecificType(FILE)!!.calculateLineColByOffset()
+        positionByOffset = this.findParentNodeWithSpecificType(KtFileElementType.INSTANCE)!!.calculateLineColByOffset()
         val offset = positionByOffset(this.startOffset).second
         return offset + this.text.length >= configuration.lineLength
     }
@@ -413,7 +413,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Function that returns `treePrev` of this node, or if this.treePrev is null, `treePrev` of first parent node that has it
      */
-    private fun ASTNode.selfOrParentsTreePrev() = parent({ it.treePrev != null }, strict = false)?.treePrev
+    private fun ASTNode.selfOrParentsTreePrev() = parent(false) { it.treePrev != null }?.treePrev
 
     /**
      * This method counts spaces in this node. Null is returned in following cases:

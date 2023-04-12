@@ -17,36 +17,37 @@ import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.ignoreImports
+import org.cqfn.diktat.ruleset.utils.isPartOf
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
+import org.cqfn.diktat.ruleset.utils.nextSibling
 import org.cqfn.diktat.ruleset.utils.operatorMap
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.KDOC
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_LINK
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.isPartOf
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.MARKDOWN_LINK
+import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtImportDirective
 import org.jetbrains.kotlin.psi.KtPackageDirective
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * Visitor for checking internal file structure.
@@ -83,7 +84,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     private val ignoreImportsPatterns = setOf("component\\d+".toRegex())
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
             )
@@ -157,8 +158,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         // * package directive - in this case we looking for kdoc before package directive
         // and if it doesn't exist, additionally looking for kdoc before imports list
         // * imports list or actual code - if there is no kdoc before it, suppose that it is absent in file
-        var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
-            ?: if (firstCodeNode == packageDirectiveNode) importsList?.prevSibling { it.elementType == KDOC } else null
+        var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDocTokens.KDOC }
+            ?: if (firstCodeNode == packageDirectiveNode) importsList?.prevSibling { it.elementType == KDocTokens.KDOC } else null
         // Annotations with target`file` can only be placed before `package` directive.
         var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
         // We also collect all other elements that are placed on top of the file.
@@ -283,8 +284,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 // the importedName method removes the quotes, but the node.text method does not
                 it.text.replace("`", "")
             }
-        val referencesFromKdocs = node.findAllDescendantsWithSpecificType(KDOC)
-            .flatMap { it.findAllDescendantsWithSpecificType(KDOC_MARKDOWN_LINK) }
+        val referencesFromKdocs = node.findAllDescendantsWithSpecificType(KDocTokens.KDOC)
+            .flatMap { it.findAllDescendantsWithSpecificType(KDocTokens.MARKDOWN_LINK) }
             .map { it.text.removePrefix("[").removeSuffix("]") }
             .flatMap {
                 if (it.contains(".")) {

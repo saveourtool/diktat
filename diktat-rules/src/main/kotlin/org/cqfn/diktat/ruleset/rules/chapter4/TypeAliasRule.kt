@@ -7,12 +7,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType.LT
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.ElementType.TYPEALIAS
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
+import org.jetbrains.kotlin.KtNodeTypes.TYPEALIAS
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.LT
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**

@@ -11,7 +11,6 @@ import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption
 import kotlin.io.path.createDirectories
 import kotlin.io.path.readText
 import kotlin.io.path.writeText

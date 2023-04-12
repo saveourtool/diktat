@@ -10,19 +10,18 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.ELSE
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.IF
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import com.pinterest.ktlint.core.ast.ElementType.THEN
-import com.pinterest.ktlint.core.ast.ElementType.WHEN
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_WITH_TYPE
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.ELSE
+import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.IF
+import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.IS_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
+import org.jetbrains.kotlin.KtNodeTypes.THEN
+import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -30,6 +29,7 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * Rule that detects redundant explicit casts
@@ -40,7 +40,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(SMART_CAST_NEEDED)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val usages = collectLocalPropertiesWithUsages(node)
             val properMap = collectReferenceList(usages)
             handleProp(properMap)

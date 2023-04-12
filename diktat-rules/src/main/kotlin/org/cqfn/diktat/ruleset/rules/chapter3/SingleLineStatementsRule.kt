@@ -7,13 +7,13 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+import org.cqfn.diktat.ruleset.utils.parent
 
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.parent
+import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
 
 /**
  * Rule that looks for multiple statements on a single line separated with a `;` and splits them in multiple lines.
@@ -36,7 +36,7 @@ class SingleLineStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                     } else {
                         if (!astNode.isBeginByNewline()) {
-                            val nextNode = astNode.parent({ parent -> parent.treeNext != null }, strict = false)?.treeNext
+                            val nextNode = astNode.parent(false) { parent -> parent.treeNext != null }?.treeNext
                             node.appendNewlineMergingWhiteSpace(nextNode, astNode)
                         }
                         node.removeChild(astNode)

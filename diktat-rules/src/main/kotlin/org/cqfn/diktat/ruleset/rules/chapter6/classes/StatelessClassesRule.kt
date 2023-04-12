@@ -8,21 +8,21 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.INTERFACE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.children
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.lexer.KtTokens.CLASS_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.INTERFACE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.OBJECT_KEYWORD
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks if class is stateless and if so changes it to object.
@@ -34,7 +34,7 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 ) {
     override fun logic(node: ASTNode) {
         // Fixme: We should find interfaces in all project and then check them
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val interfacesNodes = node
                 .findAllDescendantsWithSpecificType(CLASS)
                 .filter { it.hasChildOfType(INTERFACE_KEYWORD) }

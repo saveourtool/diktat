@@ -6,37 +6,37 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.BODY
-import com.pinterest.ktlint.core.ast.ElementType.CATCH
-import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
-import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
-import com.pinterest.ktlint.core.ast.ElementType.ELSE
-import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.FINALLY
-import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.IF
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.THEN
-import com.pinterest.ktlint.core.ast.ElementType.TRY
-import com.pinterest.ktlint.core.ast.ElementType.WHEN
-import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.BODY
+import org.jetbrains.kotlin.KtNodeTypes.CATCH
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_INITIALIZER
+import org.jetbrains.kotlin.KtNodeTypes.DO_WHILE
+import org.jetbrains.kotlin.KtNodeTypes.ELSE
+import org.jetbrains.kotlin.KtNodeTypes.FINALLY
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.IF
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
+import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.THEN
+import org.jetbrains.kotlin.KtNodeTypes.TRY
+import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.lexer.KtTokens.CATCH_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.FINALLY_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHILE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
 
@@ -237,7 +237,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
         val space = node.findChildByType(RBRACE)!!.treePrev
-        node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
+        node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
             if (space.text.isEmpty()) {
                 return
             }

@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_LINES_IN_LAMBDA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -25,7 +25,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
+        if (node.elementType == KtNodeTypes.LAMBDA_EXPRESSION) {
             checkLambda(node, configuration)
         }
     }

@@ -11,20 +11,20 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.COLON
-import com.pinterest.ktlint.core.ast.ElementType.DOT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_CALL_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.CLASS
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_CALL_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.COLON
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 internal typealias RelatedClasses = List<Pair<String, String>>
 internal typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.ExtensionFunction, ExtensionFunctionsSameNameRule.ExtensionFunction>>
@@ -43,7 +43,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
          * 2) Collect all extension functions with same signature
          * 3) Check if classes of functions are related
          */
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             val relatedClasses = collectAllRelatedClasses(node)
             val extFunctionsWithSameName = collectAllExtensionFunctions(node)
             handleFunctions(relatedClasses, extFunctionsWithSameName)

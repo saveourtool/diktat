@@ -5,16 +5,16 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.SCRIPT
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks usage of blank lines in code.
@@ -63,7 +63,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleTooManyBlankLines(node: ASTNode) {
         TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
-            if (node.treeParent.elementType != FILE && (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node ||
+            if (node.treeParent.elementType != KtFileElementType.INSTANCE && (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node ||
                     node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
                 node.leaveExactlyNumNewLines(1)
             } else {

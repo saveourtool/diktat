@@ -6,16 +6,15 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.getLineNumber
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
@@ -26,6 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 /**
  * This rule checks that local variables are declared close to the point where they are first used.
@@ -43,7 +43,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(LOCAL_VARIABLE_EARLY_DECLARATION)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             // collect all local properties and associate with corresponding references
             val propertiesToUsages = collectLocalPropertiesWithUsages(node)
 

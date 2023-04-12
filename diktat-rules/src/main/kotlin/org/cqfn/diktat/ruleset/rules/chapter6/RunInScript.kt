@@ -6,14 +6,14 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.util.isKotlinScript
 
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
-import com.pinterest.ktlint.core.ast.ElementType.SCRIPT_INITIALIZER
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
+import org.jetbrains.kotlin.KtNodeTypes.SCRIPT_INITIALIZER
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 

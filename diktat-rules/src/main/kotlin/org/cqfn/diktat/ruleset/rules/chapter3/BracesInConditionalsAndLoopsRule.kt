@@ -4,29 +4,29 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findChildrenMatching
+import org.cqfn.diktat.ruleset.utils.isPartOfComment
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.loopType
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.IF
-import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.WHEN
-import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.IF
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.lexer.KtTokens.DO_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IF_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHILE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -181,7 +181,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         secondChild: ASTNode?,
         indent: Int
     ) {
-        val emptyBlock = CompositeElement(ElementType.BLOCK_CODE_FRAGMENT)
+        val emptyBlock = CompositeElement(KtNodeTypes.BLOCK_CODE_FRAGMENT)
         addChild(emptyBlock, firstChild)
         addChild(PsiWhiteSpaceImpl(" "), emptyBlock)
         emptyBlock.addChild(LeafPsiElement(LBRACE, "{"))

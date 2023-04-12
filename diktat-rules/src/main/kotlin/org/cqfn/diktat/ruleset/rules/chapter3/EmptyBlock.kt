@@ -7,19 +7,19 @@ import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -58,7 +58,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
             EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
                 node.startOffset, node)
         } else {
-            node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
+            node.findParentNodeWithSpecificType(KtNodeTypes.LAMBDA_ARGUMENT)?.let {
                 // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
                 if (isNewLine(node)) {
                     val freeText = "do not put newlines in empty lambda"

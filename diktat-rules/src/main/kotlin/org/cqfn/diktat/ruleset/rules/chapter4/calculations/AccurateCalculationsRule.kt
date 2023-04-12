@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findLocalDeclaration
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -136,13 +136,13 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
 
 @Suppress("UnsafeCallOnNullableType")
 private fun PsiElement.isFloatingPoint(): Boolean =
-    node.elementType == ElementType.FLOAT_LITERAL ||
-            node.elementType == ElementType.FLOAT_CONSTANT ||
+    node.elementType == KtTokens.FLOAT_LITERAL ||
+            node.elementType == KtNodeTypes.FLOAT_CONSTANT ||
             ((this as? KtNameReferenceExpression)
                 ?.findLocalDeclaration()
                 ?.initializer
                 ?.node
-                ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
+                ?.run { elementType == KtTokens.FLOAT_LITERAL || elementType == KtNodeTypes.FLOAT_CONSTANT }
                 ?: false) ||
             ((this as? KtBinaryExpression)
                 ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }

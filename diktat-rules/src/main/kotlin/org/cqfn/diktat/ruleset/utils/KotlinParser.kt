@@ -1,8 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -20,6 +19,7 @@ import org.jetbrains.kotlin.com.intellij.pom.tree.TreeAspect
 import org.jetbrains.kotlin.com.intellij.psi.TokenType.ERROR_ELEMENT
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.IMPORT_KEYWORD
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.ImportPath
 import sun.reflect.ReflectionFactory

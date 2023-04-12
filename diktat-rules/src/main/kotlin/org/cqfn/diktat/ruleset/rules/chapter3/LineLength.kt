@@ -14,65 +14,66 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isWhiteSpace
+import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 
-import com.pinterest.ktlint.core.ast.ElementType.ANDAND
-import com.pinterest.ktlint.core.ast.ElementType.ARROW
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.COMMA
-import com.pinterest.ktlint.core.ast.ElementType.DOT
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.ELVIS
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.EQEQ
-import com.pinterest.ktlint.core.ast.ElementType.EQEQEQ
-import com.pinterest.ktlint.core.ast.ElementType.EXCL
-import com.pinterest.ktlint.core.ast.ElementType.EXCLEQ
-import com.pinterest.ktlint.core.ast.ElementType.EXCLEQEQEQ
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.GT
-import com.pinterest.ktlint.core.ast.ElementType.GTEQ
-import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_INLINE_LINK
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.LT
-import com.pinterest.ktlint.core.ast.ElementType.LTEQ
-import com.pinterest.ktlint.core.ast.ElementType.NULL
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.OROR
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
-import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.BOOLEAN_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.CHARACTER_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.LITERAL_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.NULL
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
+import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
+import org.jetbrains.kotlin.KtNodeTypes.POSTFIX_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.PREFIX_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.SHORT_STRING_TEMPLATE_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
+import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.MARKDOWN_INLINE_LINK
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TEXT
+import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
+import org.jetbrains.kotlin.lexer.KtTokens.ARROW
+import org.jetbrains.kotlin.lexer.KtTokens.COMMA
+import org.jetbrains.kotlin.lexer.KtTokens.DOT
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.EQEQ
+import org.jetbrains.kotlin.lexer.KtTokens.EQEQEQ
+import org.jetbrains.kotlin.lexer.KtTokens.EXCL
+import org.jetbrains.kotlin.lexer.KtTokens.EXCLEQ
+import org.jetbrains.kotlin.lexer.KtTokens.EXCLEQEQEQ
+import org.jetbrains.kotlin.lexer.KtTokens.GT
+import org.jetbrains.kotlin.lexer.KtTokens.GTEQ
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.LPAR
+import org.jetbrains.kotlin.lexer.KtTokens.LT
+import org.jetbrains.kotlin.lexer.KtTokens.LTEQ
+import org.jetbrains.kotlin.lexer.KtTokens.OROR
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RPAR
+import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
+import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import java.net.MalformedURLException
 import java.net.URL
@@ -97,7 +98,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == KtFileElementType.INSTANCE) {
             node.getChildren(null).forEach {
                 if (it.elementType != PACKAGE_DIRECTIVE && it.elementType != IMPORT_LIST) {
                     checkLength(it, configuration)
@@ -112,7 +113,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
-                if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
+                if ((newNode.elementType != TEXT && newNode.elementType != MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(
@@ -145,7 +146,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         do {
             when (parent.elementType) {
                 BINARY_EXPRESSION, PARENTHESIZED -> {
-                    val parentIsValArgListOrFunLitOrWhenEntry = listOf(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsValArgListOrFunLitOrWhenEntry = listOf(VALUE_ARGUMENT_LIST, FUNCTION_LITERAL, WHEN_CONDITION_EXPRESSION)
                     findParentNodeMatching(parent, parentIsValArgListOrFunLitOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
@@ -175,12 +176,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     parent = it
                 } ?: return checkArgumentsList(parent, configuration)
                 WHEN_ENTRY -> return WhenEntry(parent)
-                WHEN_CONDITION_WITH_EXPRESSION -> return None()
+                WHEN_CONDITION_EXPRESSION -> return None()
                 EOL_COMMENT -> return checkComment(parent, configuration)
                 FUNCTION_LITERAL -> return Lambda(parent)
                 STRING_TEMPLATE, DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION -> {
                     stringOrDot = parent
-                    val parentIsBinExpOrValArgListOrWhenEntry = listOf(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_WITH_EXPRESSION)
+                    val parentIsBinExpOrValArgListOrWhenEntry = listOf(BINARY_EXPRESSION, VALUE_ARGUMENT_LIST, WHEN_CONDITION_EXPRESSION)
                     findParentNodeMatching(parent, parentIsBinExpOrValArgListOrWhenEntry)?.let {
                         parent = it
                     } ?: run {
@@ -348,7 +349,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme json method
     private fun isKdocValid(node: ASTNode) = try {
-        if (node.elementType == KDOC_TEXT) {
+        if (node.elementType == KDocTokens.TEXT) {
             URL(node.text.split("\\s".toRegex()).last { it.isNotEmpty() })
         } else {
             URL(node.text.substring(node.text.indexOfFirst { it == ']' } + 2, node.textLength - 1))
@@ -551,8 +552,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
                 nodeOperationReference?.treeNext
             } else {
-                if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
-                    nodeOperationReference.treePrev
+                if (nodeOperationReference?.treePrev?.elementType == WHITE_SPACE) {
+                    nodeOperationReference?.treePrev
                 } else {
                     nodeOperationReference
                 }
@@ -590,8 +591,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 val nextNode = if (nodeOperationReference?.firstChildNode?.elementType != ELVIS) {
                     nodeOperationReference?.treeNext
                 } else {
-                    if (nodeOperationReference.treePrev.elementType == WHITE_SPACE) {
-                        nodeOperationReference.treePrev
+                    if (nodeOperationReference?.treePrev?.elementType == WHITE_SPACE) {
+                        nodeOperationReference?.treePrev
                     } else {
                         nodeOperationReference
                     }

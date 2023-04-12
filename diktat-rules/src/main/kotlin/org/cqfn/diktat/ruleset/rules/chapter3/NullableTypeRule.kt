@@ -7,32 +7,32 @@ import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.FLOAT_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.NULL
-import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.OPEN_QUOTE
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.QUEST
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import com.pinterest.ktlint.core.ast.ElementType.TRUE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.USER_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
+import org.jetbrains.kotlin.KtNodeTypes.BOOLEAN_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.CHARACTER_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
+import org.jetbrains.kotlin.KtNodeTypes.NULL
+import org.jetbrains.kotlin.KtNodeTypes.NULLABLE_TYPE
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.USER_TYPE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.lexer.KtTokens.CHARACTER_LITERAL
+import org.jetbrains.kotlin.lexer.KtTokens.CLOSING_QUOTE
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.FLOAT_LITERAL
+import org.jetbrains.kotlin.lexer.KtTokens.INTEGER_LITERAL
+import org.jetbrains.kotlin.lexer.KtTokens.OPEN_QUOTE
+import org.jetbrains.kotlin.lexer.KtTokens.QUEST
+import org.jetbrains.kotlin.lexer.KtTokens.TRUE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
 
 /**
  * Rule that checks if nullable types are used and suggest to substitute them with non-nullable

@@ -5,14 +5,14 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 
-import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.FUN
+import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.FUN_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.children
 

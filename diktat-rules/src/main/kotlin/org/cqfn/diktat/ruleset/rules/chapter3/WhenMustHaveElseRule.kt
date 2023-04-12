@@ -9,32 +9,32 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
+import org.cqfn.diktat.ruleset.utils.prevSibling
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.ARROW
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RETURN
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IN_RANGE
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
-import com.pinterest.ktlint.core.ast.prevSibling
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
+import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.RETURN
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IN_RANGE
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IS_PATTERN
+import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.java.PsiBlockStatementImpl
+import org.jetbrains.kotlin.lexer.KtTokens.ARROW
+import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
+import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.LBRACE
+import org.jetbrains.kotlin.lexer.KtTokens.RBRACE
 import org.jetbrains.kotlin.psi.KtWhenExpression
 
 /**
@@ -51,7 +51,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(WHEN_WITHOUT_ELSE)
 ) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.WHEN && isStatement(node)) {
+        if (node.elementType == KtNodeTypes.WHEN && isStatement(node)) {
             checkEntries(node)
         }
     }
@@ -84,7 +84,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
         }.flatten()
 
         val conditionsWithExpression = whenEntries.map {
-            it.getAllChildrenWithType(WHEN_CONDITION_WITH_EXPRESSION)
+            it.getAllChildrenWithType(WHEN_CONDITION_EXPRESSION)
         }.flatten()
 
         val areOnlyEnumEntriesWithExpressions = if (conditionsWithExpression.isNotEmpty()) {
