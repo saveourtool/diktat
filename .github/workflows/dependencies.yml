@@ -1,0 +1,52 @@
+name: 'Dependencies'
+
+on:
+  push:
+    branches:
+      - 'master'
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.welcome=never
+
+jobs:
+  dependencies:
+    name: 'Dependencies'
+    runs-on: ubuntu-latest
+
+    # The Dependency Submission API requires write permission.
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
+      - name: 'Set up Java 11'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          java-package: 'jdk+fx'
+
+      - name: 'Set up Gradle'
+        id: build
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+
+        # `gradlew :jna-lib:dependencies --configuration compileClasspath`
+      - name: 'Run snapshot action'
+        uses: mikepenz/gradle-dependency-submission@v0.8.6
+        with:
+          use-gradlew: true
+          gradle-build-module: |-
+            :jna-lib
+          # `compileClasspath` configuration has no dependencies in multiplatform
+          # projects.
+          gradle-build-configuration: |-
+            compileClasspath
