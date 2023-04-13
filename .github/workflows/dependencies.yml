@@ -31,21 +31,22 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
-          java-package: 'jdk+fx'
-
-      - name: 'Set up Gradle'
-        id: build
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: wrapper
 
       - name: 'Run snapshot action'
         uses: mikepenz/gradle-dependency-submission@v0.8.6
         with:
           use-gradlew: true
           gradle-build-module: |-
-            :
+            :diktat-api
+            :diktat-common
+            :diktat-ktlint-engine
+            :diktat-gradle-plugin
+            :diktat-maven-plugin
+            :diktat-rules
+            :diktat-ruleset
+            :diktat-test-framework
+            :diktat-dev-ksp
+            :diktat-cli
           gradle-build-configuration: |-
             compileClasspath
-          sub-module-mode: |-
-            COMBINED
+          sub-module-mode: 'INDIVIDUAL'
