@@ -39,14 +39,11 @@ jobs:
         with:
           gradle-version: wrapper
 
-        # `gradlew :jna-lib:dependencies --configuration compileClasspath`
       - name: 'Run snapshot action'
         uses: mikepenz/gradle-dependency-submission@v0.8.6
         with:
           use-gradlew: true
           gradle-build-module: |-
-            :jna-lib
-          # `compileClasspath` configuration has no dependencies in multiplatform
-          # projects.
+            :
           gradle-build-configuration: |-
             compileClasspath
