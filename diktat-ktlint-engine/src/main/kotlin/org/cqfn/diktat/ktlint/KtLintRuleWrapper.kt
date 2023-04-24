@@ -3,8 +3,10 @@ package org.cqfn.diktat.ktlint
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleProvider
+import com.pinterest.ktlint.rule.engine.core.api.Rule
+import com.pinterest.ktlint.rule.engine.core.api.Rule.VisitorModifier.RunAfterRule.Mode
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 private typealias EmitType = (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
@@ -15,10 +17,11 @@ private typealias EmitType = (offset: Int, errorMessage: String, canBeAutoCorrec
  */
 class KtLintRuleWrapper(
     val rule: DiktatRule,
-    prevRule: KtLintRuleWrapper? = null,
+    prevRuleId: RuleId? = null,
 ) : Rule(
-    id = rule.id.qualifiedWithRuleSetId(DIKTAT_RULE_SET_ID),
-    visitorModifiers = createVisitorModifiers(rule, prevRule),
+    ruleId = rule.id.toRuleId(DIKTAT_RULE_SET_ID),
+    about = about,
+    visitorModifiers = createVisitorModifiers(rule, prevRuleId),
 ) {
     override fun beforeVisitChildNodes(
         node: ASTNode,
@@ -27,8 +30,17 @@ class KtLintRuleWrapper(
     ) = rule.invoke(node, autoCorrect, emit)
 
     companion object {
-        private fun Sequence<DiktatRule>.wrapRules(): Sequence<Rule> = runningFold(null as KtLintRuleWrapper?) { prevRule, diktatRule ->
-            KtLintRuleWrapper(diktatRule, prevRule)
+        private val about: About = About(
+            maintainer = "Diktat",
+            repositoryUrl = "https://github.com/saveourtool/diktat",
+            issueTrackerUrl = "https://github.com/saveourtool/diktat/issues",
+        )
+
+        private fun Sequence<DiktatRule>.wrapRulesToProviders(): Sequence<RuleProvider> = runningFold(null as RuleProvider?) { prevRuleProvider, diktatRule ->
+            val prevRuleId = prevRuleProvider?.ruleId?.value?.toRuleId(DIKTAT_RULE_SET_ID)
+            RuleProvider(
+                provider = { KtLintRuleWrapper(diktatRule, prevRuleId) },
+            )
         }.filterNotNull()
 
         /**
@@ -36,36 +48,28 @@ class KtLintRuleWrapper(
          */
         fun DiktatRuleSet.toKtLint(): Set<RuleProvider> = rules
             .asSequence()
-            .wrapRules()
-            .map { it.asProvider() }
+            .wrapRulesToProviders()
             .toSet()
 
         private fun createVisitorModifiers(
             rule: DiktatRule,
-            prevRule: KtLintRuleWrapper?,
-        ): Set<VisitorModifier> = prevRule?.id?.qualifiedWithRuleSetId(DIKTAT_RULE_SET_ID)
-            ?.let { previousRuleId ->
-                val ruleId = rule.id.qualifiedWithRuleSetId(DIKTAT_RULE_SET_ID)
-                require(ruleId != previousRuleId) {
-                    "PrevRule has same ID as rule: $ruleId"
-                }
-                setOf(
-                    VisitorModifier.RunAfterRule(
-                        ruleId = previousRuleId,
-                        loadOnlyWhenOtherRuleIsLoaded = false,
-                        runOnlyWhenOtherRuleIsEnabled = false
-                    )
+            prevRuleId: RuleId?,
+        ): Set<VisitorModifier> = prevRuleId?.run {
+            val ruleId = rule.id.toRuleId(DIKTAT_RULE_SET_ID)
+            require(ruleId != prevRuleId) {
+                "PrevRule has same ID as rule: $ruleId"
+            }
+            setOf(
+                VisitorModifier.RunAfterRule(
+                    ruleId = prevRuleId,
+                    mode = Mode.REGARDLESS_WHETHER_RUN_AFTER_RULE_IS_LOADED_OR_DISABLED
                 )
-            } ?: emptySet()
+            )
+        } ?: emptySet()
 
         /**
          * @return a rule to which a logic is delegated
          */
         internal fun Rule.unwrap(): DiktatRule = (this as? KtLintRuleWrapper)?.rule ?: error("Provided rule ${javaClass.simpleName} is not wrapped by diktat")
-
-        /**
-         * @return wraps [Rule] to [RuleProvider]
-         */
-        internal fun Rule.asProvider(): RuleProvider = RuleProvider { this }
     }
 }

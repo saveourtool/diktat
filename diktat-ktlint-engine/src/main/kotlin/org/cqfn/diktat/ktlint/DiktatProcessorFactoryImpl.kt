@@ -4,11 +4,10 @@ import org.cqfn.diktat.DiktatProcessor
 import org.cqfn.diktat.DiktatProcessorFactory
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.wrap
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
-import com.pinterest.ktlint.core.Code
-import com.pinterest.ktlint.core.KtLintRuleEngine
-import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
 import java.nio.file.Path
 
 private typealias FormatCallback = (LintError, Boolean) -> Unit
@@ -45,9 +44,9 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
     companion object {
         private fun DiktatRuleSet.toKtLintEngine(): KtLintRuleEngine = KtLintRuleEngine(ruleProviders = toKtLint())
 
-        private fun Path.toKtLint(): Code = Code.CodeFile(this.toFile())
+        private fun Path.toKtLint(): Code = Code.fromFile(this.toFile())
 
-        private fun String.toKtLint(isScript: Boolean): Code = Code.CodeSnippet(this, isScript)
+        private fun String.toKtLint(isScript: Boolean): Code = Code.fromSnippet(this, isScript)
 
         private fun DiktatCallback.toKtLintForFormat(): FormatCallback = { error, isCorrected ->
             this(error.wrap(), isCorrected)
