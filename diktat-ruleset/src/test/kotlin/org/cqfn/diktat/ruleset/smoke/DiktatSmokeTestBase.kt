@@ -7,6 +7,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.api.DiktatError
+import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -369,12 +370,7 @@ abstract class DiktatSmokeTestBase {
         test: String,
     )
 
-    abstract fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit)
-
-
-    private fun assertUnfixedLintErrors(lintErrorsConsumer: (List<LintError>) -> Unit) = doAssertUnfixedLintErrors { diktatErrors ->
-        lintErrorsConsumer.invoke(diktatErrors.map(::LintError))
-    }
+    abstract fun assertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit)
 
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
@@ -409,25 +405,6 @@ abstract class DiktatSmokeTestBase {
             tmpFiles.forEach {
                 it.toPath().deleteIfExistsSilently()
             }
-        }
-
-        /**
-         * A wrapper for DiktatError to be able to compare them
-         */
-        private data class LintError(
-            val line: Int,
-            val col: Int,
-            val ruleId: String,
-            val detail: String,
-            var canBeAutoCorrected: Boolean = false,
-        ) {
-            constructor(diktatError: DiktatError) : this(
-                line = diktatError.getLine(),
-                col = diktatError.getCol(),
-                ruleId = diktatError.getRuleId(),
-                detail = diktatError.getDetail(),
-                canBeAutoCorrected = diktatError.canBeAutoCorrected(),
-            )
         }
     }
 }

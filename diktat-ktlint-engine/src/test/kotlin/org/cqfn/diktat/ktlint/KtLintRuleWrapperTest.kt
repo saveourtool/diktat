@@ -1,14 +1,14 @@
 package org.cqfn.diktat.ktlint
 
-import com.pinterest.ktlint.core.Code
-import com.pinterest.ktlint.core.KtLintRuleEngine
 import org.cqfn.diktat.api.DiktatErrorEmitter
 import org.cqfn.diktat.api.DiktatRule
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
 import org.cqfn.diktat.ktlint.KtLintRuleWrapper.Companion.unwrap
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleProvider
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.core.api.Rule
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -46,7 +46,7 @@ class KtLintRuleWrapperTest {
             }
             .first()
             .let {
-                Assertions.assertEquals(rule1.id.qualifiedWithRuleSetId(), it.ruleId,
+                Assertions.assertEquals(rule1.id.toRuleId(), it.ruleId,
                     "Invalid ruleId in Rule.VisitorModifier.RunAfterRule")
             }
     }
@@ -77,8 +77,8 @@ class KtLintRuleWrapperTest {
          * Make sure OrderedRuleSet preserves the order.
          */
         val ruleProviders = DiktatRuleSet(rules).toKtLint()
-        assertThat(ruleProviders.map(RuleProvider::createNewRuleInstance).map(Rule::id))
-            .containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.qualifiedWithRuleSetId() })
+        assertThat(ruleProviders.map(RuleProvider::createNewRuleInstance).map(Rule::ruleId))
+            .containsExactlyElementsOf(rules.map(DiktatRule::id).map { it.toRuleId() })
 
         @Language("kotlin")
         val code = "fun foo() { }"
@@ -86,7 +86,7 @@ class KtLintRuleWrapperTest {
         KtLintRuleEngine(
             ruleProviders = ruleProviders
         ).lint(
-            code = Code.CodeSnippet(
+            code = Code.fromSnippet(
                 content = code
             )
         )

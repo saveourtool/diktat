@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.diktatKtlintEngine)
     implementation(projects.diktatRules)
     implementation(libs.kotlinx.cli)
+    implementation(libs.kotlin.logging)
     implementation(libs.log4j2.core)
     implementation(libs.log4j2.slf4j)
 
