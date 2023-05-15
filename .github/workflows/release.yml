@@ -93,7 +93,7 @@ jobs:
           done
           echo "version=$next_snapshot_version" > info/buildSrc/gradle.properties
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           author: GitHub <noreply@github.com>
           commit-message: Prepare next development iteration after release ${{ env.RELEASE_VERSION }}
