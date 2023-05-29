@@ -31,7 +31,7 @@ mockito-all = "1.10.19"
 
 # executable jar
 kotlinx-cli = "0.3.5"
-gradle-shadow = "7.1.2"
+gradle-shadow = "8.1.1"
 
 # copied from save-cloud
 jetbrains-annotations = "24.0.1"
