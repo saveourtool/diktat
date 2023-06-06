@@ -245,7 +245,7 @@ enum class Warnings(
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
             emit(offset,
-                "${this.warnText()} $trimmedFreeText${if (autoCorrected) "" else " (cannot be auto-corrected)"}",
+                "${this.warnText()} $trimmedFreeText",
                 autoCorrected
             )
         }

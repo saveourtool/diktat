@@ -13,11 +13,14 @@ import com.pinterest.ktlint.cli.reporter.core.api.KtlintCliError
 import com.pinterest.ktlint.rule.engine.api.LintError
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.intellij.lang.annotations.Language
+import org.jetbrains.kotlin.utils.addToStdlib.applyIf
 
 import java.nio.file.Path
 
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.relativeTo
+
+private const val canBeAutoCorrectedSuffix = " (cannot be auto-corrected)"
 
 /**
  * Makes sure this _rule id_ is qualified with a _rule set id_.
@@ -40,7 +43,7 @@ fun LintError.wrap(): DiktatError = DiktatError(
     line = this@wrap.line,
     col = this@wrap.col,
     ruleId = this@wrap.ruleId.value,
-    detail = this@wrap.detail,
+    detail = this@wrap.detail.removeSuffix(canBeAutoCorrectedSuffix),
     canBeAutoCorrected = this@wrap.canBeAutoCorrected,
 )
 
@@ -51,7 +54,7 @@ fun KtlintCliError.wrap(): DiktatError = DiktatError(
     line = this@wrap.line,
     col = this@wrap.col,
     ruleId = this@wrap.ruleId,
-    detail = this@wrap.detail,
+    detail = this@wrap.detail.removeSuffix(canBeAutoCorrectedSuffix),
     canBeAutoCorrected = this@wrap.status == KtlintCliError.Status.LINT_CAN_BE_AUTOCORRECTED,
 )
 
@@ -62,7 +65,9 @@ fun DiktatError.toKtLintForCli(): KtlintCliError = KtlintCliError(
     line = this@toKtLintForCli.line,
     col = this@toKtLintForCli.col,
     ruleId = this@toKtLintForCli.ruleId,
-    detail = this@toKtLintForCli.detail,
+    detail = this@toKtLintForCli.detail.applyIf(!this@toKtLintForCli.canBeAutoCorrected) {
+        "$this$canBeAutoCorrectedSuffix"
+    },
     status = if (this@toKtLintForCli.canBeAutoCorrected) {
         KtlintCliError.Status.LINT_CAN_BE_AUTOCORRECTED
     } else {
