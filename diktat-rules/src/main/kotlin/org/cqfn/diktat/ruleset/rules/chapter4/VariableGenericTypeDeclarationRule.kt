@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.psi.KtProperty
  * Not recommended: val myVariable: Map<Int, String> = emptyMap<Int, String>() or val myVariable = emptyMap<Int, String>()
  * Recommended: val myVariable: Map<Int, String> = emptyMap()
  */
+@Suppress("ForbiddenComment")
 // FIXME: we now don't have access to return types, so we can perform this check only if explicit type is present, but should be able also if it's not.
 class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,

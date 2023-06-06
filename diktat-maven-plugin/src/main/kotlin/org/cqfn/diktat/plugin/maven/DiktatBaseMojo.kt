@@ -8,7 +8,6 @@ import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
-import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
 import org.apache.maven.plugin.MojoExecutionException
@@ -25,12 +24,6 @@ import kotlin.io.path.Path
  * Base [Mojo] for checking and fixing code using diktat
  */
 abstract class DiktatBaseMojo : AbstractMojo() {
-    /**
-     * Flag that indicates whether to turn debug logging on
-     */
-    @Parameter(property = "diktat.debug")
-    var debug = false
-
     /**
      * Property that will be used if you need to publish the report to GitHub
      */
@@ -81,9 +74,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.excludes", defaultValue = "")
     lateinit var excludes: List<String>
-
-    @Parameter(defaultValue = "\${session}", readonly = true)
-    private lateinit var mavenSession: MavenSession
 
     /**
      * @param runner instance of [DiktatRunner] used in analysis
