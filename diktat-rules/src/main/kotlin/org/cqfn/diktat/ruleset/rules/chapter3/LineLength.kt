@@ -774,19 +774,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    /**
-     * val text = "first part" +
-     * "second part" +
-     * "third part"
-     * STRING_PART_OFFSET equal to the left offset of first string part("first part") =
-     * white space + close quote (open quote removed by trim) + white space + plus sign
-     */
     companion object {
         private const val MAX_LENGTH = 120L
         const val NAME_ID = "line-length"
-        private const val STRING_PART_OFFSET = 4
-        private val propertyList = listOf(INTEGER_CONSTANT, LITERAL_STRING_TEMPLATE_ENTRY, FLOAT_CONSTANT,
-            CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT, LONG_STRING_TEMPLATE_ENTRY,
-            SHORT_STRING_TEMPLATE_ENTRY, NULL)
     }
 }
