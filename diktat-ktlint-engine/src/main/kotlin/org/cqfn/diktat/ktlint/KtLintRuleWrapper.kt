@@ -27,7 +27,9 @@ class KtLintRuleWrapper(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitType,
-    ) = rule.invoke(node, autoCorrect, emit)
+    ) = rule.invoke(node, autoCorrect) { offset, errorMessage, canBeAutoCorrected ->
+        emit.invoke(offset, errorMessage.correctErrorDetail(canBeAutoCorrected), canBeAutoCorrected)
+    }
 
     companion object {
         private val about: About = About(

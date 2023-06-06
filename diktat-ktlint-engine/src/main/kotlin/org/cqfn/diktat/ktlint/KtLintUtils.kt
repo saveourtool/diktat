@@ -65,15 +65,22 @@ fun DiktatError.toKtLintForCli(): KtlintCliError = KtlintCliError(
     line = this@toKtLintForCli.line,
     col = this@toKtLintForCli.col,
     ruleId = this@toKtLintForCli.ruleId,
-    detail = this@toKtLintForCli.detail.applyIf(!this@toKtLintForCli.canBeAutoCorrected) {
-        "$this$CANNOT_BE_AUTOCORRECTED_SUFFIX"
-    },
+    detail = this@toKtLintForCli.detail.correctErrorDetail(this@toKtLintForCli.canBeAutoCorrected),
     status = if (this@toKtLintForCli.canBeAutoCorrected) {
         KtlintCliError.Status.LINT_CAN_BE_AUTOCORRECTED
     } else {
         KtlintCliError.Status.LINT_CAN_NOT_BE_AUTOCORRECTED
     }
 )
+
+/**
+ * @param canBeAutoCorrected [DiktatError.canBeAutoCorrected]
+ * @receiver [DiktatError.detail]
+ * @return input string with [CANNOT_BE_AUTOCORRECTED_SUFFIX] if it's required
+ */
+fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = applyIf(!canBeAutoCorrected) {
+    "$this$CANNOT_BE_AUTOCORRECTED_SUFFIX"
+}
 
 /**
  * @param sourceRootDir
