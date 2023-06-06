@@ -19,7 +19,7 @@ dependencies {
     implementation(libs.kotlin.logging)
     testImplementation(projects.diktatTestFramework)
     testImplementation(projects.diktatKtlintEngine)
-    testImplementation(libs.log4j2.slf4j)
+    testImplementation(libs.log4j2.slf4j2)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

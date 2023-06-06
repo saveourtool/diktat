@@ -18,7 +18,7 @@ dependencies {
     implementation(projects.diktatRules)
     implementation(libs.kotlinx.cli)
     implementation(libs.log4j2.core)
-    implementation(libs.log4j2.slf4j)
+    implementation(libs.log4j2.slf4j2)
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
