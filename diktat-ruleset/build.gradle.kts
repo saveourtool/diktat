@@ -30,7 +30,7 @@ dependencies {
     }
     testImplementation(projects.diktatTestFramework)
     testImplementation(projects.diktatKtlintEngine)
-    testImplementation(libs.log4j2.slf4j)
+    testImplementation(libs.log4j2.slf4j2)
     testImplementation(libs.kotlin.stdlib.common)
     testImplementation(libs.kotlin.stdlib.jdk7)
     testImplementation(libs.kotlin.stdlib.jdk8)

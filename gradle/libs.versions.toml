@@ -127,7 +127,7 @@ jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref =
 # logging
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "mu-logging" }
 log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
-log4j2-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j2" }
+log4j2-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j2" }
 
 # cli
 kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinx-cli" }
