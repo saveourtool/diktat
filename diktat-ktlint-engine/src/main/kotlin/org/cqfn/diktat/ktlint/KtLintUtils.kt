@@ -78,7 +78,9 @@ fun DiktatError.toKtLintForCli(): KtlintCliError = KtlintCliError(
  * @receiver [DiktatError.detail]
  * @return input string with [CANNOT_BE_AUTOCORRECTED_SUFFIX] if it's required
  */
-fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = applyIf(!canBeAutoCorrected) {
+fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = if (canBeAutoCorrected) {
+    this
+} else {
     "$this$CANNOT_BE_AUTOCORRECTED_SUFFIX"
 }
 
