@@ -13,7 +13,6 @@ import com.pinterest.ktlint.cli.reporter.core.api.KtlintCliError
 import com.pinterest.ktlint.rule.engine.api.LintError
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.intellij.lang.annotations.Language
-import org.jetbrains.kotlin.utils.addToStdlib.applyIf
 
 import java.nio.file.Path
 
