@@ -5,11 +5,14 @@ import org.cqfn.diktat.api.DiktatBaselineFactory
 import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.wrap
-import com.pinterest.ktlint.cli.api.Baseline
-import com.pinterest.ktlint.cli.api.loadBaseline
+
+import com.pinterest.ktlint.cli.reporter.baseline.Baseline
 import com.pinterest.ktlint.cli.reporter.baseline.BaselineReporter
+import com.pinterest.ktlint.cli.reporter.baseline.loadBaseline
+
 import java.io.PrintStream
 import java.nio.file.Path
+
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.outputStream
 
