@@ -19,26 +19,17 @@ import org.cqfn.diktat.ruleset.utils.isWhiteSpaceWithNewline
 
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
-import org.jetbrains.kotlin.KtNodeTypes.BOOLEAN_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.CHARACTER_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.FLOAT_CONSTANT
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
-import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
-import org.jetbrains.kotlin.KtNodeTypes.LITERAL_STRING_TEMPLATE_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
-import org.jetbrains.kotlin.KtNodeTypes.NULL
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
 import org.jetbrains.kotlin.KtNodeTypes.POSTFIX_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.PREFIX_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.SHORT_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.STRING_TEMPLATE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
