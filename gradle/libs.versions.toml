@@ -109,8 +109,6 @@ kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
 ktlint-logger = { module = "com.pinterest.ktlint:ktlint-logger", version.ref = "ktlint" }
-# baseline is needed
-ktlint-cli = { module = "com.pinterest:ktlint", version.ref = "ktlint" }
 ktlint-cli-reporter = { module = "com.pinterest.ktlint:ktlint-cli-reporter", version.ref = "ktlint" }
 ktlint-cli-ruleset-core = { module = "com.pinterest.ktlint:ktlint-cli-ruleset-core", version.ref = "ktlint" }
 ktlint-cli-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }

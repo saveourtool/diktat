@@ -12,7 +12,6 @@ dependencies {
     api(projects.diktatApi)
     implementation(projects.diktatCommon)
     implementation(libs.ktlint.core)
-    implementation(libs.ktlint.cli)
     implementation(libs.ktlint.cli.reporter)
     implementation(libs.ktlint.rule.engine)
     implementation(libs.ktlint.cli.reporter.baseline)
