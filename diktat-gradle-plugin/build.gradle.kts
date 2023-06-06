@@ -5,8 +5,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
-    id("pl.droidsonroids.jacoco.testkit") version "1.0.9"
-    id("org.gradle.test-retry") version "1.5.2"
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
+    id("org.gradle.test-retry") version "1.5.3"
     id("com.gradle.plugin-publish") version "1.2.0"
 }
 

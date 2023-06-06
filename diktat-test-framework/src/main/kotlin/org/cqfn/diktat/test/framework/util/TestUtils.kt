@@ -315,7 +315,7 @@ fun <T> retry(
 
     var lastError: Throwable? = null
 
-    for (i in 1..attempts) {
+    repeat(attempts) {
         try {
             return block()
         } catch (error: Throwable) {
@@ -323,6 +323,7 @@ fun <T> retry(
         }
 
         if (delayMillis > 0L) {
+            @Suppress("SleepInsteadOfDelay")
             Thread.sleep(delayMillis)
         }
     }
