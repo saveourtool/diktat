@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ktlint.lint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import java.nio.file.Path
@@ -29,7 +29,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @see lintResult
      */
     fun lintMethod(@Language("kotlin") code: String,
-                   vararg expectedLintErrors: LintError,
+                   vararg expectedLintErrors: DiktatError,
                    rulesConfigList: List<RulesConfig>? = null,
     ) = doAssert(
         actualLintErrors = lintResult(code, rulesConfigList),
@@ -51,7 +51,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         @Language("kotlin") code: String,
         tempDir: Path,
         fileName: String,
-        vararg expectedLintErrors: LintError,
+        vararg expectedLintErrors: DiktatError,
         rulesConfigList: List<RulesConfig>? = null,
     ) {
         val file = tempDir.resolve(fileName).also {
@@ -75,7 +75,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      */
     fun lintMethodWithFile(
         file: Path,
-        vararg expectedLintErrors: LintError,
+        vararg expectedLintErrors: DiktatError,
         rulesConfigList: List<RulesConfig>? = null,
     ) = doAssert(
         actualLintErrors = lintResult(file, rulesConfigList),
@@ -84,9 +84,9 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     )
 
     private fun doAssert(
-        actualLintErrors: List<LintError>,
+        actualLintErrors: List<DiktatError>,
         description: String,
-        vararg expectedLintErrors: LintError,
+        vararg expectedLintErrors: DiktatError,
     ) {
         when {
             expectedLintErrors.size == 1 && actualLintErrors.size == 1 -> {
@@ -124,8 +124,8 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     private fun lintResult(
         file: Path,
         rulesConfigList: List<RulesConfig>? = null,
-    ): List<LintError> {
-        val lintErrors: MutableList<LintError> = mutableListOf()
+    ): List<DiktatError> {
+        val lintErrors: MutableList<DiktatError> = mutableListOf()
 
         lint(
             ruleSetSupplier = { rulesConfigList.toDiktatRuleSet() },
@@ -148,8 +148,8 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     protected fun lintResult(
         @Language("kotlin") code: String,
         rulesConfigList: List<RulesConfig>? = null,
-    ): List<LintError> {
-        val lintErrors: MutableList<LintError> = mutableListOf()
+    ): List<DiktatError> {
+        val lintErrors: MutableList<DiktatError> = mutableListOf()
 
         lint(
             ruleSetSupplier = { rulesConfigList.toDiktatRuleSet() },
@@ -163,7 +163,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     private fun List<RulesConfig>?.toDiktatRuleSet() = diktatRuleSetForTest(ruleSupplier, this ?: rulesConfigList)
 
     companion object {
-        private fun MutableList<LintError>.collector(): DiktatCallback = DiktatCallback { error, _ ->
+        private fun MutableList<DiktatError>.collector(): DiktatCallback = DiktatCallback { error, _ ->
             this += error
         }
     }

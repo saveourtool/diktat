@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter5.AvoidNestedFunctionsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.AVOID_NESTED_FUNCTIONS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |
                     |}
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", false)
+            DiktatError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", false)
         )
     }
 
@@ -63,8 +63,8 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |
                     |}
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", true),
-            LintError(4, 8, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun baz", true)
+            DiktatError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", true),
+            DiktatError(4, 8, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun baz", true)
         )
     }
 

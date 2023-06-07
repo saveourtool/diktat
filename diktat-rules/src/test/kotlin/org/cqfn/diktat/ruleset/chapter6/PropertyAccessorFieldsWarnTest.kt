@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NAME_OF_VARIABLE_INSIDE_
 import org.cqfn.diktat.ruleset.rules.chapter6.PropertyAccessorFields
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -70,9 +70,9 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
-            LintError(14, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {..."),
-            LintError(20, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {...")
+            DiktatError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
+            DiktatError(14, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {..."),
+            DiktatError(20, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {...")
         )
     }
 
@@ -112,9 +112,9 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |   get() = field
                     |}
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
-            LintError(18, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(valuess) {..."),
-            LintError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
+            DiktatError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
+            DiktatError(18, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(valuess) {..."),
+            DiktatError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
         )
     }
 

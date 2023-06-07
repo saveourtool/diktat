@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter5.CheckInverseMethodRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.INVERSE_FUNCTION_PREFERRED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -38,7 +38,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 14, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
+            DiktatError(2, 14, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
         )
     }
 
@@ -53,7 +53,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 16, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
+            DiktatError(2, 16, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
         )
     }
 
@@ -68,7 +68,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 32, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
+            DiktatError(2, 32, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
         )
     }
 }

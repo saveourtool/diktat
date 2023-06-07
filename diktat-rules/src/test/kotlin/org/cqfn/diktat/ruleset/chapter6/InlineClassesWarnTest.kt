@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -55,7 +55,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |   val config = Config()
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
             rulesConfigList = rulesConfigListSameVersion
         )
     }
@@ -69,7 +69,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |   val config = Config()
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
             rulesConfigList = rulesConfigListSameVersion
         )
     }
@@ -109,7 +109,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
             rulesConfigList = rulesConfigListSameVersion
         )
     }
@@ -162,7 +162,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |   val some = 3
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
             rulesConfigList = rulesConfigListSameVersion
         )
     }
@@ -189,7 +189,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", false),
             rulesConfigList = rulesConfigListSameVersion
         )
     }
@@ -203,7 +203,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", false),
             rulesConfigList = rulesConfigListSameVersion
         )
     }
@@ -218,7 +218,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |   val config = Config()
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
             rulesConfigList = rulesConfigListLateVersion
         )
 
@@ -237,7 +237,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |   val config = Config()
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
+            DiktatError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", false),
             rulesConfigList = rulesConfigListSameVersion
         )
 

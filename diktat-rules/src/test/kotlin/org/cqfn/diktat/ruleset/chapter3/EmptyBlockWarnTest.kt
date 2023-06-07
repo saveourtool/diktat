@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -35,7 +35,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
+            DiktatError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
@@ -49,7 +49,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
+            DiktatError(2, 5, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
@@ -65,7 +65,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    else {}
                     |}
             """.trimMargin(),
-            LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
+            DiktatError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
             rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
     }
@@ -157,7 +157,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                 |   }
                 |}
             """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} do not put newlines in empty lambda", true),
+            DiktatError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} do not put newlines in empty lambda", true),
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
@@ -170,7 +170,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |   val y = listOf<Int>().map { }
                     |}
             """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
+            DiktatError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
@@ -214,7 +214,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                 |
                 |val some = object : A{}
             """.trimMargin(),
-            LintError(3, 22, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
+            DiktatError(3, 22, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }

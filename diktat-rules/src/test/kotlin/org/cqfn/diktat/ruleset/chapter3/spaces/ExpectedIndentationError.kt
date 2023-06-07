@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.junit.ExpectedLintError
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule.Companion.NAME_ID
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 
 /**
  * The expected indentation error (extracted from annotated code fragments).
@@ -32,8 +32,8 @@ class ExpectedIndentationError(override val line: Int,
         warnText(expectedIndent)(actualIndent)
     )
 
-    override fun asLintError(): LintError =
-        LintError(
+    override fun asLintError(): DiktatError =
+        DiktatError(
             line,
             column,
             "$DIKTAT_RULE_SET_ID:$NAME_ID",

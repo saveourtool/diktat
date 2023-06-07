@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.LongNumericalValuesSeparatedRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.LONG_NUMERICAL_VALUES_SEPARATED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -35,17 +35,17 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val hundred = 100
                     |}
             """.trimMargin(),
-            LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
-            LintError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", true),
-            LintError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
-            LintError(5, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
-            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
-            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
-            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
-            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
-            LintError(8, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
-            LintError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
-            LintError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
+            DiktatError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
+            DiktatError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", true),
+            DiktatError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
+            DiktatError(5, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
+            DiktatError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
+            DiktatError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
+            DiktatError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
+            DiktatError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
+            DiktatError(8, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
+            DiktatError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
+            DiktatError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
 
         )
     }
@@ -82,12 +82,12 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val flo = 192.312
                     |}
             """.trimMargin(),
-            LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", true),
-            LintError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234566L", true),
-            LintError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999L", true),
-            LintError(5, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFE", true),
-            LintError(6, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0b110100", true),
-            LintError(7, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312", true),
+            DiktatError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", true),
+            DiktatError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234566L", true),
+            DiktatError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999L", true),
+            DiktatError(5, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFE", true),
+            DiktatError(6, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0b110100", true),
+            DiktatError(7, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312", true),
             rulesConfigList = rulesConfig
         )
     }
@@ -113,7 +113,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |
                     |}
             """.trimMargin(),
-            LintError(1, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000", true)
+            DiktatError(1, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000", true)
         )
     }
 }

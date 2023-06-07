@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.DebugPrintRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
                 |    print("test print")
                 |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found print()", false)
+            DiktatError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found print()", false)
         )
     }
 
@@ -35,7 +35,7 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
                 |    println("test println")
                 |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found println()", false)
+            DiktatError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found println()", false)
         )
     }
 
@@ -48,7 +48,7 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
                 |    println()
                 |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found println()", false)
+            DiktatError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found println()", false)
         )
     }
 
@@ -102,10 +102,10 @@ class DebugPrintRuleWarnTest : LintTestBase(::DebugPrintRule) {
                 |    console.warn("1", "2", "3", "4")
                 |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.error()", false),
-            LintError(3, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.info()", false),
-            LintError(4, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.log()", false),
-            LintError(5, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.warn()", false)
+            DiktatError(2, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.error()", false),
+            DiktatError(3, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.info()", false),
+            DiktatError(4, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.log()", false),
+            DiktatError(5, 5, ruleId, "${Warnings.DEBUG_PRINT.warnText()} found console.warn()", false)
         )
     }
 

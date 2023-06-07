@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -44,9 +44,9 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
                 |    httpClient.doRequest()
                 |}
             """.trimMargin(),
-            LintError(3, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} url", true),
-            LintError(4, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} port", true),
-            LintError(5, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true),
+            DiktatError(3, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} url", true),
+            DiktatError(4, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} port", true),
+            DiktatError(5, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true),
         )
     }
 
@@ -67,9 +67,9 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
                 |    httpClient.doRequest()
                 |}
             """.trimMargin(),
-            LintError(4, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} url", true),
-            LintError(6, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} port", true),
-            LintError(9, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true),
+            DiktatError(4, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} url", true),
+            DiktatError(6, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} port", true),
+            DiktatError(9, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true),
         )
     }
 
@@ -88,7 +88,7 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
                 |    httpClient.doRequest()
                 |}
             """.trimMargin(),
-            LintError(7, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true)
+            DiktatError(7, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true)
         )
     }
 

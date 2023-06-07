@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.junit.jupiter.api.Test
 
 class SuppressTest : LintTestBase(::IdentifierNaming) {
@@ -47,7 +47,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(12, 14, ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
+            DiktatError(12, 14, ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
                 true)
         )
     }
@@ -140,7 +140,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                 }
             """.trimIndent()
         lintMethod(code,
-            LintError(3, 15, "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}",
+            DiktatError(3, 15, "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}",
                 "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 }

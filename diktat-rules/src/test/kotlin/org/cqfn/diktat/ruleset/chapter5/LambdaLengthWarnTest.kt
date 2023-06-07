@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter5.LambdaLengthRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -122,7 +122,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 13, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
+            DiktatError(3, 13, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
             rulesConfigList = rulesConfigList
         )
     }
@@ -147,7 +147,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(4, 13, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
+            DiktatError(4, 13, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
             rulesConfigList = rulesConfigList
         )
     }
@@ -168,7 +168,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |       }
                     |   }
             """.trimMargin(),
-            LintError(3, 25, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
+            DiktatError(3, 25, ruleId, "${Warnings.TOO_MANY_LINES_IN_LAMBDA.warnText()} max length lambda without arguments is 3, but you have 6", false),
             rulesConfigList = rulesConfigList
         )
     }

@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.junit.jupiter.api.Test
 
 class SuppressingTest : LintTestBase(::IdentifierNaming) {
@@ -61,7 +61,7 @@ class SuppressingTest : LintTestBase(::IdentifierNaming) {
             """.trimIndent()
         lintMethod(
             code,
-            LintError(3,
+            DiktatError(3,
                 9,
                 ruleId,
                 "[IDENTIFIER_LENGTH] identifier's length is incorrect, it" +

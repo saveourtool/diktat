@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.EXTENSION_FUNCTION_WITH_CLASS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -26,7 +26,7 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
                 |
                 |}
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun coolStr")
+            DiktatError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun coolStr")
         )
     }
 
@@ -47,8 +47,8 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
                 |
                 |}
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun coolStr"),
-            LintError(9, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun extMethod"),
+            DiktatError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun coolStr"),
+            DiktatError(9, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun extMethod"),
         )
     }
 

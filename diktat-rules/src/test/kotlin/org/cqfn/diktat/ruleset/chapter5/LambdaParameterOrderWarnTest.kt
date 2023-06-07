@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
 import org.cqfn.diktat.ruleset.rules.chapter5.LambdaParameterOrder
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ class LambdaParameterOrderWarnTest : LintTestBase(::LambdaParameterOrder) {
                     |
                     |fun foo(lambda1: () -> Unit, lambda2: (() -> Unit)?) {}
             """.trimMargin(),
-            LintError(1, 17, ruleId, "${LAMBDA_IS_NOT_LAST_PARAMETER.warnText()} foo", false)
+            DiktatError(1, 17, ruleId, "${LAMBDA_IS_NOT_LAST_PARAMETER.warnText()} foo", false)
         )
     }
 }

@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -40,9 +40,9 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} some != null && some != null && some == null", true),
-            LintError(10, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 3 && b > 3 && a > 3", true),
-            LintError(14, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a && a && b > 4", true)
+            DiktatError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} some != null && some != null && some == null", true),
+            DiktatError(10, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 3 && b > 3 && a > 3", true),
+            DiktatError(14, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a && a && b > 4", true)
         )
     }
 
@@ -73,11 +73,11 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} some != null && (some != null || a > 5)", true),
-            LintError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 || (a > 5 && b > 6)", true),
-            LintError(10, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} !!(a > 5 && q > 6)", true),
-            LintError(14, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && false", true),
-            LintError(18, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 || (!(a > 5) && b > 5)", true)
+            DiktatError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} some != null && (some != null || a > 5)", true),
+            DiktatError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 || (a > 5 && b > 6)", true),
+            DiktatError(10, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} !!(a > 5 && q > 6)", true),
+            DiktatError(14, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && false", true),
+            DiktatError(18, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 || (!(a > 5) && b > 5)", true)
         )
     }
 
@@ -96,8 +96,8 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} (a > 5 || b > 5) && (a > 5 || c > 5)", true),
-            LintError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && b > 5 || a > 5 && c > 5", true)
+            DiktatError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} (a > 5 || b > 5) && (a > 5 || c > 5)", true),
+            DiktatError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && b > 5 || a > 5 && c > 5", true)
         )
     }
 
@@ -116,8 +116,8 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} (a > 5 || b > 5) && (a > 5 || c > 5) && (a > 5 || d > 5)", true),
-            LintError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && b > 5 || a > 5 && c > 5 || a > 5 || d > 5", true)
+            DiktatError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} (a > 5 || b > 5) && (a > 5 || c > 5) && (a > 5 || d > 5)", true),
+            DiktatError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && b > 5 || a > 5 && c > 5 || a > 5 || d > 5", true)
         )
     }
 

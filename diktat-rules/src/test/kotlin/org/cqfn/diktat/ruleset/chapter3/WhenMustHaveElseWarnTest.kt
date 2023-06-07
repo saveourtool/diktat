@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.WhenMustHaveElseRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -40,7 +40,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
+            DiktatError(2, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
 
@@ -123,7 +123,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                 |    }
                 |}
             """.trimMargin(),
-            LintError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
+            DiktatError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
 
@@ -140,7 +140,7 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                 |    }
                 |}
             """.trimMargin(),
-            LintError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
+            DiktatError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
 }

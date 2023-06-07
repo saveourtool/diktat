@@ -8,7 +8,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.chapter3.files.NewlinesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
@@ -54,9 +54,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    val b = if (condition) { bar(); baz()} else qux
                     |};
             """.trimMargin(),
-            LintError(6, 17, ruleId, "${REDUNDANT_SEMICOLON.warnText()} fun foo() {};", true),
-            LintError(7, 14, ruleId, "${REDUNDANT_SEMICOLON.warnText()} val a = 0;", true),
-            LintError(9, 2, ruleId, "${REDUNDANT_SEMICOLON.warnText()} };", true)
+            DiktatError(6, 17, ruleId, "${REDUNDANT_SEMICOLON.warnText()} fun foo() {};", true),
+            DiktatError(7, 14, ruleId, "${REDUNDANT_SEMICOLON.warnText()} val a = 0;", true),
+            DiktatError(9, 2, ruleId, "${REDUNDANT_SEMICOLON.warnText()} };", true)
         )
     }
 
@@ -142,11 +142,11 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        foo
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, "$shouldBreakAfter &&", true),
-            LintError(8, 8, ruleId, "$shouldBreakBefore .", true),
-            LintError(10, 8, ruleId, "$shouldBreakBefore ?.", true),
-            LintError(12, 9, ruleId, "$shouldBreakBefore ?:", true),
-            LintError(14, 8, ruleId, "$shouldBreakBefore ::", true)
+            DiktatError(3, 9, ruleId, "$shouldBreakAfter &&", true),
+            DiktatError(8, 8, ruleId, "$shouldBreakBefore .", true),
+            DiktatError(10, 8, ruleId, "$shouldBreakBefore ?.", true),
+            DiktatError(12, 9, ruleId, "$shouldBreakBefore ?:", true),
+            DiktatError(14, 8, ruleId, "$shouldBreakBefore ::", true)
         )
     }
 
@@ -185,8 +185,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        false)
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, "$shouldBreakAfter xor", true),
-            LintError(6, 9, ruleId, "$shouldBreakAfter xor", true)
+            DiktatError(3, 9, ruleId, "$shouldBreakAfter xor", true),
+            DiktatError(6, 9, ruleId, "$shouldBreakAfter xor", true)
         )
     }
 
@@ -213,11 +213,11 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    )
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, "$shouldBreakAfter or", true),
-            LintError(7, 9, ruleId, "$shouldBreakAfter xor", true),
-            LintError(8, 9, ruleId, "$shouldBreakAfter or", true),
-            LintError(12, 9, ruleId, "$shouldBreakAfter xor", true),
-            LintError(14, 9, ruleId, "$shouldBreakAfter or", true)
+            DiktatError(3, 9, ruleId, "$shouldBreakAfter or", true),
+            DiktatError(7, 9, ruleId, "$shouldBreakAfter xor", true),
+            DiktatError(8, 9, ruleId, "$shouldBreakAfter or", true),
+            DiktatError(12, 9, ruleId, "$shouldBreakAfter xor", true),
+            DiktatError(14, 9, ruleId, "$shouldBreakAfter or", true)
         )
     }
 
@@ -265,10 +265,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }?.qux()
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
-            LintError(3, 26, ruleId, "$functionalStyleWarn .", true),
-            LintError(5, 10, ruleId, "$functionalStyleWarn ?.", true),
+            DiktatError(2, 5, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(2, 11, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(3, 26, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(5, 10, ruleId, "$functionalStyleWarn ?.", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -297,7 +297,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        = 43
                     |}
             """.trimMargin(),
-            LintError(5, 9, ruleId, "$shouldBreakAfter =", true)
+            DiktatError(5, 9, ruleId, "$shouldBreakAfter =", true)
         )
     }
 
@@ -313,8 +313,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        , b)
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, commaWarn, true),
-            LintError(5, 9, ruleId, commaWarn, true)
+            DiktatError(2, 9, ruleId, commaWarn, true),
+            DiktatError(5, 9, ruleId, commaWarn, true)
         )
     }
 
@@ -330,8 +330,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar(a, b)
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, prevColonWarn, true),
-            LintError(4, 9, ruleId, prevColonWarn, true)
+            DiktatError(2, 9, ruleId, prevColonWarn, true),
+            DiktatError(4, 9, ruleId, prevColonWarn, true)
         )
     }
 
@@ -344,9 +344,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |      bar(a, b)
                     |}
             """.trimMargin(),
-            LintError(1, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+            DiktatError(1, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <foo>", true),
-            LintError(1, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <foo>", true)
+            DiktatError(1, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <foo>", true)
         )
     }
 
@@ -428,9 +428,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    ) { }
                     |}
             """.trimMargin(),
-            LintError(1, 16, ruleId, lparWarn, true),
-            LintError(3, 5, ruleId, lparWarn, true),
-            LintError(7, 5, ruleId, lparWarn, true)
+            DiktatError(1, 16, ruleId, lparWarn, true),
+            DiktatError(3, 5, ruleId, lparWarn, true),
+            DiktatError(7, 5, ruleId, lparWarn, true)
         )
     }
 
@@ -495,11 +495,11 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(3, 14, ruleId, lambdaWithArrowWarn, true),
-            LintError(7, 9, ruleId, lambdaWithArrowWarn, true),
-            LintError(11, 9, ruleId, lambdaWithArrowWarn, true),
-            LintError(13, 35, ruleId, lambdaWithArrowWarn, true),
-            LintError(16, 22, ruleId, lambdaWithoutArrowWarn, true)
+            DiktatError(3, 14, ruleId, lambdaWithArrowWarn, true),
+            DiktatError(7, 9, ruleId, lambdaWithArrowWarn, true),
+            DiktatError(11, 9, ruleId, lambdaWithArrowWarn, true),
+            DiktatError(13, 35, ruleId, lambdaWithArrowWarn, true),
+            DiktatError(16, 22, ruleId, lambdaWithoutArrowWarn, true)
         )
     }
 
@@ -541,7 +541,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    name
                     |}
             """.trimMargin(),
-            LintError(2, 35, ruleId, "$shouldBreakBefore .", true)
+            DiktatError(2, 35, ruleId, "$shouldBreakBefore .", true)
         )
     }
 
@@ -581,8 +581,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    ) { }
                     |}
             """.trimMargin(),
-            LintError(3, 14, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true),
-            LintError(7, 12, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true)
+            DiktatError(3, 14, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true),
+            DiktatError(7, 12, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true)
         )
     }
 
@@ -595,7 +595,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    return "lorem ipsum"
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, singleReturnWarn, true)
+            DiktatError(2, 5, ruleId, singleReturnWarn, true)
         )
     }
 
@@ -682,7 +682,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |         }
                     |}
             """.trimMargin(),
-            LintError(19, 20, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+            DiktatError(19, 20, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -703,15 +703,15 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |          arg3: Int
                 |) { }
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+            DiktatError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <Foo>", true),
-            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
-            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+            DiktatError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
+            DiktatError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <Foo>", true),
-            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
-            LintError(4, 62, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (arg1) should be placed on the new line or " +
+            DiktatError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
+            DiktatError(4, 62, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (arg1) should be placed on the new line or " +
                     "all other parameters should be aligned with it", true),
-            LintError(4, 62, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true)
+            DiktatError(4, 62, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true)
         )
     }
 
@@ -735,9 +735,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |        arg3: Int
                 |) { }
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+            DiktatError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <bar>", true),
-            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
+            DiktatError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
         )
     }
 
@@ -780,9 +780,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |}
             """.trimMargin(),
-            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (\"id\") should be placed on the new line or " +
+            DiktatError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (\"id\") should be placed on the new line or " +
                     "all other parameters should be aligned with it", true),
-            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true),
+            DiktatError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true),
         )
     }
 
@@ -803,8 +803,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |class Foo : FooBase<Bar>() { }
             """.trimMargin(),
-            LintError(6, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true),
-            LintError(9, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true)
+            DiktatError(6, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true),
+            DiktatError(9, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true)
         )
     }
 
@@ -828,10 +828,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.map().gre().few().qwe()
                 |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(3, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
-            LintError(13, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(13, 23, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+            DiktatError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(3, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+            DiktatError(13, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(13, 23, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }
 
@@ -858,10 +858,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   .few()
                 |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(4, 22, ruleId, "$functionalStyleWarn .", true),
-            LintError(8, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(9, 22, ruleId, "$functionalStyleWarn .", true)
+            DiktatError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(4, 22, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(8, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(9, 22, ruleId, "$functionalStyleWarn .", true)
         )
     }
 
@@ -893,9 +893,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   .few()
                 |}
             """.trimMargin(),
-            LintError(4, 10, ruleId, "$functionalStyleWarn .", true),
-            LintError(9, 11, ruleId, "$functionalStyleWarn .", true),
-            LintError(9, 17, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(4, 10, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(9, 11, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(9, 17, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -929,10 +929,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   .gre().few()
                 |}
             """.trimMargin(),
-            LintError(2, 7, ruleId, "$functionalStyleWarn .", true),
-            LintError(16, 10, ruleId, "$functionalStyleWarn .", true),
-            LintError(21, 7, ruleId, "$functionalStyleWarn .", true),
-            LintError(22, 10, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(2, 7, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(16, 10, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(21, 7, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(22, 10, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -954,7 +954,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   y.ds()?:gh()
                 |}
             """.trimMargin(),
-            LintError(4, 8, ruleId, "$shouldBreakBefore ?:", true)
+            DiktatError(4, 8, ruleId, "$shouldBreakBefore ?:", true)
         )
     }
 
@@ -969,7 +969,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |        goo().gor().goo()
                 |}
             """.trimMargin(),
-            LintError(3, 8, ruleId, "$shouldBreakBefore ?:", true)
+            DiktatError(3, 8, ruleId, "$shouldBreakBefore ?:", true)
         )
     }
 
@@ -986,8 +986,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.gf().fge().qwe().fd()
                 |}
             """.trimMargin(),
-            LintError(6, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(6, 22, ruleId, "$functionalStyleWarn .", true), rulesConfigList = rulesConfigList
+            DiktatError(6, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(6, 22, ruleId, "$functionalStyleWarn .", true), rulesConfigList = rulesConfigList
         )
     }
 
@@ -1014,8 +1014,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |       .qwe()
                 |}
             """.trimMargin(),
-            LintError(9, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            LintError(9, 29, ruleId, "$functionalStyleWarn .", true)
+            DiktatError(9, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(9, 29, ruleId, "$functionalStyleWarn .", true)
         )
     }
 
@@ -1049,9 +1049,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   foo ?: bar().qwe().qwe()
                 |}
             """.trimMargin(),
-            LintError(2, 14, ruleId, "$functionalStyleWarn ?:", true),
-            LintError(4, 8, ruleId, "$functionalStyleWarn ?:", true),
-            LintError(4, 22, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(2, 14, ruleId, "$functionalStyleWarn ?:", true),
+            DiktatError(4, 8, ruleId, "$functionalStyleWarn ?:", true),
+            DiktatError(4, 22, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -1066,8 +1066,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   a().b.c()!!
                 |}
             """.trimMargin(),
-            LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
-            LintError(3, 9, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(2, 11, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(3, 9, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -1092,11 +1092,11 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |                       .qwe()
                 |}
             """.trimMargin(),
-            LintError(7, 22, ruleId, "$functionalStyleWarn .", true),
-            LintError(9, 15, ruleId, "$functionalStyleWarn ?:", true),
-            LintError(10, 16, ruleId, "$functionalStyleWarn ?:", true),
-            LintError(10, 24, ruleId, "$shouldBreakBefore .", true),
-            LintError(12, 16, ruleId, "$functionalStyleWarn ?:", true),
+            DiktatError(7, 22, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(9, 15, ruleId, "$functionalStyleWarn ?:", true),
+            DiktatError(10, 16, ruleId, "$functionalStyleWarn ?:", true),
+            DiktatError(10, 24, ruleId, "$shouldBreakBefore .", true),
+            DiktatError(12, 16, ruleId, "$functionalStyleWarn ?:", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -1135,10 +1135,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   goo(a?.b.c)
                 |}
             """.trimMargin(),
-            LintError(2, 10, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(3, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} ?.", false),
-            LintError(4, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(5, 12, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            DiktatError(2, 10, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            DiktatError(3, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} ?.", false),
+            DiktatError(4, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            DiktatError(5, 12, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -1152,8 +1152,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   if(a().b().c()) {}
                 |}
             """.trimMargin(),
-            LintError(2, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(2, 14, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(2, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            DiktatError(2, 14, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }

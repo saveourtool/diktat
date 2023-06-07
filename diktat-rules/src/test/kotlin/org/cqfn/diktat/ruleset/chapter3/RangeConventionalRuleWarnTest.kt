@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.RangeConventionalRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.junit.jupiter.api.Test
 
 class RangeConventionalRuleWarnTest : LintTestBase(::RangeConventionalRule) {
@@ -33,10 +33,10 @@ class RangeConventionalRuleWarnTest : LintTestBase(::RangeConventionalRule) {
                     |    for (i in 1..(4 - 1) step 3) print(i)
                     |}
             """.trimMargin(),
-            LintError(2, 15, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1..(4 - 1)", true),
-            LintError(3, 15, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1..(b - 1)", true),
-            LintError(4, 17, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1 .. ((4 - 1))", true),
-            LintError(10, 15, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1..(4 - 1)", true)
+            DiktatError(2, 15, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1..(4 - 1)", true),
+            DiktatError(3, 15, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1..(b - 1)", true),
+            DiktatError(4, 17, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1 .. ((4 - 1))", true),
+            DiktatError(10, 15, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `..` with `until`: 1..(4 - 1)", true)
         )
     }
 
@@ -51,7 +51,7 @@ class RangeConventionalRuleWarnTest : LintTestBase(::RangeConventionalRule) {
                     |    val w = num.rangeTo(num)
                     |}
             """.trimMargin(),
-            LintError(5, 13, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `rangeTo` with `..`: num.rangeTo(num)", true)
+            DiktatError(5, 13, ruleId, "${Warnings.CONVENTIONAL_RANGE.warnText()} replace `rangeTo` with `..`: num.rangeTo(num)", true)
         )
     }
 

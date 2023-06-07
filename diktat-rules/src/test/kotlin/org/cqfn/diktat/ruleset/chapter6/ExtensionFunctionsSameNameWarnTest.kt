@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.EXTENSION_FUNCTION_SAME_SIGNATURE
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
@@ -31,10 +31,10 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 |
                 |fun main() { printClassName(B()) }
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun B.foo[]"),
-            LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun D.foo[]"),
-            LintError(6, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun B.foo[]"),
-            LintError(7, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun D.foo[]"),
+            DiktatError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun B.foo[]"),
+            DiktatError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun D.foo[]"),
+            DiktatError(6, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun B.foo[]"),
+            DiktatError(7, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun D.foo[]"),
         )
     }
 
@@ -53,8 +53,8 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 |
                 |fun main() { printClassName(B()) }
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[some] and fun B.foo[some]"),
-            LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[some] and fun B.foo[some]")
+            DiktatError(4, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[some] and fun B.foo[some]"),
+            DiktatError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[some] and fun B.foo[some]")
         )
     }
 
@@ -145,8 +145,8 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 |
                 |fun main() { printClassName(B()) }
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()"),
-            LintError(2, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()")
+            DiktatError(1, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()"),
+            DiktatError(2, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()")
         )
     }
 }

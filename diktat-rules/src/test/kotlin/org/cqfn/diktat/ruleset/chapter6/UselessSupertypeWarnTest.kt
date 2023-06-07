@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_SUPERTYPE
 import org.cqfn.diktat.ruleset.rules.chapter6.UselessSupertype
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -55,8 +55,8 @@ class UselessSupertypeWarnTest : LintTestBase(::UselessSupertype) {
                         }
                     }
             """.trimMargin(),
-            LintError(11, 35, ruleId, "${USELESS_SUPERTYPE.warnText()} Rectangle", true),
-            LintError(21, 35, ruleId, "${USELESS_SUPERTYPE.warnText()} Rectangle", true)
+            DiktatError(11, 35, ruleId, "${USELESS_SUPERTYPE.warnText()} Rectangle", true),
+            DiktatError(21, 35, ruleId, "${USELESS_SUPERTYPE.warnText()} Rectangle", true)
         )
     }
 
@@ -86,7 +86,7 @@ class UselessSupertypeWarnTest : LintTestBase(::UselessSupertype) {
 
                     }
             """.trimMargin(),
-            LintError(17, 35, ruleId, "${USELESS_SUPERTYPE.warnText()} KK", true)
+            DiktatError(17, 35, ruleId, "${USELESS_SUPERTYPE.warnText()} KK", true)
         )
     }
 }

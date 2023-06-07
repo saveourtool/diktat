@@ -12,7 +12,7 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.TEST_FILE_NAME
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -50,7 +50,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimIndent(),
             tempDir = tempDir,
             fileName = TEST_FILE_NAME,
-            LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
+            DiktatError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -72,7 +72,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimIndent(),
             tempDir = tempDir,
             fileName = TEST_FILE_NAME,
-            LintError(1, 37, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
+            DiktatError(1, 37, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -111,7 +111,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 35, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST", true),
+            DiktatError(1, 35, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -132,7 +132,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} org.cqfn.diktat", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} org.cqfn.diktat", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -153,7 +153,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 32, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_", true),
+            DiktatError(1, 32, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -174,7 +174,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 32, ruleId, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} testш"),
+            DiktatError(1, 32, ruleId, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} testш"),
             rulesConfigList = rulesConfigList
         )
     }
@@ -235,7 +235,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimIndent(),
             tempDir = tempDir,
             fileName = "diktat/diktat-rules/src/main/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.main.kotlin.org.cqfn.diktat.domain", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.main.kotlin.org.cqfn.diktat.domain", true),
             rulesConfigList = rulesConfigSourceDirectories
         )
     }
@@ -276,7 +276,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimIndent(),
             tempDir = tempDir,
             fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.test.kotlin.org.cqfn.diktat.domain", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.test.kotlin.org.cqfn.diktat.domain", true),
             rulesConfigList = rulesConfigSourceDirectories
         )
     }
@@ -299,7 +299,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimIndent(),
             tempDir = tempDir,
             fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -353,7 +353,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 """.trimMargin(),
                 tempDir = tempDir,
                 fileName = "project/src/$it/kotlin/org/cqfn/diktat/example/Example.kt",
-                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
+                DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
                 rulesConfigList = rulesConfigList
             )
         }
@@ -368,7 +368,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.myProjectMain.kotlin.org.cqfn.diktat.example", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.myProjectMain.kotlin.org.cqfn.diktat.example", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -382,8 +382,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
+            DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
             rulesConfigList = rulesConfigListEmptyDomainName
         )
     }

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -64,9 +64,9 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(3, 11, ruleId, keywordWarn("if", "("), true),
-            LintError(4, 14, ruleId, keywordWarn("for", "("), true),
-            LintError(5, 13, ruleId, keywordWarn("when", "("), true)
+            DiktatError(3, 11, ruleId, keywordWarn("if", "("), true),
+            DiktatError(4, 14, ruleId, keywordWarn("for", "("), true),
+            DiktatError(5, 13, ruleId, keywordWarn("when", "("), true)
         )
     }
 
@@ -79,7 +79,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    constructor (val a: Int)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${WRONG_WHITESPACE.warnText()} keyword 'constructor' should not be separated from '(' with a whitespace", true)
+            DiktatError(2, 5, ruleId, "${WRONG_WHITESPACE.warnText()} keyword 'constructor' should not be separated from '(' with a whitespace", true)
         )
     }
 
@@ -97,9 +97,9 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(4, 14, ruleId, keywordWarn("else", "{"), true),
-            LintError(5, 13, ruleId, keywordWarn("try", "{"), true),
-            LintError(6, 17, ruleId, keywordWarn("finally", "{"), true)
+            DiktatError(4, 14, ruleId, keywordWarn("else", "{"), true),
+            DiktatError(5, 13, ruleId, keywordWarn("try", "{"), true),
+            DiktatError(6, 17, ruleId, keywordWarn("finally", "{"), true)
         )
     }
 
@@ -117,7 +117,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |     if (condition) bar() else  baz()
                     |}
             """.trimMargin(),
-            LintError(7, 33, ruleId, keywordWarn("else", "baz"), true)
+            DiktatError(7, 33, ruleId, keywordWarn("else", "baz"), true)
         )
     }
 
@@ -134,10 +134,10 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(1, 14, ruleId, lbraceWarn, true),
-            LintError(2, 14, ruleId, lbraceWarn, true),
-            LintError(3, 17, ruleId, lbraceWarn, true),
-            LintError(4, 16, ruleId, lbraceWarn, true)
+            DiktatError(1, 14, ruleId, lbraceWarn, true),
+            DiktatError(2, 14, ruleId, lbraceWarn, true),
+            DiktatError(3, 17, ruleId, lbraceWarn, true),
+            DiktatError(4, 16, ruleId, lbraceWarn, true)
         )
     }
 
@@ -156,7 +156,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |
                     |val lambda = { x: Int -> 2 * x }
             """.trimMargin(),
-            LintError(6, 10, ruleId, "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
+            DiktatError(6, 10, ruleId, "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
         )
     }
 
@@ -242,28 +242,28 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(1, 31, ruleId, tokenWarn(":", 0, 0, 1, 1), true),
-            LintError(1, 44, ruleId, tokenWarn(":", 0, null, 1, 1), true),
-            LintError(1, 59, ruleId, tokenWarn(":", null, 0, 1, 1), true),
-            LintError(2, 22, ruleId, tokenWarn("+", 0, null, 1, 1), true),
-            LintError(3, 23, ruleId, tokenWarn("+", 0, 0, 1, 1), true),
-            LintError(4, 24, ruleId, tokenWarn("+", null, 0, 1, 1), true),
-            LintError(7, 21, ruleId, tokenWarn(".", 1, null, 0, 0), true),
-            LintError(7, 31, ruleId, tokenWarn("::", 1, null, 0, 0), true),
-            LintError(7, 38, ruleId, tokenWarn("?.", 1, null, 0, 0), true),
-            LintError(7, 54, ruleId, tokenWarn("->", null, 0, 1, 1), true),
-            LintError(7, 74, ruleId, tokenWarn("!!", 1, null, 0, null), true),
-            LintError(8, 21, ruleId, tokenWarn(".", 1, 1, 0, 0), true),
-            LintError(8, 32, ruleId, tokenWarn("::", 1, 1, 0, 0), true),
-            LintError(8, 40, ruleId, tokenWarn("?.", 1, 1, 0, 0), true),
-            LintError(8, 56, ruleId, tokenWarn("->", 0, 0, 1, 1), true),
-            LintError(8, 76, ruleId, tokenWarn("!!", 1, null, 0, null), true),
-            LintError(8, 79, ruleId, tokenWarn(".", 1, null, 0, 0), true),
-            LintError(9, 20, ruleId, tokenWarn(".", null, 1, 0, 0), true),
-            LintError(9, 30, ruleId, tokenWarn("::", null, 1, 0, 0), true),
-            LintError(9, 37, ruleId, tokenWarn("?.", null, 1, 0, 0), true),
-            LintError(9, 53, ruleId, tokenWarn("->", 0, null, 1, 1), true),
-            LintError(9, 75, ruleId, tokenWarn(".", null, 1, 0, 0), true)
+            DiktatError(1, 31, ruleId, tokenWarn(":", 0, 0, 1, 1), true),
+            DiktatError(1, 44, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+            DiktatError(1, 59, ruleId, tokenWarn(":", null, 0, 1, 1), true),
+            DiktatError(2, 22, ruleId, tokenWarn("+", 0, null, 1, 1), true),
+            DiktatError(3, 23, ruleId, tokenWarn("+", 0, 0, 1, 1), true),
+            DiktatError(4, 24, ruleId, tokenWarn("+", null, 0, 1, 1), true),
+            DiktatError(7, 21, ruleId, tokenWarn(".", 1, null, 0, 0), true),
+            DiktatError(7, 31, ruleId, tokenWarn("::", 1, null, 0, 0), true),
+            DiktatError(7, 38, ruleId, tokenWarn("?.", 1, null, 0, 0), true),
+            DiktatError(7, 54, ruleId, tokenWarn("->", null, 0, 1, 1), true),
+            DiktatError(7, 74, ruleId, tokenWarn("!!", 1, null, 0, null), true),
+            DiktatError(8, 21, ruleId, tokenWarn(".", 1, 1, 0, 0), true),
+            DiktatError(8, 32, ruleId, tokenWarn("::", 1, 1, 0, 0), true),
+            DiktatError(8, 40, ruleId, tokenWarn("?.", 1, 1, 0, 0), true),
+            DiktatError(8, 56, ruleId, tokenWarn("->", 0, 0, 1, 1), true),
+            DiktatError(8, 76, ruleId, tokenWarn("!!", 1, null, 0, null), true),
+            DiktatError(8, 79, ruleId, tokenWarn(".", 1, null, 0, 0), true),
+            DiktatError(9, 20, ruleId, tokenWarn(".", null, 1, 0, 0), true),
+            DiktatError(9, 30, ruleId, tokenWarn("::", null, 1, 0, 0), true),
+            DiktatError(9, 37, ruleId, tokenWarn("?.", null, 1, 0, 0), true),
+            DiktatError(9, 53, ruleId, tokenWarn("->", 0, null, 1, 1), true),
+            DiktatError(9, 75, ruleId, tokenWarn(".", null, 1, 0, 0), true)
         )
     }
 
@@ -302,14 +302,14 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    val x : Int
                     |}
             """.trimMargin(),
-            LintError(1, 19, ruleId, eolSpaceWarn, true),
-            LintError(2, 16, ruleId, tokenWarn(":", 1, 0, 0, 1), true),
-            LintError(2, 19, ruleId, tokenWarn(",", 1, 0, 0, 1), true),
-            LintError(2, 22, ruleId, tokenWarn(":", null, 0, 0, 1), true),
-            LintError(2, 27, ruleId, eolSpaceWarn, true),
-            LintError(3, 18, ruleId, tokenWarn(";", null, 0, 0, 1), true),
-            LintError(4, 19, ruleId, tokenWarn(";", 1, null, 0, 1), true),
-            LintError(7, 11, ruleId, tokenWarn(":", 1, null, 0, 1), true)
+            DiktatError(1, 19, ruleId, eolSpaceWarn, true),
+            DiktatError(2, 16, ruleId, tokenWarn(":", 1, 0, 0, 1), true),
+            DiktatError(2, 19, ruleId, tokenWarn(",", 1, 0, 0, 1), true),
+            DiktatError(2, 22, ruleId, tokenWarn(":", null, 0, 0, 1), true),
+            DiktatError(2, 27, ruleId, eolSpaceWarn, true),
+            DiktatError(3, 18, ruleId, tokenWarn(";", null, 0, 0, 1), true),
+            DiktatError(4, 19, ruleId, tokenWarn(";", 1, null, 0, 1), true),
+            DiktatError(7, 11, ruleId, tokenWarn(":", 1, null, 0, 1), true)
         )
     }
 
@@ -342,11 +342,11 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    val x = object: IFoo { /*...*/ }
                     |}
             """.trimMargin(),
-            LintError(1, 25, ruleId, tokenWarn(":", 0, null, 1, 1), true),
-            LintError(1, 31, ruleId, tokenWarn(":", 0, null, 1, 1), true),
-            LintError(3, 14, ruleId, tokenWarn(":", 0, null, 1, 1), true),
-            LintError(4, 27, ruleId, tokenWarn(":", 0, null, 1, 1), true),
-            LintError(6, 19, ruleId, tokenWarn(":", 0, null, 1, 1), true)
+            DiktatError(1, 25, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+            DiktatError(1, 31, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+            DiktatError(3, 14, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+            DiktatError(4, 27, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+            DiktatError(6, 19, ruleId, tokenWarn(":", 0, null, 1, 1), true)
         )
     }
 
@@ -360,7 +360,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    lateinit var x: Int ?
                     |}
             """.trimMargin(),
-            LintError(3, 25, ruleId, tokenWarn("?", 1, null, 0, null), true)
+            DiktatError(3, 25, ruleId, tokenWarn("?", 1, null, 0, null), true)
         )
     }
 
@@ -372,7 +372,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |val x = list[0]
                     |val y = list [0]
             """.trimMargin(),
-            LintError(2, 14, ruleId, tokenWarn("[", 1, null, 0, 0), true)
+            DiktatError(2, 14, ruleId, tokenWarn("[", 1, null, 0, 0), true)
         )
     }
 
@@ -407,11 +407,11 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(1, 15, ruleId, tokenWarn("(", 1, null, 0, 0), true),
-            LintError(2, 26, ruleId, tokenWarn("(", 1, null, 0, 0), true),
-            LintError(4, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
-            LintError(5, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
-            LintError(6, 31, ruleId, tokenWarn("(", 1, null, 0, 0), true)
+            DiktatError(1, 15, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+            DiktatError(2, 26, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+            DiktatError(4, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+            DiktatError(5, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+            DiktatError(6, 31, ruleId, tokenWarn("(", 1, null, 0, 0), true)
         )
     }
 
@@ -424,8 +424,8 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |fun bar() : String = "ipsum"
                     |fun baz() :String = "dolor"
             """.trimMargin(),
-            LintError(2, 11, ruleId, tokenWarn(":", 1, null, 0, 1), true),
-            LintError(3, 11, ruleId, tokenWarn(":", 1, 0, 0, 1), true)
+            DiktatError(2, 11, ruleId, tokenWarn(":", 1, null, 0, 1), true),
+            DiktatError(3, 11, ruleId, tokenWarn(":", 1, 0, 0, 1), true)
         )
     }
 
@@ -442,9 +442,9 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |               @get :Anno val bar: Type,
                     |               @param : Anno val baz: Type)
             """.trimMargin(),
-            LintError(5, 22, ruleId, tokenWarn(":", null, 1, 0, 0), true),
-            LintError(6, 21, ruleId, tokenWarn(":", 1, null, 0, 0), true),
-            LintError(7, 23, ruleId, tokenWarn(":", 1, 1, 0, 0), true)
+            DiktatError(5, 22, ruleId, tokenWarn(":", null, 1, 0, 0), true),
+            DiktatError(6, 21, ruleId, tokenWarn(":", 1, null, 0, 0), true),
+            DiktatError(7, 23, ruleId, tokenWarn(":", 1, 1, 0, 0), true)
         )
     }
 
@@ -457,7 +457,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    val codeFix = CodeFix(codeForm.initialCode!! ,codeFormHtml.ruleSet[0])
                     |}
             """.trimMargin(),
-            LintError(2, 50, ruleId, tokenWarn(",", 1, 0, 0, 1), true)
+            DiktatError(2, 50, ruleId, tokenWarn(",", 1, 0, 0, 1), true)
         )
     }
 
@@ -471,7 +471,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |
                     |}
             """.trimMargin(),
-            LintError(1, 13, ruleId, tokenWarn("(\"Text\")", 1, null, 0, null), true)
+            DiktatError(1, 13, ruleId, tokenWarn("(\"Text\")", 1, null, 0, null), true)
         )
     }
 
@@ -486,8 +486,8 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |   w=q
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
-            LintError(4, 5, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
+            DiktatError(2, 9, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
+            DiktatError(4, 5, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
         )
     }
 
@@ -500,9 +500,9 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |
                     |val q =goo(text=ty)
             """.trimMargin(),
-            LintError(1, 10, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
-            LintError(3, 7, ruleId, tokenWarn("=", null, 0, 1, 1), true),
-            LintError(3, 16, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
+            DiktatError(1, 10, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
+            DiktatError(3, 7, ruleId, tokenWarn("=", null, 0, 1, 1), true),
+            DiktatError(3, 16, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
         )
     }
 
@@ -528,8 +528,8 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |   a[0]
                     |}
             """.trimMargin(),
-            LintError(1, 23, ruleId, tokenWarn("=", null, 0, 1, 1), true),
-            LintError(1, 24, ruleId, tokenWarn("[", 0, null, 1, 0), true)
+            DiktatError(1, 23, ruleId, tokenWarn("=", null, 0, 1, 1), true),
+            DiktatError(1, 24, ruleId, tokenWarn("[", 0, null, 1, 0), true)
         )
     }
 
@@ -554,7 +554,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |val q = foo({ it.baz() })
                     |val q = foo( { it.baz() })
             """.trimMargin(),
-            LintError(3, 14, ruleId,
+            DiktatError(3, 14, ruleId,
                 "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
         )
     }
@@ -586,12 +586,12 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                     |    list.map(:: operationReference)
                     |}
             """.trimMargin(),
-            LintError(2, 12, ruleId, tokenWarn("(", null, 1, 0, 0), true),
-            LintError(2, 14, ruleId, tokenWarn("::", null, 1, null, 0), true),
-            LintError(3, 15, ruleId, tokenWarn(",", null, 2, 0, 1), true),
-            LintError(3, 18, ruleId, tokenWarn("::", null, 1, null, 0), true),
-            LintError(4, 26, ruleId, tokenWarn("::", null, 1, null, 0), true),
-            LintError(5, 14, ruleId, tokenWarn("::", null, 1, null, 0), true)
+            DiktatError(2, 12, ruleId, tokenWarn("(", null, 1, 0, 0), true),
+            DiktatError(2, 14, ruleId, tokenWarn("::", null, 1, null, 0), true),
+            DiktatError(3, 15, ruleId, tokenWarn(",", null, 2, 0, 1), true),
+            DiktatError(3, 18, ruleId, tokenWarn("::", null, 1, null, 0), true),
+            DiktatError(4, 26, ruleId, tokenWarn("::", null, 1, null, 0), true),
+            DiktatError(5, 14, ruleId, tokenWarn("::", null, 1, null, 0), true)
         )
     }
 
@@ -612,8 +612,8 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 |    return index ++
                 |}
             """.trimMargin(),
-            LintError(9, 5, ruleId, tokenWarn("--", null, 1, null, 0), true),
-            LintError(10, 18, ruleId, tokenWarn("++", 1, null, 0, null), true)
+            DiktatError(9, 5, ruleId, tokenWarn("--", null, 1, null, 0), true),
+            DiktatError(10, 18, ruleId, tokenWarn("++", 1, null, 0, null), true)
         )
     }
 
@@ -638,8 +638,8 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 |    list.map {it.text}
                 |}
             """.trimMargin(),
-            LintError(2, 14, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace after {", true),
-            LintError(2, 22, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace before }", true)
+            DiktatError(2, 14, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace after {", true),
+            DiktatError(2, 22, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace before }", true)
         )
     }
 

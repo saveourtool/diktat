@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.SAY_NO_TO_VAR
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -42,7 +42,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
                     |     }
                     | }
             """.trimMargin(),
-            LintError(2, 6, ruleId, "${Warnings.SAY_NO_TO_VAR.warnText()} var a = emptyList()", false)
+            DiktatError(2, 6, ruleId, "${Warnings.SAY_NO_TO_VAR.warnText()} var a = emptyList()", false)
         )
     }
 
@@ -82,7 +82,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
                     |     return a
                     | }
             """.trimMargin(),
-            LintError(2, 6, ruleId, "${Warnings.SAY_NO_TO_VAR.warnText()} var a = 0", false)
+            DiktatError(2, 6, ruleId, "${Warnings.SAY_NO_TO_VAR.warnText()} var a = 0", false)
         )
     }
 }

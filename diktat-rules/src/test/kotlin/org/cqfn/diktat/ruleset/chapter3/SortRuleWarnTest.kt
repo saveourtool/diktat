@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
 import org.cqfn.diktat.ruleset.rules.chapter3.SortRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -55,7 +55,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   ;
                     |}
             """.trimMargin(),
-            LintError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
+            DiktatError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
 
@@ -85,7 +85,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   BLUE(0x0000FF),
                     |}
             """.trimMargin(),
-            LintError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
+            DiktatError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
 
@@ -100,7 +100,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   BLUE(0x0000FF)
                     |}
             """.trimMargin(),
-            LintError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
+            DiktatError(1, 17, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
 
@@ -134,7 +134,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   abstract fun signal(): ProtocolState
                     |}
             """.trimMargin(),
-            LintError(1, 21, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
+            DiktatError(1, 21, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} enum entries order is incorrect", true)
         )
     }
 
@@ -172,7 +172,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(4, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
+            DiktatError(4, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
         )
     }
 
@@ -193,8 +193,8 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(4, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true),
-            LintError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
+            DiktatError(4, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true),
+            DiktatError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
         )
     }
 
@@ -215,7 +215,7 @@ class SortRuleWarnTest : LintTestBase(::SortRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
+            DiktatError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
         )
     }
 

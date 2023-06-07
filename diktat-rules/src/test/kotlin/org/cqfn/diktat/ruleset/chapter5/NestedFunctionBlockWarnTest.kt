@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.cqfn.diktat.ruleset.rules.chapter5.NestedFunctionBlock
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -74,7 +74,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+            DiktatError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 
@@ -104,7 +104,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+            DiktatError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 
@@ -160,7 +160,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${NESTED_BLOCK.warnText()} goo", false)
+            DiktatError(3, 8, ruleId, "${NESTED_BLOCK.warnText()} goo", false)
         )
     }
 
@@ -215,7 +215,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                         }
                     }
             """.trimMargin(),
-            LintError(4, 50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
+            DiktatError(4, 50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
             rulesConfigList = rulesConfigList
         )
     }
@@ -247,7 +247,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+            DiktatError(2, 4, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 }

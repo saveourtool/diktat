@@ -8,7 +8,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -83,7 +83,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 163", false)
+            DiktatError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 163", false)
         )
     }
 
@@ -141,8 +141,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", true),
-            LintError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", true)
+            DiktatError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", true),
+            DiktatError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", true)
         )
     }
 
@@ -172,7 +172,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 163, but was 195", false),
+            DiktatError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 163, but was 195", false),
             rulesConfigList = rulesConfigListLineLength
         )
     }
@@ -222,8 +222,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 130", false),
-            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", true)
+            DiktatError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 130", false),
+            DiktatError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", true)
 
         )
     }
@@ -236,8 +236,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |@Query(value = "ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
                     |fun foo() = println("ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", true),
-            LintError(2, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 89", true),
+            DiktatError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", true),
+            DiktatError(2, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 89", true),
             rulesConfigList = shortLineLength
         )
     }

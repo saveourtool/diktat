@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter5.ParameterNameInOuterLambdaRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -126,7 +126,7 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                     |   }
                     |}
             """.trimMargin(),
-            LintError(10, 8, ruleId, "${Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.warnText()} lambda without arguments has inner lambda", false),
+            DiktatError(10, 8, ruleId, "${Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.warnText()} lambda without arguments has inner lambda", false),
             rulesConfigList = rulesConfigList
         )
     }

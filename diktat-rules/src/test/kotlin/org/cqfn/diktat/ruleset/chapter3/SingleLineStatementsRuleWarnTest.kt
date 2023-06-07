@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LI
 import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -35,10 +35,10 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    println(1); println(1)
                     |}
             """.trimMargin(),
-            LintError(1, 40, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", true),
-            LintError(5, 13, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", true),
-            LintError(14, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", true),
-            LintError(15, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1); println(1)", true)
+            DiktatError(1, 40, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", true),
+            DiktatError(5, 13, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", true),
+            DiktatError(14, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", true),
+            DiktatError(15, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1); println(1)", true)
         )
     }
 
@@ -52,8 +52,8 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    println(1);println(1)
                     |}
             """.trimMargin(),
-            LintError(2, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", true),
-            LintError(3, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", true)
+            DiktatError(2, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", true),
+            DiktatError(3, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", true)
         )
     }
 
@@ -68,7 +68,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |   }; else { print(123) }
                     |}
             """.trimMargin(),
-            LintError(4, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; else { print(123) }", true)
+            DiktatError(4, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; else { print(123) }", true)
         )
     }
 
@@ -111,7 +111,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |   }; abstract fun signal(): ProtocolState
                     |}
             """.trimMargin(),
-            LintError(7, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; abstract fun signal(): ProtocolState", true)
+            DiktatError(7, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; abstract fun signal(): ProtocolState", true)
         )
     }
 
@@ -128,8 +128,8 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |   }; gr()
                     |}
             """.trimMargin(),
-            LintError(5, 9, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gt()", true),
-            LintError(6, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gr()", true)
+            DiktatError(5, 9, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gt()", true),
+            DiktatError(6, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gr()", true)
         )
     }
 
@@ -142,7 +142,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |   ; grr()
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} ; grr()", true)
+            DiktatError(2, 4, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} ; grr()", true)
         )
     }
 }

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
@@ -125,7 +125,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 4)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 4)}", false)
         )
     }
 
@@ -155,7 +155,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
@@ -171,7 +171,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
@@ -187,7 +187,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
@@ -206,7 +206,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
         )
     }
 
@@ -248,7 +248,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
         )
     }
 
@@ -400,7 +400,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
         )
     }
 
@@ -418,7 +418,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
         )
     }
 
@@ -435,7 +435,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("foo", 3, 5)}", false)
+            DiktatError(3, 9, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("foo", 3, 5)}", false)
         )
     }
 
@@ -514,7 +514,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    bar(list)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
+            DiktatError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
         )
     }
 

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
 import org.cqfn.diktat.ruleset.rules.chapter3.MultipleModifiersSequence
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -23,10 +23,10 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                     |   lateinit open protected var a: List<ASTNode>
                     |}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} final should be on position 2, but is on position 1", true),
-            LintError(2, 7, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
-            LintError(3, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} lateinit should be on position 3, but is on position 1", true),
-            LintError(3, 18, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected should be on position 1, but is on position 3", true)
+            DiktatError(2, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} final should be on position 2, but is on position 1", true),
+            DiktatError(2, 7, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
+            DiktatError(3, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} lateinit should be on position 3, but is on position 1", true),
+            DiktatError(3, 18, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected should be on position 1, but is on position 3", true)
         )
     }
 
@@ -57,10 +57,10 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                     |
                     |inline  fun < reified T> membersOf() = T::class.members
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 3, but is on position 1", true),
-            LintError(1, 16, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 3", true),
-            LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 2, but is on position 1", true),
-            LintError(3, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
+            DiktatError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 3, but is on position 1", true),
+            DiktatError(1, 16, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 3", true),
+            DiktatError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 2, but is on position 1", true),
+            DiktatError(3, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
         )
     }
 
@@ -77,12 +77,12 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                     |      }
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} enum should be on position 2, but is on position 1", true),
-            LintError(1, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
-            LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} data should be on position 2, but is on position 1", true),
-            LintError(3, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected should be on position 1, but is on position 2", true),
-            LintError(4, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} operator should be on position 2, but is on position 1", true),
-            LintError(4, 13, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
+            DiktatError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} enum should be on position 2, but is on position 1", true),
+            DiktatError(1, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
+            DiktatError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} data should be on position 2, but is on position 1", true),
+            DiktatError(3, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected should be on position 1, but is on position 2", true),
+            DiktatError(4, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} operator should be on position 2, but is on position 1", true),
+            DiktatError(4, 13, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
         )
     }
 
@@ -94,7 +94,7 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                     |public @Annotation final fun foo() {
                     |}
             """.trimMargin(),
-            LintError(1, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} @Annotation annotation should be before all modifiers", true)
+            DiktatError(1, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} @Annotation annotation should be before all modifiers", true)
         )
     }
 

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.UseLastIndex
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |val D = A.B.C.length - 1
                     |
             """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} A.B.C.length - 1", true)
+            DiktatError(2, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} A.B.C.length - 1", true)
         )
     }
 
@@ -51,7 +51,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |var C = A.length - 19
                     |
             """.trimMargin(),
-            LintError(2, 12, ruleId, "${Warnings.USE_LAST_INDEX.warnText() } A.length   -       1", true)
+            DiktatError(2, 12, ruleId, "${Warnings.USE_LAST_INDEX.warnText() } A.length   -       1", true)
         )
     }
 
@@ -64,7 +64,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |var B = A.length-1
                     |
             """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} A.length-1", true)
+            DiktatError(2, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} A.length-1", true)
         )
     }
 
@@ -95,7 +95,7 @@ class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
                     |val M = "ASDFG".length
                     |
             """.trimMargin(),
-            LintError(4, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} \"AAAA\".length - 1", true)
+            DiktatError(4, 9, ruleId, "${Warnings.USE_LAST_INDEX.warnText()} \"AAAA\".length - 1", true)
         )
     }
 }

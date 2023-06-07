@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter4.SmartCastRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.SMART_CAST_NEEDED
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
@@ -45,7 +45,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(5, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            DiktatError(5, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -86,7 +86,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(7, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            DiktatError(7, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 
@@ -106,7 +106,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            DiktatError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -123,7 +123,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(5, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            DiktatError(5, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -159,7 +159,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            DiktatError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -186,8 +186,8 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
-            LintError(13, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
+            DiktatError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
+            DiktatError(13, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
         )
     }
 
@@ -208,7 +208,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(5, 29, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            DiktatError(5, 29, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 
@@ -278,8 +278,8 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
-            LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} y as Int", true)
+            DiktatError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
+            DiktatError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} y as Int", true)
         )
     }
 
@@ -338,7 +338,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            DiktatError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 
@@ -357,7 +357,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            DiktatError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 }

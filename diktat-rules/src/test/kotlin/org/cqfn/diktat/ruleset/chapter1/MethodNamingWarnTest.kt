@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TYPEALIAS_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -26,7 +26,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 15, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, DiktatError(2, 15, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -40,7 +40,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two", true))
+        lintMethod(code, DiktatError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two", true))
     }
 
     @Test
@@ -55,8 +55,8 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 }
             """.trimIndent()
         lintMethod(code,
-            LintError(1, 12, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true),
-            LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} TEST", true)
+            DiktatError(1, 12, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true),
+            DiktatError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} TEST", true)
         )
     }
 
@@ -70,7 +70,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, DiktatError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -83,7 +83,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, DiktatError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -95,7 +95,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     typealias relatedClasses = List<Pair<String, String>>
                 }
             """.trimIndent()
-        lintMethod(code, LintError(2, 15, ruleId, "${TYPEALIAS_NAME_INCORRECT_CASE.warnText()} relatedClasses", true))
+        lintMethod(code, DiktatError(2, 15, ruleId, "${TYPEALIAS_NAME_INCORRECT_CASE.warnText()} relatedClasses", true))
     }
 
     @Test
@@ -119,6 +119,6 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     return false
                 }
             """.trimIndent()
-        lintMethod(code, LintError(1, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck", true))
+        lintMethod(code, DiktatError(1, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck", true))
     }
 }

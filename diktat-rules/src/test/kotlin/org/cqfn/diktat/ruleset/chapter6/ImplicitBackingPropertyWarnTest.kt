@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.ImplicitBackingPropertyRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.NO_CORRESPONDING_PROPERTY
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -50,7 +50,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |       set(value) { field = value }
                     |}
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
+            DiktatError(3, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
         )
     }
 
@@ -160,7 +160,7 @@ class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRu
                     |       }
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} foo has no corresponding property with name _foo")
+            DiktatError(2, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} foo has no corresponding property with name _foo")
         )
     }
 }

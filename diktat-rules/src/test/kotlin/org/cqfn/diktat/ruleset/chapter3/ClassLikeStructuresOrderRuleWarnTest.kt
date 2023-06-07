@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRU
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
@@ -61,8 +61,8 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
-            LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
+            DiktatError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
+            DiktatError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
         )
     }
 
@@ -119,10 +119,10 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private lateinit var lateFoo: Int
                     |}
             """.trimMargin(),
-            LintError(4, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAR", true),
-            LintError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} qux", true),
-            LintError(8, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} quux", true),
-            LintError(11, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
+            DiktatError(4, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAR", true),
+            DiktatError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} qux", true),
+            DiktatError(8, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} quux", true),
+            DiktatError(11, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
         )
     }
 
@@ -210,8 +210,8 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                         }
                     }
             """.trimMargin(),
-            LintError(3, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: b", true),
-            LintError(5, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: a", true)
+            DiktatError(3, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: b", true),
+            DiktatError(5, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: a", true)
         )
     }
 

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.TrivialPropertyAccessors
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -24,8 +24,8 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |       set(value) { field = value }
                     |}
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() { return field }", true),
-            LintError(4, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} set(value) { field = value }", true)
+            DiktatError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() { return field }", true),
+            DiktatError(4, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} set(value) { field = value }", true)
         )
     }
 
@@ -39,7 +39,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |       get() = field
                     |}
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() = field", true)
+            DiktatError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() = field", true)
         )
     }
 
@@ -86,7 +86,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                     |       get
                     |}
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get", true)
+            DiktatError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get", true)
         )
     }
 }

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.AbstractClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.CLASS_SHOULD_NOT_BE_ABSTRACT
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -36,7 +36,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 |    fun func() {}
                 |}
             """.trimMargin(),
-            LintError(1, 37, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Some", true)
+            DiktatError(1, 37, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Some", true)
         )
     }
 
@@ -53,7 +53,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 |    }
                 |}
             """.trimMargin(),
-            LintError(4, 32, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Inner", true)
+            DiktatError(4, 32, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Inner", true)
         )
     }
 
@@ -83,7 +83,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 |    }
                 |}
             """.trimMargin(),
-            LintError(1, 58, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} CoroutineTest", true)
+            DiktatError(1, 58, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} CoroutineTest", true)
         )
     }
 
