@@ -34,7 +34,7 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
                     valueArgumentList?.getChildren(TokenSet.create(KtNodeTypes.VALUE_ARGUMENT))?.size?.let { it <= 1 } == true &&
                     node.findChildByType(KtNodeTypes.LAMBDA_ARGUMENT) == null) {
                 Warnings.DEBUG_PRINT.warn(
-                    configRules, emitWarn, false,
+                    configRules, emitWarn, autoCorrected = false,
                     "found $referenceExpression()", node.startOffset, node,
                 )
             }
@@ -57,7 +57,7 @@ class DebugPrintRule(configRules: List<RulesConfig>) : DiktatRule(
                     ?.text
                 if (logMethod in setOf("error", "info", "log", "warn")) {
                     Warnings.DEBUG_PRINT.warn(
-                        configRules, emitWarn, false,
+                        configRules, emitWarn, autoCorrected = false,
                         "found console.$logMethod()", node.startOffset, node,
                     )
                 }
