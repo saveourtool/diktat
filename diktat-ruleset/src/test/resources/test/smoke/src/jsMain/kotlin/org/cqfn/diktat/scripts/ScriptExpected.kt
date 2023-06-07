@@ -1,4 +1,4 @@
-package org.cqfn.diktat.scripts
+package com.saveourtool.diktat.scripts
 
 import kotlinx.browser.document
 

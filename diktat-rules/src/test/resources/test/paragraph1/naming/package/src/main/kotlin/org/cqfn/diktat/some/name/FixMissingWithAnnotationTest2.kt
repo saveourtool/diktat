@@ -1,5 +1,5 @@
 @file:Suppress("CONSTANT_UPPERCASE") // comment
-import org.cqfn.diktat.ktlint.core.Rule
+import com.saveourtool.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }

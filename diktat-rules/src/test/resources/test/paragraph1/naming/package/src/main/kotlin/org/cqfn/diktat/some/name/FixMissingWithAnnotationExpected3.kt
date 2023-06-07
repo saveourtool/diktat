@@ -2,8 +2,8 @@
  * comment
  */
 @file:Suppress("CONSTANT_UPPERCASE")
-package org.cqfn.diktat.some.name
-import org.cqfn.diktat.ktlint.core.Rule
+package com.saveourtool.diktat.some.name
+import com.saveourtool.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }

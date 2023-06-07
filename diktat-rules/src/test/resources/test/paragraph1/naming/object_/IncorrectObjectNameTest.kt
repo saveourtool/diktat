@@ -1,4 +1,4 @@
-package org.cqfn.diktat.test.resources.test.paragraph1.naming.object_
+package com.saveourtool.diktat.test.resources.test.paragraph1.naming.object_
 
 object PaScalCase1 {}
 object Pascal_Case2 {}

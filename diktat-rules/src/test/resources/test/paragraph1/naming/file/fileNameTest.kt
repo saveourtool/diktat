@@ -1,4 +1,4 @@
-package org.cqfn.diktat.resources.test.paragraph1.naming.file.resources.test.paragraph1.naming.file.naming.file
+package com.saveourtool.diktat.resources.test.paragraph1.naming.file.resources.test.paragraph1.naming.file.naming.file
 
 fun foo () {
 

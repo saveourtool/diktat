@@ -1,4 +1,4 @@
-package org.cqfn.diktat.kdoc.methods
+package com.saveourtool.diktat.kdoc.methods
 
 class KdocMethodsFull {
     fun test1() {

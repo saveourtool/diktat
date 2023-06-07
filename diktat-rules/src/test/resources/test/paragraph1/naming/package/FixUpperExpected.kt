@@ -1,6 +1,6 @@
-package /* AAAAAA */    org.cqfn.diktat.ktlint.ruleset.standarddd
+package /* AAAAAA */    com.saveourtool.diktat.ktlint.ruleset.standarddd
 
-import org.cqfn.diktat.ktlint.CORE.Rule
+import com.saveourtool.diktat.ktlint.CORE.Rule
 
 
 /**

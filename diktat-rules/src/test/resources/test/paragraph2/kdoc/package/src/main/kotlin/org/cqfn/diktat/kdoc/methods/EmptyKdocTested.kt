@@ -1,4 +1,4 @@
-package org.cqfn.diktat.kdoc.methods
+package com.saveourtool.diktat.kdoc.methods
 
 val foo = 42
 

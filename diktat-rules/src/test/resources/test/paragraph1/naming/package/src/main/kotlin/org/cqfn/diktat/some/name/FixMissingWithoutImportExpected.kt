@@ -1,5 +1,5 @@
 @file:Suppress("CONSTANT_UPPERCASE")
-package org.cqfn.diktat.some.name
+package com.saveourtool.diktat.some.name
 
 val a = 5
 

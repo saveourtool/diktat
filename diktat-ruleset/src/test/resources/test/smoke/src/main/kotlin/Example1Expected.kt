@@ -1,5 +1,5 @@
 // ;warn:$line:1: [FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: Example1Expected.kt vs Example{{.*}}
-package org.cqfn.diktat
+package com.saveourtool.diktat
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: Example (cannot be auto-corrected){{.*}}
 class Example {
