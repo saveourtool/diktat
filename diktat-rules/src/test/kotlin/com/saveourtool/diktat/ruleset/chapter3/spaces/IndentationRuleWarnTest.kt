@@ -709,7 +709,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 |
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kts"
         )
     }
 
@@ -722,7 +722,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 |
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/build.gradle.kts"
+            fileName = "src/main/kotlin/com/saveourtool/diktat/build.gradle.kts"
         )
     }
 

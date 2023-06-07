@@ -111,7 +111,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |}
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kt",
             DiktatError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
         )
         lintMethodWithFile(
@@ -124,7 +124,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |}
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
+            fileName = "src/test/kotlin/com/saveourtool/diktat/Example.kt"
         )
         lintMethodWithFile(
             """
@@ -135,7 +135,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |}
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/test/kotlin/org/cqfn/diktat/UtilTest.kt"
+            fileName = "src/test/kotlin/com/saveourtool/diktat/UtilTest.kt"
         )
     }
 }

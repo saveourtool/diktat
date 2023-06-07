@@ -485,7 +485,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
+            fileName = "src/main/kotlin/com/saveourtool/diktat/builds.gradle.kts"
         )
     }
 
@@ -498,7 +498,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kts",
             DiktatError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 0 declared classes and/or objects")
         )
     }

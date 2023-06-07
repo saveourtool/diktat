@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
-class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/kotlin/org/cqfn/diktat/kdoc/methods",
+class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/kotlin/com/saveourtool/diktat/kdoc/methods",
     ::KdocMethods) {
     @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)

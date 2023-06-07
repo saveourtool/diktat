@@ -26,7 +26,7 @@ class DiktatRuleSetProviderTest {
     @Suppress("UnsafeCallOnNullableType")
     @Test
     fun `check DiktatRuleSetProviderTest contain all rules`() {
-        val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
+        val path = "${System.getProperty("user.dir")}/src/main/kotlin/com/saveourtool/diktat/ruleset/rules"
         val fileNames = Path(path)
             .walk()
             .filter(Path::isRegularFile)

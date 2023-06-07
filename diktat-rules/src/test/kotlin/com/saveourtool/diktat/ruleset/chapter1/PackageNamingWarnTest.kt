@@ -111,7 +111,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            DiktatError(1, 35, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST", true),
+            DiktatError(1, 42, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -153,7 +153,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            DiktatError(1, 32, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_", true),
+            DiktatError(1, 39, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -174,7 +174,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            DiktatError(1, 32, ruleId, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} testш"),
+            DiktatError(1, 39, ruleId, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} testш"),
             rulesConfigList = rulesConfigList
         )
     }
@@ -216,7 +216,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
             """.trimIndent(),
             tempDir = tempDir,
-            fileName = "diktat/diktat-rules/src/nativeMain/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            fileName = "diktat/diktat-rules/src/nativeMain/kotlin/com/saveourtool/diktat/domain/BlaBla.kt",
             rulesConfigList = rulesConfigSourceDirectories
         )
 
@@ -234,7 +234,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
             """.trimIndent(),
             tempDir = tempDir,
-            fileName = "diktat/diktat-rules/src/main/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            fileName = "diktat/diktat-rules/src/main/kotlin/com/saveourtool/diktat/domain/BlaBla.kt",
             DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} com.saveourtool.diktat.main.kotlin.com.saveourtool.diktat.domain", true),
             rulesConfigList = rulesConfigSourceDirectories
         )
@@ -257,7 +257,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
             """.trimIndent(),
             tempDir = tempDir,
-            fileName = "diktat/diktat-rules/src/nativeTest/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            fileName = "diktat/diktat-rules/src/nativeTest/kotlin/com/saveourtool/diktat/domain/BlaBla.kt",
             rulesConfigList = rulesConfigSourceDirectories
         )
 
@@ -275,7 +275,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
             """.trimIndent(),
             tempDir = tempDir,
-            fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            fileName = "diktat/diktat-rules/src/test/kotlin/com/saveourtool/diktat/domain/BlaBla.kt",
             DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} com.saveourtool.diktat.test.kotlin.com.saveourtool.diktat.domain", true),
             rulesConfigList = rulesConfigSourceDirectories
         )
@@ -289,7 +289,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                     package com.saveourtool.diktat.ruleset.chapter1
             """.trimIndent(),
             tempDir = tempDir,
-            fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+            fileName = "diktat/diktat-rules/src/test/kotlin/com/saveourtool/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             rulesConfigList = rulesConfigList
         )
 
@@ -298,7 +298,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                     package com.saveourtool.diktat.chapter1
             """.trimIndent(),
             tempDir = tempDir,
-            fileName = "diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+            fileName = "diktat/diktat-rules/src/test/kotlin/com/saveourtool/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
             DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} com.saveourtool.diktat.ruleset.chapter1", true),
             rulesConfigList = rulesConfigList
         )
@@ -312,7 +312,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                     |package com.saveourtool.diktat.test.processing
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt",
+            fileName = "project/module/src/test/kotlin/com/saveourtool/diktat/test/processing/SpecialPackageNaming.kt",
             rulesConfigList = rulesConfigList
         )
 
@@ -337,7 +337,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                     |package com.saveourtool.diktat
                 """.trimMargin(),
                 tempDir = tempDir,
-                fileName = "project/src/$it/kotlin/org/cqfn/diktat/Example.kt",
+                fileName = "project/src/$it/kotlin/com/saveourtool/diktat/Example.kt",
                 rulesConfigList = rulesConfigList
             )
         }
@@ -352,7 +352,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                     |package com.saveourtool.diktat
                 """.trimMargin(),
                 tempDir = tempDir,
-                fileName = "project/src/$it/kotlin/org/cqfn/diktat/example/Example.kt",
+                fileName = "project/src/$it/kotlin/com/saveourtool/diktat/example/Example.kt",
                 DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} com.saveourtool.diktat.example", true),
                 rulesConfigList = rulesConfigList
             )
@@ -367,7 +367,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 |package com.saveourtool.diktat
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
+            fileName = "project/src/myProjectMain/kotlin/com/saveourtool/diktat/example/Example.kt",
             DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} com.saveourtool.diktat.myProjectMain.kotlin.com.saveourtool.diktat.example", true),
             rulesConfigList = rulesConfigList
         )
@@ -381,7 +381,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 |package com.saveourtool.diktat
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
+            fileName = "project/src/main/kotlin/com/saveourtool/diktat/example/Example.kt",
             DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
             DiktatError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} com.saveourtool.diktat.example", true),
             rulesConfigList = rulesConfigListEmptyDomainName
@@ -396,7 +396,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 |package com.saveourtool.diktat.test.utils
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "project/src/main/kotlin/org/cqfn/diktat/test.utils/Example.kt",
+            fileName = "project/src/main/kotlin/com/saveourtool/diktat/test.utils/Example.kt",
         )
     }
 

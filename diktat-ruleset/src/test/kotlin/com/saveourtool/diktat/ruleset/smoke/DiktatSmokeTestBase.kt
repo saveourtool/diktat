@@ -304,8 +304,8 @@ abstract class DiktatSmokeTestBase {
     fun `smoke test with multiplatform project layout`() {
         fixAndCompare(
             prepareOverriddenRulesConfig(),
-            "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptExpected.kt",
-            "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptTest.kt"
+            "../../jsMain/kotlin/com/saveourtool/diktat/scripts/ScriptExpected.kt",
+            "../../jsMain/kotlin/com/saveourtool/diktat/scripts/ScriptTest.kt"
         )
     }
 

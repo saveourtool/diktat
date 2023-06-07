@@ -16,13 +16,13 @@ class PackagePathFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
     fun `fixing package name that differs from a path`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixIncorrectExpected.kt", "org/cqfn/diktat/some/name/FixIncorrectTest.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixIncorrectExpected.kt", "com/saveourtool/diktat/some/name/FixIncorrectTest.kt")
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
     fun `fixing package name that differs from a path - regression one-word package name`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixPackageRegressionExpected.kt", "org/cqfn/diktat/some/name/FixPackageRegressionTest.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixPackageRegressionExpected.kt", "com/saveourtool/diktat/some/name/FixPackageRegressionTest.kt")
     }
 
     @Test
@@ -34,19 +34,19 @@ class PackagePathFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with file annotation`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixMissingWithAnnotationExpected.kt", "com/saveourtool/diktat/some/name/FixMissingWithAnnotationTest.kt")
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with file annotation and comments`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected2.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest2.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixMissingWithAnnotationExpected2.kt", "com/saveourtool/diktat/some/name/FixMissingWithAnnotationTest2.kt")
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with file annotation and comments 2`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected3.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest3.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixMissingWithAnnotationExpected3.kt", "com/saveourtool/diktat/some/name/FixMissingWithAnnotationTest3.kt")
     }
 
     // If there is no import list in code, the node is still present in the AST, but without any whitespaces around
@@ -54,7 +54,7 @@ class PackagePathFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name without import list`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithoutImportExpected.kt", "org/cqfn/diktat/some/name/FixMissingWithoutImportTest.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixMissingWithoutImportExpected.kt", "com/saveourtool/diktat/some/name/FixMissingWithoutImportTest.kt")
     }
 
     @Test
@@ -66,6 +66,6 @@ class PackagePathFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with a proper location`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixMissingExpected.kt", "org/cqfn/diktat/some/name/FixMissingTest.kt")
+        fixAndCompare("com/saveourtool/diktat/some/name/FixMissingExpected.kt", "com/saveourtool/diktat/some/name/FixMissingTest.kt")
     }
 }

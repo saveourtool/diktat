@@ -104,7 +104,7 @@ fun Project.configurePublications() {
 fun MavenPom.configurePom(project: Project) {
     name.set(project.name)
     description.set(project.description ?: project.name)
-    url.set("https://www.cqfn.org/diKTat/")
+    url.set("https://saveourtool.com")
     licenses {
         license {
             name.set("MIT License")

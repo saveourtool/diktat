@@ -47,7 +47,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
 
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kts",
             DiktatError(10, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
             DiktatError(12, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo( //dfdg...", true),
             DiktatError(15, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} println(\"hello\")", true),
@@ -72,7 +72,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
 
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kts"
         )
     }
 
@@ -92,7 +92,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 }
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kts"
         )
     }
 
@@ -132,7 +132,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
 
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts",
+            fileName = "src/main/kotlin/com/saveourtool/diktat/builds.gradle.kts",
             DiktatError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true)
         )
     }
@@ -153,7 +153,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 foo().goo()
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
+            fileName = "src/main/kotlin/com/saveourtool/diktat/builds.gradle.kts"
         )
     }
 
@@ -171,7 +171,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 foo/*df*/()
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kts",
             DiktatError(1, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} version = \"0.1.0-SNAPSHOT\"", true),
             DiktatError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true)
         )

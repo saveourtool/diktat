@@ -84,23 +84,23 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         val complexAnnotationCode = "@Anno(test = [\"args\"]) $funCode"
 
         // do not force KDoc on annotated function
-        lintMethodWithFile(validCode, tempDir = tempDir, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        lintMethodWithFile(validCode, tempDir = tempDir, fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kt")
         // no false positive triggers on annotations
         lintMethodWithFile(complexAnnotationCode,
             tempDir = tempDir,
-            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
+            fileName = "src/main/kotlin/com/saveourtool/diktat/Example.kt",
             DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
         )
         // should check all .kt files unless both conditions on location and name are true
         lintMethodWithFile(funCode,
             tempDir = tempDir,
-            fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt",
+            fileName = "src/test/kotlin/com/saveourtool/diktat/Example.kt",
             DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
         )
         // should allow to set custom test dirs
         lintMethodWithFile(funCode,
             tempDir = tempDir,
-            fileName = "src/jvmTest/kotlin/org/cqfn/diktat/ExampleTest.kt",
+            fileName = "src/jvmTest/kotlin/com/saveourtool/diktat/ExampleTest.kt",
             rulesConfigList = listOf(RulesConfig(DIKTAT_COMMON, true, mapOf("testDirs" to "test,jvmTest")))
         )
     }

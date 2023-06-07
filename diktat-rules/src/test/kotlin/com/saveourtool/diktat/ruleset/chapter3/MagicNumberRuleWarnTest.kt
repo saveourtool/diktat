@@ -208,7 +208,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |}
             """.trimMargin(),
             tempDir = tempDir,
-            fileName = "src/test/kotlin/org/cqfn/diktat/test/hehe/MagicNumberTest.kt",
+            fileName = "src/test/kotlin/com/saveourtool/diktat/test/hehe/MagicNumberTest.kt",
             rulesConfigList = rulesConfigIgnoreNumbersMagicNumber,
         )
     }
