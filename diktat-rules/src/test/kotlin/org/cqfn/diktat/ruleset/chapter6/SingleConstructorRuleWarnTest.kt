@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_P
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -38,7 +38,7 @@ class SingleConstructorRuleWarnTest : LintTestBase(::SingleConstructorRule) {
                 |    }
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY.warnText()} in class <Test>", true)
+            DiktatError(1, 1, ruleId, "${SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY.warnText()} in class <Test>", true)
         )
     }
 }

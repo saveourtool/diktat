@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.DataClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.USE_DATA_CLASS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
+            DiktatError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
         )
     }
 
@@ -34,7 +34,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |class Some(val a: Int = 5)
                     |
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
+            DiktatError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Some")
         )
     }
 
@@ -49,7 +49,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |          set(value: Int) { field = value}
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Test")
+            DiktatError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Test")
         )
     }
 
@@ -121,7 +121,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |class A(val map: Map<Int, Int>) {}
                     |
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} A")
+            DiktatError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} A")
         )
     }
 
@@ -156,8 +156,8 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |   fun foo() = 10
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} B"),
-            LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Ab")
+            DiktatError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} B"),
+            DiktatError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Ab")
         )
     }
 
@@ -263,7 +263,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |   val gitHubAuthToken: String = auth.toLowerCase()
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
+            DiktatError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
         )
     }
 
@@ -281,7 +281,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 |   }
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
+            DiktatError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
         )
     }
 

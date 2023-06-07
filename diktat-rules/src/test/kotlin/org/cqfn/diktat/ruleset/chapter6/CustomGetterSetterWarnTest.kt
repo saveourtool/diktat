@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.CUSTOM_GETTERS_SETTERS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -27,8 +27,8 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        get() = this.hashCode() * 2
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
-            LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
+            DiktatError(3, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
+            DiktatError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
 
@@ -80,7 +80,7 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        get() = this.hashCode() * 2
                     |}
             """.trimMargin(),
-            LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
+            DiktatError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
 
@@ -98,8 +98,8 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        get() = this.hashCode() * 2
                     |}
             """.trimMargin(),
-            LintError(3, 19, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
-            LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
+            DiktatError(3, 19, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
+            DiktatError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
 }

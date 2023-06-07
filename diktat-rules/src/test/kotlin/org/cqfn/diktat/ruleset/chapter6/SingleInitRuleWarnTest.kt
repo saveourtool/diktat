@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -38,7 +38,7 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
                 |    init { println("Dolor sit amet") }
                 |}
             """.trimMargin(),
-            LintError(1, 15, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} in class <Example> found 2 `init` blocks", true)
+            DiktatError(1, 15, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} in class <Example> found 2 `init` blocks", true)
         )
     }
 
@@ -54,7 +54,7 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
                 |    }
                 |}
             """.trimMargin(),
-            LintError(3, 5, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} `init` block has assignments that can be moved to declarations", true)
+            DiktatError(3, 5, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} `init` block has assignments that can be moved to declarations", true)
         )
     }
 

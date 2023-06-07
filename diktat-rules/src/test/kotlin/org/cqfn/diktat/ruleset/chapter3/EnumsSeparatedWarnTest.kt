@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -53,10 +53,10 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   fun foo() {}
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
-            LintError(2, 7, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
-            LintError(2, 10, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
-            LintError(2, 10, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
+            DiktatError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
+            DiktatError(2, 7, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
+            DiktatError(2, 10, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
+            DiktatError(2, 10, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -82,9 +82,9 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   C
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
-            LintError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-            LintError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
+            DiktatError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
+            DiktatError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
+            DiktatError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -98,8 +98,8 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   C, ;
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
-            LintError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true)
+            DiktatError(2, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
+            DiktatError(3, 4, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true)
         )
     }
 
@@ -130,7 +130,7 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   ;
                     |}
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
+            DiktatError(4, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -168,8 +168,8 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   abstract fun signal(): ProtocolState
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
-            LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
+            DiktatError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
+            DiktatError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -187,8 +187,8 @@ class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-            LintError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
+            DiktatError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
+            DiktatError(5, 4, ruleId, "${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
 
         )
     }

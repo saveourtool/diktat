@@ -12,7 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
@@ -52,7 +52,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimMargin()
         lintMethod(
             code,
-            LintError(
+            DiktatError(
                 11, 9, ruleId, "${Warnings.COMMENTED_BY_KDOC.warnText()} Redundant asterisk in block comment: \\**", true
             )
         )
@@ -80,10 +80,10 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimIndent()
         lintMethod(
             code,
-            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
-            LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
-            LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
-            LintError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
+            DiktatError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
+            DiktatError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
+            DiktatError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
         )
     }
 
@@ -96,7 +96,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 }
             """.trimIndent()
         lintMethod(
-            code, LintError(
+            code, DiktatError(
                 1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"
             )
         )
@@ -118,8 +118,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimIndent()
         lintMethod(
             code,
-            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
-            LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
+            DiktatError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
     }
 
@@ -173,9 +173,9 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimIndent()
         lintMethod(
             code,
-            LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
-            LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
-            LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+            DiktatError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+            DiktatError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+            DiktatError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 
@@ -208,9 +208,9 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimIndent()
         lintMethod(
             code,
-            LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
-            LintError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
-            LintError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+            DiktatError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+            DiktatError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+            DiktatError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 
@@ -311,7 +311,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |) {
                     |}
             """.trimMargin(),
-            LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
+            DiktatError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
@@ -365,7 +365,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
@@ -384,7 +384,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
         )
     }
 
@@ -427,7 +427,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
         )
     }
 
@@ -448,7 +448,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
         )
     }
 
@@ -482,8 +482,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property Name text", false),
-            LintError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
+            DiktatError(2, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property Name text", false),
+            DiktatError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 
@@ -498,8 +498,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
-            LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
+            DiktatError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 
@@ -518,7 +518,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
+            DiktatError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
         )
     }
 
@@ -534,7 +534,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val foo: Any
                 |}
             """.trimMargin(),
-            LintError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} val foo: Any")
+            DiktatError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} val foo: Any")
         )
     }
 
@@ -552,7 +552,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val foo: Any
                 |}
             """.trimMargin(),
-            LintError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} /**...")
+            DiktatError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} /**...")
         )
     }
 
@@ -569,9 +569,9 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |
                 |actual class A{}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} fo"),
-            LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} foo"),
-            LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} B")
+            DiktatError(2, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} fo"),
+            DiktatError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} foo"),
+            DiktatError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} B")
         )
     }
 
@@ -635,7 +635,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    //
                 |}
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
+            DiktatError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
 
@@ -654,7 +654,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field2"),
+            DiktatError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field2"),
         )
     }
 
@@ -673,7 +673,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
+            DiktatError(4, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
 
@@ -693,8 +693,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |    val field2: String,
                 |)
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field1"),
-            LintError(5, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
+            DiktatError(3, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @property field1"),
+            DiktatError(5, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
 }

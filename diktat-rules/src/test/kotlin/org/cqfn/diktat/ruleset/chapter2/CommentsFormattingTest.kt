@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Tag
@@ -51,7 +51,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(6, 51, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but there are too many in // comment", true))
+            DiktatError(6, 51, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but there are too many in // comment", true))
     }
 
     @Test
@@ -68,7 +68,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(3, 22, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but there are too many in // asdasd", true))
+            DiktatError(3, 22, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but there are too many in // asdasd", true))
     }
 
     @Test
@@ -138,8 +138,8 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(4, 5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space(s) before comment token in //First Comment", true),
-            LintError(11, 5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space(s) before comment token in /*     Comment */", true))
+            DiktatError(4, 5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space(s) before comment token in //First Comment", true),
+            DiktatError(11, 5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space(s) before comment token in /*     Comment */", true))
     }
 
     @Test
@@ -220,7 +220,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(2, 1, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} // Some comment", true))
+            DiktatError(2, 1, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} // Some comment", true))
     }
 
     @Test
@@ -243,9 +243,9 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(2, 1, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /* Some comment */", true),
-            LintError(6, 1, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /**...", true),
-            LintError(8, 3, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} redundant blank line after /**...", true))
+            DiktatError(2, 1, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /* Some comment */", true),
+            DiktatError(6, 1, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /**...", true),
+            DiktatError(8, 3, ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} redundant blank line after /**...", true))
     }
 
     @Test
@@ -278,7 +278,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(5, 13, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but are none in // This is a comment", true))
+            DiktatError(5, 13, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but are none in // This is a comment", true))
     }
 
     @Test
@@ -349,7 +349,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(6, 8, ruleId, "${IF_ELSE_COMMENTS.warnText()} // Bad Comment", true))
+            DiktatError(6, 8, ruleId, "${IF_ELSE_COMMENTS.warnText()} // Bad Comment", true))
     }
 
     @Test
@@ -372,7 +372,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(6, 8, ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
+            DiktatError(6, 8, ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
     }
 
     @Test
@@ -394,7 +394,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(6, 8, ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
+            DiktatError(6, 8, ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
     }
 
     @Test
@@ -439,7 +439,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(8, 18, ruleId, "${Warnings.FIRST_COMMENT_NO_BLANK_LINE.warnText()} // Bad Comment", true))
+            DiktatError(8, 18, ruleId, "${Warnings.FIRST_COMMENT_NO_BLANK_LINE.warnText()} // Bad Comment", true))
     }
 
     @Test
@@ -473,7 +473,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
             """.trimMargin()
 
         lintMethod(code,
-            LintError(1, 2, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 0 space(s) before comment text, but are 1 in /*...", true))
+            DiktatError(1, 2, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 0 space(s) before comment text, but are 1 in /*...", true))
     }
 
     @Test

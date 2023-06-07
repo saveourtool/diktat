@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_PARAMETERS
 import org.cqfn.diktat.ruleset.rules.chapter5.FunctionArgumentsSize
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -29,10 +29,10 @@ class FunctionArgumentsSizeWarnTest : LintTestBase(::FunctionArgumentsSize) {
                     |fun foo(a: Int, b: Int, c: Int, d: Int, e: Int, myLambda: () -> Unit) = 10
                     |abstract fun foo(a: Int, b: Int, c: Int, d: Int, e: Int, f: Int)
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
-            LintError(2, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
-            LintError(4, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
-            LintError(5, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false)
+            DiktatError(1, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
+            DiktatError(2, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
+            DiktatError(4, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false),
+            DiktatError(5, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 6, but allowed 5", false)
         )
     }
 
@@ -43,7 +43,7 @@ class FunctionArgumentsSizeWarnTest : LintTestBase(::FunctionArgumentsSize) {
             """
                     |fun foo(a: Int, b: Int) {}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 2, but allowed 1", false),
+            DiktatError(1, 1, ruleId, "${TOO_MANY_PARAMETERS.warnText()} foo has 2, but allowed 1", false),
             rulesConfigList = rulesConfigList
         )
     }

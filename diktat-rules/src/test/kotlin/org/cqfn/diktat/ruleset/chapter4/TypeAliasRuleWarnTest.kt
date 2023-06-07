@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.rules.chapter4.TypeAliasRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -26,7 +26,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | val b: MutableMap<String, MutableList<String>>
                     | val b = listof<Int>()
             """.trimMargin(),
-            LintError(1, 9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+            DiktatError(1, 9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -38,8 +38,8 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | var emitWarn: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
                     | var emitWarn: (offset: Int, (T) -> Boolean) -> Unit
             """.trimMargin(),
-            LintError(1, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
-            LintError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+            DiktatError(1, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+            DiktatError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -55,7 +55,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | }
                     |
             """.trimMargin(),
-            LintError(4, 13, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+            DiktatError(4, 13, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -69,7 +69,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | val list: List<List<Int>>
                     |
             """.trimMargin(),
-            LintError(3, 12, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+            DiktatError(3, 12, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
             rulesConfigList = rulesConfigListShortType
         )
     }
@@ -87,8 +87,8 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     |   }
                     | }
             """.trimMargin(),
-            LintError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
-            LintError(3, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+            DiktatError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+            DiktatError(3, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -121,7 +121,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+            DiktatError(2, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
             rulesConfigList = rulesConfigListShortType
         )
     }

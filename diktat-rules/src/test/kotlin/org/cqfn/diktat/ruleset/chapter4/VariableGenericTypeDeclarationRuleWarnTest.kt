@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter4.VariableGenericTypeDeclarationRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.GENERIC_VARIABLE_WRONG_DECLARATION
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -43,11 +43,11 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |   val x = foo.bar<Bar>().baz<Some>()
                     |}
             """.trimMargin(),
-            LintError(2, 4, ruleId,
+            DiktatError(2, 4, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true),
-            LintError(3, 4, ruleId,
+            DiktatError(3, 4, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val any = Array<Any>(3) { \"\" }", false),
-            LintError(4, 4, ruleId,
+            DiktatError(4, 4, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val x = foo.bar<Bar>().baz<Some>()", false)
         )
     }
@@ -105,7 +105,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 25, ruleId,
+            DiktatError(2, 25, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true)
         )
     }
@@ -149,7 +149,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 8, ruleId,
+            DiktatError(3, 8, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true)
         )
     }
@@ -187,7 +187,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |
                     |}
             """.trimMargin(),
-            LintError(1, 17, ruleId,
+            DiktatError(1, 17, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true)
         )
     }
@@ -203,7 +203,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 8, ruleId,
+            DiktatError(3, 8, ruleId,
                 "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, Map<String>>()", true)
         )
     }

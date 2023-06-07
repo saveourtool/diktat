@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -27,7 +27,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |    PLUS, ASD
                     |}
             """.trimMargin(),
-            LintError(1, 5, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 7. need to be: 1", true)
+            DiktatError(1, 5, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 7. need to be: 1", true)
         )
     }
 
@@ -66,8 +66,8 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 7, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 6. need to be: 1", true),
-            LintError(2, 33, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
+            DiktatError(2, 7, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 6. need to be: 1", true),
+            DiktatError(2, 33, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
 
@@ -81,8 +81,8 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(1, 6, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true),
-            LintError(2, 9, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
+            DiktatError(1, 6, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true),
+            DiktatError(2, 9, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
 
@@ -128,9 +128,9 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 15, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 4. need to be: 1", true),
-            LintError(4, 18, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true),
-            LintError(5, 14, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
+            DiktatError(3, 15, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 4. need to be: 1", true),
+            DiktatError(4, 18, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true),
+            DiktatError(5, 14, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
 
         )
     }
@@ -156,8 +156,8 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   var value = t
                     |}
             """.trimMargin(),
-            LintError(1, 11, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 3. need to be: 1", true),
-            LintError(1, 19, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 4. need to be: 1", true)
+            DiktatError(1, 11, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 3. need to be: 1", true),
+            DiktatError(1, 19, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 4. need to be: 1", true)
         )
     }
 
@@ -184,7 +184,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   fun bar()
                     |}
             """.trimMargin(),
-            LintError(1, 10, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 7. need to be: 1", true)
+            DiktatError(1, 10, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 7. need to be: 1", true)
         )
     }
 
@@ -199,7 +199,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 8, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
+            DiktatError(2, 8, ruleId, "${TOO_MANY_CONSECUTIVE_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
 

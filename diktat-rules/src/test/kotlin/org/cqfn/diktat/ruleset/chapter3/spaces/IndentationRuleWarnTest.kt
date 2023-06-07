@@ -14,7 +14,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig.Companion.IND
 import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.TEST_FILE_NAME
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -68,7 +68,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} tabs are not allowed for indentation", true)
+            DiktatError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} tabs are not allowed for indentation", true)
         )
     }
 
@@ -82,7 +82,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(2, 1, ruleId, warnText(4, 3), true)
+            DiktatError(2, 1, ruleId, warnText(4, 3), true)
         )
     }
 
@@ -97,7 +97,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = TEST_FILE_NAME,
-            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file $TEST_FILE_NAME", true)
+            DiktatError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file $TEST_FILE_NAME", true)
         )
     }
 
@@ -112,7 +112,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = TEST_FILE_NAME,
-            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file $TEST_FILE_NAME", true)
+            DiktatError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file $TEST_FILE_NAME", true)
         )
     }
 
@@ -129,7 +129,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = TEST_FILE_NAME,
-            LintError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file $TEST_FILE_NAME", true)
+            DiktatError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file $TEST_FILE_NAME", true)
         )
     }
 
@@ -210,9 +210,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(2, 1, ruleId, warnText(8, 14), true),
-            LintError(3, 1, ruleId, warnText(8, 14), true),
-            LintError(4, 1, ruleId, warnText(8, 14), true),
+            DiktatError(2, 1, ruleId, warnText(8, 14), true),
+            DiktatError(3, 1, ruleId, warnText(8, 14), true),
+            DiktatError(4, 1, ruleId, warnText(8, 14), true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -299,8 +299,8 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(2, 1, ruleId, warnText(1, 0), true),
-            LintError(3, 1, ruleId, warnText(1, 0), true)
+            DiktatError(2, 1, ruleId, warnText(1, 0), true),
+            DiktatError(3, 1, ruleId, warnText(1, 0), true)
         )
     }
 
@@ -372,10 +372,10 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(3, 1, ruleId, warnText(8, 4), true),
-            LintError(6, 1, ruleId, warnText(8, 4), true),
-            LintError(10, 1, ruleId, warnText(8, 4), true),
-            LintError(12, 1, ruleId, warnText(8, 4), true)
+            DiktatError(3, 1, ruleId, warnText(8, 4), true),
+            DiktatError(6, 1, ruleId, warnText(8, 4), true),
+            DiktatError(10, 1, ruleId, warnText(8, 4), true),
+            DiktatError(12, 1, ruleId, warnText(8, 4), true)
         )
     }
 
@@ -498,9 +498,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(3, 1, ruleId, warnText(8, 12), true),
-            LintError(8, 1, ruleId, warnText(8, 4), true),
-            LintError(9, 1, ruleId, warnText(8, 4), true)
+            DiktatError(3, 1, ruleId, warnText(8, 12), true),
+            DiktatError(8, 1, ruleId, warnText(8, 4), true),
+            DiktatError(9, 1, ruleId, warnText(8, 4), true)
         )
     }
 
@@ -601,9 +601,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(4, 1, ruleId, warnText(12, 8), true),
-            LintError(7, 1, ruleId, warnText(12, 8), true),
-            LintError(10, 1, ruleId, warnText(12, 8), true)
+            DiktatError(4, 1, ruleId, warnText(12, 8), true),
+            DiktatError(7, 1, ruleId, warnText(12, 8), true),
+            DiktatError(10, 1, ruleId, warnText(12, 8), true)
         )
     }
 
@@ -693,9 +693,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 |}
                 |
             """.trimMargin(),
-            LintError(4, 1, ruleId, warnText(12, 8), true),
-            LintError(5, 1, ruleId, warnText(16, 12), true),
-            LintError(6, 1, ruleId, warnText(16, 12), true),
+            DiktatError(4, 1, ruleId, warnText(12, 8), true),
+            DiktatError(5, 1, ruleId, warnText(16, 12), true),
+            DiktatError(6, 1, ruleId, warnText(16, 12), true),
             rulesConfigList = rulesConfigList
         )
     }

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
 import org.cqfn.diktat.ruleset.rules.chapter6.RunInScript
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -48,11 +48,11 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
-            LintError(10, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
-            LintError(12, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo( //dfdg...", true),
-            LintError(15, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} println(\"hello\")", true),
-            LintError(17, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} w.map { it -> it }", true),
-            LintError(19, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} tasks.register(\"a\") {...", true)
+            DiktatError(10, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
+            DiktatError(12, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo( //dfdg...", true),
+            DiktatError(15, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} println(\"hello\")", true),
+            DiktatError(17, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} w.map { it -> it }", true),
+            DiktatError(19, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} tasks.register(\"a\") {...", true)
         )
     }
 
@@ -133,7 +133,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts",
-            LintError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true)
+            DiktatError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true)
         )
     }
 
@@ -172,8 +172,8 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts",
-            LintError(1, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} version = \"0.1.0-SNAPSHOT\"", true),
-            LintError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true)
+            DiktatError(1, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} version = \"0.1.0-SNAPSHOT\"", true),
+            DiktatError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true)
         )
     }
 }

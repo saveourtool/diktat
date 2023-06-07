@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOP_LEVEL_ORDER
 import org.cqfn.diktat.ruleset.rules.chapter3.files.TopLevelOrderRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -42,14 +42,14 @@ class TopLevelOrderRuleWarnTest : LintTestBase(::TopLevelOrderRule) {
                 |public const val g = 9.8
                 |object B {}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} class A {}", true),
-            LintError(2, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} lateinit var q: String", true),
-            LintError(3, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} interface B {}", true),
-            LintError(4, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} fun foo() {}", true),
-            LintError(5, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} fun String.foo() {}", true),
-            LintError(6, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} private val et = 0", true),
-            LintError(7, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} public const val g = 9.8", true),
-            LintError(8, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} object B {}", true)
+            DiktatError(1, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} class A {}", true),
+            DiktatError(2, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} lateinit var q: String", true),
+            DiktatError(3, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} interface B {}", true),
+            DiktatError(4, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} fun foo() {}", true),
+            DiktatError(5, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} fun String.foo() {}", true),
+            DiktatError(6, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} private val et = 0", true),
+            DiktatError(7, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} public const val g = 9.8", true),
+            DiktatError(8, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} object B {}", true)
         )
     }
 }

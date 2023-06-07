@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -58,8 +58,8 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
                     |    fun bar() { }
                     |}
             """.trimMargin(),
-            LintError(1, 16, ruleId, consecutiveLinesWarn, true),
-            LintError(4, 16, ruleId, consecutiveLinesWarn, true)
+            DiktatError(1, 16, ruleId, consecutiveLinesWarn, true),
+            DiktatError(4, 16, ruleId, consecutiveLinesWarn, true)
         )
     }
 
@@ -77,9 +77,9 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(1, 16, ruleId, blankLinesInBlockWarn(true), true),
-            LintError(3, 16, ruleId, blankLinesInBlockWarn(true), true),
-            LintError(5, 14, ruleId, blankLinesInBlockWarn(false), true)
+            DiktatError(1, 16, ruleId, blankLinesInBlockWarn(true), true),
+            DiktatError(3, 16, ruleId, blankLinesInBlockWarn(true), true),
+            DiktatError(5, 14, ruleId, blankLinesInBlockWarn(false), true)
         )
     }
 
@@ -96,8 +96,8 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
                     |
                     |}
             """.trimMargin(),
-            LintError(3, 14, ruleId, blankLinesInBlockWarn(false), true),
-            LintError(5, 6, ruleId, blankLinesInBlockWarn(false), true)
+            DiktatError(3, 14, ruleId, blankLinesInBlockWarn(false), true),
+            DiktatError(5, 6, ruleId, blankLinesInBlockWarn(false), true)
         )
     }
 }

@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
 import org.cqfn.diktat.ruleset.rules.chapter3.TrailingCommaRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -38,8 +38,8 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                     )
                 }
             """.trimMargin(),
-            LintError(4, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_ARGUMENT: 20", true),
-            LintError(10, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_ARGUMENT: \"blue\"", true),
+            DiktatError(4, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_ARGUMENT: 20", true),
+            DiktatError(10, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_ARGUMENT: \"blue\"", true),
             rulesConfigList = getRulesConfig("valueArgument")
         )
     }
@@ -59,8 +59,8 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                     lastName: String // trailing comma
                 )
             """.trimMargin(),
-            LintError(3, 21, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: val lastName: String // trailing comma", true),
-            LintError(8, 21, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: lastName: String // trailing comma", true),
+            DiktatError(3, 21, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: val lastName: String // trailing comma", true),
+            DiktatError(8, 21, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: lastName: String // trailing comma", true),
             rulesConfigList = getRulesConfig("valueParameter")
         )
     }
@@ -90,8 +90,8 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                     ) {}
                 }
             """.trimMargin(),
-            LintError(12, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: y: Iterable<Number>", true),
-            LintError(17, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: description: String", true),
+            DiktatError(12, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: y: Iterable<Number>", true),
+            DiktatError(17, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: description: String", true),
             rulesConfigList = getRulesConfig("valueParameter")
         )
     }
@@ -112,7 +112,7 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                     println(sum(8, 8, 8))
                 }
             """.trimMargin(),
-            LintError(5, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: z // trailing comma", true),
+            DiktatError(5, 25, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: z // trailing comma", true),
             rulesConfigList = getRulesConfig("valueParameter")
         )
     }
@@ -131,7 +131,7 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                         yValue // trailing comma
                     ]
             """.trimMargin(),
-            LintError(7, 25, ruleId, "${TRAILING_COMMA.warnText()} after REFERENCE_EXPRESSION: yValue", true),
+            DiktatError(7, 25, ruleId, "${TRAILING_COMMA.warnText()} after REFERENCE_EXPRESSION: yValue", true),
             rulesConfigList = getRulesConfig("referenceExpression")
         )
     }
@@ -188,9 +188,9 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                    when (x) {}
                }
             """.trimMargin(),
-            LintError(4, 21, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_WITH_EXPRESSION: String::class", true),
-            LintError(12, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IS_PATTERN: is String", true),
-            LintError(20, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IN_RANGE: in 1..2", true),
+            DiktatError(4, 21, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_WITH_EXPRESSION: String::class", true),
+            DiktatError(12, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IS_PATTERN: is String", true),
+            DiktatError(20, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IN_RANGE: in 1..2", true),
             rulesConfigList = getRulesConfig("whenConditions")
         )
     }
@@ -210,7 +210,7 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                 ],)
                 fun foo() {}
             """.trimMargin(),
-            LintError(7, 21, ruleId, "${TRAILING_COMMA.warnText()} after STRING_TEMPLATE: \"inMemoryCache\"", true),
+            DiktatError(7, 21, ruleId, "${TRAILING_COMMA.warnText()} after STRING_TEMPLATE: \"inMemoryCache\"", true),
             rulesConfigList = getRulesConfig("collectionLiteral")
         )
     }
@@ -230,8 +230,8 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                             >()
                 }
             """.trimMargin(),
-            LintError(6, 29, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Iterable<Number...", true),
-            LintError(6, 38, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Number", true),
+            DiktatError(6, 29, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Iterable<Number...", true),
+            DiktatError(6, 38, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Number", true),
             rulesConfigList = getRulesConfig("typeArgument")
         )
     }
@@ -246,7 +246,7 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                         MyValue // trailing comma
                         > {}
             """.trimMargin(),
-            LintError(3, 25, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PARAMETER: MyValue", true),
+            DiktatError(3, 25, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PARAMETER: MyValue", true),
             rulesConfigList = getRulesConfig("typeParameter")
         )
     }
@@ -281,8 +281,8 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                     printMeanValue()
                 }
             """.trimMargin(),
-            LintError(8, 25, ruleId, "${TRAILING_COMMA.warnText()} after DESTRUCTURING_DECLARATION_ENTRY: year", true),
-            LintError(17, 29, ruleId, "${TRAILING_COMMA.warnText()} after DESTRUCTURING_DECLARATION_ENTRY: year", true),
+            DiktatError(8, 25, ruleId, "${TRAILING_COMMA.warnText()} after DESTRUCTURING_DECLARATION_ENTRY: year", true),
+            DiktatError(17, 29, ruleId, "${TRAILING_COMMA.warnText()} after DESTRUCTURING_DECLARATION_ENTRY: year", true),
             rulesConfigList = getRulesConfig("destructuringDeclaration")
         )
     }

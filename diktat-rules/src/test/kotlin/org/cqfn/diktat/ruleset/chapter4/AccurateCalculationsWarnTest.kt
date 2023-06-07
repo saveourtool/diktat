@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
 import org.cqfn.diktat.ruleset.rules.chapter4.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -29,10 +29,10 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, warnText("1.0", "x == 1.0"), false),
-            LintError(4, 9, ruleId, warnText("1.0", "1.0 == x"), false),
-            LintError(5, 9, ruleId, warnText("1.0", "x.equals(1.0)"), false),
-            LintError(6, 9, ruleId, warnText("1.0", "1.0.equals(x)"), false)
+            DiktatError(3, 9, ruleId, warnText("1.0", "x == 1.0"), false),
+            DiktatError(4, 9, ruleId, warnText("1.0", "1.0 == x"), false),
+            DiktatError(5, 9, ruleId, warnText("1.0", "x.equals(1.0)"), false),
+            DiktatError(6, 9, ruleId, warnText("1.0", "1.0.equals(x)"), false)
         )
     }
 
@@ -50,10 +50,10 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(3, 9, ruleId, warnText("1.0", "x > 1.0"), false),
-            LintError(4, 9, ruleId, warnText("1.0", "1.0 > x"), false),
-            LintError(5, 9, ruleId, warnText("1.0", "x.compareTo(1.0)"), false),
-            LintError(6, 9, ruleId, warnText("1.0", "1.0.compareTo(x)"), false)
+            DiktatError(3, 9, ruleId, warnText("1.0", "x > 1.0"), false),
+            DiktatError(4, 9, ruleId, warnText("1.0", "1.0 > x"), false),
+            DiktatError(5, 9, ruleId, warnText("1.0", "x.compareTo(1.0)"), false),
+            DiktatError(6, 9, ruleId, warnText("1.0", "1.0.compareTo(x)"), false)
         )
     }
 
@@ -69,7 +69,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(4, 9, ruleId, warnText("x", "x == 1"), false)
+            DiktatError(4, 9, ruleId, warnText("x", "x == 1"), false)
         )
     }
 
@@ -88,7 +88,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(6, 13, ruleId, warnText("x", "x == 1"), false)
+            DiktatError(6, 13, ruleId, warnText("x", "x == 1"), false)
         )
     }
 
@@ -136,19 +136,19 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(4, 9, ruleId, warnText("x", "x == 1"), false),
-            LintError(5, 9, ruleId, warnText("x", "x + 2"), false),
-            // LintError(6, 9, ruleId, warnText("x", "x++"), false),
-            LintError(7, 9, ruleId, warnText("x", "x += 2"), false),
-            LintError(8, 9, ruleId, warnText("x", "x - 2"), false),
-            // LintError(9, 9, ruleId, warnText("x", "x--"), false),
-            LintError(10, 9, ruleId, warnText("x", "x -= 2"), false),
-            LintError(11, 9, ruleId, warnText("x", "x * 2"), false),
-            LintError(12, 9, ruleId, warnText("x", "x *= 2"), false),
-            LintError(13, 9, ruleId, warnText("x", "x / 2"), false),
-            LintError(14, 9, ruleId, warnText("x", "x /= 2"), false),
-            LintError(15, 9, ruleId, warnText("x", "x % 2"), false),
-            LintError(16, 9, ruleId, warnText("x", "x %= 2"), false)
+            DiktatError(4, 9, ruleId, warnText("x", "x == 1"), false),
+            DiktatError(5, 9, ruleId, warnText("x", "x + 2"), false),
+            // DiktatError(6, 9, ruleId, warnText("x", "x++"), false),
+            DiktatError(7, 9, ruleId, warnText("x", "x += 2"), false),
+            DiktatError(8, 9, ruleId, warnText("x", "x - 2"), false),
+            // DiktatError(9, 9, ruleId, warnText("x", "x--"), false),
+            DiktatError(10, 9, ruleId, warnText("x", "x -= 2"), false),
+            DiktatError(11, 9, ruleId, warnText("x", "x * 2"), false),
+            DiktatError(12, 9, ruleId, warnText("x", "x *= 2"), false),
+            DiktatError(13, 9, ruleId, warnText("x", "x / 2"), false),
+            DiktatError(14, 9, ruleId, warnText("x", "x /= 2"), false),
+            DiktatError(15, 9, ruleId, warnText("x", "x % 2"), false),
+            DiktatError(16, 9, ruleId, warnText("x", "x %= 2"), false)
         )
     }
 
@@ -179,9 +179,9 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    abs(1.0 - 0.999) == eps
                     |}
             """.trimMargin(),
-            LintError(11, 5, ruleId, warnText("1e-6", "abs(1.0 - 0.999) == 1e-6"), false),
-            LintError(11, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false),
-            LintError(20, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false)
+            DiktatError(11, 5, ruleId, warnText("1e-6", "abs(1.0 - 0.999) == 1e-6"), false),
+            DiktatError(11, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false),
+            DiktatError(20, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false)
         )
     }
 }

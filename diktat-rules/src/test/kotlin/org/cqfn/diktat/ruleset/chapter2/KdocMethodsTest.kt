@@ -11,7 +11,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
@@ -68,7 +68,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
 
         """.trimIndent()
         lintMethod(code,
-            LintError(3, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+            DiktatError(3, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
         )
     }
 
@@ -89,13 +89,13 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         lintMethodWithFile(complexAnnotationCode,
             tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
         )
         // should check all .kt files unless both conditions on location and name are true
         lintMethodWithFile(funCode,
             tempDir = tempDir,
             fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt",
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true)
         )
         // should allow to set custom test dirs
         lintMethodWithFile(funCode,
@@ -138,7 +138,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(1, 13, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true)
+            DiktatError(1, 13, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true)
         )
     }
 
@@ -159,7 +159,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(1, 12, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)", true)
+            DiktatError(1, 12, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)", true)
         )
     }
 
@@ -179,7 +179,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true)
+            DiktatError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true)
         )
     }
 
@@ -205,7 +205,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo", true)
+            DiktatError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo", true)
         )
     }
 
@@ -225,7 +225,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true)
+            DiktatError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true)
         )
     }
 
@@ -268,7 +268,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)", true)
+            DiktatError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)", true)
         )
     }
 
@@ -331,8 +331,8 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
-            LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
+            DiktatError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
+            DiktatError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
         )
     }
 
@@ -343,7 +343,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             """
                     |fun foo() { }
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false)
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false)
         )
     }
 
@@ -357,7 +357,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     | */
                     |fun getX(): TypeX { return x }
             """.trimMargin(),
-            LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
+            DiktatError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
         )
     }
 
@@ -386,7 +386,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |   return qwe
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
         )
     }
 
@@ -398,8 +398,8 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |fun hasNoChildren() = children.size == 0
                     |fun getFirstChild() = children.elementAtOrNull(0)
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} hasNoChildren", true),
-            LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getFirstChild", true)
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} hasNoChildren", true),
+            DiktatError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getFirstChild", true)
         )
     }
 
@@ -422,7 +422,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |actual fun writeToConsoleAc(msg: String, outputType: OutputStreamType) {}
                     |expect fun writeToConsoleEx(msg: String, outputType: OutputStreamType) {}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} writeToConsoleEx", true),
+            DiktatError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} writeToConsoleEx", true),
         )
     }
 }

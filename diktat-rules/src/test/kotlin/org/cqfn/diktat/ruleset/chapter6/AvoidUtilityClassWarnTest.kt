@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidUtilityClass
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -43,8 +43,8 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtil"),
-            LintError(11, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
+            DiktatError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtil"),
+            DiktatError(11, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
 
@@ -79,7 +79,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
+            DiktatError(2, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
 
@@ -112,7 +112,7 @@ class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
-            LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
+            DiktatError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
         )
         lintMethodWithFile(
             """

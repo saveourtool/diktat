@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.CUSTOM_LABEL
 import org.cqfn.diktat.ruleset.rules.chapter5.CustomLabel
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -44,8 +44,8 @@ class CustomLabelsTest : LintTestBase(::CustomLabel) {
                         }
                     }
             """.trimMargin(),
-            LintError(4, 39, ruleId, "${CUSTOM_LABEL.warnText()} @qwe", false),
-            LintError(16, 34, ruleId, "${CUSTOM_LABEL.warnText()} @qq", false)
+            DiktatError(4, 39, ruleId, "${CUSTOM_LABEL.warnText()} @qwe", false),
+            DiktatError(16, 34, ruleId, "${CUSTOM_LABEL.warnText()} @qq", false)
         )
     }
 

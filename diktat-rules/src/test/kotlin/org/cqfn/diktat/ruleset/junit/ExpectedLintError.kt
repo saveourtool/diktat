@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.junit
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 
 /**
  * The common super-interface for expected lint errors (extracted from the
@@ -18,9 +18,9 @@ interface ExpectedLintError {
     val column: Int
 
     /**
-     * Converts this instance to a [LintError].
+     * Converts this instance to a [DiktatError].
      *
-     * @return the [LintError] which corresponds to this instance.
+     * @return the [DiktatError] which corresponds to this instance.
      */
-    fun asLintError(): LintError
+    fun asLintError(): DiktatError
 }

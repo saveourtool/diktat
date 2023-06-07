@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COLLAPSE_IF_STATEMENTS
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -32,7 +32,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -53,7 +53,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -71,7 +71,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -86,7 +86,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -105,7 +105,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(5, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(5, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -125,7 +125,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(6, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(6, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -169,7 +169,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -191,7 +191,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(8, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(8, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -208,7 +208,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -225,7 +225,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -246,7 +246,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -267,8 +267,8 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(6, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(6, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -386,7 +386,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |   }
             |}
             """.trimMargin(),
-            LintError(5, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(5, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
     }
 
@@ -405,8 +405,8 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(4, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(4, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -431,11 +431,11 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(4, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(5, 18, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(6, 22, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(7, 26, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(4, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(5, 18, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(6, 22, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(7, 26, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
@@ -480,7 +480,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |    }
             |}
             """.trimMargin(),
-            LintError(7, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(7, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
     }
 
@@ -501,7 +501,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |}
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
     }
 

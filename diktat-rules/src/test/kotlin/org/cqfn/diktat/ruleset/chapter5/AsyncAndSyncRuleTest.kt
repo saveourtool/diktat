@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.RUN_BLOCKING_INSIDE_ASYNC
 import org.cqfn.diktat.ruleset.rules.chapter5.AsyncAndSyncRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -41,8 +41,8 @@ class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
                     |}
                     |
             """.trimMargin(),
-            LintError(11, 8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false),
-            LintError(18, 4, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
+            DiktatError(11, 8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false),
+            DiktatError(18, 4, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
         )
     }
 
@@ -68,7 +68,7 @@ class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(4, 8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
+            DiktatError(4, 8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
         )
     }
 }

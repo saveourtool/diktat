@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -41,8 +41,8 @@ class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstruc
                     |
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some", true),
-            LintError(8, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some1", true)
+            DiktatError(1, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some", true),
+            DiktatError(8, 1, ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some1", true)
         )
     }
 

@@ -75,6 +75,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   run_diktat_from_CLI:
     name: Run diktat via CLI
@@ -302,6 +303,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   report:
     name: Publish JUnit test results

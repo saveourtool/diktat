@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.rules.chapter3.NullableTypeRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -24,11 +24,11 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |val c: String? = null
                     |val a: MutableList<Int>? = null
             """.trimMargin(),
-            LintError(1, 21, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-            LintError(2, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-            LintError(3, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-            LintError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-            LintError(5, 28, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true)
+            DiktatError(1, 21, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+            DiktatError(2, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+            DiktatError(3, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+            DiktatError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+            DiktatError(5, 28, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true)
         )
     }
 
@@ -45,9 +45,9 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-            LintError(4, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
-            LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
+            DiktatError(3, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+            DiktatError(4, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
+            DiktatError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
     }
 
@@ -64,9 +64,9 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(3, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
-            LintError(4, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-            LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
+            DiktatError(3, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
+            DiktatError(4, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+            DiktatError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
     }
 
@@ -81,7 +81,7 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |   val e: A.Q? = null
                     |}
             """.trimMargin(),
-            LintError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", false)
+            DiktatError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", false)
         )
     }
 
@@ -95,8 +95,8 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     | val c: Set<Int>? = setOf()
                     | val d: List<Int?> = emptyList()
             """.trimMargin(),
-            LintError(1, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
-            LintError(3, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
+            DiktatError(1, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
+            DiktatError(3, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
     }
 

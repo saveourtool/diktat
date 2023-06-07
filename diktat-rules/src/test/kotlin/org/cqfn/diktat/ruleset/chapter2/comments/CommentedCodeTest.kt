@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -24,8 +24,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |// this is an actual comment
                 |//import org.junit.Ignore
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package org.cqfn.diktat.example", false),
-            LintError(5, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package org.cqfn.diktat.example", false),
+            DiktatError(5, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
         )
     }
 
@@ -37,8 +37,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                |/*import org.junit.Test
                |import org.junit.Ignore*/
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Test", false),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Test", false),
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
         )
     }
 
@@ -57,7 +57,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                |    return 0
                |}
             """.trimMargin(),
-            LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
+            DiktatError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
         )
     }
 
@@ -89,7 +89,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                |//    return 0
                |//}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            DiktatError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -107,7 +107,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                |//    return 0
                |//}
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            DiktatError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -124,7 +124,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                |    return 0
                |}*/
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            DiktatError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -145,8 +145,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |    //}
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
-            LintError(6, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
+            DiktatError(6, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -214,7 +214,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |   */
                 |}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun clickFilters_showFilters() {", false)
+            DiktatError(2, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun clickFilters_showFilters() {", false)
         )
     }
 
@@ -235,8 +235,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |//    }
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
-            LintError(6, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
+            DiktatError(6, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -256,7 +256,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
                 |// public data class Test(val some: Int): Exception()
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
     }
 
     @Test
@@ -266,7 +266,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
                 |// var foo: Int = 1
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} var foo: Int = 1", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} var foo: Int = 1", false))
     }
 
     @Test
@@ -278,7 +278,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 | //     varfoo adda foofoo
                 | // }
             """.trimMargin(),
-            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo() {", false))
+            DiktatError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo() {", false))
     }
 
     @Test
@@ -288,7 +288,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
                 | // class A { val a = 2 }
             """.trimMargin(),
-            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
+            DiktatError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
     }
 
     @Test
@@ -298,7 +298,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
                 | /* class A { val a = 2 } */
             """.trimMargin(),
-            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
+            DiktatError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
     }
 
     @Test
@@ -317,7 +317,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
                 |// import some.org
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import some.org", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import some.org", false))
     }
 
     @Test
@@ -327,7 +327,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """
                 |// package some.org
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package some.org", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package some.org", false))
     }
 
     @Test
@@ -339,7 +339,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |//     val a = 5
                 |// }
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
     }
 
     @Test
@@ -350,7 +350,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |// fun someFunc(name: String): Boolean =
                 |//     name.contains("a")
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean =", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean =", false))
     }
 
     @Test
@@ -361,7 +361,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |// public fun someFunc(name: String): Boolean =
                 |//     name.contains("a")
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
+            DiktatError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
     }
 
     @Test
@@ -428,8 +428,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
             */
             """.trimMargin(),
-            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2 + 4 + 1", false),
-            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A {", false)
+            DiktatError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2 + 4 + 1", false),
+            DiktatError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A {", false)
         )
     }
 

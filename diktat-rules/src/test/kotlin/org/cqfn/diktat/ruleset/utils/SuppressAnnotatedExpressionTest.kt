@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.junit.jupiter.api.Test
 
 class SuppressAnnotatedExpressionTest : LintTestBase(::CollapseIfStatementsRule) {
@@ -26,8 +26,8 @@ class SuppressAnnotatedExpressionTest : LintTestBase(::CollapseIfStatementsRule)
                 |}
             """.trimMargin()
         lintMethod(code,
-            LintError(3, 8, ruleId, "${Warnings.COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
-            LintError(4, 12, ruleId, "${Warnings.COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            DiktatError(3, 8, ruleId, "${Warnings.COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            DiktatError(4, 12, ruleId, "${Warnings.COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 

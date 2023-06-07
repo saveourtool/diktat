@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.junit.jupiter.api.Test
 
 class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
@@ -36,7 +36,7 @@ class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
     @Test
     fun `check that if one inspection is enabled then rule will run`() {
         lintMethod(codeTemplate,
-            LintError(4, 4, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} some", true),
+            DiktatError(4, 4, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} some", true),
             rulesConfigList = rulesConfigOneRuleIsEnabled
         )
     }

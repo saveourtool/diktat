@@ -14,7 +14,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -37,7 +37,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                | */
                |fun foo() = Unit
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} foo", false)
+            DiktatError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} foo", false)
         )
     }
 
@@ -49,7 +49,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                | */
                |fun foo() = Unit
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} foo", false)
+            DiktatError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} foo", false)
         )
     }
 
@@ -61,7 +61,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                | *
                | */
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} /**...", false)
+            DiktatError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} /**...", false)
         )
     }
 
@@ -76,7 +76,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                |    companion object { }
                |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${KDOC_EMPTY_KDOC.warnText()} object", false)
+            DiktatError(2, 5, ruleId, "${KDOC_EMPTY_KDOC.warnText()} object", false)
         )
     }
 
@@ -91,7 +91,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(2, 4, ruleId, "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead", true)
+            DiktatError(2, 4, ruleId, "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead", true)
         )
     }
 
@@ -108,7 +108,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(3, 16, ruleId,
+            DiktatError(3, 16, ruleId,
                 "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false))
     }
 
@@ -140,13 +140,13 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(2, 16, ruleId,
+            DiktatError(2, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @param", true),
-            LintError(3, 16, ruleId,
+            DiktatError(3, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @param", true),
-            LintError(4, 16, ruleId,
+            DiktatError(4, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @return", true),
-            LintError(5, 16, ruleId,
+            DiktatError(5, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @throws", true))
     }
 
@@ -196,7 +196,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(2, 16, ruleId,
+            DiktatError(2, 16, ruleId,
                 "${KDOC_WRONG_TAGS_ORDER.warnText()} @return, @throws, @param", true))
     }
 
@@ -218,9 +218,9 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(4, 4, ruleId,
+            DiktatError(4, 4, ruleId,
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @property", true),
-            LintError(4, 4, ruleId,
+            DiktatError(4, 4, ruleId,
                 "${KDOC_WRONG_TAGS_ORDER.warnText()} @property, @param", true)
         )
     }
@@ -240,9 +240,9 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(2, 16, ruleId,
+            DiktatError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @param", true),
-            LintError(4, 16, ruleId,
+            DiktatError(4, 16, ruleId,
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @return", true))
     }
 
@@ -271,7 +271,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                | */
                |fun test(a: Int): Unit = Unit
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
+            DiktatError(3, 4, ruleId, "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
         )
     }
 
@@ -286,7 +286,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                | */
                |fun test(a: Int): Unit = Unit
             """.trimMargin(),
-            LintError(4, 4, ruleId, "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
+            DiktatError(4, 4, ruleId, "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
         )
     }
 
@@ -322,7 +322,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(2, 16, ruleId,
+            DiktatError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
     }
 
@@ -345,7 +345,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-            LintError(2, 16, ruleId,
+            DiktatError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
     }
 
@@ -367,8 +367,8 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                 | */
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
-            LintError(10, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
+            DiktatError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
+            DiktatError(10, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
         )
     }
 
@@ -400,12 +400,12 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                 | */
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
-            LintError(4, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 19-10-11"),
-            LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
-            LintError(6, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019/10/11"),
-            LintError(7, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 11 Oct 2019"),
-            LintError(19, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            DiktatError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            DiktatError(4, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 19-10-11"),
+            DiktatError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
+            DiktatError(6, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019/10/11"),
+            DiktatError(7, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 11 Oct 2019"),
+            DiktatError(19, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
             rulesConfigList = emptyList()
         )
     }
@@ -431,9 +431,9 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                 | */
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
-            LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 1.2.3.RELEASE"),
-            LintError(12, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            DiktatError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            DiktatError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 1.2.3.RELEASE"),
+            DiktatError(12, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
             rulesConfigList = listOf(
                 RulesConfig(
                     Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.name, true, mapOf(

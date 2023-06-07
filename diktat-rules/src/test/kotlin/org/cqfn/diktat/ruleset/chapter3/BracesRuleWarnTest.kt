@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_
 import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -39,8 +39,8 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    if (y < 0) baz()
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
-            LintError(5, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+            DiktatError(5, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true)
         )
     }
 
@@ -76,9 +76,9 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        baz()
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
-            LintError(4, 10, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
-            LintError(6, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+            DiktatError(4, 10, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+            DiktatError(6, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
     }
 
@@ -172,7 +172,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
             |    } else baz(b.apply { id = 5 })
             |}
             """.trimMargin(),
-            LintError(4, 7, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
+            DiktatError(4, 7, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
     }
 
@@ -188,7 +188,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
             |        c.baz(b.apply {id = 5})
             |}
             """.trimMargin(),
-            LintError(4, 7, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
+            DiktatError(4, 7, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
     }
 
@@ -203,8 +203,8 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    } else if (x == 0) bar() else baz()
                     |}
             """.trimMargin(),
-            LintError(4, 12, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
-            LintError(4, 30, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
+            DiktatError(4, 12, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+            DiktatError(4, 30, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
     }
 
@@ -219,9 +219,9 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    else foo()
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
-            LintError(3, 10, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
-            LintError(4, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+            DiktatError(3, 10, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+            DiktatError(4, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
     }
 
@@ -247,8 +247,8 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    }
                     |}
             """.trimMargin(),
-            LintError(7, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true),
-            LintError(8, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true)
+            DiktatError(7, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true),
+            DiktatError(8, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true)
         )
     }
 
@@ -276,7 +276,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        println(i)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} FOR", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} FOR", true)
         )
     }
 
@@ -304,7 +304,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        println("")
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHILE", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHILE", true)
         )
     }
 
@@ -331,7 +331,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    do println(i) while (condition)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
         )
     }
 
@@ -344,7 +344,7 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |    do while (condition)
                     |}
             """.trimMargin(),
-            LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
+            DiktatError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
         )
     }
 }

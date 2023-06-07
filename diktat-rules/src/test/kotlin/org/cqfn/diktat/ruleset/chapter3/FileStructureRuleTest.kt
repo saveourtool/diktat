@@ -11,7 +11,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
@@ -47,7 +47,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |// lorem ipsum
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${FILE_CONTAINS_ONLY_COMMENTS.warnText()} file contains no code", false)
+            DiktatError(1, 1, ruleId, "${FILE_CONTAINS_ONLY_COMMENTS.warnText()} file contains no code", false)
         )
     }
 
@@ -66,8 +66,8 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:JvmName(\"Foo\")", true),
-            LintError(3, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} /**", true)
+            DiktatError(1, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:JvmName(\"Foo\")", true),
+            DiktatError(3, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} /**", true)
         )
     }
 
@@ -86,7 +86,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |val y: Foo = null
                 |}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.Foo...", true)
+            DiktatError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.Foo...", true)
         )
     }
 
@@ -101,7 +101,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_WILDCARD_IMPORTS.warnText()} import org.cqfn.diktat.*", false),
+            DiktatError(3, 1, ruleId, "${FILE_WILDCARD_IMPORTS.warnText()} import org.cqfn.diktat.*", false),
         )
     }
 
@@ -122,10 +122,10 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |val x: Foo = null
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} /**", true),
-            LintError(4, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} @file:JvmName(\"Foo\")", true),
-            LintError(7, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} package org.cqfn.diktat.example", true),
-            LintError(8, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} import org.cqfn.diktat.Foo", true)
+            DiktatError(1, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} /**", true),
+            DiktatError(4, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} @file:JvmName(\"Foo\")", true),
+            DiktatError(7, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} package org.cqfn.diktat.example", true),
+            DiktatError(8, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} import org.cqfn.diktat.Foo", true)
         )
     }
 
@@ -197,8 +197,8 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |val x: Foo = null
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} // some notes on this file", true),
-            LintError(2, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} /**", true),
+            DiktatError(1, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} // some notes on this file", true),
+            DiktatError(2, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} /**", true),
         )
     }
 
@@ -242,7 +242,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |val x: Foo = null
                 |}
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Annotation", true)
+            DiktatError(4, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Annotation", true)
         )
     }
 
@@ -261,7 +261,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |val x: Foo = null
                 |}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import com.pinterest.ktlint.core.LintError...", true),
+            DiktatError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import com.pinterest.ktlint.core.LintError...", true),
             rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
@@ -278,7 +278,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |class Example {
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.example.Foo - unused import", true)
+            DiktatError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.example.Foo - unused import", true)
         )
     }
 
@@ -294,7 +294,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |class Example {
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.Foo - unused import", true)
+            DiktatError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.Foo - unused import", true)
         )
     }
 
@@ -360,7 +360,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |println("Type is not supported yet")
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.utils.logAndExit - unused import", true)
+            DiktatError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.utils.logAndExit - unused import", true)
         )
     }
 
@@ -458,8 +458,8 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |   val a: Foo
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} Delegate - unused import", true),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} com.example.equals - unused import", true)
+            DiktatError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} Delegate - unused import", true),
+            DiktatError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} com.example.equals - unused import", true)
         )
     }
 
@@ -481,7 +481,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |   val a
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} tasks.getValue - unused import", true)
+            DiktatError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} tasks.getValue - unused import", true)
         )
     }
 
@@ -578,7 +578,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """.trimIndent(),
             fileName = "build.gradle.kts",
             tempDir = tempDir,
-            expectedLintErrors = arrayOf(LintError(3, 1, ruleId, "${Warnings.FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Suppress(\"DSL_SCOPE_VIOLATION\")", true)),
+            expectedLintErrors = arrayOf(DiktatError(3, 1, ruleId, "${Warnings.FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Suppress(\"DSL_SCOPE_VIOLATION\")", true)),
         )
     }
 }

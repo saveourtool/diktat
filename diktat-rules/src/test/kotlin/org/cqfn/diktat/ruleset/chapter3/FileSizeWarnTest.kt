@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -46,7 +46,7 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
             .split("\n")
             .size
         lintMethodWithFile(file.toPath(),
-            LintError(1, 1, ruleId,
+            DiktatError(1, 1, ruleId,
                 "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
             rulesConfigList = rulesConfigListLarge)
     }
@@ -66,7 +66,7 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
         val file = File(path!!.file)
         val size = generate2000lines() + 1
         lintMethodWithFile(file.toPath(),
-            LintError(1, 1, ruleId,
+            DiktatError(1, 1, ruleId,
                 "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
             rulesConfigList = rulesConfigListLarge)
     }

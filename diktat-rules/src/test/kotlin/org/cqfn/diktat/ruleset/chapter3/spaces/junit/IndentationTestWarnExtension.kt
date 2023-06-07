@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.chapter3.spaces.withCustomParameters
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.ruleset.utils.NEWLINE
 import org.cqfn.diktat.util.LintTestBase
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -23,7 +23,7 @@ import kotlin.math.min
 internal class IndentationTestWarnExtension(
     override val customConfig: Map<String, Any>,
     @Language("kotlin") override val actualCode: String,
-    private val expectedErrors: Array<LintError>
+    private val expectedErrors: Array<DiktatError>
 ) : LintTestBase(::IndentationRule), IndentationTestExtension {
 
     override fun beforeTestExecution(context: ExtensionContext) {
@@ -75,7 +75,7 @@ internal class IndentationTestWarnExtension(
          * ```
          */
         @Suppress("CUSTOM_GETTERS_SETTERS")
-        private val LintError.annotationText: String
+        private val DiktatError.annotationText: String
             get() {
                 @Suppress("WRONG_NEWLINES")  // False positives, see #1495.
                 val columnNumbers = decimalNumber
@@ -108,7 +108,7 @@ internal class IndentationTestWarnExtension(
 
         private val decimalNumber = Regex("""\b[+-]?(\d++)\b""")
 
-        private fun String.annotateWith(errors: List<LintError>): String =
+        private fun String.annotateWith(errors: List<DiktatError>): String =
             when {
                 errors.isEmpty() -> this
                 else -> {

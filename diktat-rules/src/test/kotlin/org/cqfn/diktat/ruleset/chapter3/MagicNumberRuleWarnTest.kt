@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.chapter3.MagicNumberRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -62,11 +62,11 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   }
                 |}
             """.trimMargin(),
-            LintError(2, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
-            LintError(3, 12, ruleId, "${MAGIC_NUMBER.warnText()} 128L", false),
-            LintError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 3.4f", false),
-            LintError(5, 12, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
-            LintError(5, 14, ruleId, "${MAGIC_NUMBER.warnText()} 3", false)
+            DiktatError(2, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
+            DiktatError(3, 12, ruleId, "${MAGIC_NUMBER.warnText()} 128L", false),
+            DiktatError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 3.4f", false),
+            DiktatError(5, 12, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
+            DiktatError(5, 14, ruleId, "${MAGIC_NUMBER.warnText()} 3", false)
         )
     }
 
@@ -91,10 +91,10 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |   return 32
                 |}
             """.trimMargin(),
-            LintError(2, 13, ruleId, "${MAGIC_NUMBER.warnText()} -1", false),
-            LintError(3, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
-            LintError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 0xff", false),
-            LintError(10, 6, ruleId, "${MAGIC_NUMBER.warnText()} 3", false),
+            DiktatError(2, 13, ruleId, "${MAGIC_NUMBER.warnText()} -1", false),
+            DiktatError(3, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
+            DiktatError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 0xff", false),
+            DiktatError(10, 6, ruleId, "${MAGIC_NUMBER.warnText()} 3", false),
             rulesConfigList = rulesConfigIgnoreNumbersMagicNumber
         )
     }
@@ -112,7 +112,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |
                 |}
             """.trimMargin(),
-            LintError(3, 21, ruleId, "${MAGIC_NUMBER.warnText()} 32", false),
+            DiktatError(3, 21, ruleId, "${MAGIC_NUMBER.warnText()} 32", false),
         )
     }
 
@@ -169,7 +169,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                     var elementsCount: Int = 100
                 )
             """.trimMargin(),
-            LintError(2, 46, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
+            DiktatError(2, 46, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
             rulesConfigList = rulesConfigMagicNumber
         )
     }
@@ -181,7 +181,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
             """
                 fun TomlDecoder(elementsCount: Int = 100) {}
             """.trimMargin(),
-            LintError(1, 54, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
+            DiktatError(1, 54, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
             rulesConfigList = rulesConfigMagicNumber
         )
     }

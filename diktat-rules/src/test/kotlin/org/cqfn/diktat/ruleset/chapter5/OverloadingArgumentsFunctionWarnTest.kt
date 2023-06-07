@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_OVERLOADING_FUNCTION_ARG
 import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -45,7 +45,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |   fun foo(){}
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
+            DiktatError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
         )
     }
 
@@ -99,7 +99,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |fun foo(a: Double) {}
                     |fun foo(a: Double, b: Int) {}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
+            DiktatError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
         )
     }
 
@@ -151,7 +151,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?: false
                     }
             """.trimMargin(),
-            LintError(8, 21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
+            DiktatError(8, 21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
         )
     }
 

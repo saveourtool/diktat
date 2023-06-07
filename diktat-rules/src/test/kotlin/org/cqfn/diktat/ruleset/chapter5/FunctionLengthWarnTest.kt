@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_LONG_FUNCTION
 import org.cqfn.diktat.ruleset.rules.chapter5.FunctionLength
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -51,7 +51,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |
                     |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 5, but you have 7", false),
+            DiktatError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 5, but you have 7", false),
             rulesConfigList = rulesConfigList
         )
     }
@@ -91,7 +91,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |fun goo() =
                     |   10
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 4", false),
+            DiktatError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 4", false),
             rulesConfigList = shortRulesConfigList
         )
     }
@@ -116,7 +116,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |
                     |}
             """.trimMargin(),
-            LintError(5, 4, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 8", false),
+            DiktatError(5, 4, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 8", false),
             rulesConfigList = shortRulesConfigList
         )
     }

@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.api.DiktatError
 import generated.WarningNames.STRING_TEMPLATE_CURLY_BRACES
 import generated.WarningNames.STRING_TEMPLATE_QUOTES
 import org.junit.jupiter.api.Tag
@@ -40,11 +40,11 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |   val digitsWithLetters = "${'$'}{1.0}asd"
                     |}
             """.trimMargin(),
-            LintError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{a}", true),
-            LintError(3, 16, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true),
-            LintError(4, 19, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1}", true),
-            LintError(5, 28, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{ref}", true),
-            LintError(6, 29, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true)
+            DiktatError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{a}", true),
+            DiktatError(3, 16, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true),
+            DiktatError(4, 19, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1}", true),
+            DiktatError(5, 28, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{ref}", true),
+            DiktatError(6, 29, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true)
         )
     }
 
@@ -58,7 +58,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |   val z = a
                     |}
             """.trimMargin(),
-            LintError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_QUOTES.warnText()} ${'$'}a", true)
+            DiktatError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_QUOTES.warnText()} ${'$'}a", true)
         )
     }
 
@@ -74,7 +74,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |   }
                     |}
             """.trimMargin(),
-            LintError(4, 17, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{s}", true)
+            DiktatError(4, 17, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{s}", true)
         )
     }
 
