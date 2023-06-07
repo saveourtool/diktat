@@ -5,27 +5,83 @@
 package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatCallback
+import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import com.pinterest.ktlint.core.LintError
+
+import com.pinterest.ktlint.cli.reporter.core.api.KtlintCliError
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.intellij.lang.annotations.Language
+
 import java.nio.file.Path
+
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.relativeTo
+
+private const val CANNOT_BE_AUTOCORRECTED_SUFFIX = " (cannot be auto-corrected)"
 
 /**
  * Makes sure this _rule id_ is qualified with a _rule set id_.
  *
  * @param ruleSetId the _rule set id_; defaults to [DIKTAT_RULE_SET_ID].
- * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId`.
+ * @return the fully-qualified _rule id_ in the form of `ruleSetId:ruleId` as __KtLint__'s [RuleId].
  * @see DIKTAT_RULE_SET_ID
  * @since 1.2.4
  */
-fun String.qualifiedWithRuleSetId(ruleSetId: String = DIKTAT_RULE_SET_ID): String =
+fun String.toRuleId(ruleSetId: String = DIKTAT_RULE_SET_ID): RuleId =
     when {
-        this.contains(':') -> this
-        else -> "$ruleSetId:$this"
+        this.contains(':') -> RuleId(this)
+        else -> RuleId("$ruleSetId:$this")
     }
+
+/**
+ * @return [DiktatError] from KtLint's [LintError]
+ */
+fun LintError.wrap(): DiktatError = DiktatError(
+    line = this@wrap.line,
+    col = this@wrap.col,
+    ruleId = this@wrap.ruleId.value,
+    detail = this@wrap.detail.removeSuffix(CANNOT_BE_AUTOCORRECTED_SUFFIX),
+    canBeAutoCorrected = this@wrap.canBeAutoCorrected,
+)
+
+/**
+ * @return [DiktatError] from KtLint's [KtlintCliError]
+ */
+fun KtlintCliError.wrap(): DiktatError = DiktatError(
+    line = this@wrap.line,
+    col = this@wrap.col,
+    ruleId = this@wrap.ruleId,
+    detail = this@wrap.detail.removeSuffix(CANNOT_BE_AUTOCORRECTED_SUFFIX),
+    canBeAutoCorrected = this@wrap.status == KtlintCliError.Status.LINT_CAN_BE_AUTOCORRECTED,
+)
+
+/**
+ * @return KtLint [LintError] from [DiktatError] or exception
+ */
+fun DiktatError.toKtLintForCli(): KtlintCliError = KtlintCliError(
+    line = this@toKtLintForCli.line,
+    col = this@toKtLintForCli.col,
+    ruleId = this@toKtLintForCli.ruleId,
+    detail = this@toKtLintForCli.detail.correctErrorDetail(this@toKtLintForCli.canBeAutoCorrected),
+    status = if (this@toKtLintForCli.canBeAutoCorrected) {
+        KtlintCliError.Status.LINT_CAN_BE_AUTOCORRECTED
+    } else {
+        KtlintCliError.Status.LINT_CAN_NOT_BE_AUTOCORRECTED
+    }
+)
+
+/**
+ * @receiver [DiktatError.detail]
+ * @param canBeAutoCorrected [DiktatError.canBeAutoCorrected]
+ * @return input string with [CANNOT_BE_AUTOCORRECTED_SUFFIX] if it's required
+ */
+fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = if (canBeAutoCorrected) {
+    this
+} else {
+    "$this$CANNOT_BE_AUTOCORRECTED_SUFFIX"
+}
 
 /**
  * @param sourceRootDir

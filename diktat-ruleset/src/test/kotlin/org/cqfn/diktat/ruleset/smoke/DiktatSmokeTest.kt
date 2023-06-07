@@ -34,7 +34,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         unfixedLintErrors.clear()
     }
 
-    override fun doAssertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) {
+    override fun assertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) {
         diktatErrorConsumer(unfixedLintErrors)
     }
 

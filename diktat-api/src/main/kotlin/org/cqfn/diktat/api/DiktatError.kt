@@ -2,30 +2,17 @@ package org.cqfn.diktat.api
 
 /**
  * Error found by `diktat`
+ *
+ * @property line line number (one-based)
+ * @property col column number (one-based)
+ * @property ruleId rule id
+ * @property detail error message
+ * @property canBeAutoCorrected true if the found error can be fixed
  */
-interface DiktatError {
-    /**
-     * @return line number (one-based)
-     */
-    fun getLine(): Int
-
-    /**
-     * @return column number (one-based)
-     */
-    fun getCol(): Int
-
-    /**
-     * @return rule id
-     */
-    fun getRuleId(): String
-
-    /**
-     * @return error message
-     */
-    fun getDetail(): String
-
-    /**
-     * @return true if the found error can be fixed
-     */
-    fun canBeAutoCorrected(): Boolean
-}
+data class DiktatError(
+    val line: Int,
+    val col: Int,
+    val ruleId: String,
+    val detail: String,
+    val canBeAutoCorrected: Boolean = false,
+)

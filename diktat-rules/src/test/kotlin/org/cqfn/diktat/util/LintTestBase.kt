@@ -2,12 +2,10 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
 import org.cqfn.diktat.ktlint.lint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import java.nio.file.Path
@@ -17,7 +15,7 @@ import kotlin.io.path.writeText
 
 /**
  * Base class for testing rules without fixing code.
- * @property ruleSupplier mapping of list of [RulesConfig] into a [Rule]
+ * @property ruleSupplier mapping of list of [RulesConfig] into a [DiktatRule]
  * @property rulesConfigList optional custom rules config
  */
 open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
@@ -166,7 +164,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
 
     companion object {
         private fun MutableList<LintError>.collector(): DiktatCallback = DiktatCallback { error, _ ->
-            this += error.unwrap()
+            this += error
         }
     }
 }

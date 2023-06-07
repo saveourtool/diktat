@@ -2,9 +2,9 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.unwrap
 import org.cqfn.diktat.plugin.gradle.tasks.DiktatCheckTask
-import com.pinterest.ktlint.reporter.json.JsonReporter
-import com.pinterest.ktlint.reporter.plain.PlainReporter
-import com.pinterest.ktlint.reporter.sarif.SarifReporter
+import com.pinterest.ktlint.cli.reporter.json.JsonReporter
+import com.pinterest.ktlint.cli.reporter.plain.PlainReporter
+import com.pinterest.ktlint.cli.reporter.sarif.SarifReporter
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder

@@ -28,6 +28,8 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")
         exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
     }
+    implementation(libs.ktlint.cli.ruleset.core)
+    implementation(libs.ktlint.logger)
     testImplementation(projects.diktatTestFramework)
     testImplementation(projects.diktatKtlintEngine)
     testImplementation(libs.log4j2.slf4j2)

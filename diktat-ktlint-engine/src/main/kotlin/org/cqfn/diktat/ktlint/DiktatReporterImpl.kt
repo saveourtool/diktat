@@ -2,15 +2,14 @@ package org.cqfn.diktat.ktlint
 
 import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.api.DiktatReporter
-import org.cqfn.diktat.ktlint.DiktatErrorImpl.Companion.unwrap
-import com.pinterest.ktlint.core.Reporter
+import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 import java.nio.file.Path
 
 /**
  * [DiktatReporter] using __KtLint__
  */
 class DiktatReporterImpl(
-    private val ktLintReporter: Reporter,
+    private val ktLintReporter: ReporterV2,
     private val sourceRootDir: Path,
 ) : DiktatReporter {
     override fun beforeAll(files: Collection<Path>): Unit = ktLintReporter.beforeAll()
@@ -19,21 +18,21 @@ class DiktatReporterImpl(
         file: Path,
         error: DiktatError,
         isCorrected: Boolean,
-    ): Unit = ktLintReporter.onLintError(file.relativePathStringTo(sourceRootDir), error.unwrap(), isCorrected)
+    ): Unit = ktLintReporter.onLintError(file.relativePathStringTo(sourceRootDir), error.toKtLintForCli())
     override fun after(file: Path): Unit = ktLintReporter.after(file.relativePathStringTo(sourceRootDir))
     override fun afterAll(): Unit = ktLintReporter.afterAll()
 
     companion object {
         /**
          * @param sourceRootDir
-         * @return [DiktatReporter] which wraps __KtLint__'s [Reporter]
+         * @return [DiktatReporter] which wraps __KtLint__'s [ReporterV2]
          */
-        fun Reporter.wrap(sourceRootDir: Path): DiktatReporter = DiktatReporterImpl(this, sourceRootDir)
+        fun ReporterV2.wrap(sourceRootDir: Path): DiktatReporter = DiktatReporterImpl(this, sourceRootDir)
 
         /**
-         * @return __KtLint__'s [Reporter]
+         * @return __KtLint__'s [ReporterV2]
          */
-        fun DiktatReporter.unwrap(): Reporter = (this as? DiktatReporterImpl)?.ktLintReporter
+        fun DiktatReporter.unwrap(): ReporterV2 = (this as? DiktatReporterImpl)?.ktLintReporter
             ?: error("Unsupported wrapper of ${DiktatReporter::class.java.simpleName}: ${this::class.java.canonicalName}")
     }
 }

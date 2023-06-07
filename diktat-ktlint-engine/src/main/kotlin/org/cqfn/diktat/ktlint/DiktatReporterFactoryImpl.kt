@@ -3,13 +3,12 @@ package org.cqfn.diktat.ktlint
 import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.api.DiktatReporterFactory
 import org.cqfn.diktat.ktlint.DiktatReporterImpl.Companion.wrap
-import com.pinterest.ktlint.core.ReporterProvider
-import com.pinterest.ktlint.reporter.checkstyle.CheckStyleReporterProvider
-import com.pinterest.ktlint.reporter.html.HtmlReporterProvider
-import com.pinterest.ktlint.reporter.json.JsonReporterProvider
-import com.pinterest.ktlint.reporter.plain.Color
-import com.pinterest.ktlint.reporter.plain.PlainReporterProvider
-import com.pinterest.ktlint.reporter.sarif.SarifReporterProvider
+import com.pinterest.ktlint.cli.reporter.checkstyle.CheckStyleReporterProvider
+import com.pinterest.ktlint.cli.reporter.html.HtmlReporterProvider
+import com.pinterest.ktlint.cli.reporter.json.JsonReporterProvider
+import com.pinterest.ktlint.cli.reporter.plain.Color
+import com.pinterest.ktlint.cli.reporter.plain.PlainReporterProvider
+import com.pinterest.ktlint.cli.reporter.sarif.SarifReporterProvider
 import java.io.OutputStream
 import java.io.PrintStream
 import java.nio.file.Path
@@ -22,7 +21,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     private val plainReporterProvider = PlainReporterProvider()
 
     /**
-     * All [ReporterProvider] which __KtLint__ provides
+     * All reporters which __KtLint__ provides
      */
     private val reporterProviders = setOf(
         plainReporterProvider,
