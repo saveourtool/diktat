@@ -37,7 +37,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.MARKDOWN_LINK
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE

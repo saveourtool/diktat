@@ -6,11 +6,12 @@ import kotlin.io.path.absolutePathString
 /**
  * A factory which creates a [DiktatRuleSet].
  */
-interface DiktatRuleSetFactory : Function0<DiktatRuleSet> {
+interface DiktatRuleSetFactory : Function1<List<DiktatRuleConfig>, DiktatRuleSet> {
     /**
+     * @param rulesConfig all configurations for rules
      * @return the default instance of [DiktatRuleSet]
      */
-    override operator fun invoke(): DiktatRuleSet
+    override operator fun invoke(rulesConfig: List<DiktatRuleConfig>): DiktatRuleSet
 
     /**
      * @param configFile a path to file with configuration for diktat (`diktat-analysis.yml`)

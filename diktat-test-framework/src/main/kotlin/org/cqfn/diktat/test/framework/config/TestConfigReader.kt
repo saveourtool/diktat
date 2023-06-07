@@ -1,33 +1,29 @@
 package org.cqfn.diktat.test.framework.config
 
-import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
 
-import java.io.BufferedReader
 import java.io.IOException
-import java.util.stream.Collectors
+import java.io.InputStream
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 
 /**
- * A [JsonResourceConfigReader] to read tests configuration as [TestConfig]
- * @property classLoader a [ClassLoader] to load configutation file
+ * A [AbstractResourceConfigReader] to read tests configuration as [TestConfig]
+ * @property classLoader a [ClassLoader] to load configuration file
  */
-class TestConfigReader(configFilePath: String, override val classLoader: ClassLoader) : JsonResourceConfigReader<TestConfig?>() {
+class TestConfigReader(configFilePath: String, classLoader: ClassLoader) : AbstractResourceConfigReader<TestConfig>(classLoader) {
     /**
      * The [TestConfig] which is read from
      */
     val config: TestConfig? = readResource(configFilePath)
 
     /**
-     * @param fileStream input stream of data from config file
+     * @param inputStream input stream of data from config file
      * @return [TestConfig] read from file
      */
     @OptIn(ExperimentalSerializationApi::class)
     @Throws(IOException::class)
-    override fun parseResource(fileStream: BufferedReader): TestConfig {
-        val jsonValue: String = fileStream.lines().collect(Collectors.joining())
-        return Json.decodeFromString(jsonValue)
-    }
+    override fun parse(inputStream: InputStream): TestConfig = Json.decodeFromStream(inputStream)
 }
