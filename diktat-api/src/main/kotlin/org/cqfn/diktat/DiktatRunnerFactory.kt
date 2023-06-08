@@ -3,7 +3,6 @@ package org.cqfn.diktat
 import org.cqfn.diktat.api.DiktatBaseline
 import org.cqfn.diktat.api.DiktatBaselineFactory
 import org.cqfn.diktat.api.DiktatProcessorListener
-import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.api.DiktatReporterFactory
 import org.cqfn.diktat.api.DiktatRuleSetFactory
@@ -29,7 +28,7 @@ class DiktatRunnerFactory(
         val diktatRuleSet = diktatRuleSetFactory.create(args.configFileName)
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
-        val (reporter, closer) = resolveReporter(
+        val reporter = resolveReporter(
             args.reporterType, args.reporterOutput,
             args.colorNameInPlain, args.groupByFileInPlain,
             args.sourceRootDir
@@ -39,7 +38,6 @@ class DiktatRunnerFactory(
             diktatBaseline = baseline,
             diktatBaselineGenerator = baselineGenerator,
             diktatReporter = reporter,
-            diktatReporterCloser = closer,
         )
     }
 
@@ -62,13 +60,9 @@ class DiktatRunnerFactory(
         colorNameInPlain: String?,
         groupByFileInPlain: Boolean?,
         sourceRootDir: Path,
-    ): Pair<DiktatReporter, DiktatProcessorListener> {
-        val (outputStream, closeListener) = reporterOutput
-            ?.let { it to it.closeAfterAllAsProcessorListener() }
-            ?: run {
-                System.`out` to DiktatProcessorListener.empty
-            }
-        val actualReporter = if (reporterType == diktatReporterFactory.plainId) {
+    ): DiktatReporter {
+        val outputStream = reporterOutput ?: System.`out`
+        return if (reporterType == diktatReporterFactory.plainId) {
             diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
         } else {
             require(colorNameInPlain == null) {
@@ -79,6 +73,5 @@ class DiktatRunnerFactory(
             }
             diktatReporterFactory(reporterType, outputStream, sourceRootDir)
         }
-        return actualReporter to closeListener
     }
 }

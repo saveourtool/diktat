@@ -10,9 +10,13 @@ import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 
 import com.pinterest.ktlint.cli.reporter.core.api.KtlintCliError
+import com.pinterest.ktlint.cli.reporter.core.api.ReporterProviderV2
+import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 import com.pinterest.ktlint.rule.engine.api.LintError
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.intellij.lang.annotations.Language
+import java.io.OutputStream
+import java.io.PrintStream
 
 import java.nio.file.Path
 
@@ -159,3 +163,33 @@ fun lint(
         isScript = false,
         callback = cb.ignoreCorrectedErrors(),
     )
+
+/**
+ * @param out [OutputStream] for [ReporterV2]
+ * @param opt configuration for [ReporterV2]
+ * @return created [ReporterV2] which closes [out] in [ReporterV2.afterAll]
+ */
+fun <R : ReporterV2> ReporterProviderV2<R>.get(
+    out: OutputStream,
+    opt: Map<String, String>,
+): ReporterV2 = get(out.printStream(), opt).closeAfterAll(out)
+
+private fun OutputStream.printStream(): PrintStream = (this as? PrintStream) ?: PrintStream(this)
+
+private fun ReporterV2.closeAfterAll(outputStream: OutputStream): ReporterV2 {
+    return object : ReporterV2 {
+        override fun beforeAll() = this@closeAfterAll.beforeAll()
+
+        override fun before(file: String) = this@closeAfterAll.before(file)
+
+        override fun onLintError(file: String, ktlintCliError: KtlintCliError) = this@closeAfterAll.onLintError(file, ktlintCliError)
+
+        override fun after(file: String) = this@closeAfterAll.after(file)
+
+        override fun afterAll() {
+            this@closeAfterAll.afterAll()
+            outputStream.flush()
+            outputStream.close()
+        }
+    }
+}
