@@ -63,8 +63,8 @@ class DiktatRuleSetFactoryImplTest {
             ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
             rulesConfigList: List<RulesConfig>?,
         ): DiktatRuleSet = run {
-            rulesConfigList ?: RulesConfigReader(Companion::class.java.classLoader)
-                .readResource("diktat-analysis.yml")
+            rulesConfigList ?: Companion::class.java.classLoader.getResourceAsStream("diktat-analysis.yml")
+                ?.let { RulesConfigReader().read(it) }
                 .orEmpty()
         }
             .let(ruleSupplier)

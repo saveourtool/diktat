@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test
 class ConfigReaderTest {
     @Test
     fun `testing json reading`() {
-        val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader)
-            .readResource("src/test/resources/test-rules-config.yml")
+        val rulesConfigList: List<RulesConfig>? = RulesConfigReader()
+            .read(javaClass.classLoader.getResourceAsStream("src/test/resources/test-rules-config.yml")!!)
         requireNotNull(rulesConfigList)
         assert(rulesConfigList.any { it.name == "CLASS_NAME_INCORRECT" && it.enabled })
         assert(rulesConfigList.find { it.name == "CLASS_NAME_INCORRECT" }?.configuration == emptyMap<String, String>())
@@ -21,8 +21,8 @@ class ConfigReaderTest {
 
     @Test
     fun `testing kotlin version`() {
-        val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader)
-            .readResource("src/test/resources/test-rules-config.yml")
+        val rulesConfigList: List<RulesConfig>? = RulesConfigReader()
+            .read(javaClass.classLoader.getResourceAsStream("src/test/resources/test-rules-config.yml")!!)
         requireNotNull(rulesConfigList)
         assert(rulesConfigList.getCommonConfiguration().kotlinVersion == kotlinVersion)
         assert(rulesConfigList.getCommonConfiguration().testAnchors.contains("androidUnitTest"))

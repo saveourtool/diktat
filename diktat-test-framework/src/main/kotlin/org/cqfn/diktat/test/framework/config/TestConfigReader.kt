@@ -1,6 +1,6 @@
 package org.cqfn.diktat.test.framework.config
 
-import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
+import org.cqfn.diktat.common.config.reader.AbstractConfigReader
 
 import java.io.IOException
 import java.io.InputStream
@@ -10,14 +10,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 
 /**
- * A [AbstractResourceConfigReader] to read tests configuration as [TestConfig]
- * @property classLoader a [ClassLoader] to load configuration file
+ * A [AbstractConfigReader] to read tests configuration as [TestConfig]
  */
-class TestConfigReader(configFilePath: String, classLoader: ClassLoader) : AbstractResourceConfigReader<TestConfig>(classLoader) {
+class TestConfigReader(configFilePath: String, classLoader: ClassLoader) : AbstractConfigReader<TestConfig>() {
     /**
      * The [TestConfig] which is read from
      */
-    val config: TestConfig? = readResource(configFilePath)
+    val config: TestConfig? = classLoader.getResourceAsStream(configFilePath)?.let { read(it) }
 
     /**
      * @param inputStream input stream of data from config file

@@ -4,7 +4,6 @@ import org.cqfn.diktat.api.DiktatProcessorListener
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 import kotlin.io.path.inputStream
 
 /**

@@ -21,6 +21,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
@@ -68,7 +69,7 @@ abstract class DiktatSmokeTestBase {
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun prepareOverriddenRulesConfig(rulesToDisable: List<Warnings> = emptyList(), rulesToOverride: RuleToConfig = emptyMap()): Path {
-        val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(DEFAULT_CONFIG_PATH)!!
+        val rulesConfig = RulesConfigReader().read(DiktatRuleConfigReaderImpl.readConfigFile(DEFAULT_CONFIG_PATH))!!
             .toMutableList()
             .also { rulesConfig ->
                 rulesToDisable.forEach { warning ->

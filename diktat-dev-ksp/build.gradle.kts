@@ -6,3 +6,10 @@ plugins {
 dependencies {
     implementation(libs.kotlin.ksp.api)
 }
+
+tasks.named("diktatFix") {
+    dependsOn(
+        tasks.named("compileKotlin"),
+        tasks.named("processResources"),
+    )
+}

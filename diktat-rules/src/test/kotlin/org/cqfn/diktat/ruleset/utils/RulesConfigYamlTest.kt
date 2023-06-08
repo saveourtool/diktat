@@ -108,8 +108,8 @@ class RulesConfigYamlTest {
     }
 
     private fun readAllRulesFromConfig(nameConfig: String) =
-        RulesConfigReader(javaClass.classLoader)
-            .readResource(nameConfig) ?: emptyList()
+        RulesConfigReader()
+            .read(javaClass.classLoader.getResourceAsStream(nameConfig)!!) ?: emptyList()
 
     private fun readAllRulesFromCode() =
         Warnings.values()

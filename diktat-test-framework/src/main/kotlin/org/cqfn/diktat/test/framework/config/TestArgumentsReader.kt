@@ -1,7 +1,7 @@
 package org.cqfn.diktat.test.framework.config
 
 import org.cqfn.diktat.common.cli.CliArgument
-import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
+import org.cqfn.diktat.common.config.reader.AbstractConfigReader
 import mu.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
@@ -22,16 +22,16 @@ import kotlinx.serialization.json.decodeFromStream
 /**
  * Class that gives access to properties of a test
  *
+ * @param classLoader [ClassLoader] which is used to load properties file
  * @property args CLI arguments
  * @property properties properties from properties file
- * @property classLoader [ClassLoader] which is used to load properties file
  */
 class TestArgumentsReader(
     private val args: Array<String>,
     val properties: TestFrameworkProperties,
     classLoader: ClassLoader
-) : AbstractResourceConfigReader<List<CliArgument>>(classLoader) {
-    private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
+) : AbstractConfigReader<List<CliArgument>>() {
+    private val cliArguments: List<CliArgument>? = classLoader.getResourceAsStream(properties.testFrameworkArgsRelativePath)?.let { read(it) }
     private val cmd: CommandLine by lazy { parseArguments() }
 
     /**

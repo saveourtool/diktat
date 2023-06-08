@@ -17,7 +17,9 @@ import java.io.InputStream
  * Default implementation for [DiktatRuleConfigReader]
  */
 class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
-    override fun invoke(inputStream: InputStream): List<DiktatRuleConfig> = RulesConfigReader(javaClass.classLoader)
+    private val yamlRuleConfigReader = RulesConfigReader()
+
+    override fun invoke(inputStream: InputStream): List<DiktatRuleConfig> = yamlRuleConfigReader
         .read(inputStream)
         ?.onEach(::validate)
         ?: emptyList()

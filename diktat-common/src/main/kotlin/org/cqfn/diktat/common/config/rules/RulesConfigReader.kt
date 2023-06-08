@@ -5,7 +5,7 @@
 package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.api.DiktatRuleConfig
-import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
+import org.cqfn.diktat.common.config.reader.AbstractConfigReader
 import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 import com.charleskorn.kaml.Yaml
@@ -14,7 +14,6 @@ import com.charleskorn.kaml.decodeFromStream
 import mu.KLogger
 import mu.KotlinLogging
 
-import java.io.File
 import java.io.InputStream
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
@@ -57,9 +56,8 @@ open class RuleConfiguration(protected val config: Map<String, String>)
 
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
- * @property classLoader a [ClassLoader] used to load configuration file
  */
-open class RulesConfigReader(classLoader: ClassLoader) : AbstractResourceConfigReader<List<RulesConfig>>(classLoader) {
+open class RulesConfigReader : AbstractConfigReader<List<RulesConfig>>() {
     private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = true)) }
 
     /**
@@ -69,24 +67,6 @@ open class RulesConfigReader(classLoader: ClassLoader) : AbstractResourceConfigR
      * @return list of [RulesConfig]
      */
     override fun parse(inputStream: InputStream): List<RulesConfig> = yamlSerializer.decodeFromStream(inputStream)
-
-    /**
-     * instead of reading the resource as it is done in the interface we will read a file by the absolute path here
-     * if the path is provided, else will read the hardcoded file 'diktat-analysis.yml' from the package
-     *
-     * @param resourceFileName name of the resource which will be loaded using [classLoader]
-     * @return [InputStream] representing loaded resource
-     */
-    override fun getConfigFile(resourceFileName: String): InputStream? {
-        val resourceFile = File(resourceFileName)
-        return if (resourceFile.exists()) {
-            log.debug("Using $DIKTAT_ANALYSIS_CONF file from the following path: ${resourceFile.absolutePath}")
-            File(resourceFileName).inputStream()
-        } else {
-            log.debug("Using the default $DIKTAT_ANALYSIS_CONF file from the class path")
-            classLoader.getResourceAsStream(resourceFileName)
-        }
-    }
 
     companion object {
         internal val log: KLogger = KotlinLogging.logger {}

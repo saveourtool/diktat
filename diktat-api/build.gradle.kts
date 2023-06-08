@@ -41,3 +41,11 @@ kotlin.sourceSets.getByName("main") {
         }
     )
 }
+
+tasks.named("diktatFix") {
+    dependsOn(
+        generateDiktatVersionFile,
+        tasks.named("compileKotlin"),
+        tasks.named("processResources"),
+    )
+}
