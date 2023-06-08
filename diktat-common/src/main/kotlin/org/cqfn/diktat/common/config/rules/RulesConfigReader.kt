@@ -19,7 +19,7 @@ import java.io.InputStream
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
-import kotlinx.serialization.Serializable
+typealias RulesConfig = DiktatRuleConfig
 
 /**
  * Name of common configuration
@@ -48,8 +48,6 @@ interface Rule {
      */
     fun ruleName(): String
 }
-
-typealias RulesConfig = DiktatRuleConfig
 
 /**
  * Configuration that allows customizing additional options of particular rules.

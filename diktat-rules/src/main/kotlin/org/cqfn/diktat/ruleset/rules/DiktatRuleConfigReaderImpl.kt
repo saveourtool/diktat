@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.api.DiktatRuleConfig
 import org.cqfn.diktat.api.DiktatRuleConfigReader
-import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
@@ -18,12 +17,10 @@ import java.io.InputStream
  * Default implementation for [DiktatRuleConfigReader]
  */
 class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
-    override fun invoke(inputStream: InputStream): List<DiktatRuleConfig> {
-        return RulesConfigReader(javaClass.classLoader)
-            .read(inputStream)
-            ?.onEach(::validate)
-            ?: emptyList()
-    }
+    override fun invoke(inputStream: InputStream): List<DiktatRuleConfig> = RulesConfigReader(javaClass.classLoader)
+        .read(inputStream)
+        ?.onEach(::validate)
+        ?: emptyList()
 
     private fun validate(config: org.cqfn.diktat.common.config.rules.RulesConfig) =
         require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {

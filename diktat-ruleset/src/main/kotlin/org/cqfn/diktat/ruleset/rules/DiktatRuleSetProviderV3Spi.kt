@@ -22,13 +22,13 @@ import org.slf4j.Logger
 class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
     id = RuleSetId(DIKTAT_RULE_SET_ID),
 ) {
+    private val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
+    private val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
+
     init {
         // Need to init KtLint logger to set log level from CLI
         KotlinLogging.logger(Logger.ROOT_LOGGER_NAME).initKtLintKLogger()
     }
-
-    private val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
-    private val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
 
     override fun getRuleProviders(): Set<RuleProvider> = diktatRuleSetFactory(diktatRuleConfigReader(DiktatRuleConfigReaderImpl.readConfigFile()))
         .toKtLint()
