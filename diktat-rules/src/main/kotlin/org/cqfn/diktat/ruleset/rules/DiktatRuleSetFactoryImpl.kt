@@ -200,6 +200,4 @@ class DiktatRuleSetFactoryImpl : DiktatRuleSetFactory {
             .toList()
         return DiktatRuleSet(rules)
     }
-
-    override fun create(configFile: String): DiktatRuleSet = DiktatRuleSetProvider(configFile).invoke()
 }

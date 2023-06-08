@@ -2,15 +2,16 @@ package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.ktlint.format
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
+import kotlin.io.path.inputStream
 
 /**
- * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
+ * Test for [DiktatRuleSetFactoryImpl] in autocorrect mode as a whole. All rules are applied to a file.
  * Note: ktlint uses initial text from a file to calculate line and column from offset. Because of that line/col of unfixed errors
  * may change after some changes to text or other rules.
  */
@@ -42,7 +43,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         resourceFilePath = RESOURCE_FILE_PATH,
         function = { testFile ->
             format(
-                ruleSetSupplier = { DiktatRuleSetProvider(config.absolutePathString()).invoke() },
+                ruleSetSupplier = { DiktatRuleSetFactoryImpl().invoke(DiktatRuleConfigReaderImpl().invoke(config.inputStream())) },
                 file = testFile,
                 cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
             )

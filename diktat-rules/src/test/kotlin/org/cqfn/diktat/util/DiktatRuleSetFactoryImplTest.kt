@@ -8,7 +8,7 @@ import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
 import org.assertj.core.api.Assertions.assertThat
@@ -21,11 +21,11 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.walk
 
-class DiktatRuleSetProviderTest {
+class DiktatRuleSetFactoryImplTest {
     @OptIn(ExperimentalPathApi::class)
     @Suppress("UnsafeCallOnNullableType")
     @Test
-    fun `check DiktatRuleSetProviderTest contain all rules`() {
+    fun `check DiktatRuleSetFactoryImpl contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
         val fileNames = Path(path)
             .walk()
@@ -34,8 +34,8 @@ class DiktatRuleSetProviderTest {
             .map(Path::nameWithoutExtension)
             .filterNot { it in ignoredFileNames }
             .toList()
-        val ruleNames = DiktatRuleSetProvider()
-            .invoke()
+        val ruleNames = DiktatRuleSetFactoryImpl()
+            .invoke(emptyList())
             .rules
             .asSequence()
             .map { it::class.simpleName }

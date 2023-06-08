@@ -27,5 +27,9 @@ class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
         KotlinLogging.logger(Logger.ROOT_LOGGER_NAME).initKtLintKLogger()
     }
 
-    override fun getRuleProviders(): Set<RuleProvider> = DiktatRuleSetProvider().invoke().toKtLint()
+    private val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
+    private val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
+
+    override fun getRuleProviders(): Set<RuleProvider> = diktatRuleSetFactory(diktatRuleConfigReader(DiktatRuleConfigReaderImpl.readConfigFile()))
+        .toKtLint()
 }

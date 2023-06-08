@@ -109,7 +109,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             diktatReporterFactory = DiktatReporterFactoryImpl()
         )
         val args = DiktatRunnerArguments(
-            configFileName = resolveConfig(),
+            configInputStream = resolveConfig(),
             sourceRootDir = sourceRootDir,
             files = inputs.map(::Path),
             baselineFile = baseline?.toPath(),

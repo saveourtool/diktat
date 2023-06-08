@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import org.cqfn.diktat.api.DiktatRuleConfig
 import org.cqfn.diktat.api.DiktatRuleConfigReader
+import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
 import org.cqfn.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
@@ -32,13 +33,31 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
 
     companion object {
         private val log = KotlinLogging.logger {}
+        private val classLoader: ClassLoader = object {}.javaClass.classLoader
 
         /**
          * @param diktatConfigFile the configuration file where all configurations for
          *   inspections and rules are stored.
          * @return resolved existed diktatConfigFile
          */
-        fun resolveConfigFile(diktatConfigFile: String = DIKTAT_ANALYSIS_CONF): String {
+        fun readConfigFile(diktatConfigFile: String = DIKTAT_CONF_PROPERTY): InputStream {
+            val resourceFileName = resolveConfigFile(diktatConfigFile)
+            val resourceFile = File(resourceFileName)
+            return if (resourceFile.exists()) {
+                log.debug { "Using $DIKTAT_ANALYSIS_CONF file from the following path: ${resourceFile.absolutePath}" }
+                resourceFile.inputStream()
+            } else {
+                log.debug { "Using the default $DIKTAT_ANALYSIS_CONF file from the class path" }
+                classLoader.getResourceAsStream(resourceFileName) ?: run {
+                    log.error { "Not able to open file $resourceFileName from the resources" }
+                    object : InputStream() {
+                        override fun read(): Int = -1
+                    }
+                }
+            }
+        }
+
+        private fun resolveConfigFile(diktatConfigFile: String = DIKTAT_ANALYSIS_CONF): String {
             val possibleConfigs: Sequence<String?> = sequence {
                 yield(resolveDefaultConfig(diktatConfigFile))
                 yield(resolveConfigFileFromJarLocation(diktatConfigFile))
