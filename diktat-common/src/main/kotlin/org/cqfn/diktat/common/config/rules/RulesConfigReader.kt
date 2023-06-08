@@ -18,8 +18,6 @@ import java.io.InputStream
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
-typealias RulesConfig = DiktatRuleConfig
-
 /**
  * Name of common configuration
  */
@@ -37,6 +35,8 @@ const val DIKTAT = "diktat"
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
 const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
+
+typealias RulesConfig = DiktatRuleConfig
 
 /**
  * This interface represents individual inspection in rule set.
