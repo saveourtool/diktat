@@ -45,7 +45,7 @@ class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
             resourceFile.inputStream()
         } else {
             log.debug { "Using the default $DIKTAT_ANALYSIS_CONF file from the class path" }
-            DiktatRuleConfigReaderImpl.Companion::class.java.classLoader.getResourceAsStream(resourceFileName) ?: run {
+            javaClass.classLoader.getResourceAsStream(resourceFileName) ?: run {
                 log.error { "Not able to open file $resourceFileName from the resources" }
                 object : InputStream() {
                     override fun read(): Int = -1
@@ -84,7 +84,7 @@ class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
     private fun resolveConfigFileFromJarLocation(): String {
         // for some aggregators of static analyzers we need to provide configuration for cli
         // in this case diktat would take the configuration from the directory where jar file is stored
-        val ruleSetProviderPath = DiktatRuleConfigReaderImpl.Companion::class.java
+        val ruleSetProviderPath = javaClass
             .protectionDomain
             .codeSource
             .location
