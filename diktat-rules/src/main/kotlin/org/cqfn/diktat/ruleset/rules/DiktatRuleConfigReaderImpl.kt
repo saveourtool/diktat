@@ -32,8 +32,6 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
 
     companion object {
         private val log = KotlinLogging.logger {}
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val javaClass = object {}.javaClass
 
         /**
          * @param diktatConfigFile the configuration file where all configurations for
@@ -48,7 +46,7 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
                 resourceFile.inputStream()
             } else {
                 log.debug { "Using the default $DIKTAT_ANALYSIS_CONF file from the class path" }
-                javaClass.classLoader.getResourceAsStream(resourceFileName) ?: run {
+                Companion::class.java.classLoader.getResourceAsStream(resourceFileName) ?: run {
                     log.error { "Not able to open file $resourceFileName from the resources" }
                     object : InputStream() {
                         override fun read(): Int = -1
@@ -89,7 +87,7 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
         private fun resolveConfigFileFromJarLocation(diktatConfigFile: String): String {
             // for some aggregators of static analyzers we need to provide configuration for cli
             // in this case diktat would take the configuration from the directory where jar file is stored
-            val ruleSetProviderPath = javaClass
+            val ruleSetProviderPath = Companion::class.java
                 .protectionDomain
                 .codeSource
                 .location
