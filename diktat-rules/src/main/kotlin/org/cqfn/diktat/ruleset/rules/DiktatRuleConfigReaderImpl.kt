@@ -30,14 +30,15 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
 
     companion object {
         private val log = KotlinLogging.logger {}
-        private val classLoader: ClassLoader = object {}.javaClass.classLoader
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        private val javaClass = object {}.javaClass
 
         /**
          * @param diktatConfigFile the configuration file where all configurations for
          *   inspections and rules are stored.
          * @return resolved existed diktatConfigFile
          */
-        fun readConfigFile(diktatConfigFile: String = DIKTAT_CONF_PROPERTY): InputStream {
+        fun readConfigFile(diktatConfigFile: String = DIKTAT_ANALYSIS_CONF): InputStream {
             val resourceFileName = resolveConfigFile(diktatConfigFile)
             val resourceFile = File(resourceFileName)
             return if (resourceFile.exists()) {
@@ -45,7 +46,7 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
                 resourceFile.inputStream()
             } else {
                 log.debug { "Using the default $DIKTAT_ANALYSIS_CONF file from the class path" }
-                classLoader.getResourceAsStream(resourceFileName) ?: run {
+                javaClass.classLoader.getResourceAsStream(resourceFileName) ?: run {
                     log.error { "Not able to open file $resourceFileName from the resources" }
                     object : InputStream() {
                         override fun read(): Int = -1
@@ -86,12 +87,11 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
         private fun resolveConfigFileFromJarLocation(diktatConfigFile: String): String {
             // for some aggregators of static analyzers we need to provide configuration for cli
             // in this case diktat would take the configuration from the directory where jar file is stored
-            val ruleSetProviderPath =
-                object {}.javaClass
-                    .protectionDomain
-                    .codeSource
-                    .location
-                    .toURI()
+            val ruleSetProviderPath = javaClass
+                .protectionDomain
+                .codeSource
+                .location
+                .toURI()
 
             val configPathWithFileName = File(ruleSetProviderPath).absolutePath
 
