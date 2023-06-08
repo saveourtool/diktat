@@ -101,9 +101,6 @@ class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
     private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
     companion object {
-        // need to load after [com.pinterest.ktlint.logger.api.initKtLintKLogger]
-        private val log by lazy {
-            KotlinLogging.logger {}
-        }
+        private val log = KotlinLogging.logger {}
     }
 }
