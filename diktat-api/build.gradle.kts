@@ -42,10 +42,12 @@ kotlin.sourceSets.getByName("main") {
     )
 }
 
-tasks.named("diktatFix") {
-    dependsOn(
-        generateDiktatVersionFile,
-        tasks.named("compileKotlin"),
-        tasks.named("processResources"),
-    )
+sequenceOf("diktatFix", "diktatCheck").forEach { diktatTaskName ->
+    tasks.named(diktatTaskName) {
+        dependsOn(
+            generateDiktatVersionFile,
+            tasks.named("compileKotlin"),
+            tasks.named("processResources"),
+        )
+    }
 }

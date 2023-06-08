@@ -7,9 +7,11 @@ dependencies {
     implementation(libs.kotlin.ksp.api)
 }
 
-tasks.named("diktatFix") {
-    dependsOn(
-        tasks.named("compileKotlin"),
-        tasks.named("processResources"),
-    )
+sequenceOf("diktatFix", "diktatCheck").forEach { diktatTaskName ->
+    tasks.named(diktatTaskName) {
+        dependsOn(
+            tasks.named("compileKotlin"),
+            tasks.named("processResources"),
+        )
+    }
 }
