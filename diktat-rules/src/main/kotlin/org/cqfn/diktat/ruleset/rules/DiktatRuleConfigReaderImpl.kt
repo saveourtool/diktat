@@ -90,7 +90,7 @@ class DiktatRuleConfigReaderImpl : DiktatRuleConfigReader {
             // for some aggregators of static analyzers we need to provide configuration for cli
             // in this case diktat would take the configuration from the directory where jar file is stored
             val ruleSetProviderPath =
-                javaClass
+                object {}.javaClass
                     .protectionDomain
                     .codeSource
                     .location

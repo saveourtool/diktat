@@ -13,7 +13,7 @@ import java.io.InputStream
  *    b. parse - implement parser for your file format (for example parse it to a proper json)
  * 2) Use your new class MyReader(javaClass.classLoader).readResource("some/path/to/file.format")
  *
- * @param classLoader The [ClassLoader] used to load the requested resource.
+ * @property classLoader The [ClassLoader] used to load the requested resource.
  * @param T - class name parameter that will be used in calculation of classpath
  */
 abstract class AbstractResourceConfigReader<T : Any>(

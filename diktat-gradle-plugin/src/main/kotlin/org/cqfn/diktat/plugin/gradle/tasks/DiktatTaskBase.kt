@@ -10,6 +10,7 @@ import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.getOutputFile
 import org.cqfn.diktat.plugin.gradle.getReporterType
+import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import generated.DIKTAT_VERSION
@@ -66,6 +67,7 @@ abstract class DiktatTaskBase(
     }
     private val diktatRunnerFactory by lazy {
         DiktatRunnerFactory(
+            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
             diktatProcessorFactory = DiktatProcessorFactoryImpl(),
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),

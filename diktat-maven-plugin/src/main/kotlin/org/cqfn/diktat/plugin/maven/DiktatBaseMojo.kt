@@ -6,6 +6,7 @@ import org.cqfn.diktat.DiktatRunnerFactory
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
+import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import org.apache.maven.plugin.AbstractMojo
@@ -94,7 +95,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     override fun execute() {
         val configFile = resolveConfig()
-        if (!File(configFile).exists()) {
+        if (!configFile.exists()) {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
@@ -103,13 +104,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
         val diktatRunnerFactory = DiktatRunnerFactory(
+            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
             diktatProcessorFactory = DiktatProcessorFactoryImpl(),
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),
             diktatReporterFactory = DiktatReporterFactoryImpl()
         )
         val args = DiktatRunnerArguments(
-            configInputStream = resolveConfig(),
+            configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
             files = inputs.map(::Path),
             baselineFile = baseline?.toPath(),
@@ -148,11 +150,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * If [diktatConfigFile] is absolute, it's path is used. If [diktatConfigFile] is relative, this method looks for it in all maven parent projects.
      * This way config file can be placed in parent module directory and used in all child modules too.
      *
-     * @return path to configuration file as a string. File by this path might not exist.
+     * @return a configuration file. File by this path might not exist.
      */
-    private fun resolveConfig(): String {
-        if (File(diktatConfigFile).isAbsolute) {
-            return diktatConfigFile
+    private fun resolveConfig(): File {
+        val file = File(diktatConfigFile)
+        if (file.isAbsolute) {
+            return file
         }
 
         return generateSequence(mavenProject) { it.parent }
@@ -160,6 +163,5 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .run {
                 firstOrNull { it.exists() } ?: first()
             }
-            .absolutePath
     }
 }

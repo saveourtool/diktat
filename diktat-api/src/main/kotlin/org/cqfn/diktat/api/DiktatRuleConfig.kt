@@ -1,5 +1,7 @@
 package org.cqfn.diktat.api
 
+import kotlinx.serialization.Serializable
+
 /**
  * Configuration of individual [DiktatRule]
  *
@@ -8,6 +10,7 @@ package org.cqfn.diktat.api
  * @property configuration a map of strings with configuration options
  * @property ignoreAnnotated if a code block is marked with these annotations - it will not be checked by this rule
  */
+@Serializable
 data class DiktatRuleConfig(
     val name: String,
     val enabled: Boolean = true,

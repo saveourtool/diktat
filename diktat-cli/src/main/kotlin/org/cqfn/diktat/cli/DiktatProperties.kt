@@ -17,6 +17,7 @@ import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.createDirectories
+import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 import kotlin.system.exitProcess
 import kotlinx.cli.ArgParser
@@ -69,7 +70,7 @@ data class DiktatProperties(
         sourceRootDir: Path,
         loggingListener: DiktatProcessorListener,
     ): DiktatRunnerArguments = DiktatRunnerArguments(
-        configInputStream = config,
+        configInputStream = Paths.get(config).inputStream(),
         sourceRootDir = sourceRootDir,
         files = getFiles(sourceRootDir),
         baselineFile = null,

@@ -2,12 +2,14 @@ plugins {
     id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
     id("org.cqfn.diktat.buildutils.code-quality-convention")
     id("org.cqfn.diktat.buildutils.publishing-signing-default-configuration")
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 project.description = "This module builds diktat-api"
 
 dependencies {
     implementation(libs.kotlin.compiler.embeddable)
+    implementation(libs.kotlinx.serialization.core)
 }
 
 val generateDiktatVersionFile by tasks.registering {

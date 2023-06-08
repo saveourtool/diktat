@@ -10,6 +10,7 @@ import org.cqfn.diktat.cli.DiktatProperties
 import org.cqfn.diktat.ktlint.DiktatBaselineFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatProcessorFactoryImpl
 import org.cqfn.diktat.ktlint.DiktatReporterFactoryImpl
+import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import mu.KotlinLogging
@@ -31,6 +32,7 @@ private val loggingListener = object : DiktatProcessorListener {
 
 fun main(args: Array<String>) {
     val diktatRunnerFactory = DiktatRunnerFactory(
+        DiktatRuleConfigReaderImpl(),
         DiktatRuleSetFactoryImpl(),
         DiktatProcessorFactoryImpl(),
         DiktatBaselineFactoryImpl(),
