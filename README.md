@@ -60,7 +60,7 @@ Main features of diktat are the following:
 
    **OR** use `curl`:
    ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar
+   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar && chmod a+x diktat
    ```
 
 ### Run diKTat

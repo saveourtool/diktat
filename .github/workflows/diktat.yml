@@ -1,0 +1,49 @@
+name: Run diKTat (release)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  diktat_check:
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+
+    steps:
+      - name: This action is disabled until the release 2.0.0
+        run: |
+          echo "This action is disabled until the release 2.0.0"
+#      - uses: actions/checkout@v3
+#      - name: Set up JDK 11
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: 11
+#          distribution: temurin
+#      - uses: gradle/gradle-build-action@v2
+#        with:
+#          gradle-version: wrapper
+#          arguments: |
+#            diktatCheck
+#            mergeDiktatReports
+#            -Pdiktat.githubActions=true
+#            -Pdetekt.multiplatform.disabled=true
+#            --build-cache
+#            --continue
+#            -PgprUser=${{ github.actor }}
+#            -PgprKey=${{ secrets.GITHUB_TOKEN }}
+#      - name: Upload SARIF report to Github
+#        uses: github/codeql-action/upload-sarif@v2
+#        if: ${{ always() }}
+#        with:
+#          sarif_file: build/reports/diktat/diktat-merged.sarif
+#      - name: Upload SARIF artifacts
+#        uses: actions/upload-artifact@v3
+#        if: ${{ failure() }}
+#        with:
+#          name: sarif-reports
+#          path: "**/build/reports/diktat"
+#          retention-days: 1

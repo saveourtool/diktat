@@ -53,13 +53,39 @@ jobs:
             :diktat-gradle-plugin:publishToMavenLocal
             :generateLibsForDiktatSnapshot
             -x detekt
-            -x diktatCheck
             -x test
+          # FixMe: return after 2.0.0
+          # -x diktatCheck
+
 
       - name: 'Override <gradle/libs.versions.toml>'
         run: |
           mv gradle/libs.versions.toml gradle/libs.versions.toml_current
           mv build/diktat-snapshot/libs.versions.toml_snapshot gradle/libs.versions.toml
+
+      # FixMe: remove after 2.0.0
+      - name: 'Small hack to inject implementation and to run diktat properly from snapshot'
+        run: |
+          #!/bin/bash
+          line_number=26
+          file_path=gradle/plugins/build.gradle.kts
+          string_to_insert='implementation(libs.diktat.gradle.plugin) {
+            exclude("io.github.detekt.sarif4k", "sarif4k")
+          }'
+
+          # Escape the special characters in the string
+          escaped_string=$(sed 's/[\/&]/\\&/g' <<< "$string_to_insert")
+
+          # Create a temporary file
+          tmp_file=$(mktemp)
+
+          # Insert the string as multiple lines after the specified line number
+          sed "${line_number}r /dev/stdin" "$file_path" <<< "$escaped_string" > "$tmp_file"
+
+          # Move the temporary file to overwrite the original file
+          mv "$tmp_file" "$file_path"
+
+          echo "String inserted successfully."
 
       # copied from .github/workflows/diktat.yml
       - uses: gradle/gradle-build-action@v2
