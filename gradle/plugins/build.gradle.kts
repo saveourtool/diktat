@@ -22,26 +22,28 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-@Suppress("COMMENTED_OUT_CODE", "WRONG_INDENTATION")
-dependencies {
-    // workaround https://github.com/gradle/gradle/issues/15383
-    implementation(files(project.libs.javaClass.superclass.protectionDomain.codeSource.location))
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.reckon.gradle.plugin)
-    implementation(libs.detekt.gradle.plugin) {
-        exclude("io.github.detekt.sarif4k", "sarif4k")
-    }
-    // FixMe: return after 2.0.0
-    /* implementation(libs.diktat.gradle.plugin) {
+run {
+    @Suppress("COMMENTED_OUT_CODE", "WRONG_INDENTATION")
+    dependencies {
+        // workaround https://github.com/gradle/gradle/issues/15383
+        implementation(files(project.libs.javaClass.superclass.protectionDomain.codeSource.location))
+        implementation(libs.kotlin.gradle.plugin)
+        implementation(libs.reckon.gradle.plugin)
+        implementation(libs.detekt.gradle.plugin) {
+            exclude("io.github.detekt.sarif4k", "sarif4k")
+        }
+        // FixMe: return after 2.0.0
+        /* implementation(libs.diktat.gradle.plugin) {
         exclude("io.github.detekt.sarif4k", "sarif4k")
     }*/
-    implementation(libs.sarif4k)
-    implementation(libs.gradle.plugin.spotless)
-    implementation(libs.publish.gradle.plugin)
-    // extra dependencies
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.stdlib.common)
-    implementation(libs.kotlin.stdlib.jdk7)
-    implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.jetbrains.annotations)
+        implementation(libs.sarif4k)
+        implementation(libs.gradle.plugin.spotless)
+        implementation(libs.publish.gradle.plugin)
+        // extra dependencies
+        implementation(libs.kotlin.stdlib)
+        implementation(libs.kotlin.stdlib.common)
+        implementation(libs.kotlin.stdlib.jdk7)
+        implementation(libs.kotlin.stdlib.jdk8)
+        implementation(libs.jetbrains.annotations)
+    }
 }
