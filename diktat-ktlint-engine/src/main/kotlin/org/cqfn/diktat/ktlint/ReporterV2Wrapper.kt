@@ -8,7 +8,7 @@ import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
  *
  * @param reporterV2
  */
-abstract class ReporterV2Wrapper(private val reporterV2: ReporterV2) : ReporterV2 {
+open class ReporterV2Wrapper(private val reporterV2: ReporterV2) : ReporterV2 {
     override fun beforeAll() = reporterV2.beforeAll()
 
     override fun before(file: String) = reporterV2.before(file)
