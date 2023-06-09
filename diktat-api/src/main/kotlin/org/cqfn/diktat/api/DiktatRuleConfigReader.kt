@@ -5,7 +5,7 @@ import java.io.InputStream
 /**
  * A reader for [DiktatRuleConfig]
  */
-interface DiktatRuleConfigReader : Function1<InputStream, List<DiktatRuleConfig>> {
+fun interface DiktatRuleConfigReader : Function1<InputStream, List<DiktatRuleConfig>> {
     /**
      * @param inputStream
      * @return parsed [DiktatRuleConfig]s

@@ -40,7 +40,7 @@ class RulesConfigValidationTest {
             """.trimMargin()
         )
         val exception = assertThrows<IllegalArgumentException> {
-            DiktatRuleSetFactoryImpl().invoke(DiktatRuleConfigReaderImpl().invoke(file.inputStream()))
+            diktatRuleSetFactory(diktatRuleConfigReader(file.inputStream()))
         }
         Assertions.assertEquals("Warning name <MISSING_DOC_TOP_LEVEL> in configuration file is invalid, did you mean <MISSING_KDOC_TOP_LEVEL>?", exception.message)
     }
@@ -55,7 +55,7 @@ class RulesConfigValidationTest {
             """.trimMargin()
         )
         assertThrows<InvalidPropertyValueException> {
-            DiktatRuleSetFactoryImpl().invoke(DiktatRuleConfigReaderImpl().invoke(file.inputStream()))
+            diktatRuleSetFactory(diktatRuleConfigReader(file.inputStream()))
         }
     }
 
@@ -71,6 +71,11 @@ class RulesConfigValidationTest {
                 |    isIncludeHeader: Fslse
             """.trimMargin()
         )
-        DiktatRuleSetFactoryImpl().invoke(DiktatRuleConfigReaderImpl().invoke(file.inputStream()))
+        diktatRuleSetFactory(diktatRuleConfigReader(file.inputStream()))
+    }
+
+    companion object {
+        private val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
+        private val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
     }
 }

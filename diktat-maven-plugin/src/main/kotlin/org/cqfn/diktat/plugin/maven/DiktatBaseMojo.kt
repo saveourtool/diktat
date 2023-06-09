@@ -19,7 +19,11 @@ import org.apache.maven.project.MavenProject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.io.path.Path
+import kotlin.io.path.inputStream
+import kotlin.io.path.isRegularFile
 
 /**
  * Base [Mojo] for checking and fixing code using diktat
@@ -95,7 +99,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     override fun execute() {
         val configFile = resolveConfig()
-        if (!configFile.exists()) {
+        if (configFile.isRegularFile()) {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
@@ -152,16 +156,16 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      *
      * @return a configuration file. File by this path might not exist.
      */
-    private fun resolveConfig(): File {
-        val file = File(diktatConfigFile)
+    private fun resolveConfig(): Path {
+        val file = Paths.get(diktatConfigFile)
         if (file.isAbsolute) {
             return file
         }
 
         return generateSequence(mavenProject) { it.parent }
-            .map { File(it.basedir, diktatConfigFile) }
+            .map { it.basedir.toPath().resolve(diktatConfigFile) }
             .run {
-                firstOrNull { it.exists() } ?: first()
+                firstOrNull { it.isRegularFile() } ?: first()
             }
     }
 }
