@@ -11,13 +11,13 @@ import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 
+import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStream
+import java.util.stream.Collectors
 
 import kotlin.system.exitProcess
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
 
 /**
  * Class that gives access to properties of a test
@@ -29,8 +29,8 @@ import kotlinx.serialization.json.decodeFromStream
 class TestArgumentsReader(
     private val args: Array<String>,
     val properties: TestFrameworkProperties,
-    classLoader: ClassLoader
-) : JsonResourceConfigReader<List<CliArgument>>(classLoader) {
+    override val classLoader: ClassLoader
+) : JsonResourceConfigReader<List<CliArgument>?>() {
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine by lazy { parseArguments() }
 
@@ -82,12 +82,14 @@ class TestArgumentsReader(
     /**
      * Parse JSON to a list of [CliArgument]s
      *
-     * @param inputStream a [InputStream] representing input JSON
+     * @param fileStream a [BufferedReader] representing input JSON
      * @return list of [CliArgument]s
      */
-    @OptIn(ExperimentalSerializationApi::class)
     @Throws(IOException::class)
-    override fun parse(inputStream: InputStream): List<CliArgument> = Json.decodeFromStream(inputStream)
+    override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
+        val jsonValue = fileStream.lines().collect(Collectors.joining())
+        return Json.decodeFromString(jsonValue)
+    }
 
     companion object {
         private val log = KotlinLogging.logger {}
