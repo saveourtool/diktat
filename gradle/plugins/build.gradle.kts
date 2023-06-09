@@ -16,6 +16,12 @@ repositories {
     gradlePluginPortal()
 }
 
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+    }
+}
+
 @Suppress("COMMENTED_OUT_CODE", "WRONG_INDENTATION")
 dependencies {
     // workaround https://github.com/gradle/gradle/issues/15383
@@ -38,10 +44,4 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk7)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.jetbrains.annotations)
-}
-
-tasks.withType<KotlinCompile> {
-    compilerOptions {
-        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-    }
 }
