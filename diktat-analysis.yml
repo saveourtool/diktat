@@ -3,7 +3,7 @@
   enabled: true
   configuration:
     # put your package name here - it will be autofixed and checked
-    domainName: org.cqfn.diktat
+    domainName: com.saveourtool.diktat
     # testDirs: test
     # can also use chapter names here (not only numbers)
     # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
@@ -173,8 +173,8 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
-    allowedWildcards: "kotlinx.serialization.*,org.cqfn.diktat.ruleset.utils.*"
+    # Allowed wildcards for imports (e.g. "import com.saveourtool.diktat.*, import org.jetbrains.kotlin.*")
+    allowedWildcards: "kotlinx.serialization.*,com.saveourtool.diktat.ruleset.utils.*"
 # Checks unused imports
 - name: UNUSED_IMPORT
   enabled: true

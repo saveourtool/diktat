@@ -1,8 +1,8 @@
 package test.paragraph3.file_structure
 
 // lorem ipsum
-import org.cqfn.diktat.example.Bar
-import org.cqfn.diktat.example.Foo
+import com.saveourtool.diktat.example.Bar
+import com.saveourtool.diktat.example.Foo
 import org.junit.jupiter.api.Test
 
 class Example {

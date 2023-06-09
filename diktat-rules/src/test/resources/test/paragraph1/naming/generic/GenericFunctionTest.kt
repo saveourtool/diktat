@@ -1,4 +1,4 @@
-package org.cqfn.diktat.test.paragraph1.naming.generic
+package com.saveourtool.diktat.test.paragraph1.naming.generic
 
 private class ClassName<T> {
     private fun <Template, T> lock(body: ((Template?) -> T?)?, value: Template?): T? {

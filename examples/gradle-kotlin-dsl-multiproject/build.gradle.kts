@@ -1,8 +1,8 @@
-import org.cqfn.diktat.plugin.gradle.DiktatExtension
+import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 
 plugins {
     kotlin("jvm") version "1.8.21"
-    id("org.cqfn.diktat.diktat-gradle-plugin")
+    id("com.saveourtool.diktat.diktat-gradle-plugin")
 }
 
 allprojects {
@@ -10,7 +10,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
     }
-    apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
+    apply(plugin = "com.saveourtool.diktat.diktat-gradle-plugin")
     configure<DiktatExtension> {
         diktatConfigFile = rootProject.file("diktat-analysis.yml")
         inputs { include("src/**/*.kt") }

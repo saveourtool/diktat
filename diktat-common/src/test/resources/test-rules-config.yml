@@ -1,7 +1,7 @@
 - name: DIKTAT_COMMON
   enabled: true
   configuration:
-    domainName: org.cqfn.diktat
+    domainName: com.saveourtool.diktat
     kotlinVersion: 1.4.21
     testDirs: "test, androidUnitTest"
 - name: CLASS_NAME_INCORRECT
@@ -109,7 +109,7 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import com.saveourtool.diktat.*, import org.jetbrains.kotlin.*")
     useRecommendedImportsOrder: true
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true

@@ -2,8 +2,8 @@
  * This is an example
  */
 @file:JvmName("Foo")
-package org.cqfn.diktat.example
-import org.cqfn.diktat.Foo
+package com.saveourtool.diktat.example
+import com.saveourtool.diktat.Foo
 class Example {
     val y: Foo = Foo()
 }
