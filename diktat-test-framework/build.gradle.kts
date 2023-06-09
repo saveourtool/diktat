@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.apache.commons.cli)
     implementation(libs.apache.commons.io)
     implementation(libs.kotlin.logging)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlin.multiplatform.diff)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
