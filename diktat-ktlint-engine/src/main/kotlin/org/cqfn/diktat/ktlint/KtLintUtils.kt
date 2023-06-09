@@ -94,6 +94,16 @@ fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = if (canBeAu
 fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRootDir).invariantSeparatorsPathString
 
 /**
+ * @param out [OutputStream] for [ReporterV2]
+ * @param opt configuration for [ReporterV2]
+ * @return created [ReporterV2] which closes [out] in [ReporterV2.afterAll]
+ */
+fun <R : ReporterV2> ReporterProviderV2<R>.get(
+    out: OutputStream,
+    opt: Map<String, String>,
+): ReporterV2 = get(out.printStream(), opt).closeAfterAll(out)
+
+/**
  * Enables ignoring autocorrected errors when in "fix" mode (i.e. when
  * [com.pinterest.ktlint.core.KtLint.format] is invoked).
  *
@@ -109,6 +119,16 @@ fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRo
 private fun DiktatCallback.ignoreCorrectedErrors(): DiktatCallback = DiktatCallback { error, isCorrected ->
     if (!isCorrected) {
         this@ignoreCorrectedErrors(error, false)
+    }
+}
+
+private fun OutputStream.printStream(): PrintStream = (this as? PrintStream) ?: PrintStream(this)
+
+private fun ReporterV2.closeAfterAll(outputStream: OutputStream): ReporterV2 = object : ReporterV2Wrapper(this@closeAfterAll) {
+    override fun afterAll() {
+        super.afterAll()
+        outputStream.flush()
+        outputStream.close()
     }
 }
 
@@ -163,33 +183,3 @@ fun lint(
         isScript = false,
         callback = cb.ignoreCorrectedErrors(),
     )
-
-/**
- * @param out [OutputStream] for [ReporterV2]
- * @param opt configuration for [ReporterV2]
- * @return created [ReporterV2] which closes [out] in [ReporterV2.afterAll]
- */
-fun <R : ReporterV2> ReporterProviderV2<R>.get(
-    out: OutputStream,
-    opt: Map<String, String>,
-): ReporterV2 = get(out.printStream(), opt).closeAfterAll(out)
-
-private fun OutputStream.printStream(): PrintStream = (this as? PrintStream) ?: PrintStream(this)
-
-private fun ReporterV2.closeAfterAll(outputStream: OutputStream): ReporterV2 {
-    return object : ReporterV2 {
-        override fun beforeAll() = this@closeAfterAll.beforeAll()
-
-        override fun before(file: String) = this@closeAfterAll.before(file)
-
-        override fun onLintError(file: String, ktlintCliError: KtlintCliError) = this@closeAfterAll.onLintError(file, ktlintCliError)
-
-        override fun after(file: String) = this@closeAfterAll.after(file)
-
-        override fun afterAll() {
-            this@closeAfterAll.afterAll()
-            outputStream.flush()
-            outputStream.close()
-        }
-    }
-}

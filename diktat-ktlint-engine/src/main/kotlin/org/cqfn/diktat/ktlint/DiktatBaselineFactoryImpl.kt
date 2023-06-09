@@ -34,7 +34,6 @@ class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
             }
         }
 
-    override fun generator(baselineFile: Path, sourceRootDir: Path): DiktatProcessorListener {
-        return baselineReporterProvider.get(baselineFile.outputStream(), emptyMap()).wrap(sourceRootDir)
-    }
+    override fun generator(baselineFile: Path, sourceRootDir: Path): DiktatProcessorListener =
+        baselineReporterProvider.get(baselineFile.outputStream(), emptyMap()).wrap(sourceRootDir)
 }
