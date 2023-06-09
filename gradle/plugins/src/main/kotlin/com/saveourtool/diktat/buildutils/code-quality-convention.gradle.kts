@@ -1,5 +1,6 @@
 package com.saveourtool.diktat.buildutils
 
+@Suppress("AVOID_NULL_CHECKS")
 plugins {
     id("com.saveourtool.diktat.buildutils.detekt-convention-configuration")
     // FixMe: remove after 2.0.0

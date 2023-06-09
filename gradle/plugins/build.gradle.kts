@@ -16,6 +16,7 @@ repositories {
     gradlePluginPortal()
 }
 
+@Suppress("COMMENTED_OUT_CODE", "WRONG_INDENTATION")
 dependencies {
     // workaround https://github.com/gradle/gradle/issues/15383
     implementation(files(project.libs.javaClass.superclass.protectionDomain.codeSource.location))

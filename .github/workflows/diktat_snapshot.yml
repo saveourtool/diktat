@@ -57,6 +57,10 @@ jobs:
           # FixMe: return after 2.0.0
           # -x diktatCheck
 
+      - name: 'Copy files and set flags'
+        run: |
+          echo "DIKTAT_SNAPSHOT=1" >> $GITHUB_ENV
+          mv gradle/plugins/src/main/kotlin/com/saveourtool/diktat/buildutils/diktat-convention-configuration.gradle.txt gradle/plugins/src/main/kotlin/com/saveourtool/diktat/buildutils/diktat-convention-configuration.gradle.kts
 
       - name: 'Override <gradle/libs.versions.toml>'
         run: |
@@ -96,7 +100,6 @@ jobs:
             mergeDiktatReports
             -Pdiktat.githubActions=true
             -Pdetekt.multiplatform.disabled=true
-            --build-cache
             --continue
             -PgprUser=${{ github.actor }}
             -PgprKey=${{ secrets.GITHUB_TOKEN }}
