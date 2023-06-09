@@ -4,22 +4,20 @@
 
 package org.cqfn.diktat.common.config.rules
 
-import org.cqfn.diktat.api.DiktatRuleConfig
-import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
+import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
-import com.charleskorn.kaml.decodeFromStream
 import mu.KLogger
 import mu.KotlinLogging
+import java.io.BufferedReader
 
 import java.io.File
-import java.io.InputStream
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
-
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 
 /**
  * Name of common configuration
@@ -49,7 +47,20 @@ interface Rule {
     fun ruleName(): String
 }
 
-typealias RulesConfig = DiktatRuleConfig
+/**
+ * Configuration of individual [Rule]
+ * @property name name of the rule
+ * @property enabled
+ * @property configuration a map of strings with configuration options
+ * @property ignoreAnnotated if a code block is marked with this annotations - it will not be checked by this rule
+ */
+@Serializable
+data class RulesConfig(
+    val name: String,
+    val enabled: Boolean = true,
+    val configuration: Map<String, String> = emptyMap(),
+    val ignoreAnnotated: Set<String> = emptySet(),
+)
 
 /**
  * Configuration that allows customizing additional options of particular rules.
@@ -61,32 +72,34 @@ open class RuleConfiguration(protected val config: Map<String, String>)
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  * @property classLoader a [ClassLoader] used to load configuration file
  */
-open class RulesConfigReader(classLoader: ClassLoader) : AbstractResourceConfigReader<List<RulesConfig>>(classLoader) {
+open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
     private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = true)) }
 
     /**
      * Parse resource file into list of [RulesConfig]
      *
-     * @param inputStream a [InputStream] representing loaded rules config file
+     * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    override fun parse(inputStream: InputStream): List<RulesConfig> = yamlSerializer.decodeFromStream(inputStream)
+    override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
+        yamlSerializer.decodeFromString<List<RulesConfig>>(stream.readLines().joinToString(separator = "\n")).reversed().distinctBy { it.name }
+    }
 
     /**
      * instead of reading the resource as it is done in the interface we will read a file by the absolute path here
      * if the path is provided, else will read the hardcoded file 'diktat-analysis.yml' from the package
      *
      * @param resourceFileName name of the resource which will be loaded using [classLoader]
-     * @return [InputStream] representing loaded resource
+     * @return [BufferedReader] representing loaded resource
      */
-    override fun getConfigFile(resourceFileName: String): InputStream? {
+    override fun getConfigFile(resourceFileName: String): BufferedReader? {
         val resourceFile = File(resourceFileName)
         return if (resourceFile.exists()) {
             log.debug("Using $DIKTAT_ANALYSIS_CONF file from the following path: ${resourceFile.absolutePath}")
-            File(resourceFileName).inputStream()
+            File(resourceFileName).bufferedReader()
         } else {
             log.debug("Using the default $DIKTAT_ANALYSIS_CONF file from the class path")
-            classLoader.getResourceAsStream(resourceFileName)
+            classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
         }
     }
 

@@ -1,7 +1,7 @@
 package org.cqfn.diktat.test.framework.config
 
 import org.cqfn.diktat.common.cli.CliArgument
-import org.cqfn.diktat.common.config.reader.AbstractResourceConfigReader
+import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import mu.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
@@ -30,7 +30,7 @@ class TestArgumentsReader(
     private val args: Array<String>,
     val properties: TestFrameworkProperties,
     classLoader: ClassLoader
-) : AbstractResourceConfigReader<List<CliArgument>>(classLoader) {
+) : JsonResourceConfigReader<List<CliArgument>>(classLoader) {
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine by lazy { parseArguments() }
 

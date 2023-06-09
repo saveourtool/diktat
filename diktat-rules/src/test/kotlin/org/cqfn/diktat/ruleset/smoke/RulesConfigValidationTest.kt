@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.cqfn.diktat.test.framework.util.deleteIfExistsSilently
 

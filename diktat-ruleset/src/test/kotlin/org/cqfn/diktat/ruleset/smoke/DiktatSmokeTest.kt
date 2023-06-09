@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.smoke
 
 import org.cqfn.diktat.api.DiktatError
 import org.cqfn.diktat.ktlint.format
-import org.cqfn.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
