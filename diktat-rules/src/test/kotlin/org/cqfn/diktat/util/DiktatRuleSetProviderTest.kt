@@ -8,7 +8,6 @@ import org.cqfn.diktat.api.DiktatRuleSet
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.test.framework.util.filterContentMatches
 
