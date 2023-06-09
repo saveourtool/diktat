@@ -10,10 +10,10 @@ import java.io.IOException
  * Usage:
  * 1) implement this class with implementing two methods:
  *    a. getConfigFile - to return URI (path) to the file that you want to read
- *    b. parseResource  - implement parser for your file format (for example parse it to a proper json)
+ *    b. parseResource - implement parser for your file format (for example parse it to a proper json)
  * 2) Use your new class MyReader(javaClass.classLoader).readResource("some/path/to/file.format")
  *
- * @param T - class name parameter that will be used in calculation of classpath
+ * @param <T> - class name parameter that will be used in calculation of classpath
  */
 abstract class JsonResourceConfigReader<T> {
     /**
@@ -46,6 +46,7 @@ abstract class JsonResourceConfigReader<T> {
      */
     protected open fun getConfigFile(resourceFileName: String): BufferedReader? =
         classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
+
     /**
      * you can specify your own parser, in example for parsing stream as a json
      *

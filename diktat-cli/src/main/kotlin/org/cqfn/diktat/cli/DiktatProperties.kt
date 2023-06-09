@@ -69,7 +69,7 @@ data class DiktatProperties(
         sourceRootDir: Path,
         loggingListener: DiktatProcessorListener,
     ): DiktatRunnerArguments = DiktatRunnerArguments(
-        configInputStream = config,
+        configFileName = config,
         sourceRootDir = sourceRootDir,
         files = getFiles(sourceRootDir),
         baselineFile = null,

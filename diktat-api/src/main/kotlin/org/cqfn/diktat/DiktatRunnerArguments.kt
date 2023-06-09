@@ -1,16 +1,14 @@
 package org.cqfn.diktat
 
 import org.cqfn.diktat.api.DiktatProcessorListener
-import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
-import kotlin.io.path.inputStream
 
 /**
  * Arguments for [DiktatRunner]
  *
- * @property configInputStream an input stream with config to load Diktat's rules
+ * @property configFileName a config file to load Diktat's rules
  * @property sourceRootDir a common root dir for all provided [files]
  * @property files a collection of files which needs to be fixed
  * @property baselineFile an optional path to file with baseline
@@ -21,7 +19,7 @@ import kotlin.io.path.inputStream
  * @property loggingListener listener to log diktat runner phases, [DiktatProcessorListener.empty] by default
  */
 data class DiktatRunnerArguments(
-    val configInputStream: InputStream,
+    val configFileName: String,
     val sourceRootDir: Path,
     val files: Collection<Path>,
     val baselineFile: Path?,
@@ -42,7 +40,7 @@ data class DiktatRunnerArguments(
         colorNameInPlain: String? = null,
         loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
     ) : this(
-        configFile.inputStream(),
+        configFile.absolutePathString(),
         sourceRootDir,
         files,
         baselineFile,

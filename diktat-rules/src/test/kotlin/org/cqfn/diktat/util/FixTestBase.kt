@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.test.framework.processing.FileComparisonResult
 import org.cqfn.diktat.test.framework.processing.ResourceReader
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
-import org.cqfn.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
+import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
 import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions

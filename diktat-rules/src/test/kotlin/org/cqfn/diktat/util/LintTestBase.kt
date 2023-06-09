@@ -4,7 +4,7 @@ import org.cqfn.diktat.api.DiktatCallback
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ktlint.lint
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
+import org.cqfn.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
 import org.cqfn.diktat.api.DiktatError
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language

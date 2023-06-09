@@ -7,7 +7,7 @@ import org.cqfn.diktat.api.DiktatRuleSetFactory
  * A default implementation of [DiktatRuleSetFactory]
  */
 class DiktatRuleSetFactoryImpl : DiktatRuleSetFactory {
-    override fun create(configFile: String): DiktatRuleSet = DiktatRuleSetProvider(configFile).invoke()
+    override fun invoke(): DiktatRuleSet = DiktatRuleSetProvider().invoke()
 
     override fun create(configFile: String): DiktatRuleSet = DiktatRuleSetProvider(configFile).invoke()
 }

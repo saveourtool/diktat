@@ -6,7 +6,6 @@ import org.cqfn.diktat.api.DiktatProcessorListener
 import org.cqfn.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import org.cqfn.diktat.api.DiktatReporter
 import org.cqfn.diktat.api.DiktatReporterFactory
-import org.cqfn.diktat.api.DiktatRuleConfigReader
 import org.cqfn.diktat.api.DiktatRuleSetFactory
 import java.io.OutputStream
 import java.nio.file.Path
@@ -17,7 +16,6 @@ import java.nio.file.Path
  * @property diktatReporterFactory a factory for [DiktatReporter]
  */
 class DiktatRunnerFactory(
-    private val diktatRuleConfigReader: DiktatRuleConfigReader,
     private val diktatRuleSetFactory: DiktatRuleSetFactory,
     private val diktatProcessorFactory: DiktatProcessorFactory,
     private val diktatBaselineFactory: DiktatBaselineFactory,
@@ -28,8 +26,7 @@ class DiktatRunnerFactory(
      * @return an instance of [DiktatRunner] created using [args]
      */
     override fun invoke(args: DiktatRunnerArguments): DiktatRunner {
-        val diktatRuleConfigs = diktatRuleConfigReader(args.configInputStream)
-        val diktatRuleSet = diktatRuleSetFactory(diktatRuleConfigs)
+        val diktatRuleSet = diktatRuleSetFactory.create(args.configFileName)
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
         val (reporter, closer) = resolveReporter(
