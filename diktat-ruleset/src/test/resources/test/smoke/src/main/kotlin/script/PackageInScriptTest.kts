@@ -1,4 +1,4 @@
-package org.cqfn.diktat.script
+package com.saveourtool.diktat.script
 
 run {
     println("hello world!")

@@ -1,5 +1,5 @@
-package org.cqfn.diktat.some
-import org.cqfn.diktat.ktlint.core.Rule
+package com.saveourtool.diktat.some
+import com.saveourtool.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }

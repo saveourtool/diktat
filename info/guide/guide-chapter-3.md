@@ -93,7 +93,7 @@ Extension functions shouldn't have receivers declared in the same file according
 
 Valid example:
 ```kotlin
-package org.cqfn.diktat.example
+package com.saveourtool.diktat.example
 
 const val CONSTANT = 42
 

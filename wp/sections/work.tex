@@ -91,7 +91,7 @@ When you run program, you can pass flags to ktlint - one of them is \texttt{-F}.
 
 Another feature of ktlint is that at it's startup you can provide a JAR file with additional ruleset(s), that will be discovered by the \texttt{ServiceLoader} and then all AST nodes will be passed to these rules. DiKTat uses this approach.
 
-The only modification Diktat makes to the framework is that it adds a mechanism to disable Inspection from the code using annotations or configuration file. The set of all rules is described in the \textsl{DiktatRuleSetProvider}\footnote{\url{https://github.com/saveourtool/diKTat/blob/v0.1.3/diktat-rules/src/main/kotlin/org/cqfn/diktat/ruleset/rules/DiktatRuleSetProvider.kt}} class. This class overrides the \textsl{get()} method of the \textsl{RuleSetProvider}\footnote{\url{https://github.com/pinterest/ktlint/blob/master/ktlint-core/src/main/kotlin/com/pinterest/ktlint/core/RuleSetProvider.kt}} interface, which returns a set of rules to be "traversed". But before returning this set Diktat is reading the configuration file where the user has independently configured all the Inspections. If there is no configuration file, then a warning will be displayed and Inspections will use the default configuration file.
+The only modification Diktat makes to the framework is that it adds a mechanism to disable Inspection from the code using annotations or configuration file. The set of all rules is described in the \textsl{DiktatRuleSetProvider}\footnote{\url{https://github.com/saveourtool/diKTat/blob/v0.1.3/diktat-rules/src/main/kotlin/com/saveourtool/diktat/ruleset/rules/DiktatRuleSetProvider.kt}} class. This class overrides the \textsl{get()} method of the \textsl{RuleSetProvider}\footnote{\url{https://github.com/pinterest/ktlint/blob/master/ktlint-core/src/main/kotlin/com/pinterest/ktlint/core/RuleSetProvider.kt}} interface, which returns a set of rules to be "traversed". But before returning this set Diktat is reading the configuration file where the user has independently configured all the Inspections. If there is no configuration file, then a warning will be displayed and Inspections will use the default configuration file.
 Each rule must implement the \textsl{visit} method of the abstract Rule class, which describes the logic of the rule. By the way it is a special case of a famous pattern Visitor \cite{ref:gang}. Implementation example of the simple Rule that contains one Inspections can be found below.
 
 \begin{lstlisting}[caption={Example of the Rule.}, label={lst:example1}, language=Kotlin]
@@ -176,11 +176,11 @@ There are also many unique Inspections that other analyzers do not have. Here ar
   two children at (0.3,-0.8) and (0.3,-1.5)},
   scale=0.5,
   edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
-    
+
   \node(a) {...}
     child { node {FUN}
         child {node {...}}
-        child {node {BLOCK}            
+        child {node {BLOCK}
             child {node {FUN}
             	child{node{...}}
 		child{node{BLOCK}
@@ -189,39 +189,39 @@ There are also many unique Inspections that other analyzers do not have. Here ar
             }
         }
     };
-    
+
     \node(b) [right of=a, xshift=17cm]{...}
     	child { node {FUN}
         		child {node {...}}
-        		child {node {BLOCK}          
+        		child {node {BLOCK}
           		child{node{...}}
-		}	
+		}
         }
         child [missing] {}
 	child [missing] {}
          child { node {FUN}
         		child {node {...}}
-        		child {node {BLOCK}          
+        		child {node {BLOCK}
           		child{node{...}}
-		}	
+		}
         };
-     
+
     \draw[-latex,very thick,shorten <=5mm,shorten >=5mm,] ([xshift=5cm,yshift=-3cm]a.north) to ([xshift=-2cm, yshift=-3cm]b.north);
 \end{tikzpicture}
 \\
     \item \textbf{FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS} - Inspection that checks that floating-point numbers are not used for accurate calculations (see the corresponding Rule from the code style to get more information).
 
     \item \textbf{PACKAGE\underline{ }NAMING} - This Inspection checks that package name is in a proper format and is separated by dots. This inspection is very demonstrative to show how the work with AST is done.
-    
+
     This inspection receives different nodes and checks them one by one. First it checks their element type (type of the node in AST). When it's element type equals to \texttt{PACKAGE\_DIRECTIVE} it gets the file name and collects all nodes with \texttt{IDENTIFIER} type as it is shown on the following graph:
-    
-        
+
+
 \begin{center}
 \begin{tikzpicture}[nodes={draw, circle}, sibling distance=1.5cm, level distance = 1.2cm, minimum size=3.1cm, scale = 1.2, node distance=16cm]
 \node(main)[text width = 2cm] { PACKAGE DIRECTIVE}
     child { node(a) [below left] { PACKAGE} }
     child { node(b)[below] { WHITE SPACE} }
-    child { node(c)[below right, text width=3cm] {  DOT QUALIFIED EXPRESSION} 
+    child { node(c)[below right, text width=3cm] {  DOT QUALIFIED EXPRESSION}
         child { node(d)[below left, text width=2.5cm] { REFERENCE EXPRESSION}
             child { node(e)[below, fill = selectColor] { IDENTIFIER} }
         }
@@ -241,11 +241,11 @@ There are also many unique Inspections that other analyzers do not have. Here ar
 
 \end{tikzpicture}
 \end{center}
-    
-In order to collect  elements with a proper type, Inspection has to do a tree traversal. Tree traversal is done by a special method called \texttt{findAllNodesWithCondition()} (see Listing 3). This function searches for a node with a given condition (in this case it is when node's type equals to \texttt{IDENTIFIER}). As a basis it uses DFS (Depth-first search): it goes recursively in depth of the tree and compares types of AST nodes. When it finds necessary node it returns it and the result from it's parent search as a list, otherwise it returns empty list. At the end the Inspection checks the package name based on identifiers and file name. 
+
+In order to collect  elements with a proper type, Inspection has to do a tree traversal. Tree traversal is done by a special method called \texttt{findAllNodesWithCondition()} (see Listing 3). This function searches for a node with a given condition (in this case it is when node's type equals to \texttt{IDENTIFIER}). As a basis it uses DFS (Depth-first search): it goes recursively in depth of the tree and compares types of AST nodes. When it finds necessary node it returns it and the result from it's parent search as a list, otherwise it returns empty list. At the end the Inspection checks the package name based on identifiers and file name.
 
 
-\begin{lstlisting}[caption={Method for AST traversal}, label={lst:example1}, language=Kotlin]      
+\begin{lstlisting}[caption={Method for AST traversal}, label={lst:example1}, language=Kotlin]
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */

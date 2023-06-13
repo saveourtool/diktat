@@ -4,7 +4,7 @@
 
 package test.paragraph3.top_level
 
-import org.cqfn.diktat.bar
+import com.saveourtool.diktat.bar
 
 class A {}
 

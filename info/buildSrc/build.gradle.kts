@@ -6,7 +6,7 @@ repositories {
     mavenCentral()
     mavenLocal {
         content {
-            includeGroup("org.cqfn.diktat")
+            includeGroup("com.saveourtool.diktat")
         }
     }
     flatDir {
@@ -18,5 +18,5 @@ repositories {
 }
 
 dependencies {
-    implementation("org.cqfn.diktat:diktat-rules:$version")
+    implementation("com.saveourtool.diktat:diktat-rules:$version")
 }

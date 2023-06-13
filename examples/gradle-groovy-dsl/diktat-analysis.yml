@@ -175,7 +175,7 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import com.saveourtool.diktat.*, import org.jetbrains.kotlin.*")
     useRecommendedImportsOrder: true
 # Checks unused imports
 - name: UNUSED_IMPORT

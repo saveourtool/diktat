@@ -1,4 +1,4 @@
-package org.cqfn.diktat
+package com.saveourtool.diktat
 
     override fun boo() {
      val listTestResult: MutableList<TestResult> = mutableListOf()

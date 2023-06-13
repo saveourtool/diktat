@@ -1,4 +1,4 @@
-package org.cqfn.diktat.test.resources.test.paragraph1.naming.enum_
+package com.saveourtool.diktat.test.resources.test.paragraph1.naming.enum_
 
 enum class EnumValuePascalCaseTest {
     paSC_SAl_l,

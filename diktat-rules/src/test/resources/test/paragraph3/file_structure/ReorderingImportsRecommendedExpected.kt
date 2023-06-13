@@ -5,8 +5,8 @@ import android.*
 import androidx.*
 import com.android.*
 
-import org.cqfn.*
-import org.cqfn.diktat.*
+import com.saveourtool.*
+import com.saveourtool.diktat.*
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.CaseFormat
