@@ -1,4 +1,4 @@
-package org.cqfn.diktat.resources.paragraph3.longline
+package com.saveourtool.diktat.resources.paragraph3.longline
 
 class veryLoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong {
     // looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongggggggggggggggggggggggggg

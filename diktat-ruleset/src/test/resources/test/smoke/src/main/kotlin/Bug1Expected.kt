@@ -1,5 +1,5 @@
 // ;warn:$line:1: [FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: Bug1Expected.kt vs D{{.*}}
-package org.cqfn.diktat
+package com.saveourtool.diktat
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: D (cannot be auto-corrected){{.*}}
 // ;warn:7: [CLASS_NAME_INCORRECT] class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers: D{{.*}}

@@ -5,10 +5,10 @@ import kotlin.system.exitProcess
 // comment about java imports
 import java.io.IOException
 import java.net.URL
-import org.cqfn.*
+import com.saveourtool.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import android.*
-import org.cqfn.diktat.*
+import com.saveourtool.diktat.*
 import org.junit.jupiter.api.Assertions
 import androidx.*
 import org.springframework.context.annotation.Bean

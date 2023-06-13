@@ -1,7 +1,7 @@
-import org.cqfn.diktat.generation.docs.generateAvailableRules
-import org.cqfn.diktat.generation.docs.generateCodeStyle
-import org.cqfn.diktat.generation.docs.generateFullDoc
-import org.cqfn.diktat.generation.docs.generateRulesMapping
+import com.saveourtool.diktat.generation.docs.generateAvailableRules
+import com.saveourtool.diktat.generation.docs.generateCodeStyle
+import com.saveourtool.diktat.generation.docs.generateFullDoc
+import com.saveourtool.diktat.generation.docs.generateRulesMapping
 
 tasks.register("generateRulesMapping") {
     group = "documentation"

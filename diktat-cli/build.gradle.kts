@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.incremental.createDirectory
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
-    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
-    id("org.cqfn.diktat.buildutils.code-quality-convention")
-    id("org.cqfn.diktat.buildutils.publishing-signing-default-configuration")
+    id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
+    id("com.saveourtool.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.publishing-signing-default-configuration")
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.shadow)
 }
@@ -55,7 +55,7 @@ sourceSets.getByName("main") {
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     manifest {
-        attributes["Main-Class"] = "org.cqfn.diktat.DiktatMainKt"
+        attributes["Main-Class"] = "com.saveourtool.diktat.DiktatMainKt"
     }
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }

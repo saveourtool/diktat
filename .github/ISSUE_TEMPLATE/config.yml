@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Telegram chat @diktat_kotlin
-    url: https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg
-    about: Ask everything about diktat in this channel
+  - name: Discussions
+    url: https://github.com/saveourtool/diktat/discussions
+    about: Ask everything about diktat in discussions tab

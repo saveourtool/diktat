@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/saveourtool/diKTat)](https://github.com/saveourtool/diKTat/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
+[![Maven Central](https://img.shields.io/maven-central/v/com.saveourtool.diktat/diktat-rules)](https://mvnrepository.com/artifact/com.saveourtool.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaveourtool%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaveourtool%2FdiKTat?ref=badge_shield)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
@@ -60,7 +60,7 @@ Main features of diktat are the following:
 
    **OR** use `curl`:
    ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar
+   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar && chmod a+x diktat
    ```
 
 ### Run diKTat
@@ -89,7 +89,7 @@ If you use it and encounter any problems, feel free to open issues on [github](h
 
 ```xml
             <plugin>
-                <groupId>org.cqfn.diktat</groupId>
+                <groupId>com.saveourtool.diktat</groupId>
                 <artifactId>diktat-maven-plugin</artifactId>
                 <version>${diktat.version}</version>
                 <executions>
@@ -182,7 +182,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
+    id("com.saveourtool.diktat.diktat-gradle-plugin") version "1.2.5"
 }
 ```
 
@@ -193,11 +193,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.2.5")
+        classpath("com.saveourtool.diktat:diktat-gradle-plugin:1.2.5")
     }
 }
 
-apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
+apply(plugin = "com.saveourtool.diktat.diktat-gradle-plugin")
 ```
 
 You can then configure diktat using `diktat` extension:

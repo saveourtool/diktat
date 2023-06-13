@@ -1,6 +1,6 @@
 package /* AAAAAA */    buggy.path
 
-import org.cqfn.diktat.ktlint.core.Rule
+import com.saveourtool.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }

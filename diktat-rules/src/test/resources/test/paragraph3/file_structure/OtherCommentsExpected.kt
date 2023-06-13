@@ -4,9 +4,9 @@
 
 // some notes on this file
 // and some more
-package org.cqfn.diktat.example
+package com.saveourtool.diktat.example
 
-import org.cqfn.diktat.Foo
+import com.saveourtool.diktat.Foo
 
 class Example {
     val x: Foo = Foo()

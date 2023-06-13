@@ -35,13 +35,13 @@ For example it can parse and provide you a sub-tree for these lines of code:
 \end{lstlisting}
 
 \tikzstyle{every node}=[draw=black,thick,anchor=west, scale = 0.5]
-  
+
 \begin{tikzpicture}[%
   grow via three points={one child at (0.3,-0.8) and
   two children at (0.3,-0.8) and (0.3,-1.5)},
   scale=0.5,
   edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
-    
+
   \node {PROPERTY}
     child { node {val}}
     child {node {WHITE\underline{ }SPACE}}
@@ -57,7 +57,7 @@ For example it can parse and provide you a sub-tree for these lines of code:
     }
     child [missing] {}
     child [missing] {}
-    child [missing] {}  
+    child [missing] {}
     child {node {WHITE\underline{ }SPACE}}
     child {node {EQ}}
     child {node {WHITE\underline{ }SPACE}}
@@ -79,7 +79,7 @@ What if the user wants one of the diKTat Inspections not to check a particular p
  * This is example
  */
 
-package org.cqfn.diktat
+package com.saveourtool.diktat
 
 /**
  * Simple class
@@ -95,7 +95,7 @@ class User(private val name: String, private val age: Int) {
 
 \end{lstlisting}
 
-Diktat will raise the warning: 
+Diktat will raise the warning:
 $$
 \texttt{ \small{ $\big[$FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE$\big]$  function/method name should be in lowerCamelCase}}
 $$
@@ -106,7 +106,7 @@ But if there is a \texttt{@Suppress} before this method, then there will be no w
  * This is example
  */
 
-package org.cqfn.diktat
+package com.saveourtool.diktat
 
 /**
  * Simple class
@@ -133,11 +133,11 @@ It worth mentioning that there is a web version of diKTat. This is a handy tool 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.3]{pictures/web-example.png}
-  \caption{Diktat-web online demo} 
-\end{figure} 
+  \caption{Diktat-web online demo}
+\end{figure}
 
 \subsection{Options validation}
 As it has been mention earlier, diktat has a highly customizable configuration file, but manually editing it is error-prone, for example, name of the rule can be incorrect due to a typo. Diktat will validate configuration file on startup and suggest the closest name based on \textsl{Levenshtein} method.
 
 \subsection{Self checks}
-Diktat fully supports self checking of it's own code using both release and snapshot (master) versions. Diktat uses it's self to validate the code inside during it's CI/CD process. 
+Diktat fully supports self checking of it's own code using both release and snapshot (master) versions. Diktat uses it's self to validate the code inside during it's CI/CD process.
