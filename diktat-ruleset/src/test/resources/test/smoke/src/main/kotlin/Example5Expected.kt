@@ -8,7 +8,7 @@
         http://www.apache.org/licenses/LICENSE-2.0
 */
 
-package org.cqfn.diktat
+package com.saveourtool.diktat
 
 // ;warn:$line:1: [MISSING_KDOC_TOP_LEVEL] all public and internal top-level classes and functions should have Kdoc: Some (cannot be auto-corrected){{.*}}
 // ;warn:$line-1:1: [USE_DATA_CLASS] this class can be converted to a data class: Some (cannot be auto-corrected){{.*}}

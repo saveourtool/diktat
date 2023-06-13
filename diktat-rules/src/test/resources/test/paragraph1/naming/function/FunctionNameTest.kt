@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ktlint.ruleset
+package com.saveourtool.diktat.ktlint.ruleset
 
 class TestPackageName {
     fun /* */ METHOD1(someName: String): Unit {

@@ -5,8 +5,8 @@
 
 package test.paragraph2.header
 
-import org.cqfn.diktat.example.A
-import org.cqfn.diktat.example.B
+import com.saveourtool.diktat.example.A
+import com.saveourtool.diktat.example.B
 
 /**
  * Example class

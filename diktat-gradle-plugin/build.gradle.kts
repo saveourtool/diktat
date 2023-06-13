@@ -1,10 +1,10 @@
-import org.cqfn.diktat.buildutils.configureSigning
+import com.saveourtool.diktat.buildutils.configureSigning
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.cqfn.diktat.buildutils.kotlin-jvm-configuration")
-    id("org.cqfn.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
+    id("com.saveourtool.diktat.buildutils.code-quality-convention")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
     id("org.gradle.test-retry") version "1.5.3"
     id("com.gradle.plugin-publish") version "1.2.0"
@@ -39,8 +39,8 @@ tasks.withType<KotlinCompile> {
 gradlePlugin {
     plugins {
         create("diktatPlugin") {
-            id = "org.cqfn.diktat.diktat-gradle-plugin"
-            implementationClass = "org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin"
+            id = "com.saveourtool.diktat.diktat-gradle-plugin"
+            implementationClass = "com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin"
         }
     }
 }
