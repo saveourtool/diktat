@@ -43,7 +43,11 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         resourceFilePath = RESOURCE_FILE_PATH,
         function = { testFile ->
             format(
-                ruleSetSupplier = { DiktatRuleSetFactoryImpl().invoke(DiktatRuleConfigReaderImpl().invoke(config.inputStream())) },
+                ruleSetSupplier = {
+                    val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
+                    val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
+                    diktatRuleSetFactory(diktatRuleConfigReader(config.inputStream()))
+                },
                 file = testFile,
                 cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
             )
