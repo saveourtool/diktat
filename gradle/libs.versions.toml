@@ -39,7 +39,7 @@ save-cli = "0.3.9"
 ktor = "2.2.4"
 okio = "3.3.0"
 kotlinx-datetime = "0.4.0"
-kotlinx-coroutines = "1.6.4"
+kotlinx-coroutines = "1.7.1"
 assertj = "3.24.2"
 diktat = "2.0.0"
 jgit = "6.5.0.202303070854-r"
@@ -101,6 +101,9 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json-jvm = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "serialization" }
 # another serialization
 kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
+
+# kotlinx coroutines
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 #kotlin libs
 kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-diff", version.ref = "kotlin-multiplatform-diff" }
