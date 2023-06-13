@@ -15,6 +15,7 @@ import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 import com.pinterest.ktlint.rule.engine.api.LintError
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.intellij.lang.annotations.Language
+import org.jetbrains.kotlin.utils.addToStdlib.applyIf
 import java.io.OutputStream
 import java.io.PrintStream
 
@@ -95,13 +96,17 @@ fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRo
 
 /**
  * @param out [OutputStream] for [ReporterV2]
+ * @param closeOutAfterAll close [OutputStream] in [ReporterV2.afterAll]
  * @param opt configuration for [ReporterV2]
- * @return created [ReporterV2] which closes [out] in [ReporterV2.afterAll]
+ * @return created [ReporterV2] which closes [out] in [ReporterV2.afterAll] if it's required
  */
 fun <R : ReporterV2> ReporterProviderV2<R>.get(
     out: OutputStream,
+    closeOutAfterAll: Boolean,
     opt: Map<String, String>,
-): ReporterV2 = get(out.printStream(), opt).closeAfterAll(out)
+): ReporterV2 = get(out.printStream(), opt).applyIf(closeOutAfterAll) {
+    closeAfterAll(out)
+}
 
 /**
  * Enables ignoring autocorrected errors when in "fix" mode (i.e. when

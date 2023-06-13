@@ -43,6 +43,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     override fun invoke(
         id: String,
         outputStream: OutputStream,
+        closeOutputStreamAfterAll: Boolean,
         sourceRootDir: Path,
     ): DiktatReporter {
         val reporterProvider = reporterProviders[id] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
@@ -54,11 +55,12 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         } else {
             emptyMap()
         }
-        return reporterProvider.get(outputStream, opt).wrap(sourceRootDir)
+        return reporterProvider.get(outputStream, closeOutputStreamAfterAll, opt).wrap(sourceRootDir)
     }
 
     override fun createPlain(
         outputStream: OutputStream,
+        closeOutputStreamAfterAll: Boolean,
         sourceRootDir: Path,
         colorName: String?,
         groupByFile: Boolean?,
@@ -73,6 +75,6 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
             }
             groupByFile?.let { put("group_by_file", it) }
         }.mapValues { it.value.toString() }
-        return plainReporterProvider.get(outputStream, opt).wrap(sourceRootDir)
+        return plainReporterProvider.get(outputStream, closeOutputStreamAfterAll, opt).wrap(sourceRootDir)
     }
 }

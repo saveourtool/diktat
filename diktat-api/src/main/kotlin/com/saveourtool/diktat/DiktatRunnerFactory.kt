@@ -61,9 +61,9 @@ class DiktatRunnerFactory(
         groupByFileInPlain: Boolean?,
         sourceRootDir: Path,
     ): DiktatReporter {
-        val outputStream = reporterOutput ?: System.`out`
+        val (outputStream, closeOutputStream) = reporterOutput?.let { it to true } ?: (System.`out` to false)
         return if (reporterType == diktatReporterFactory.plainId) {
-            diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
+            diktatReporterFactory.createPlain(outputStream, closeOutputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
         } else {
             require(colorNameInPlain == null) {
                 "colorization is applicable only for plain reporter"
@@ -71,7 +71,7 @@ class DiktatRunnerFactory(
             require(groupByFileInPlain == null) {
                 "groupByFile is applicable only for plain reporter"
             }
-            diktatReporterFactory(reporterType, outputStream, sourceRootDir)
+            diktatReporterFactory(reporterType, outputStream, closeOutputStream, sourceRootDir)
         }
     }
 }
