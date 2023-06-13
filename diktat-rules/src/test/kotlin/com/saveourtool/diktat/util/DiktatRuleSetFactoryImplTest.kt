@@ -8,7 +8,7 @@ import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.RulesConfigReader
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetProvider
+import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.util.filterContentMatches
 
 import org.assertj.core.api.Assertions.assertThat
@@ -21,11 +21,11 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.walk
 
-class DiktatRuleSetProviderTest {
+class DiktatRuleSetFactoryImplTest {
     @OptIn(ExperimentalPathApi::class)
     @Suppress("UnsafeCallOnNullableType")
     @Test
-    fun `check DiktatRuleSetProviderTest contain all rules`() {
+    fun `check DiktatRuleSetFactoryImpl contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/com/saveourtool/diktat/ruleset/rules"
         val fileNames = Path(path)
             .walk()
@@ -34,8 +34,8 @@ class DiktatRuleSetProviderTest {
             .map(Path::nameWithoutExtension)
             .filterNot { it in ignoredFileNames }
             .toList()
-        val ruleNames = DiktatRuleSetProvider()
-            .invoke()
+        val ruleNames = DiktatRuleSetFactoryImpl()
+            .invoke(emptyList())
             .rules
             .asSequence()
             .map { it::class.simpleName }
@@ -63,8 +63,8 @@ class DiktatRuleSetProviderTest {
             ruleSupplier: (rulesConfigList: List<RulesConfig>) -> DiktatRule,
             rulesConfigList: List<RulesConfig>?,
         ): DiktatRuleSet = run {
-            rulesConfigList ?: RulesConfigReader(Companion::class.java.classLoader)
-                .readResource("diktat-analysis.yml")
+            rulesConfigList ?: Companion::class.java.classLoader.getResourceAsStream("diktat-analysis.yml")
+                ?.let { RulesConfigReader().read(it) }
                 .orEmpty()
         }
             .let(ruleSupplier)

@@ -27,6 +27,16 @@ class DiktatJavaExecTaskTest {
         // mock kotlin sources
         project.mkdir("src/main/kotlin")
         project.file("src/main/kotlin/Test.kt").createNewFile()
+        sequenceOf(
+            project.file("diktat-analysis.yml"),
+            project.file("../diktat-analysis.yml")
+        ).forEach {
+            it.writeText("""
+                # Common configuration
+                - name: DIKTAT_COMMON
+                  enabled: true
+            """.trimIndent())
+        }
     }
 
     @AfterEach

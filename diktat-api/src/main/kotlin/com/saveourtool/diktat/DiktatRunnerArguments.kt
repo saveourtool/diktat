@@ -1,14 +1,15 @@
 package com.saveourtool.diktat
 
 import com.saveourtool.diktat.api.DiktatProcessorListener
+import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
+import kotlin.io.path.inputStream
 
 /**
  * Arguments for [DiktatRunner]
  *
- * @property configFileName a config file to load Diktat's rules
+ * @property configInputStream an input stream with config to load Diktat's rules
  * @property sourceRootDir a common root dir for all provided [files]
  * @property files a collection of files which needs to be fixed
  * @property baselineFile an optional path to file with baseline
@@ -19,7 +20,7 @@ import kotlin.io.path.absolutePathString
  * @property loggingListener listener to log diktat runner phases, [DiktatProcessorListener.empty] by default
  */
 data class DiktatRunnerArguments(
-    val configFileName: String,
+    val configInputStream: InputStream,
     val sourceRootDir: Path,
     val files: Collection<Path>,
     val baselineFile: Path?,
@@ -40,7 +41,7 @@ data class DiktatRunnerArguments(
         colorNameInPlain: String? = null,
         loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
     ) : this(
-        configFile.absolutePathString(),
+        configFile.inputStream(),
         sourceRootDir,
         files,
         baselineFile,

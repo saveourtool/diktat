@@ -12,6 +12,7 @@ dependencies {
     api(libs.kaml)
     implementation(libs.apache.commons.cli)
     implementation(libs.kotlin.logging)
+    implementation(projects.diktatApi)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
 }

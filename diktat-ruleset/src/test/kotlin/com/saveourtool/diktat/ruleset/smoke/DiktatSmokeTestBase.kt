@@ -46,10 +46,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import java.io.File
 import java.nio.file.Path
+import java.nio.file.Paths
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.io.path.createTempFile
+import kotlin.io.path.inputStream
 import kotlin.io.path.writeText
 
 import kotlinx.serialization.builtins.ListSerializer
@@ -68,7 +70,7 @@ abstract class DiktatSmokeTestBase {
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun prepareOverriddenRulesConfig(rulesToDisable: List<Warnings> = emptyList(), rulesToOverride: RuleToConfig = emptyMap()): Path {
-        val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(DEFAULT_CONFIG_PATH)!!
+        val rulesConfig = RulesConfigReader().read(Paths.get(DEFAULT_CONFIG_PATH).inputStream())!!
             .toMutableList()
             .also { rulesConfig ->
                 rulesToDisable.forEach { warning ->
