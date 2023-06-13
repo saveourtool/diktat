@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ktlint
+package com.saveourtool.diktat.ktlint
 
 import com.pinterest.ktlint.cli.reporter.core.api.KtlintCliError
 import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2

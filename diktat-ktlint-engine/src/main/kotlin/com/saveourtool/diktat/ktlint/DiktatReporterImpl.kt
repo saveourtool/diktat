@@ -2,7 +2,7 @@ package com.saveourtool.diktat.ktlint
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.api.DiktatReporter
-import org.cqfn.diktat.ktlint.ReporterV2Wrapper.Companion.unwrapIfNeeded
+import com.saveourtool.diktat.ktlint.ReporterV2Wrapper.Companion.unwrapIfNeeded
 import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 import java.nio.file.Path
 
