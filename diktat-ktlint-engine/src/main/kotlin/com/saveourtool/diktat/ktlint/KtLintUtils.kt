@@ -10,9 +10,14 @@ import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 
 import com.pinterest.ktlint.cli.reporter.core.api.KtlintCliError
+import com.pinterest.ktlint.cli.reporter.core.api.ReporterProviderV2
+import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 import com.pinterest.ktlint.rule.engine.api.LintError
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.intellij.lang.annotations.Language
+import org.jetbrains.kotlin.utils.addToStdlib.applyIf
+import java.io.OutputStream
+import java.io.PrintStream
 
 import java.nio.file.Path
 
@@ -90,6 +95,20 @@ fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = if (canBeAu
 fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRootDir).invariantSeparatorsPathString
 
 /**
+ * @param out [OutputStream] for [ReporterV2]
+ * @param closeOutAfterAll close [OutputStream] in [ReporterV2.afterAll]
+ * @param opt configuration for [ReporterV2]
+ * @return created [ReporterV2] which closes [out] in [ReporterV2.afterAll] if it's required
+ */
+fun <R : ReporterV2> ReporterProviderV2<R>.get(
+    out: OutputStream,
+    closeOutAfterAll: Boolean,
+    opt: Map<String, String>,
+): ReporterV2 = get(out.printStream(), opt).applyIf(closeOutAfterAll) {
+    closeAfterAll(out)
+}
+
+/**
  * Enables ignoring autocorrected errors when in "fix" mode (i.e. when
  * [com.pinterest.ktlint.core.KtLint.format] is invoked).
  *
@@ -105,6 +124,16 @@ fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRo
 private fun DiktatCallback.ignoreCorrectedErrors(): DiktatCallback = DiktatCallback { error, isCorrected ->
     if (!isCorrected) {
         this@ignoreCorrectedErrors(error, false)
+    }
+}
+
+private fun OutputStream.printStream(): PrintStream = (this as? PrintStream) ?: PrintStream(this)
+
+private fun ReporterV2.closeAfterAll(outputStream: OutputStream): ReporterV2 = object : ReporterV2Wrapper(this@closeAfterAll) {
+    override fun afterAll() {
+        super.afterAll()
+        outputStream.flush()
+        outputStream.close()
     }
 }
 

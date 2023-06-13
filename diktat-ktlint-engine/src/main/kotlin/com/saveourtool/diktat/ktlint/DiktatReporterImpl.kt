@@ -2,6 +2,7 @@ package com.saveourtool.diktat.ktlint
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.api.DiktatReporter
+import com.saveourtool.diktat.ktlint.ReporterV2Wrapper.Companion.unwrapIfNeeded
 import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 import java.nio.file.Path
 
@@ -32,7 +33,7 @@ class DiktatReporterImpl(
         /**
          * @return __KtLint__'s [ReporterV2]
          */
-        fun DiktatReporter.unwrap(): ReporterV2 = (this as? DiktatReporterImpl)?.ktLintReporter
+        fun DiktatReporter.unwrap(): ReporterV2 = (this as? DiktatReporterImpl)?.ktLintReporter?.unwrapIfNeeded()
             ?: error("Unsupported wrapper of ${DiktatReporter::class.java.simpleName}: ${this::class.java.canonicalName}")
     }
 }

@@ -3,7 +3,6 @@ package com.saveourtool.diktat
 import com.saveourtool.diktat.api.DiktatBaseline
 import com.saveourtool.diktat.api.DiktatBaselineFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
-import com.saveourtool.diktat.api.DiktatProcessorListener.Companion.closeAfterAllAsProcessorListener
 import com.saveourtool.diktat.api.DiktatReporter
 import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.api.DiktatRuleConfigReader
@@ -32,7 +31,7 @@ class DiktatRunnerFactory(
         val diktatRuleSet = diktatRuleSetFactory(diktatRuleConfigs)
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
-        val (reporter, closer) = resolveReporter(
+        val reporter = resolveReporter(
             args.reporterType, args.reporterOutput,
             args.colorNameInPlain, args.groupByFileInPlain,
             args.sourceRootDir
@@ -42,7 +41,6 @@ class DiktatRunnerFactory(
             diktatBaseline = baseline,
             diktatBaselineGenerator = baselineGenerator,
             diktatReporter = reporter,
-            diktatReporterCloser = closer,
         )
     }
 
@@ -65,14 +63,10 @@ class DiktatRunnerFactory(
         colorNameInPlain: String?,
         groupByFileInPlain: Boolean?,
         sourceRootDir: Path,
-    ): Pair<DiktatReporter, DiktatProcessorListener> {
-        val (outputStream, closeListener) = reporterOutput
-            ?.let { it to it.closeAfterAllAsProcessorListener() }
-            ?: run {
-                System.`out` to DiktatProcessorListener.empty
-            }
-        val actualReporter = if (reporterType == diktatReporterFactory.plainId) {
-            diktatReporterFactory.createPlain(outputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
+    ): DiktatReporter {
+        val (outputStream, closeOutputStream) = reporterOutput?.let { it to true } ?: (System.`out` to false)
+        return if (reporterType == diktatReporterFactory.plainId) {
+            diktatReporterFactory.createPlain(outputStream, closeOutputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
         } else {
             require(colorNameInPlain == null) {
                 "colorization is applicable only for plain reporter"
@@ -80,8 +74,7 @@ class DiktatRunnerFactory(
             require(groupByFileInPlain == null) {
                 "groupByFile is applicable only for plain reporter"
             }
-            diktatReporterFactory(reporterType, outputStream, sourceRootDir)
+            diktatReporterFactory(reporterType, outputStream, closeOutputStream, sourceRootDir)
         }
-        return actualReporter to closeListener
     }
 }

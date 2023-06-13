@@ -19,14 +19,12 @@ private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
  * @property diktatBaseline
  * @property diktatBaselineGenerator
  * @property diktatReporter
- * @property diktatReporterCloser
  */
 data class DiktatRunner(
     val diktatProcessor: DiktatProcessor,
     val diktatBaseline: DiktatBaseline,
     private val diktatBaselineGenerator: DiktatProcessorListener,
     val diktatReporter: DiktatReporter,
-    private val diktatReporterCloser: DiktatProcessorListener,
 ) {
     private fun doRun(
         args: DiktatRunnerArguments,
@@ -38,7 +36,6 @@ data class DiktatRunner(
             DiktatProcessorListener(
                 args.loggingListener,
                 diktatReporter.skipKnownErrors(diktatBaseline),
-                diktatReporterCloser,
                 diktatBaselineGenerator,
                 errorCounter.countErrorsAsProcessorListener()
             ),
@@ -47,7 +44,7 @@ data class DiktatRunner(
     }
 
     /**
-     * Run `diktat fix` for all [files].
+     * Run `diktat fix` for all [DiktatRunnerArguments.files].
      *
      * @param args
      * @param fileUpdateNotifier notifier about updated files
@@ -74,7 +71,7 @@ data class DiktatRunner(
     }
 
     /**
-     * Run `diktat check` for all [files].
+     * Run `diktat check` for all [DiktatRunnerArguments.files].
      *
      * @param args
      * @return count of detected errors

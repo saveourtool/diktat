@@ -1,6 +1,5 @@
 package com.saveourtool.diktat.api
 
-import java.io.OutputStream
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -80,16 +79,6 @@ interface DiktatProcessorListener {
                 isCorrected: Boolean
             ) {
                 incrementAndGet()
-            }
-        }
-
-        /**
-         * @return An implementation of [DiktatProcessorListener] which closes [OutputStream] at the end
-         */
-        fun OutputStream.closeAfterAllAsProcessorListener(): DiktatProcessorListener = object : DiktatProcessorListener {
-            override fun afterAll() {
-                this@closeAfterAllAsProcessorListener.flush()
-                this@closeAfterAllAsProcessorListener.close()
             }
         }
     }
