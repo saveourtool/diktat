@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 import java.io.File
+import java.nio.file.Paths
+import kotlin.io.path.exists
+import kotlin.io.path.inputStream
 
 import kotlinx.serialization.encodeToString
 
@@ -107,9 +110,12 @@ class RulesConfigYamlTest {
         }
     }
 
-    private fun readAllRulesFromConfig(nameConfig: String) =
-        RulesConfigReader(javaClass.classLoader)
-            .readResource(nameConfig) ?: emptyList()
+    private fun readAllRulesFromConfig(nameConfig: String) = run {
+        Paths.get(nameConfig).takeIf { it.exists() }?.inputStream()
+            ?: javaClass.classLoader.getResourceAsStream(nameConfig)
+    }
+        ?.let { RulesConfigReader().read(it) }
+        ?: emptyList()
 
     private fun readAllRulesFromCode() =
         Warnings.values()

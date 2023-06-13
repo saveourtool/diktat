@@ -6,12 +6,11 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetProvider
 
 import org.apache.maven.plugins.annotations.Mojo
 
 /**
- * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
+ * Main [Mojo] that call diktat's rules on [inputs] files
  */
 @Mojo(name = "check")
 @Suppress("unused")
@@ -23,7 +22,7 @@ class DiktatCheckMojo : DiktatBaseMojo() {
 }
 
 /**
- * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
+ * Main [Mojo] that call diktat's rules on [inputs] files
  * and fixes discovered errors
  */
 @Mojo(name = "fix")

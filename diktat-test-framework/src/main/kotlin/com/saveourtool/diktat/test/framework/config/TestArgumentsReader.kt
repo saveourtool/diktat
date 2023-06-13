@@ -1,7 +1,7 @@
 package com.saveourtool.diktat.test.framework.config
 
 import com.saveourtool.diktat.common.cli.CliArgument
-import com.saveourtool.diktat.common.config.reader.JsonResourceConfigReader
+import com.saveourtool.diktat.common.config.reader.AbstractConfigReader
 import mu.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
@@ -11,27 +11,27 @@ import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 
-import java.io.BufferedReader
 import java.io.IOException
-import java.util.stream.Collectors
+import java.io.InputStream
 
 import kotlin.system.exitProcess
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 
 /**
  * Class that gives access to properties of a test
  *
+ * @param classLoader [ClassLoader] which is used to load properties file
  * @property args CLI arguments
  * @property properties properties from properties file
- * @property classLoader [ClassLoader] which is used to load properties file
  */
 class TestArgumentsReader(
     private val args: Array<String>,
     val properties: TestFrameworkProperties,
-    override val classLoader: ClassLoader
-) : JsonResourceConfigReader<List<CliArgument>?>() {
-    private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
+    classLoader: ClassLoader
+) : AbstractConfigReader<List<CliArgument>>() {
+    private val cliArguments: List<CliArgument>? = classLoader.getResourceAsStream(properties.testFrameworkArgsRelativePath)?.let { read(it) }
     private val cmd: CommandLine by lazy { parseArguments() }
 
     /**
@@ -82,14 +82,12 @@ class TestArgumentsReader(
     /**
      * Parse JSON to a list of [CliArgument]s
      *
-     * @param fileStream a [BufferedReader] representing input JSON
+     * @param inputStream a [InputStream] representing input JSON
      * @return list of [CliArgument]s
      */
+    @OptIn(ExperimentalSerializationApi::class)
     @Throws(IOException::class)
-    override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
-        val jsonValue = fileStream.lines().collect(Collectors.joining())
-        return Json.decodeFromString(jsonValue)
-    }
+    override fun parse(inputStream: InputStream): List<CliArgument> = Json.decodeFromStream(inputStream)
 
     companion object {
         private val log = KotlinLogging.logger {}

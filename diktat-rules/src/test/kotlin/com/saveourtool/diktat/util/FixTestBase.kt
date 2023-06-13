@@ -7,7 +7,7 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.test.framework.processing.FileComparisonResult
 import com.saveourtool.diktat.test.framework.processing.ResourceReader
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
-import com.saveourtool.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
+import com.saveourtool.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
 import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions

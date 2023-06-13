@@ -4,7 +4,7 @@ import com.saveourtool.diktat.api.DiktatCallback
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ktlint.lint
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.util.DiktatRuleSetProviderTest.Companion.diktatRuleSetForTest
+import com.saveourtool.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
 import com.saveourtool.diktat.api.DiktatError
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
