@@ -1,4 +1,4 @@
-package org.cqfn.diktat.common.config.reader
+package com.saveourtool.diktat.common.config.reader
 
 import mu.KotlinLogging
 import java.io.IOException

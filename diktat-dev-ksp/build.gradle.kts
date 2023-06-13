@@ -8,10 +8,8 @@ dependencies {
 }
 
 sequenceOf("diktatFix", "diktatCheck").forEach { diktatTaskName ->
-    tasks.named(diktatTaskName) {
-        dependsOn(
-            tasks.named("compileKotlin"),
-            tasks.named("processResources"),
-        )
-    }
+    tasks.findByName(diktatTaskName)?.dependsOn(
+        tasks.named("compileKotlin"),
+        tasks.named("processResources"),
+    )
 }

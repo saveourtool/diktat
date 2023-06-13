@@ -4,21 +4,12 @@
 
 package com.saveourtool.diktat.util
 
-<<<<<<<< HEAD:diktat-rules/src/test/kotlin/com/saveourtool/diktat/util/DiktatRuleSetFactoryImplTest.kt
-import org.cqfn.diktat.api.DiktatRuleSet
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
-import org.cqfn.diktat.test.framework.util.filterContentMatches
-========
 import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.RulesConfigReader
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetProvider
+import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.util.filterContentMatches
->>>>>>>> origin/master:diktat-rules/src/test/kotlin/com/saveourtool/diktat/util/DiktatRuleSetProviderTest.kt
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -34,13 +25,8 @@ class DiktatRuleSetFactoryImplTest {
     @OptIn(ExperimentalPathApi::class)
     @Suppress("UnsafeCallOnNullableType")
     @Test
-<<<<<<<< HEAD:diktat-rules/src/test/kotlin/com/saveourtool/diktat/util/DiktatRuleSetFactoryImplTest.kt
     fun `check DiktatRuleSetFactoryImpl contain all rules`() {
-        val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
-========
-    fun `check DiktatRuleSetProviderTest contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/com/saveourtool/diktat/ruleset/rules"
->>>>>>>> origin/master:diktat-rules/src/test/kotlin/com/saveourtool/diktat/util/DiktatRuleSetProviderTest.kt
         val fileNames = Path(path)
             .walk()
             .filter(Path::isRegularFile)

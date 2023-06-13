@@ -1,5 +1,6 @@
-package org.cqfn.diktat.api
+package com.saveourtool.diktat.api
 
+import com.saveourtool.diktat.api.DiktatRuleConfig
 import java.io.InputStream
 
 /**
