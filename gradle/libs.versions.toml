@@ -1,6 +1,6 @@
 [versions]
-kotlin = "1.8.21"
-kotlin-ksp = "1.8.21-1.0.11"
+kotlin = "1.8.22"
+kotlin-ksp = "1.8.22-1.0.11"
 serialization = "1.5.1"
 ktlint = "0.49.1"
 junit = "5.9.3"
