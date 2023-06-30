@@ -28,7 +28,9 @@ pluginManagement {
 }
 
 plugins {
-    id("com.gradle.enterprise") version "3.13.3"
+    id("com.gradle.enterprise") version "3.13.4"
+    // starting from Gradle 8, it's needed to configure a repo from which to take Java for a toolchain
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
 }
 
 includeBuild("gradle/plugins")
