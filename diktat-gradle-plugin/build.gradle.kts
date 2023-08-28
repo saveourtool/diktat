@@ -28,9 +28,10 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        // fixme: kotlin 1.3 is required for gradle <6.8
-        languageVersion = "1.3"
-        apiVersion = "1.3"
+        // kotlin 1.4 api is latest support for kotlin 1.9
+        // min supported Gradle is 7.0
+        languageVersion = "1.4"
+        apiVersion = "1.4"
         jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs - "-Werror"
     }
