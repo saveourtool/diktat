@@ -6,8 +6,8 @@ plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
-    id("org.gradle.test-retry") version "1.5.3"
-    id("com.gradle.plugin-publish") version "1.2.0"
+    id("org.gradle.test-retry") version "1.5.4"
+    id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 dependencies {
