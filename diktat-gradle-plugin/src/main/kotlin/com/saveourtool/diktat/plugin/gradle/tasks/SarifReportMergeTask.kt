@@ -85,8 +85,7 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
 internal fun Project.configureMergeReportsTask(diktatExtension: DiktatExtension) {
     if (path == rootProject.path) {
         tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
-            val diktatReportsDir = "${project.buildDir}/reports/diktat"
-            val mergedReportFile = project.file("$diktatReportsDir/diktat-merged.sarif")
+            val mergedReportFile = project.layout.buildDirectory.file("reports/diktat/diktat-merged.sarif")
             reportMergeTask.outputs.file(mergedReportFile)
             reportMergeTask.output.set(mergedReportFile)
         }

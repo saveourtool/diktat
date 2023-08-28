@@ -41,7 +41,7 @@ class DiktatJavaExecTaskTest {
 
     @AfterEach
     fun tearDown() {
-        project.buildDir.deleteRecursively()
+        project.layout.buildDirectory.get().asFile.deleteRecursively()
     }
 
     @Test
