@@ -10,7 +10,6 @@ import groovy.lang.Closure
 import org.gradle.api.Project
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Paths
 
 @Suppress(
     "MISSING_KDOC_TOP_LEVEL",
@@ -79,10 +78,13 @@ fun Project.getReporterType(diktatExtension: DiktatExtension): String {
  * @return destination [File] or null if stdout is used
  */
 internal fun Project.getOutputFile(diktatExtension: DiktatExtension): File? = when {
-    diktatExtension.githubActions -> {
-        val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
-        reportDir.resolve("diktat.sarif").toFile()
-    }
+    diktatExtension.githubActions -> project.layout.buildDirectory
+        .file("reports/diktat/diktat.sarif")
+        .get()
+        .asFile
+        .also {
+            Files.createDirectories(it.parentFile.toPath())
+        }
     diktatExtension.output.isNotEmpty() -> file(diktatExtension.output)
     else -> null
 }
