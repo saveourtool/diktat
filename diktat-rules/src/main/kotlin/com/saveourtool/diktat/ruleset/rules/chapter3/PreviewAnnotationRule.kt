@@ -1,7 +1,6 @@
 package com.saveourtool.diktat.ruleset.rules.chapter3
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.constants.Warnings.PREVIEW_ANNOTATION
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.*
@@ -10,8 +9,8 @@ import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 
 /**
  * This rule checks, whether the method has `@Preview` annotation (Jetpack Compose)
@@ -23,71 +22,60 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(PREVIEW_ANNOTATION)
 ) {
     override fun logic(node: ASTNode) {
-        when (node.elementType) {
-            FUN -> checkFunctionSignature(node)
-            else -> return
+        if (node.elementType == FUN) {
+            checkFunctionSignature(node)
         }
     }
 
     private fun checkFunctionSignature(node: ASTNode) {
         node.findChildByType(MODIFIER_LIST)?.let { modList ->
-            fixAnnotation(modList)
+            doCheck(node, modList)
         }
     }
 
-    private fun fixAnnotation(node: ASTNode) {
-        if (node.getAllChildrenWithType(ANNOTATION_ENTRY).size <= 1) {
+    private fun doCheck(functionNode: ASTNode, modeList: ASTNode) {
+        if (modeList.getAllChildrenWithType(ANNOTATION_ENTRY).isEmpty()) {
             return
         }
 
-        node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach { annotationNode ->
-            if (!annotationNode.isStandardMethod() || !annotationNode.isMethodHasPreviewSuffix()) {
-                doWarnAndFix(annotationNode)
+        modeList.getAllChildrenWithType(ANNOTATION_ENTRY).filter {
+            it.text.contains("$ANNOTATION_SYMBOL$PREVIEW_ANNOTATION_TEXT")
+        }.forEach { annotationNode ->
+            if (!((functionNode.psi as KtNamedFunction).isPrivate())) {
+                PREVIEW_ANNOTATION.warnAndFix(
+                    configRules,
+                    emitWarn,
+                    isFixMode,
+                    "${functionNode.text} method should has `Preview` suffix",
+                    functionNode.startOffset,
+                    functionNode
+                ) {
+                    // TODO: provide fix
+                }
+            }
+
+            if(!functionNode.isMethodHasPreviewSuffix()) {
+                PREVIEW_ANNOTATION.warnAndFix(
+                    configRules,
+                    emitWarn,
+                    isFixMode,
+                    "${functionNode.treeParent.text} method should be private",
+                    functionNode.startOffset,
+                    functionNode
+                ) {
+                    // TODO: provide fix
+                }
             }
         }
     }
 
-    private fun doWarnAndFix(node: ASTNode) {
-        PREVIEW_ANNOTATION.warnAndFix(
-            configRules,
-            emitWarn,
-            isFixMode,
-            "${node.treeParent.text} method should has `Preview` suffix",
-            node.startOffset,
-            node
-        ) {
-            // todo:
-//            if (rightSide) {
-//                if (node.treeNext?.isWhiteSpace() == true) {
-//                    node.removeChild(node.treeNext)
-//                }
-//                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
-//            }
-//
-//            if (node == node.treeParent.getFirstChildWithType(node.elementType)) {
-//                // Current node is ANNOTATION_ENTRY. treeParent(ModifierList) -> treeParent(PRIMARY_CONSTRUCTOR)
-//                // Checks if there is a white space before grandparent node
-//                val hasSpaceBeforeGrandparent = node
-//                    .treeParent
-//                    .treeParent
-//                    .treePrev
-//                    .isWhiteSpace()
-//                if (hasSpaceBeforeGrandparent) {
-//                    (node.treeParent.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n")
-//                }
-//            }
-        }
-        PREVIEW_ANNOTATION.warnAndFix(
-            configRules,
-            emitWarn,
-            isFixMode,
-            "${node.treeParent.text} method should be private",
-            node.startOffset,
-            node
-        ) {}
-    }
+    private fun ASTNode.isMethodHasPreviewSuffix() =
+        this.getIdentifierName()?.text?.contains(PREVIEW_ANNOTATION_TEXT) ?: false
+
 
     companion object {
         const val NAME_ID = "preview-annotation"
+        const val ANNOTATION_SYMBOL = "@"
+        const val PREVIEW_ANNOTATION_TEXT = "Preview"
     }
 }

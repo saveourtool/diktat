@@ -5,11 +5,13 @@ import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.rules.chapter3.PreviewAnnotationRule
 import com.saveourtool.diktat.util.LintTestBase
+import generated.WarningNames
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 
-class PreviewAnnotationWarnTest : LintTestBase(com.saveourtool.diktat.ruleset.rules.chapter3::PreviewAnnotationRule) {
+class PreviewAnnotationWarnTest : LintTestBase(::PreviewAnnotationRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:${PreviewAnnotationRule.NAME_ID}"
 
     @Test
