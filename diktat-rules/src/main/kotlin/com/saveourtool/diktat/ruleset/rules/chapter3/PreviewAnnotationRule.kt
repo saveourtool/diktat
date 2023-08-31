@@ -3,7 +3,8 @@ package com.saveourtool.diktat.ruleset.rules.chapter3
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.PREVIEW_ANNOTATION
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.ruleset.utils.*
+import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
+import com.saveourtool.diktat.ruleset.utils.getIdentifierName
 
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
@@ -38,15 +39,20 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
 
-        modeList.getAllChildrenWithType(ANNOTATION_ENTRY).filter {
+        val previewAnnotationNode = modeList.getAllChildrenWithType(ANNOTATION_ENTRY).firstOrNull {
             it.text.contains("$ANNOTATION_SYMBOL$PREVIEW_ANNOTATION_TEXT")
-        }.forEach { annotationNode ->
+        }
+
+        previewAnnotationNode?.let {
+            val functionName = functionNode.getIdentifierName()!!.text
+
+            // warn if function is not private
             if (!((functionNode.psi as KtNamedFunction).isPrivate())) {
                 PREVIEW_ANNOTATION.warnAndFix(
                     configRules,
                     emitWarn,
                     isFixMode,
-                    "${functionNode.text} method should has `Preview` suffix",
+                    "$functionName method should be private",
                     functionNode.startOffset,
                     functionNode
                 ) {
@@ -54,12 +60,13 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
 
-            if(!functionNode.isMethodHasPreviewSuffix()) {
+            // warn if function has no `Preview` suffix
+            if (!isMethodHasPreviewSuffix(functionName)) {
                 PREVIEW_ANNOTATION.warnAndFix(
                     configRules,
                     emitWarn,
                     isFixMode,
-                    "${functionNode.treeParent.text} method should be private",
+                    "$functionName method should has `Preview` suffix",
                     functionNode.startOffset,
                     functionNode
                 ) {
@@ -69,8 +76,9 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun ASTNode.isMethodHasPreviewSuffix() =
-        this.getIdentifierName()?.text?.contains(PREVIEW_ANNOTATION_TEXT) ?: false
+
+    private fun isMethodHasPreviewSuffix(functionName: String) =
+        functionName.contains(PREVIEW_ANNOTATION_TEXT)
 
 
     companion object {
