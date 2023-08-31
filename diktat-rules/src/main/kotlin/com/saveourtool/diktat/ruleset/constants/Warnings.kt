@@ -131,7 +131,7 @@ enum class Warnings(
     WRONG_WHITESPACE(true, "3.8.1", "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "3.8.1", "too many consecutive spaces"),
     ANNOTATION_NEW_LINE(true, "3.12.1", "annotations must be on new line"),
-    PREVIEW_ANNOTATION(false, "3.12.2", "if method has `@Preview` annotation such method should be private and function name should end with `Preview` suffix"),
+    PREVIEW_ANNOTATION(false, "3.12.2", "method, annotated with `@Preview` annotation should be private and has `Preview` suffix"),
     ENUMS_SEPARATED(true, "3.9.1", "enum is incorrectly formatted"),
     WHEN_WITHOUT_ELSE(true, "3.11.1", "each 'when' statement must have else at the end"),
     LONG_NUMERICAL_VALUES_SEPARATED(true, "3.14.2", "long numerical values should be separated with underscore"),

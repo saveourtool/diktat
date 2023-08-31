@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(Warnings.PREVIEW_ANNOTATION)
+    listOf(PREVIEW_ANNOTATION)
 ) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
@@ -52,30 +52,39 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
             configRules,
             emitWarn,
             isFixMode,
-            "Method, annotated with ${node.text} should has `Preview` suffix and be private",
+            "${node.treeParent.text} method should has `Preview` suffix",
             node.startOffset,
             node
         ) {
-            if (rightSide) {
-                if (node.treeNext?.isWhiteSpace() == true) {
-                    node.removeChild(node.treeNext)
-                }
-                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
-            }
-
-            if (node == node.treeParent.getFirstChildWithType(node.elementType)) {
-                // Current node is ANNOTATION_ENTRY. treeParent(ModifierList) -> treeParent(PRIMARY_CONSTRUCTOR)
-                // Checks if there is a white space before grandparent node
-                val hasSpaceBeforeGrandparent = node
-                    .treeParent
-                    .treeParent
-                    .treePrev
-                    .isWhiteSpace()
-                if (hasSpaceBeforeGrandparent) {
-                    (node.treeParent.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n")
-                }
-            }
+            // todo:
+//            if (rightSide) {
+//                if (node.treeNext?.isWhiteSpace() == true) {
+//                    node.removeChild(node.treeNext)
+//                }
+//                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
+//            }
+//
+//            if (node == node.treeParent.getFirstChildWithType(node.elementType)) {
+//                // Current node is ANNOTATION_ENTRY. treeParent(ModifierList) -> treeParent(PRIMARY_CONSTRUCTOR)
+//                // Checks if there is a white space before grandparent node
+//                val hasSpaceBeforeGrandparent = node
+//                    .treeParent
+//                    .treeParent
+//                    .treePrev
+//                    .isWhiteSpace()
+//                if (hasSpaceBeforeGrandparent) {
+//                    (node.treeParent.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n")
+//                }
+//            }
         }
+        PREVIEW_ANNOTATION.warnAndFix(
+            configRules,
+            emitWarn,
+            isFixMode,
+            "${node.treeParent.text} method should be private",
+            node.startOffset,
+            node
+        ) {}
     }
 
     companion object {
