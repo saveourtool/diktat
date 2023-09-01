@@ -76,14 +76,12 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-
     private fun isMethodHasPreviewSuffix(functionName: String) =
         functionName.contains(PREVIEW_ANNOTATION_TEXT)
 
-
     companion object {
-        const val NAME_ID = "preview-annotation"
         const val ANNOTATION_SYMBOL = "@"
+        const val NAME_ID = "preview-annotation"
         const val PREVIEW_ANNOTATION_TEXT = "Preview"
     }
 }

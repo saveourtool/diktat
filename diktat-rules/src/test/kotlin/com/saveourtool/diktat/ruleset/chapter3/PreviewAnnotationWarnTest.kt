@@ -25,7 +25,6 @@ class PreviewAnnotationWarnTest : LintTestBase(::PreviewAnnotationRule) {
         )
     }
 
-
     @Test
     @Tag(WarningNames.PREVIEW_ANNOTATION)
     fun `method is not private`() {
@@ -36,6 +35,33 @@ class PreviewAnnotationWarnTest : LintTestBase(::PreviewAnnotationRule) {
             |fun BannerPreview() {}
             """.trimMargin(),
             DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} BannerPreview method should be private", false),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PREVIEW_ANNOTATION)
+    fun `method has no preview suffix`() {
+        lintMethod(
+            """
+            |@Preview
+            |@Composable
+            |private fun Banner() {}
+            """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should has `Preview` suffix", false),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PREVIEW_ANNOTATION)
+    fun `method has no preview suffix and is not private`() {
+        lintMethod(
+            """
+            |@Preview
+            |@Composable
+            |fun Banner() {}
+            """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should be private", false),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should has `Preview` suffix", false),
         )
     }
 }
