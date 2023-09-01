@@ -44,7 +44,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         previewAnnotationNode?.let {
-            val functionName = functionNode.getIdentifierName()!!.text
+            val functionName = functionNode.getIdentifierName()?.text ?: return
 
             // warn if function is not private
             if (!((functionNode.psi as KtNamedFunction).isPrivate())) {
@@ -56,7 +56,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    // TODO: provide fix
+                    // provide fix
                 }
             }
 
@@ -70,7 +70,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    // TODO: provide fix
+                    // provide fix
                 }
             }
         }

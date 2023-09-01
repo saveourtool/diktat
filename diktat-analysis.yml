@@ -300,6 +300,9 @@
 # Checks that annotation is on a single line
 - name: ANNOTATION_NEW_LINE
   enabled: true
+# Checks that method annotated with `Preview` annotation is private and has Preview suffix
+- name: PREVIEW_ANNOTATION
+  enabled: true
 # Checks that enum structure is correct: enum entries should be separated by comma and line break and last entry should have semicolon in the end.
 - name: ENUMS_SEPARATED
   enabled: true
