@@ -27,6 +27,7 @@ import com.saveourtool.diktat.ruleset.rules.chapter3.LongNumericalValuesSeparate
 import com.saveourtool.diktat.ruleset.rules.chapter3.MagicNumberRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.MultipleModifiersSequence
 import com.saveourtool.diktat.ruleset.rules.chapter3.NullableTypeRule
+import com.saveourtool.diktat.ruleset.rules.chapter3.PreviewAnnotationRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.RangeConventionalRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.SortRule
@@ -159,6 +160,7 @@ class DiktatRuleSetFactoryImpl : DiktatRuleSetFactory {
             ::LongNumericalValuesSeparatedRule,
             ::NestedFunctionBlock,
             ::AnnotationNewLineRule,
+            ::PreviewAnnotationRule,
             ::SortRule,
             ::EnumsSeparated,
             ::StringConcatenationRule,

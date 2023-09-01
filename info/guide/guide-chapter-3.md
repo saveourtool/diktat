@@ -964,7 +964,8 @@ The compiler can issue a warning when it is missing.
 
 <!-- =============================================================================== -->
 ### <a name="c3.12"></a> 3.12 Annotations
-
+This section contains recommendations regarding annotations.
+#### <a name="r3.12.1"></a> 3.12.1 Whitespaces and newlines for annotations
 Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
 1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line).
 
@@ -988,6 +989,16 @@ fun getNameIfPresent() { /* ... */ }
 ```kotlin
 @MustBeDocumented @CustomAnnotation val loader: DataLoader
 ```
+#### <a name="r3.12.2"></a> 3.12.2 Preview annotation
+`@Preview` (Jetpack Compose) functions should end with 'Preview' suffix and are also be private
+
+**Valid example**:
+```kotlin
+@Preview
+@Composable
+private fun BannerPreview() {}
+```
+
 
 <!-- =============================================================================== -->
 ### <a name="c3.13"></a> 3.13 Block comments
