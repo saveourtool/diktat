@@ -30,7 +30,7 @@ jupiter-itf-extension = "0.12.0"
 mockito-all = "1.10.19"
 
 # executable jar
-kotlinx-cli = "0.3.5"
+kotlinx-cli = "0.3.6"
 gradle-shadow = "8.1.1"
 
 # copied from save-cloud
@@ -52,7 +52,7 @@ commons-compress = "1.22"
 zip4j = "2.11.5"
 ktoml = "0.4.1"
 springdoc = "1.6.15"
-spotless = "6.20.0"
+spotless = "6.21.0"
 arrow-kt = "1.1.5"
 publish = "1.3.0"
 download = "5.5.0"
