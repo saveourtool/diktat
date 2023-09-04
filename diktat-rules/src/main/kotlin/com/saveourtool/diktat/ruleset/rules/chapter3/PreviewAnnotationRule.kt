@@ -43,6 +43,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun doCheck(functionNode: ASTNode, modeList: ASTNode) {
         if (modeList.getAllChildrenWithType(ANNOTATION_ENTRY).isEmpty()) {
             return
