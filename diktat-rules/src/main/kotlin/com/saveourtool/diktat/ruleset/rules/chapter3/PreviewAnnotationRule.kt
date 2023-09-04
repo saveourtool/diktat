@@ -65,41 +65,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    val modifiersList = functionNode
-                        .findChildByType(MODIFIER_LIST)
-                        ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
-                        ?.toList()
-
-                    val isContainOpenOrAbstractKeyword = modifiersList?.any {
-                        it.elementType in listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD)
-                    }
-
-                    // private modifier is not applicable for abstract and open methods
-                    // so search only those, which can be replaced via `private`
-                    if (isContainOpenOrAbstractKeyword == true) {
-                        return@warnAndFix
-                    }
-
-                    // these modifiers could be safely replaced via `private`
-                    val modifierForReplacement = modifiersList?.firstOrNull {
-                            it.elementType in listOf(
-                                PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD
-                            )
-                        }
-
-                    modifierForReplacement?.let {
-                        // replace current modifier with `private`
-                        val parent = it.treeParent
-                        parent.replaceChild(it, createPrivateModifierNode()
-                        )
-                    } ?: run {
-                        // the case, when there is no explicit modifier, i.e. `fun foo`
-                        // just add `private` before function identifier `fun`
-                        val funNode = functionNode.findAllNodesWithCondition { it.text == "fun" }.single()
-                        // add `private ` nodes before `fun`
-                        funNode.treeParent?.addChild(PsiWhiteSpaceImpl(" "), funNode)
-                        funNode.treeParent?.addChild(createPrivateModifierNode(), funNode.treePrev)
-                    }
+                    addPrivateModifier(functionNode)
                 }
             }
 
@@ -122,6 +88,44 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isMethodHasPreviewSuffix(functionName: String) =
         functionName.contains(PREVIEW_ANNOTATION_TEXT)
 
+
+    private fun addPrivateModifier(functionNode: ASTNode) {
+        val modifiersList = functionNode
+            .findChildByType(MODIFIER_LIST)
+            ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
+            ?.toList()
+
+        val isContainOpenOrAbstractKeyword = modifiersList?.any {
+            it.elementType in listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD)
+        }
+
+        // private modifier is not applicable for abstract and open methods
+        // so search only those, which can be replaced via `private`
+        if (isContainOpenOrAbstractKeyword == true) {
+            return
+        }
+
+        // these modifiers could be safely replaced via `private`
+        val modifierForReplacement = modifiersList?.firstOrNull {
+            it.elementType in listOf(
+                PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD
+            )
+        }
+
+        modifierForReplacement?.let {
+            // replace current modifier with `private`
+            val parent = it.treeParent
+            parent.replaceChild(it, createPrivateModifierNode()
+            )
+        } ?: run {
+            // the case, when there is no explicit modifier, i.e. `fun foo`
+            // just add `private` before function identifier `fun`
+            val funNode = functionNode.findAllNodesWithCondition { it.text == "fun" }.single()
+            // add `private ` nodes before `fun`
+            funNode.treeParent?.addChild(PsiWhiteSpaceImpl(" "), funNode)
+            funNode.treeParent?.addChild(createPrivateModifierNode(), funNode.treePrev)
+        }
+    }
 
     private fun createPrivateModifierNode() = KotlinParser().createNode("private")
 

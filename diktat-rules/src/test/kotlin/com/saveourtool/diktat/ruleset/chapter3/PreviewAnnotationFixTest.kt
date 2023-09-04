@@ -11,6 +11,6 @@ class PreviewAnnotationFixTest : FixTestBase("test/paragraph3/preview_annotation
     @Test
     @Tag(WarningNames.PREVIEW_ANNOTATION)
     fun `should add private modifier`() {
-        fixAndCompare("PreviewAnnotationExpected.kt", "PreviewAnnotationTest.kt")
+        fixAndCompare("PreviewAnnotationPrivateModifierExpected.kt", "PreviewAnnotationPrivateModifierTest.kt")
     }
 }
