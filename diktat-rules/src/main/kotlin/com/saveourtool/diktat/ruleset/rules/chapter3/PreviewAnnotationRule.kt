@@ -3,15 +3,22 @@ package com.saveourtool.diktat.ruleset.rules.chapter3
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.PREVIEW_ANNOTATION
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
+import com.saveourtool.diktat.ruleset.utils.KotlinParser
 import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.getIdentifierName
+import com.saveourtool.diktat.ruleset.utils.prettyPrint
 
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.ABSTRACT_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PUBLIC_KEYWORD
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 
 /**
@@ -47,6 +54,33 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         previewAnnotationNode?.let {
             val functionName = functionNode.getIdentifierName()?.text ?: return
 
+
+            val modifier = functionNode
+                .findChildByType(MODIFIER_LIST)
+                ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
+                ?.toList()?.firstOrNull {
+                    // private modifier is not applicable for abstract and open methods
+                    // so search only those, which can be replaced via `private`
+                    it.elementType in listOf(
+                        PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD
+                    )
+                }
+
+            println("modifier ${modifier?.elementType} | ${modifier?.elementType}")
+
+                modifier?.let {
+                    val parent = it.treeParent
+                    parent.replaceChild(
+                        it,
+                        KotlinParser().createNode("private")
+                    )
+                } ?: {
+                    println("-------------HAS NO MPODIFIFIER")
+                    println(functionNode.prettyPrint())
+                }
+
+
+
             // warn if function is not private
             if (!((functionNode.psi as KtNamedFunction).isPrivate())) {
                 PREVIEW_ANNOTATION.warnAndFix(
@@ -57,12 +91,6 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    functionNode
-                        .getChildren(KtTokens.MODIFIER_KEYWORDS)
-                        .toList()
-                        .forEach {
-                            println("IITTTT ${it.elementType} | ${it.elementType}")
-                        }
 
                 }
             }
@@ -85,6 +113,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isMethodHasPreviewSuffix(functionName: String) =
         functionName.contains(PREVIEW_ANNOTATION_TEXT)
+
 
     companion object {
         const val ANNOTATION_SYMBOL = "@"
