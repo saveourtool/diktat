@@ -53,7 +53,8 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         previewAnnotationNode?.let {
-            val functionName = functionNode.getIdentifierName()?.text ?: return
+            val functionNameNode = functionNode.getIdentifierName()
+            val functionName = functionNameNode?.text ?: return
 
             // warn if function is not private
             if (!((functionNode.psi as KtNamedFunction).isPrivate())) {
@@ -79,7 +80,10 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    // provide fix
+                    functionNode.replaceChild(
+                        functionNameNode,
+                        KotlinParser().createNode("${functionNameNode.text}Preview")
+                    )
                 }
             }
         }
@@ -87,7 +91,6 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isMethodHasPreviewSuffix(functionName: String) =
         functionName.contains(PREVIEW_ANNOTATION_TEXT)
-
 
     private fun addPrivateModifier(functionNode: ASTNode) {
         val modifiersList = functionNode
