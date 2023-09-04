@@ -34,7 +34,7 @@ class PreviewAnnotationWarnTest : LintTestBase(::PreviewAnnotationRule) {
             |@Composable
             |fun BannerPreview() {}
             """.trimMargin(),
-            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} BannerPreview method should be private", false),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} BannerPreview method should be private", true),
         )
     }
 
@@ -47,7 +47,7 @@ class PreviewAnnotationWarnTest : LintTestBase(::PreviewAnnotationRule) {
             |@Composable
             |private fun Banner() {}
             """.trimMargin(),
-            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should has `Preview` suffix", false),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should has `Preview` suffix", true),
         )
     }
 
@@ -60,8 +60,8 @@ class PreviewAnnotationWarnTest : LintTestBase(::PreviewAnnotationRule) {
             |@Composable
             |fun Banner() {}
             """.trimMargin(),
-            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should be private", false),
-            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should has `Preview` suffix", false),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should be private", true),
+            DiktatError(1, 1, ruleId, "${Warnings.PREVIEW_ANNOTATION.warnText()} Banner method should has `Preview` suffix", true),
         )
     }
 }

@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 
@@ -56,7 +57,13 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    // provide fix
+                    functionNode
+                        .getChildren(KtTokens.MODIFIER_KEYWORDS)
+                        .toList()
+                        .forEach {
+                            println("IITTTT ${it.elementType} | ${it.elementType}")
+                        }
+
                 }
             }
 
