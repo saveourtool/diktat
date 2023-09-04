@@ -4,12 +4,9 @@ import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.PREVIEW_ANNOTATION
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.KotlinParser
-import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.findAllNodesWithCondition
-import com.saveourtool.diktat.ruleset.utils.findLeafWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.getIdentifierName
-import com.saveourtool.diktat.ruleset.utils.prettyPrint
 
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
@@ -19,10 +16,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.ABSTRACT_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.OPEN_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PUBLIC_KEYWORD
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 
 /**
@@ -68,33 +65,40 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
                     functionNode.startOffset,
                     functionNode
                 ) {
-                    val modifier = functionNode
+                    val modifiersList = functionNode
                         .findChildByType(MODIFIER_LIST)
                         ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
-                        ?.toList()?.firstOrNull {
-                            // private modifier is not applicable for abstract and open methods
-                            // so search only those, which can be replaced via `private`
+                        ?.toList()
+
+                    val isContainOpenOrAbstractKeyword = modifiersList?.any {
+                        it.elementType in listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD)
+                    }
+
+                    // private modifier is not applicable for abstract and open methods
+                    // so search only those, which can be replaced via `private`
+                    if (isContainOpenOrAbstractKeyword == true) {
+                        return@warnAndFix
+                    }
+
+                    // these modifiers could be safely replaced via `private`
+                    val modifierForReplacement = modifiersList?.firstOrNull {
                             it.elementType in listOf(
                                 PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD
                             )
                         }
 
-                    println("modifier ${modifier?.elementType} | ${modifier?.elementType}")
-
-                    modifier?.let {
+                    modifierForReplacement?.let {
+                        // replace current modifier with `private`
                         val parent = it.treeParent
-                        parent.replaceChild(
-                            it,
-                            KotlinParser().createNode("private")
+                        parent.replaceChild(it, createPrivateModifierNode()
                         )
                     } ?: run {
-                        println("-------------HAS NO MPODIFIFIER")
-                        println(functionNode.prettyPrint())
-                        val temp = functionNode.findAllNodesWithCondition { it.text == "fun" }.single()
-
-                        println("\n\nIM TEMP ${temp.text}")
-                        temp.treeParent?.addChild(PsiWhiteSpaceImpl(" "), temp)
-                        temp.treeParent?.addChild(KotlinParser().createNode("private"), temp.treePrev)
+                        // the case, when there is no explicit modifier, i.e. `fun foo`
+                        // just add `private` before function identifier `fun`
+                        val funNode = functionNode.findAllNodesWithCondition { it.text == "fun" }.single()
+                        // add `private ` nodes before `fun`
+                        funNode.treeParent?.addChild(PsiWhiteSpaceImpl(" "), funNode)
+                        funNode.treeParent?.addChild(createPrivateModifierNode(), funNode.treePrev)
                     }
                 }
             }
@@ -118,6 +122,8 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isMethodHasPreviewSuffix(functionName: String) =
         functionName.contains(PREVIEW_ANNOTATION_TEXT)
 
+
+    private fun createPrivateModifierNode() = KotlinParser().createNode("private")
 
     companion object {
         const val ANNOTATION_SYMBOL = "@"

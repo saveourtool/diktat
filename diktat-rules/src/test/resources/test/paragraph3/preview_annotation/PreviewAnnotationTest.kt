@@ -12,3 +12,9 @@ internal fun BannerPreview3() {}
 
 @Preview
 fun BannerPreview4() {}
+
+@Preview
+open fun BannerPreview5() {}
+
+@Preview
+final fun BannerPreview6() {}
