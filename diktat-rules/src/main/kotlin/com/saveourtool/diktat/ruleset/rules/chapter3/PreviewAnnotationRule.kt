@@ -99,20 +99,19 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
             ?.toList()
 
-        val isContainOpenOrAbstractKeyword = modifiersList?.any {
-            it.elementType in listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD)
+        val isMethodAbstract = modifiersList?.any {
+            it.elementType == ABSTRACT_KEYWORD
         }
 
-        // private modifier is not applicable for abstract and open methods
-        // so search only those, which can be replaced via `private`
-        if (isContainOpenOrAbstractKeyword == true) {
+        // private modifier is not applicable for abstract methods
+        if (isMethodAbstract == true) {
             return
         }
 
         // these modifiers could be safely replaced via `private`
         val modifierForReplacement = modifiersList?.firstOrNull {
             it.elementType in listOf(
-                PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD
+                PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD, OPEN_KEYWORD
             )
         }
 

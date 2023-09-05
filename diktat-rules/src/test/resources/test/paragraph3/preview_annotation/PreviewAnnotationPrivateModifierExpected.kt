@@ -14,7 +14,7 @@ private fun BannerPreview3() {}
 private fun BannerPreview4() {}
 
 @Preview
-open fun BannerPreview5() {}
+private fun BannerPreview5() {}
 
 @Preview
 final private fun BannerPreview6() {}
