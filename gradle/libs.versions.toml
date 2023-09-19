@@ -20,7 +20,7 @@ plexus = "2.0"
 
 jbool = "1.24"
 # downgraded to be compliance with ktlint
-mu-logging = "3.0.5"
+kotlin-logging = "5.1.0"
 log4j2 = "2.20.0"
 kaml = "0.55.0"
 kotlin-multiplatform-diff = "0.4.0"
@@ -109,17 +109,17 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-diff", version.ref = "kotlin-multiplatform-diff" }
 
 # ktlint & detekt
-ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
+ktlint-rule-engine-core = { module = "com.pinterest.ktlint:ktlint-rule-engine-core", version.ref = "ktlint" }
 ktlint-logger = { module = "com.pinterest.ktlint:ktlint-logger", version.ref = "ktlint" }
-ktlint-cli-reporter = { module = "com.pinterest.ktlint:ktlint-cli-reporter", version.ref = "ktlint" }
 ktlint-cli-ruleset-core = { module = "com.pinterest.ktlint:ktlint-cli-ruleset-core", version.ref = "ktlint" }
-ktlint-cli-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-reporter-baseline", version.ref = "ktlint" }
-ktlint-cli-reporter-checkstyle = { module = "com.pinterest.ktlint:ktlint-reporter-checkstyle", version.ref = "ktlint" }
-ktlint-cli-reporter-html = { module = "com.pinterest.ktlint:ktlint-reporter-html", version.ref = "ktlint" }
-ktlint-cli-reporter-json = { module = "com.pinterest.ktlint:ktlint-reporter-json", version.ref = "ktlint" }
-ktlint-cli-reporter-plain = { module = "com.pinterest.ktlint:ktlint-reporter-plain", version.ref = "ktlint" }
-ktlint-cli-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-reporter-sarif", version.ref = "ktlint" }
+ktlint-cli-reporter-core = { module = "com.pinterest.ktlint:ktlint-cli-reporter-core", version.ref = "ktlint" }
+ktlint-cli-reporter-baseline = { module = "com.pinterest.ktlint:ktlint-cli-reporter-baseline", version.ref = "ktlint" }
+ktlint-cli-reporter-checkstyle = { module = "com.pinterest.ktlint:ktlint-cli-reporter-checkstyle", version.ref = "ktlint" }
+ktlint-cli-reporter-html = { module = "com.pinterest.ktlint:ktlint-cli-reporter-html", version.ref = "ktlint" }
+ktlint-cli-reporter-json = { module = "com.pinterest.ktlint:ktlint-cli-reporter-json", version.ref = "ktlint" }
+ktlint-cli-reporter-plain = { module = "com.pinterest.ktlint:ktlint-cli-reporter-plain", version.ref = "ktlint" }
+ktlint-cli-reporter-sarif = { module = "com.pinterest.ktlint:ktlint-cli-reporter-sarif", version.ref = "ktlint" }
 sarif4k = { module = "io.github.detekt.sarif4k:sarif4k", version.ref = "sarif4k" }
 sarif4k-jvm = { module = "io.github.detekt.sarif4k:sarif4k-jvm", version.ref = "sarif4k" }
 
@@ -132,7 +132,8 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref = "jbool" }
 
 # logging
-kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "mu-logging" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.9" }
 log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
 log4j2-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j2" }
 

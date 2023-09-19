@@ -2,7 +2,7 @@ package com.saveourtool.diktat.test.framework.processing
 
 import com.saveourtool.diktat.test.framework.util.readTextOrNull
 import com.saveourtool.diktat.test.framework.util.toUnixEndLines
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
@@ -40,7 +40,7 @@ class TestComparatorUnit(
         val expectedPath = resourceReader("$resourceFilePath/$expectedResult")
         val testPath = resourceReader("$resourceFilePath/$testFileStr")
         if (testPath == null || expectedPath == null) {
-            log.error("Not able to find files for running test: $expectedResult and $testFileStr")
+            log.error { "Not able to find files for running test: $expectedResult and $testFileStr" }
             return FileComparisonResult(
                 isSuccessful = false,
                 delta = null,
@@ -70,7 +70,7 @@ class TestComparatorUnit(
         testFile: Path,
     ): FileComparisonResult {
         if (!testFile.isRegularFile() || !expectedFile.isRegularFile()) {
-            log.error("Not able to find files for running test: $expectedFile and $testFile")
+            log.error { "Not able to find files for running test: $expectedFile and $testFile" }
             return FileComparisonResult(
                 isSuccessful = false,
                 delta = null,

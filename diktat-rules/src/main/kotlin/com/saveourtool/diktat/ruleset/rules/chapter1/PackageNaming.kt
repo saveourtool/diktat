@@ -13,7 +13,7 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.*
 import com.saveourtool.diktat.util.isKotlinScript
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
@@ -79,8 +79,10 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
             }
         } ?: if (visitorCounter.incrementAndGet() == 1) {
-            log.error("Not able to find an external configuration for domain" +
-                    " name in the common configuration (is it missing in yml config?)")
+            log.error {
+                "Not able to find an external configuration for domain" +
+                        " name in the common configuration (is it missing in yml config?)"
+            }
         } else {
             @Suppress("RedundantUnitExpression")
             Unit
@@ -124,8 +126,10 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             .flatMap { it.split(".") }
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
-            log.error("Not able to determine a path to a scanned file or \"$PACKAGE_PATH_ANCHOR\" directory cannot be found in it's path." +
-                    " Will not be able to determine correct package name. It can happen due to missing <$PACKAGE_PATH_ANCHOR> directory in the path")
+            log.error {
+                "Not able to determine a path to a scanned file or \"$PACKAGE_PATH_ANCHOR\" directory cannot be found in it's path." +
+                        " Will not be able to determine correct package name. It can happen due to missing <$PACKAGE_PATH_ANCHOR> directory in the path"
+            }
             emptyList()
         } else {
             // creating a real package name:

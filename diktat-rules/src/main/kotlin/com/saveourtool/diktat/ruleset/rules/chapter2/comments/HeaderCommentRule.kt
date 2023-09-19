@@ -19,7 +19,7 @@ import com.saveourtool.diktat.ruleset.utils.isGradleScript
 import com.saveourtool.diktat.ruleset.utils.isWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.moveChildBefore
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
@@ -142,7 +142,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
         if (copyrightWithCorrectYear.isNotEmpty()) {
-            log.warn("Copyright year in your configuration file is not up to date.")
+            log.warn { "Copyright year in your configuration file is not up to date." }
         }
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)

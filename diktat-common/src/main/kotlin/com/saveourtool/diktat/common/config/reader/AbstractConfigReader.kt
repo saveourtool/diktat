@@ -1,6 +1,6 @@
 package com.saveourtool.diktat.common.config.reader
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.IOException
 import java.io.InputStream
 import kotlin.jvm.Throws
@@ -22,7 +22,9 @@ abstract class AbstractConfigReader<T : Any> {
     fun read(inputStream: InputStream): T? = try {
         parse(inputStream)
     } catch (e: IOException) {
-        log.error("Cannot read config from input stream due to: ", e)
+        log.error(e) {
+            "Cannot read config from input stream due to: "
+        }
         null
     }
 

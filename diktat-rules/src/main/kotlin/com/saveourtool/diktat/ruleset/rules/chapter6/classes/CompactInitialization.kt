@@ -9,7 +9,7 @@ import com.saveourtool.diktat.ruleset.utils.findLeafWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.getFunctionName
 import com.saveourtool.diktat.ruleset.utils.isPartOfComment
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
@@ -205,7 +205,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
             }
                 ?: run {
                     // valid code should always have apply with either lambdaArguments or valueArguments
-                    log.warn("apply with unexpected parameters: ${applyExpression.text}")
+                    log.warn { "apply with unexpected parameters: ${applyExpression.text}" }
                 }
         }
     }

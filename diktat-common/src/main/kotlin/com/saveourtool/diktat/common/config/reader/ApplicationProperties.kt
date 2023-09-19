@@ -1,6 +1,6 @@
 package com.saveourtool.diktat.common.config.reader
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import java.io.IOException
 import java.util.Properties
@@ -30,7 +30,9 @@ open class ApplicationProperties(propertiesFileName: String) {
     }
 
     private fun errorReadingConfig(propertiesFileName: String) {
-        log.error("Cannot read file $propertiesFileName with configuration properties")
+        log.error {
+            "Cannot read file $propertiesFileName with configuration properties"
+        }
         exitProcess(EXIT_STATUS_MISSING_PROPERTIES)
     }
 
