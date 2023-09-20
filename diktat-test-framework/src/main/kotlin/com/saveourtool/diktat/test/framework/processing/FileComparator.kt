@@ -96,10 +96,10 @@ class FileComparator(
             val joinedDeltas = delta ?: return true
             log.error {
                 """
-                        |Expected result for <$fileName> formatted are different.
-                        |See difference below:
-                        |$joinedDeltas
-                        """.trimMargin()
+                    |Expected result for <$fileName> formatted are different.
+                    |See difference below:
+                    |$joinedDeltas
+                """.trimMargin()
             }
             return false
         } catch (e: IllegalArgumentException) {

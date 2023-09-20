@@ -44,8 +44,7 @@ class TestArgumentsReader(
             ?.map { it.trim() }
             ?: run {
                 log.error {
-                    """Missing option --test or -t. Not able to run tests, please provide test names or use --all
-                                     option to run all available tests"""
+                    "Missing option --test or -t. Not able to run tests, please provide test names or use --all option to run all available tests"
                 }
                 exitProcess(2)
             }

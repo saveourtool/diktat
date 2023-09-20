@@ -36,7 +36,7 @@ class LocalCommandExecutor internal constructor(
                 )
             }
         } catch (ex: IOException) {
-            log.error(ex) { "${"Execution of $command failed"}" }
+            log.error(ex) { "Execution of $command failed" }
         }
         return ExecutionResult(emptyList(), emptyList())
     }
