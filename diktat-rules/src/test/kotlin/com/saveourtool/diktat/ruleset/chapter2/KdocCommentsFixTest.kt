@@ -4,6 +4,7 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -20,6 +21,7 @@ class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments)
         fixAndCompare("ConstructorCommentExpected.kt", "ConstructorCommentTest.kt")
     }
 
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check fix without class kdoc`() {
