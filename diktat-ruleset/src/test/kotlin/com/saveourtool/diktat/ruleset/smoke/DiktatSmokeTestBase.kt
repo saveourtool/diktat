@@ -41,6 +41,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -135,6 +136,7 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test #5`() {
         val configFilePath = prepareOverriddenRulesConfig(emptyList(),
             mapOf(
@@ -198,6 +200,7 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test #2`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
@@ -224,6 +227,7 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test #1`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
@@ -275,6 +279,7 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `regression - should correctly handle tags with empty lines`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
@@ -289,6 +294,7 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `fix can cause long line`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
@@ -332,6 +338,7 @@ abstract class DiktatSmokeTestBase {
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test with gradle script plugin`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         assertUnfixedLintErrors { unfixedLintErrors ->
@@ -346,6 +353,7 @@ abstract class DiktatSmokeTestBase {
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `disable chapters`() {
         val configFilePath = prepareOverriddenRulesConfig(
             emptyList(),

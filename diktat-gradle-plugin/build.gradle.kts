@@ -20,7 +20,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-    testImplementation(libs.ktlint.cli.reporter)
+    testImplementation(libs.ktlint.cli.reporter.core)
     testImplementation(libs.ktlint.cli.reporter.json)
     testImplementation(libs.ktlint.cli.reporter.plain)
     testImplementation(libs.ktlint.cli.reporter.sarif)

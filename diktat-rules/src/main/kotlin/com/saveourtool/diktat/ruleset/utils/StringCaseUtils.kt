@@ -3,7 +3,7 @@
 package com.saveourtool.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import java.util.Locale
 
@@ -77,7 +77,7 @@ fun String.toUpperSnakeCase(): String {
         return this[idx].uppercaseChar().toString() + convertUnknownCaseToUpperSnake(this.substring(idx + 1))
     }
 
-    log.error("Not able to fix case format for: $this")
+    log.error { "Not able to fix case format for: $this" }
     return this
 }
 
@@ -114,7 +114,7 @@ fun String.toLowerCamelCase(): String {
         return this[idx].lowercaseChar().toString() + convertUnknownCaseToCamel(this.substring(idx + 1), this[idx].isUpperCase())
     }
 
-    log.error("Not able to fix case format for: $this")
+    log.error { "Not able to fix case format for: $this" }
     return this
 }
 
@@ -150,7 +150,7 @@ fun String.toPascalCase(): String = when {
             // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
             this[idx].uppercaseChar().toString() + convertUnknownCaseToCamel(substring(idx + 1), true)
         } else {
-            log.error("Not able to fix case format for: $this")
+            log.error { "Not able to fix case format for: $this" }
             this
         }
     }

@@ -1,6 +1,6 @@
 package com.saveourtool.diktat.test.framework.common
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
@@ -36,7 +36,7 @@ class LocalCommandExecutor internal constructor(
                 )
             }
         } catch (ex: IOException) {
-            log.error("Execution of $command failed", ex)
+            log.error(ex) { "${"Execution of $command failed"}" }
         }
         return ExecutionResult(emptyList(), emptyList())
     }

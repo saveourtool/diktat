@@ -8,7 +8,7 @@ import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.getFilePath
 import com.saveourtool.diktat.ruleset.utils.prevSibling
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -97,8 +97,10 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                             parsedNode.text.contains(it.second.trim(), false)
                 }?.first
                 if (invalidNode == null) {
-                    logger.warn("Text [${parsedNode.text}] is a piece of code, created from comment; " +
-                            "but no matching text in comments has been found in the file ${node.getFilePath()}")
+                    logger.warn {
+                        "Text [${parsedNode.text}] is a piece of code, created from comment; " +
+                                "but no matching text in comments has been found in the file ${node.getFilePath()}"
+                    }
                 } else {
                     COMMENTED_OUT_CODE.warn(
                         configRules,

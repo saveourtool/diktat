@@ -15,4 +15,5 @@ dependencies {
     implementation(projects.diktatApi)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
+    testImplementation(libs.slf4j.api)
 }

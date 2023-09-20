@@ -1,8 +1,8 @@
 package com.saveourtool.diktat.test.framework.processing
 
 import com.saveourtool.diktat.test.framework.config.TestConfig
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 /**
  * [TestCompare] that uses stderr as tests output stream

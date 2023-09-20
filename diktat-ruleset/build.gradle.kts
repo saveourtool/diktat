@@ -30,6 +30,7 @@ dependencies {
     }
     implementation(libs.ktlint.cli.ruleset.core)
     implementation(libs.ktlint.logger)
+    implementation(libs.slf4j.api)
     testImplementation(projects.diktatTestFramework)
     testImplementation(projects.diktatKtlintEngine)
     testImplementation(libs.log4j2.slf4j2)

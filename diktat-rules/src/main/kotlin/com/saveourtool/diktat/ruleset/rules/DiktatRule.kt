@@ -5,7 +5,7 @@ import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.isRuleEnabled
 import com.saveourtool.diktat.ruleset.utils.getFilePathSafely
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 private typealias DiktatConfigRule = com.saveourtool.diktat.common.config.rules.Rule
@@ -66,11 +66,13 @@ abstract class DiktatRule(
                 logic(node)
             } catch (internalError: Throwable) {
                 log.error(
-                    """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/.
-                       As a workaround you can disable these inspections in yml config: <$inspections>.
-                       Root cause of the problem is in [${node.getFilePathSafely()}] file.
-                    """.trimIndent(), internalError
-                )
+                    internalError
+                ) {
+                        """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/.
+                                   As a workaround you can disable these inspections in yml config: <$inspections>.
+                                   Root cause of the problem is in [${node.getFilePathSafely()}] file.
+                                """.trimIndent()
+                }
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
                 // any existing Exception, as they will be caught in ktlint framework and the logging will be confusing:
                 // in this case it will incorrectly ask you to report issues in diktat to ktlint repository

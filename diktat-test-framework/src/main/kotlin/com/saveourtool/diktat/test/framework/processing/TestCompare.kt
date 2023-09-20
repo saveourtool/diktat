@@ -4,8 +4,8 @@ import com.saveourtool.diktat.test.framework.common.ExecutionResult
 import com.saveourtool.diktat.test.framework.common.TestBase
 import com.saveourtool.diktat.test.framework.config.TestConfig
 import com.saveourtool.diktat.test.framework.config.TestFrameworkProperties
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import org.apache.commons.io.FileUtils
 
@@ -36,9 +36,9 @@ open class TestCompare : TestBase {
         val testPassed = if (testConfig.inPlace) processInPlace() else processToStdOut()
 
         if (testPassed) {
-            log.info("Test <${testConfig.testName}> passed")
+            log.info { "Test <${testConfig.testName}> passed" }
         } else {
-            log.error("Test <${testConfig.testName}> failed")
+            log.error { "Test <${testConfig.testName}> failed" }
         }
 
         return testPassed

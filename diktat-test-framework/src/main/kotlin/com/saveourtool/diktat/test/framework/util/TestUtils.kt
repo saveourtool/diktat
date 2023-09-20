@@ -4,7 +4,7 @@
 
 package com.saveourtool.diktat.test.framework.util
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import java.io.File
 import java.io.IOException

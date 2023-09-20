@@ -8,7 +8,7 @@ import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3
 import com.pinterest.ktlint.logger.api.initKtLintKLogger
 import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.pinterest.ktlint.rule.engine.core.api.RuleSetId
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.Logger
 import java.io.File
 import java.io.InputStream
@@ -61,14 +61,16 @@ class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
             yield(resolveConfigFileFromSystemProperty())
         }
 
-        log.debug("Will run $DIKTAT_RULE_SET_ID with $DIKTAT_ANALYSIS_CONF" +
-                " (it can be placed to the run directory or the default file from resources will be used)")
+        log.debug {
+            "Will run $DIKTAT_RULE_SET_ID with $DIKTAT_ANALYSIS_CONF" +
+                    " (it can be placed to the run directory or the default file from resources will be used)"
+        }
         val configPath = possibleConfigs
             .firstOrNull { it != null && File(it).exists() }
         return configPath
             ?: run {
                 val possibleConfigsList = possibleConfigs.toList()
-                log.warn(
+                log.warn {
                     "Configuration file not found in directory where diktat is run (${possibleConfigsList[0]}) " +
                             "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
                             "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
@@ -76,7 +78,7 @@ class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
                             "Some configuration options will be disabled or substituted with defaults. " +
                             "Custom configuration file should be placed in diktat working directory if run from CLI " +
                             "or provided as configuration options in plugins."
-                )
+                }
                 DIKTAT_ANALYSIS_CONF
             }
     }
