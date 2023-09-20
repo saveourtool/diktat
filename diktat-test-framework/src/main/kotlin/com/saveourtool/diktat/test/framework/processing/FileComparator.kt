@@ -1,10 +1,11 @@
 package com.saveourtool.diktat.test.framework.processing
 
 import com.saveourtool.diktat.test.framework.util.readTextOrNull
+
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.petertrr.diffutils.diff
 import io.github.petertrr.diffutils.patch.ChangeDelta
 import io.github.petertrr.diffutils.text.DiffRowGenerator
-import io.github.oshai.kotlinlogging.KotlinLogging
 
 import java.io.File
 

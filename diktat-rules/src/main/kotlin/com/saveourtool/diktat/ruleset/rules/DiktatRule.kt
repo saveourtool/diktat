@@ -68,10 +68,10 @@ abstract class DiktatRule(
                 log.error(
                     internalError
                 ) {
-                        """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/.
-                                   As a workaround you can disable these inspections in yml config: <$inspections>.
-                                   Root cause of the problem is in [${node.getFilePathSafely()}] file.
-                                """.trimIndent()
+                    """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/saveourtool/diKTat/.
+                       As a workaround you can disable these inspections in yml config: <$inspections>.
+                       Root cause of the problem is in [${node.getFilePathSafely()}] file.
+                    """.trimIndent()
                 }
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
                 // any existing Exception, as they will be caught in ktlint framework and the logging will be confusing:
