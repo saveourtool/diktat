@@ -132,11 +132,11 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         if (loopBodyNode == null || loopBodyNode.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset, node) {
                 // fixme proper way to calculate indent? or get step size (instead of hardcoded 4)
-                val indent = node.prevSibling { it.elementType == WHITE_SPACE }!!
-                    .text
-                    .lines()
-                    .last()
-                    .count { it == ' ' }
+                val indent = node.prevSibling { it.elementType == WHITE_SPACE }
+                    ?.text
+                    ?.lines()
+                    ?.last()
+                    ?.count { it == ' ' } ?: 0
                 loopBody?.run {
                     replaceWithBlock(indent)
                 }

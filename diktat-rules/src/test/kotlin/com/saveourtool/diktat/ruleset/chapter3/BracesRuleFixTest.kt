@@ -24,6 +24,12 @@ class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", ::BracesInCondit
 
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+    fun `should add braces to loops inside scope functions`() {
+        fixAndCompare("LoopsBracesInsideScopeFunctionsExpected.kt", "LoopsBracesInsideScopeFunctionsTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add braces to do-while loops with empty body`() {
         fixAndCompare("DoWhileBracesExpected.kt", "DoWhileBracesTest.kt")
