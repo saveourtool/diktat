@@ -136,10 +136,9 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 elseKeyWord.prevNodeUntilNode(THEN, KDOC) != null -> elseKeyWord.prevNodeUntilNode(THEN, KDOC)
                 else -> null
             }
-            val copyComment = comment?.copyElement()
             comment?.let {
                 IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, it.text, node.startOffset, node) {
-                    moveCommentToElse(node, elseBlock, elseKeyWord, it, copyComment)
+                    moveCommentToElse(node, elseBlock, elseKeyWord, it)
                 }
             }
         }
@@ -150,17 +149,16 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                                   elseBlock: ASTNode,
                                   elseKeyWord: ASTNode,
                                   comment: ASTNode,
-                                  copyComment: ASTNode?
     ) {
         if (elseBlock.hasChildOfType(BLOCK)) {
             val elseCodeBlock = elseBlock.getFirstChildWithType(BLOCK)!!
-            elseCodeBlock.addChild(copyComment!!,
+            elseCodeBlock.addChild(comment,
                 elseCodeBlock.firstChildNode.treeNext)
             elseCodeBlock.addChild(PsiWhiteSpaceImpl("\n"),
                 elseCodeBlock.firstChildNode.treeNext)
             node.removeChild(comment)
         } else {
-            elseKeyWord.treeParent.addChild(copyComment!!, elseKeyWord.treeNext)
+            elseKeyWord.treeParent.addChild(comment, elseKeyWord.treeNext)
             elseKeyWord.treeParent.addChild(PsiWhiteSpaceImpl("\n"), elseKeyWord.treeNext)
             node.removeChild(comment)
         }

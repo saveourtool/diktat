@@ -2,7 +2,7 @@ package com.saveourtool.diktat.test.framework.config
 
 import com.saveourtool.diktat.common.cli.CliArgument
 import com.saveourtool.diktat.common.config.reader.AbstractConfigReader
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
@@ -43,8 +43,9 @@ class TestArgumentsReader(
             ?.split(",")
             ?.map { it.trim() }
             ?: run {
-                log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
-                         option to run all available tests""")
+                log.error {
+                    "Missing option --test or -t. Not able to run tests, please provide test names or use --all option to run all available tests"
+                }
                 exitProcess(2)
             }
     }
@@ -65,7 +66,7 @@ class TestArgumentsReader(
         try {
             cmd = parser.parse(options, args)
         } catch (e: ParseException) {
-            log.error("Cannot parse command line arguments due to ", e)
+            log.error(e) { "Cannot parse command line arguments due to" }
             formatter.printHelp("utility-name", options)
             exitProcess(1)
         }

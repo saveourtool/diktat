@@ -10,7 +10,7 @@ import com.saveourtool.diktat.test.framework.util.isWindows
 import com.saveourtool.diktat.test.framework.util.temporaryDirectory
 import generated.KTLINT_VERSION
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.Assertions.fail
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.AfterAll

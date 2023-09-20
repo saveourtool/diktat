@@ -17,7 +17,7 @@ import com.saveourtool.diktat.ruleset.utils.nextCodeLeaf
 import com.saveourtool.diktat.ruleset.utils.parent
 import com.saveourtool.diktat.ruleset.utils.prevSibling
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
@@ -269,7 +269,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             VALUE_PARAMETER, PROPERTY, FUN -> handleToken(node, 0, 1)
             ANNOTATION_ENTRY -> handleToken(node, 0, 0)  // e.g. @param:JsonProperty
             // fixme: find examples or delete this line
-            else -> log.warn("Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule")
+            else -> log.warn { "Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule" }
         }
     }
 

@@ -5,7 +5,7 @@ import com.saveourtool.diktat.test.framework.config.TestArgumentsReader
 import com.saveourtool.diktat.test.framework.config.TestConfig
 import com.saveourtool.diktat.test.framework.config.TestConfig.ExecutionType
 import com.saveourtool.diktat.test.framework.config.TestConfigReader
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import java.io.File
 import java.io.IOException
@@ -25,8 +25,9 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
         val resource = fileUrl
             ?.let { File(it.file) }
             ?: run {
-                log.error("Not able to get directory with test configuration files: " +
-                        argReader.properties.testConfigsRelativePath)
+                log.error {
+                    "Not able to get directory with test configuration files: ${argReader.properties.testConfigsRelativePath}"
+                }
                 exitProcess(STATUS_FIVE)
             }
         try {
@@ -36,7 +37,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
                 .map { file -> file.name.replace(".json", "") }
                 .toList()
         } catch (e: IOException) {
-            log.error("Got -all option, but cannot read config files ", e)
+            log.error(e) { "Got -all option, but cannot read config files " }
             exitProcess(STATUS_THREE)
         }
     }
@@ -48,10 +49,10 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
         val failedTests = AtomicInteger(0)
         val passedTests = AtomicInteger(0)
         val testList: List<String> = if (argReader.shouldRunAllTests()) {
-            log.info("Will run all available test cases")
+            log.info { "Will run all available test cases" }
             allTestsFromResources
         } else {
-            log.info("Will run specific tests: ${argReader.tests}")
+            log.info { "Will run specific tests: ${argReader.tests}" }
             argReader.tests
         }
 
@@ -66,7 +67,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
                 if (processTest(test)) passedTests.incrementAndGet() else failedTests.incrementAndGet()
             }
 
-        log.info("Test processing finished. Passed tests: [$passedTests]. Failed tests: [$failedTests]")
+        log.info { "Test processing finished. Passed tests: [$passedTests]. Failed tests: [$failedTests]" }
     }
 
     private fun findTestInResources(test: String): TestConfig? =

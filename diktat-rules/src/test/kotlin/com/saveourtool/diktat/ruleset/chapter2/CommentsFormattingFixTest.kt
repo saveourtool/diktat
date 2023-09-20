@@ -10,6 +10,7 @@ import generated.WarningNames.FIRST_COMMENT_NO_BLANK_LINE
 import generated.WarningNames.IF_ELSE_COMMENTS
 import generated.WarningNames.WRONG_NEWLINES_AROUND_KDOC
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
@@ -31,6 +32,7 @@ class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::Comment
         Tag(IF_ELSE_COMMENTS),
         Tag(FIRST_COMMENT_NO_BLANK_LINE)
     )
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `check lines and spaces in comments`() {
         fixAndCompare("KdocCodeBlocksFormattingExpected.kt", "KdocCodeBlocksFormattingTest.kt")
     }

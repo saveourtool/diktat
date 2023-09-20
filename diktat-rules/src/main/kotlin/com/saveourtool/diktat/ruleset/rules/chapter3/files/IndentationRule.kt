@@ -65,7 +65,7 @@ import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import com.saveourtool.diktat.ruleset.utils.isWhiteSpaceWithNewline
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -125,7 +125,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             if (checkIsIndentedWithSpaces(node)) {
                 checkIndentation(node)
             } else {
-                log.warn("Not going to check indentation because there are tabs")
+                log.warn { "Not going to check indentation because there are tabs" }
             }
             checkNewlineAtEnd(node)
         }

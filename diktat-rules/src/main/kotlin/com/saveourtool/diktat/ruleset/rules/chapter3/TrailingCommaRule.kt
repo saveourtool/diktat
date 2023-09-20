@@ -9,7 +9,7 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.isPartOfComment
 import com.saveourtool.diktat.ruleset.utils.isWhiteSpaceWithNewline
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.COLLECTION_LITERAL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION_ENTRY
@@ -61,8 +61,10 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
     private val configuration by lazy {
         if (trailingConfig.isEmpty()) {
-            log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
-                    " configuration options. See [available-rules.md] for possible configuration options.")
+            log.warn {
+                "You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
+                        " configuration options. See [available-rules.md] for possible configuration options."
+            }
         }
         TrailingCommaConfiguration(trailingConfig)
     }

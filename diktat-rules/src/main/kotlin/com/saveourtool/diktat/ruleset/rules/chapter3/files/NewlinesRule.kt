@@ -30,7 +30,7 @@ import com.saveourtool.diktat.ruleset.utils.nextCodeSibling
 import com.saveourtool.diktat.ruleset.utils.parent
 import com.saveourtool.diktat.ruleset.utils.prevCodeSibling
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALLABLE_REFERENCE_EXPRESSION
@@ -464,7 +464,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             SUPER_TYPE_LIST -> (node.psi as KtSuperTypeList).entries.size to "supertype list entries"
             VALUE_ARGUMENT_LIST -> (node.psi as KtValueArgumentList).arguments.size to "value arguments"
             else -> {
-                log.warn("Unexpected node element type ${node.elementType}")
+                log.warn { "Unexpected node element type ${node.elementType}" }
                 return
             }
         }

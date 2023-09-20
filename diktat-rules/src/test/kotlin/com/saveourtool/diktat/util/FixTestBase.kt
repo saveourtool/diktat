@@ -8,7 +8,7 @@ import com.saveourtool.diktat.test.framework.processing.FileComparisonResult
 import com.saveourtool.diktat.test.framework.processing.ResourceReader
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
 import com.saveourtool.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.nio.file.Path

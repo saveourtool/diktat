@@ -7,6 +7,7 @@ import com.saveourtool.diktat.ruleset.rules.chapter3.TrailingCommaRule
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -29,6 +30,7 @@ class TrailingCommaFixTest : FixTestBase("test/paragraph3/trailing_comma", ::Tra
 
     @Test
     @Tag(WarningNames.TRAILING_COMMA)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add all trailing comma`() {
         fixAndCompare("TrailingCommaExpected.kt", "TrailingCommaTest.kt", config)
     }

@@ -11,8 +11,8 @@ import com.saveourtool.diktat.common.config.rules.RulesConfigReader.Companion.lo
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.charleskorn.kaml.decodeFromStream
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 import java.io.InputStream
 import java.util.Locale
@@ -85,7 +85,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     val testAnchors: List<String> by lazy {
         val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',').map { it.trim() }
         if (testDirs.any { !it.lowercase(Locale.getDefault()).endsWith("test") }) {
-            log.error("test directory names should end with `test`")
+            log.error { "test directory names should end with `test`" }
         }
         testDirs
     }
@@ -110,7 +110,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     val kotlinVersion: KotlinVersion by lazy {
         configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
             if (visitorCounter.incrementAndGet() == 1) {
-                log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+                log.error { "Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version" }
             }
             KotlinVersion.CURRENT
         }

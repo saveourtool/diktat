@@ -3,7 +3,7 @@
 package com.saveourtool.diktat.ruleset.smoke
 
 import com.saveourtool.diktat.test.framework.util.retry
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.Assertions.fail
 import java.net.URL
 import java.nio.file.Path

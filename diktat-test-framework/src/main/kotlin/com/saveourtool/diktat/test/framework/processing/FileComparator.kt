@@ -1,10 +1,11 @@
 package com.saveourtool.diktat.test.framework.processing
 
 import com.saveourtool.diktat.test.framework.util.readTextOrNull
+
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.petertrr.diffutils.diff
 import io.github.petertrr.diffutils.patch.ChangeDelta
 import io.github.petertrr.diffutils.text.DiffRowGenerator
-import mu.KotlinLogging
 
 import java.io.File
 
@@ -93,15 +94,16 @@ class FileComparator(
                 return false
             }
             val joinedDeltas = delta ?: return true
-            log.error("""
-                |Expected result for <$fileName> formatted are different.
-                |See difference below:
-                |$joinedDeltas
+            log.error {
+                """
+                    |Expected result for <$fileName> formatted are different.
+                    |See difference below:
+                    |$joinedDeltas
                 """.trimMargin()
-            )
+            }
             return false
         } catch (e: IllegalArgumentException) {
-            log.error("Not able to prepare diffs for <$fileName>", e)
+            log.error(e) { "Not able to prepare diffs for <$fileName>" }
             return false
         }
     }

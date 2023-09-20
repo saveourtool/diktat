@@ -258,7 +258,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
     fun `should not trigger on KotlinLogging logger`() {
         lintMethod(
             """
-                |import mu.KotlinLogging
+                |import io.github.oshai.kotlinlogging.KotlinLogging
                 |
                 |fun some() {
                 |    val log = KotlinLogging.logger {}
