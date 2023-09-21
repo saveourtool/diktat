@@ -73,7 +73,7 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
 
         if (identifierName != null && node.treeParent.text.trim('"', '$') == identifierName) {
             STRING_TEMPLATE_QUOTES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                val identifier = node.findChildByType(REFERENCE_EXPRESSION)!!.copyElement()
+                val identifier = node.findChildByType(REFERENCE_EXPRESSION)!!
                 // node.treeParent is String template that we need to delete
                 node.treeParent.treeParent.addChild(identifier, node.treeParent)
                 node.treeParent.treeParent.removeChild(node.treeParent)

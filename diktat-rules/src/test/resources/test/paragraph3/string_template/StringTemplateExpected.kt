@@ -12,7 +12,7 @@ class SomeClass {
 
         val binExpr = "${foo as Foo}"
 
-        val trippleQuotes = """$x"""
+        val trippleQuotes = x
 
         val test = """${'$'}"""
 

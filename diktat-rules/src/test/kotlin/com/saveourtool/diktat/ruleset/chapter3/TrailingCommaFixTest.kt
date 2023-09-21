@@ -30,7 +30,6 @@ class TrailingCommaFixTest : FixTestBase("test/paragraph3/trailing_comma", ::Tra
 
     @Test
     @Tag(WarningNames.TRAILING_COMMA)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add all trailing comma`() {
         fixAndCompare("TrailingCommaExpected.kt", "TrailingCommaTest.kt", config)
     }
