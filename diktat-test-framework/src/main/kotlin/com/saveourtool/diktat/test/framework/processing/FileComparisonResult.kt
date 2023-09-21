@@ -16,10 +16,12 @@ import org.intellij.lang.annotations.Language
  * @property actualContent the actual file content (possibly slightly different
  *   from the original after `diktat:check` is run).
  * @property expectedContent the expected file content.
+ * @property expectedContentWithoutWarns the expected file content without warns.
  */
 data class FileComparisonResult(
     val isSuccessful: Boolean,
     val delta: String?,
     @Language("kotlin") val actualContent: String,
-    @Language("kotlin") val expectedContent: String
+    @Language("kotlin") val expectedContent: String,
+    @Language("kotlin") val expectedContentWithoutWarns: String = expectedContent,
 )

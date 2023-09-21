@@ -4,14 +4,12 @@ import com.saveourtool.diktat.ruleset.rules.chapter3.PreviewAnnotationRule
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class PreviewAnnotationFixTest : FixTestBase("test/paragraph3/preview_annotation", ::PreviewAnnotationRule) {
     @Test
     @Tag(WarningNames.PREVIEW_ANNOTATION)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add private modifier`() {
         fixAndCompare("PreviewAnnotationPrivateModifierExpected.kt", "PreviewAnnotationPrivateModifierTest.kt")
     }
