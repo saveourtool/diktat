@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.KtNodeTypes.IF
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -154,13 +155,11 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             val elseCodeBlock = elseBlock.getFirstChildWithType(BLOCK)!!
             elseCodeBlock.addChild(comment,
                 elseCodeBlock.firstChildNode.treeNext)
-            elseCodeBlock.addChild(PsiWhiteSpaceImpl("\n"),
+            elseCodeBlock.addChild(ASTFactory.whitespace("\n"),
                 elseCodeBlock.firstChildNode.treeNext)
-            node.removeChild(comment)
         } else {
             elseKeyWord.treeParent.addChild(comment, elseKeyWord.treeNext)
-            elseKeyWord.treeParent.addChild(PsiWhiteSpaceImpl("\n"), elseKeyWord.treeNext)
-            node.removeChild(comment)
+            elseKeyWord.treeParent.addChild(ASTFactory.whitespace("\n"), elseKeyWord.treeNext)
         }
 
         val whiteSpace = elseKeyWord.prevNodeUntilNode(THEN, WHITE_SPACE)
