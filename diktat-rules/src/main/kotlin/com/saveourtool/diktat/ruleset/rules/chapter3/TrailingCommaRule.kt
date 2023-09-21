@@ -101,7 +101,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun ASTNode.checkTrailingComma(config: Boolean) {
-        val noCommaInSiblings = siblings(true).toList()
+        val noCommaInSiblings = siblings(true).toSet()
             .let { siblings ->
                 siblings.none { it.elementType == COMMA } && siblings.any { it.isWhiteSpaceWithNewline() || it.isPartOfComment() }
             }
