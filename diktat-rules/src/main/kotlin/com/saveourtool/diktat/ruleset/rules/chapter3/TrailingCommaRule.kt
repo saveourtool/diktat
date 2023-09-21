@@ -28,8 +28,8 @@ import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IN_RANGE
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_CONDITION_IS_PATTERN
 import org.jetbrains.kotlin.KtNodeTypes.WHEN_ENTRY
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.COMMA
@@ -101,9 +101,13 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun ASTNode.checkTrailingComma(config: Boolean) {
-        val shouldFix = this.siblings(true).toList().run {
-            !this.map { it.elementType }.contains(COMMA) && this.any { it.isWhiteSpaceWithNewline() || it.isPartOfComment() }
-        }
+        val noCommaInSiblings = siblings(true).toList()
+            .let { siblings ->
+                siblings.none { it.elementType == COMMA } && siblings.any { it.isWhiteSpaceWithNewline() || it.isPartOfComment() }
+            }
+        val noCommaInChildren = children().none { it.elementType == COMMA }
+        val shouldFix = noCommaInSiblings && noCommaInChildren
+
         if (shouldFix && config) {
             // we should write type of node in warning, to make it easier for user to find the parameter
             TRAILING_COMMA.warnAndFix(configRules, emitWarn, isFixMode, "after ${this.elementType}: ${this.text}", this.startOffset, this) {
@@ -116,9 +120,9 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
                 val comments = listOf(EOL_COMMENT, BLOCK_COMMENT, KDOC)
                 val firstCommentNodeOrNull = if (this.elementType == VALUE_PARAMETER) this.children().firstOrNull { it.elementType in comments } else null
                 firstCommentNodeOrNull?.let {
-                    this.addChild(LeafPsiElement(COMMA, ","), firstCommentNodeOrNull)
+                    this.addChild(ASTFactory.leaf(COMMA, ","), it)
                 }
-                    ?: parent.addChild(LeafPsiElement(COMMA, ","), this.treeNext)
+                    ?: parent.addChild(ASTFactory.leaf(COMMA, ","), this.treeNext)
             }
         }
     }
