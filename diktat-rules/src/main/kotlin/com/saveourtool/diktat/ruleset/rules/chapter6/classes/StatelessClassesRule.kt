@@ -13,9 +13,8 @@ import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.lexer.KtTokens.CLASS_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.lexer.KtTokens.INTERFACE_KEYWORD
@@ -50,14 +49,16 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (isClassExtendsValidInterface(node, interfaces) && isStatelessClass(node)) {
             OBJECT_IS_PREFERRED.warnAndFix(configRules, emitWarn, isFixMode,
                 "class ${(node.psi as KtClass).name!!}", node.startOffset, node) {
-                val newObjectNode = CompositeElement(OBJECT_DECLARATION)
+                val newObjectNode = ASTFactory.composite(OBJECT_DECLARATION)
+                val children = node.children().toList()
                 node.treeParent.addChild(newObjectNode, node)
-                node.children().forEach {
-                    newObjectNode.addChild(it.copyElement(), null)
+                children.forEach {
+                    if (it.elementType == CLASS_KEYWORD) {
+                        newObjectNode.addChild(ASTFactory.leaf(OBJECT_KEYWORD, "object"))
+                    } else {
+                        newObjectNode.addChild(it)
+                    }
                 }
-                newObjectNode.addChild(LeafPsiElement(OBJECT_KEYWORD, "object"),
-                    newObjectNode.getFirstChildWithType(CLASS_KEYWORD))
-                newObjectNode.removeChild(newObjectNode.getFirstChildWithType(CLASS_KEYWORD)!!)
                 node.treeParent.removeChild(node)
             }
         }
