@@ -88,10 +88,12 @@ class TestComparatorUnit(
         )
 
         return FileComparisonResult(
-            comparator.compareFilesEqual(),
-            comparator.delta,
-            actualFileContent,
-            expectedFileContent)
+            isSuccessful = comparator.compareFilesEqual(),
+            delta = comparator.delta,
+            actualContent = actualFileContent,
+            expectedContent = expectedFileContent,
+            expectedContentWithoutWarns = comparator.expectedResultWithoutWarns,
+        )
     }
 
     private companion object {

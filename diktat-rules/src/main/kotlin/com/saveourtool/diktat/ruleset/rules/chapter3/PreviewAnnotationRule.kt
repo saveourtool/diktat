@@ -11,14 +11,16 @@ import com.saveourtool.diktat.ruleset.utils.getIdentifierName
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.ABSTRACT_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.INTERNAL_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.OPEN_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PROTECTED_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PUBLIC_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 
@@ -58,7 +60,7 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
             val functionName = functionNameNode?.text ?: return
 
             // warn if function is not private
-            if (!((functionNode.psi as KtNamedFunction).isPrivate())) {
+            if (!(functionNode.psi as KtNamedFunction).isPrivate()) {
                 PREVIEW_ANNOTATION.warnAndFix(
                     configRules,
                     emitWarn,
@@ -94,22 +96,23 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         functionName.contains(PREVIEW_ANNOTATION_TEXT)
 
     private fun addPrivateModifier(functionNode: ASTNode) {
-        val modifiersList = functionNode
-            .findChildByType(MODIFIER_LIST)
-            ?.getChildren(KtTokens.MODIFIER_KEYWORDS)
-            ?.toList()
+        // MODIFIER_LIST should be present since ANNOTATION_ENTRY is there
+        val modifierListNode = functionNode.findChildByType(MODIFIER_LIST) ?: return
+        val modifiersList = modifierListNode
+            .getChildren(KtTokens.MODIFIER_KEYWORDS)
+            .toList()
 
-        val isMethodAbstract = modifiersList?.any {
+        val isMethodAbstract = modifiersList.any {
             it.elementType == ABSTRACT_KEYWORD
         }
 
         // private modifier is not applicable for abstract methods
-        if (isMethodAbstract == true) {
+        if (isMethodAbstract) {
             return
         }
 
         // these modifiers could be safely replaced via `private`
-        val modifierForReplacement = modifiersList?.firstOrNull {
+        val modifierForReplacement = modifiersList.firstOrNull {
             it.elementType in listOf(
                 PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD, OPEN_KEYWORD
             )
@@ -118,19 +121,21 @@ class PreviewAnnotationRule(configRules: List<RulesConfig>) : DiktatRule(
         modifierForReplacement?.let {
             // replace current modifier with `private`
             val parent = it.treeParent
-            parent.replaceChild(it, createPrivateModifierNode()
-            )
+            parent.replaceChild(it, createPrivateModifierNode())
         } ?: run {
             // the case, when there is no explicit modifier, i.e. `fun foo`
-            // just add `private` before function identifier `fun`
+            // just add `private` in MODIFIER_LIST at the end
+            // and move WHITE_SPACE before function identifier `fun` to MODIFIER_LIST
             val funNode = functionNode.findAllNodesWithCondition { it.text == "fun" }.single()
-            // add `private ` nodes before `fun`
-            funNode.treeParent?.addChild(PsiWhiteSpaceImpl(" "), funNode)
-            funNode.treeParent?.addChild(createPrivateModifierNode(), funNode.treePrev)
+            val whiteSpaceAfterAnnotation = modifierListNode.treeNext
+            modifierListNode.addChild(whiteSpaceAfterAnnotation, null)
+            modifierListNode.addChild(createPrivateModifierNode(), null)
+            // add ` ` node before `fun`
+            functionNode.addChild(ASTFactory.leaf(WHITE_SPACE, " "), funNode)
         }
     }
 
-    private fun createPrivateModifierNode() = KotlinParser().createNode("private")
+    private fun createPrivateModifierNode() = ASTFactory.leaf(PRIVATE_KEYWORD, "private")
 
     companion object {
         const val ANNOTATION_SYMBOL = "@"

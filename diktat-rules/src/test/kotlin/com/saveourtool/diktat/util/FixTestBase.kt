@@ -56,6 +56,14 @@ open class FixTestBase(
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
             .compareFilesFromResources(expectedPath, testPath, resourceReader)
+        if (!result.isSuccessful) {
+            Assertions.assertEquals(
+                result.expectedContentWithoutWarns,
+                result.actualContent,
+            ) {
+                "Content are different"
+            }
+        }
         Assertions.assertTrue(
             result.isSuccessful
         ) {
