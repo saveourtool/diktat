@@ -176,13 +176,13 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                 if (node.isConstant()) {
                     if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected = canBeAutoCorrected) {
+                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected) {
                             (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.toDeterministic { toUpperSnakeCase() })
                         }
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
                     // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected = canBeAutoCorrected) {
+                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected) {
                         // FixMe: cover fixes with tests
                         val correctVariableName = variableName.text.toDeterministic { toLowerCamelCase() }
                         variableName
@@ -216,7 +216,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             .forEach { variableName ->
                 // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
                 if (variableName.text.hasPrefix()) {
-                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected = canBeAutoCorrected) {
+                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected) {
                         (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.removePrefix())
                     }
                 }
