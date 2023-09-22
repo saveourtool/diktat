@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - 'master'
+  workflow_dispatch:
 
 concurrency:
     # https://docs.github.com/en/actions/using-jobs/using-concurrency
@@ -13,6 +14,14 @@ concurrency:
     # Workflows on master branch shouldn't be cancelled, that's why they are identified by commit SHA
     group: ${{ github.ref == 'refs/heads/master' && format('{0}-{1}', github.workflow, github.sha) || format('{0}-{1}', github.workflow, github.ref) }}
     cancel-in-progress: true
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.welcome=never
+  GPG_SEC: ${{ secrets.PGP_SEC }}
+  GPG_PASSWORD: ${{ secrets.PGP_PASSWORD }}
+  OSSRH_USERNAME: ${{ secrets.SONATYPE_USER }}
+  OSSRH_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build_and_test_with_code_coverage:
@@ -305,6 +314,31 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: 'Publish a snapshot to GitHub'
+        id: publish-github
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
+            -Preckon.stage=snapshot
+            publishAllPublicationsToGitHubRepository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Publish a snapshot to Maven Central'
+        id: publish-sonatype
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
+            -Preckon.stage=snapshot
+            publishToSonatype
+            closeAndReleaseSonatypeStagingRepository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   report:
     name: Publish JUnit test results
     if: ${{ always() }}
@@ -332,7 +366,6 @@ jobs:
         with:
           check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v2)
           junit_files: |
-            **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
 
       - name: JUnit Tests (EnricoMi/publish-unit-test-result-action@v2, Windows or Mac OS X)
@@ -341,5 +374,4 @@ jobs:
         with:
           check_name: JUnit Tests (${{ runner.os }}, EnricoMi/publish-unit-test-result-action@v2)
           junit_files: |
-            **/target/*-reports/TEST-*.xml
             **/build/test-results/*/TEST-*.xml
