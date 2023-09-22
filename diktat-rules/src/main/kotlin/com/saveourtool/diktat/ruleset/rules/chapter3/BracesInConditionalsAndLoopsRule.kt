@@ -10,6 +10,7 @@ import com.saveourtool.diktat.ruleset.utils.loopType
 import com.saveourtool.diktat.ruleset.utils.prevSibling
 
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
+import org.jetbrains.kotlin.KtNodeTypes.BODY
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
 import org.jetbrains.kotlin.KtNodeTypes.IF
@@ -37,6 +38,7 @@ import org.jetbrains.kotlin.psi.psiUtil.astReplace
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 /**
  * Rule that checks that all conditionals and loops have braces.
@@ -148,7 +150,8 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                         node.insertEmptyBlockBetweenChildren(
                             node.findChildByType(DO_KEYWORD)!!.treeNext,
                             node.findChildByType(WHILE_KEYWORD)!!.treePrev,
-                            indent
+                            indent,
+                            BODY,
                         )
                     }
             }
@@ -187,18 +190,20 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         firstChild: ASTNode,
         secondChild: ASTNode?,
         indent: Int,
-        conditionTypeOpt: IElementType? = null,
+        conditionBlockType: IElementType,
     ) {
         val emptyBlock = ASTFactory.composite(BLOCK)
-        conditionTypeOpt?.let { conditionType ->
-            val anotherBlock: CompositeElement = firstChild.siblings(true)
-                .filter { it.elementType == conditionType }
-                .firstIsInstance()
-            addChild(ASTFactory.whitespace(" "), anotherBlock.treeNext)
-            anotherBlock.addChild(emptyBlock)
+        val conditionBlock: CompositeElement? = firstChild.siblings(true)
+            .filter { it.elementType == conditionBlockType }
+            .firstIsInstanceOrNull()
+        conditionBlock?.let {
+            addChild(ASTFactory.whitespace(" "), it.treeNext)
+            it.addChild(emptyBlock)
         } ?: run {
-            addChild(emptyBlock, firstChild)
-            addChild(ASTFactory.whitespace(" "), emptyBlock)
+            val newConditionBlock = ASTFactory.composite(conditionBlockType)
+            addChild(newConditionBlock, firstChild)
+            newConditionBlock.addChild(emptyBlock)
+            addChild(ASTFactory.whitespace(" "), newConditionBlock)
         }
         emptyBlock.addChild(ASTFactory.leaf(LBRACE, "{"))
         emptyBlock.addChild(ASTFactory.whitespace("\n${" ".repeat(indent)}"))
