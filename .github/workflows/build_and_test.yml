@@ -316,7 +316,7 @@ jobs:
 
       - name: 'Publish a snapshot to GitHub'
         id: publish-github
-        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/feature/maven-central-release#1712' }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
@@ -328,7 +328,7 @@ jobs:
 
       - name: 'Publish a snapshot to Maven Central'
         id: publish-sonatype
-        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/feature/maven-central-release#1712' }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
