@@ -489,13 +489,12 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
         const val NAME_ID = "identifier-naming"
+        private const val MAX_DETERMINISTIC_RUNS = 5
 
         // FixMe: this should be moved to properties
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")
         val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should", "can")
         val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
-
-        private const val MAX_DETERMINISTIC_RUNS = 5
 
         private fun String.toDeterministic(function: String.() -> String): String = generateSequence(function(this), function)
             .runningFold(this to false) { (current, result), next ->
