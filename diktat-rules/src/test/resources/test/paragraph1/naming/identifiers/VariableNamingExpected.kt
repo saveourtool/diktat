@@ -8,7 +8,7 @@ private val amConstant1 = ""
 private val strangeName = ""
 private val loWerValue = ""
 private val lower = ""
-private val valNX256 = ""
+private val valNx256 = ""
 private val voiceIpPort = ""
 
 class A {
@@ -23,7 +23,7 @@ class A {
 
     fun goo() {
         val qwe = lowerSnake
-        val pre = valNX256
+        val pre = valNx256
     }
 }
 

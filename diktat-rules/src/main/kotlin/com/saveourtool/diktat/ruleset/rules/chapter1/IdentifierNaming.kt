@@ -158,13 +158,13 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val isNonPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
             hasValOrVar() && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true && !isPrivate()
         } ?: false
-        val isFix = isFixMode && !(isPublicOrNonLocalProperty || isNonPrivatePrimaryConstructorParameter)
+        val canBeAutoCorrected = !(isPublicOrNonLocalProperty || isNonPrivatePrimaryConstructorParameter)
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
                 // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
                 if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                    VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node)
+                    VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, false, variableName.text, variableName.startOffset, node)
                 }
                 // check if identifier of a property has a confusing name
                 if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
@@ -176,15 +176,15 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                 if (node.isConstant()) {
                     if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFix, variableName.text, variableName.startOffset, node) {
-                            (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.toUpperSnakeCase())
+                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected = canBeAutoCorrected) {
+                            (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.toDeterministic { toUpperSnakeCase() })
                         }
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
                     // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFix, variableName.text, variableName.startOffset, node) {
+                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected = canBeAutoCorrected) {
                         // FixMe: cover fixes with tests
-                        val correctVariableName = variableName.text.toLowerCamelCase()
+                        val correctVariableName = variableName.text.toDeterministic { toLowerCamelCase() }
                         variableName
                             .parent { it.elementType == KtFileElementType.INSTANCE }
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
@@ -216,7 +216,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             .forEach { variableName ->
                 // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
                 if (variableName.text.hasPrefix()) {
-                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
+                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected = canBeAutoCorrected) {
                         (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.removePrefix())
                     }
                 }
@@ -282,7 +282,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val className: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!(className.text.isPascalCase())) {
             CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset, className) {
-                (className as LeafPsiElement).rawReplaceWithText(className.text.toPascalCase())
+                (className as LeafPsiElement).rawReplaceWithText(className.text.toDeterministic { toPascalCase() })
             }
         }
 
@@ -321,7 +321,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val objectName: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset, objectName) {
-                (objectName as LeafPsiElement).rawReplaceWithText(objectName.text.toPascalCase())
+                (objectName as LeafPsiElement).rawReplaceWithText(objectName.text.toDeterministic { toPascalCase() })
             }
         }
         return listOf(objectName)
@@ -383,7 +383,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         if (!functionName.text.isLowerCamelCase()) {
             FUNCTION_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                 // FixMe: add tests for this
-                (functionName as LeafPsiElement).rawReplaceWithText(functionName.text.toLowerCamelCase())
+                (functionName as LeafPsiElement).rawReplaceWithText(functionName.text.toDeterministic { toLowerCamelCase() })
             }
         }
 
@@ -413,7 +413,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
 
         if (!aliasName.text.isPascalCase()) {
             TYPEALIAS_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, aliasName.text, aliasName.startOffset, aliasName) {
-                (aliasName as LeafPsiElement).rawReplaceWithText(aliasName.text.toPascalCase())
+                (aliasName as LeafPsiElement).rawReplaceWithText(aliasName.text.toDeterministic { toPascalCase() })
             }
         }
         return listOf(aliasName)
@@ -468,7 +468,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
          * In which style enum members should be named
          */
         val enumStyle = config["enumStyle"]?.let { styleString ->
-            val style = Style.values().firstOrNull {
+            val style = Style.entries.firstOrNull {
                 it.name == styleString.toUpperSnakeCase()
             }
             if (style == null || !style.isEnumStyle) {
@@ -494,5 +494,18 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")
         val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should", "can")
         val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
+
+
+        private const val MAX_DETERMINISTIC_RUNS = 5
+        private fun String.toDeterministic(function: String.() -> String): String = generateSequence(function(this), function)
+            .runningFold(this to false) { (current, result), next ->
+                require(!result) {
+                    "Should return a value already"
+                }
+                next to (current == next)
+            }
+            .take(MAX_DETERMINISTIC_RUNS)
+            .first { it.second }
+            .first
     }
 }

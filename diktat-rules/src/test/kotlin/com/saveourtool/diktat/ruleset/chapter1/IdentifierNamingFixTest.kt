@@ -5,7 +5,6 @@ import com.saveourtool.diktat.ruleset.rules.chapter1.IdentifierNaming
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -23,14 +22,12 @@ class IdentifierNamingFixTest : FixTestBase(
         fixAndCompare("identifiers/IdentifierNameRegressionExpected.kt", "identifiers/IdentifierNameRegressionTest.kt")
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     @Tag(WarningNames.CLASS_NAME_INCORRECT)
     fun `incorrect class name fix`() {
         fixAndCompare("class_/IncorrectClassNameExpected.kt", "class_/IncorrectClassNameTest.kt")
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     @Tag(WarningNames.OBJECT_NAME_INCORRECT)
     fun `incorrect object name fix`() {
@@ -49,7 +46,6 @@ class IdentifierNamingFixTest : FixTestBase(
         fixAndCompare("identifiers/ConstantValNameExpected.kt", "identifiers/ConstantValNameTest.kt")
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `incorrect variable name case fix`() {
