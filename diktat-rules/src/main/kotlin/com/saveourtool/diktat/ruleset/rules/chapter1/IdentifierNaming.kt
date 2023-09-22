@@ -495,8 +495,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should", "can")
         val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
 
-
         private const val MAX_DETERMINISTIC_RUNS = 5
+
         private fun String.toDeterministic(function: String.() -> String): String = generateSequence(function(this), function)
             .runningFold(this to false) { (current, result), next ->
                 require(!result) {
