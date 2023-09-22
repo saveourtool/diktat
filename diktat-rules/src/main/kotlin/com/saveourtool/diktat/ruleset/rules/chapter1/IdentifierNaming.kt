@@ -216,7 +216,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             .forEach { variableName ->
                 // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
                 if (variableName.text.hasPrefix()) {
-                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected) {
+                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
                         (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.removePrefix())
                     }
                 }
