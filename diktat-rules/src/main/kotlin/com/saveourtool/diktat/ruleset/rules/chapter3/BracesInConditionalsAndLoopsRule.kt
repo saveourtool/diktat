@@ -12,14 +12,18 @@ import com.saveourtool.diktat.ruleset.utils.prevSibling
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.ELSE
 import org.jetbrains.kotlin.KtNodeTypes.IF
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.THEN
 import org.jetbrains.kotlin.KtNodeTypes.WHEN
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.lexer.KtTokens.DO_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.ELSE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.IF_KEYWORD
@@ -81,14 +85,14 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
                 (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset, node) {
                 thenNode?.run {
-                    (psi as KtElement).replaceWithBlock(indent)
+                    this.replaceWithBlock(indent)
                     if (elseNode != null && elseKeyword != null) {
                         node.replaceChild(elseKeyword.prevSibling.node, PsiWhiteSpaceImpl(" "))
                     }
                 }
                     ?: run {
                         val nodeAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
-                        node.insertEmptyBlockBetweenChildren(nodeAfterCondition, nodeAfterCondition, indent)
+                        node.insertEmptyBlockBetweenChildren(nodeAfterCondition, nodeAfterCondition, indent, THEN)
                     }
             }
         }
@@ -119,7 +123,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                 }
                     ?: run {
                         // `else` can have empty body e.g. when there is a semicolon after: `else ;`
-                        node.insertEmptyBlockBetweenChildren(elseKeyword.node.treeNext, null, indent)
+                        node.insertEmptyBlockBetweenChildren(elseKeyword.node.treeNext, null, indent, ELSE)
                     }
             }
         }
@@ -171,24 +175,43 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     }
 
     private fun KtElement.replaceWithBlock(indent: Int) {
-        this.astReplace(KtBlockExpression(
+        val ktBlockNode = KtBlockExpression(
             "{\n${" ".repeat(indent + INDENT_STEP)}$text\n${" ".repeat(indent)}}"
-        ))
+        )
+        this.astReplace(ktBlockNode)
+    }
+
+    private fun ASTNode.replaceWithBlock(indent: Int) {
+        val blockNode = ASTFactory.composite(BLOCK)
+        this.treeParent.addChild(blockNode, this)
+        blockNode.addChild(ASTFactory.leaf(LBRACE, "{"))
+        blockNode.addChild(ASTFactory.whitespace("\n${" ".repeat(indent + INDENT_STEP)}"))
+        blockNode.addChild(this)
+        blockNode.addChild(ASTFactory.whitespace("\n${" ".repeat(indent)}"))
+        blockNode.addChild(ASTFactory.leaf(RBRACE, "}"))
     }
 
     private fun ASTNode.insertEmptyBlockBetweenChildren(
         firstChild: ASTNode,
         secondChild: ASTNode?,
-        indent: Int
+        indent: Int,
+        elementType: IElementType? = null,
     ) {
-        val emptyBlock = CompositeElement(KtNodeTypes.BLOCK_CODE_FRAGMENT)
-        addChild(emptyBlock, firstChild)
-        addChild(PsiWhiteSpaceImpl(" "), emptyBlock)
-        emptyBlock.addChild(LeafPsiElement(LBRACE, "{"))
-        emptyBlock.addChild(PsiWhiteSpaceImpl("\n${" ".repeat(indent)}"))
-        emptyBlock.addChild(LeafPsiElement(RBRACE, "}"))
+        val emptyBlock = ASTFactory.composite(BLOCK)
+        elementType?.let {
+            val anotherBlock = ASTFactory.composite(it)
+            addChild(anotherBlock, firstChild)
+            addChild(ASTFactory.whitespace(" "), anotherBlock)
+            anotherBlock.addChild(emptyBlock)
+        } ?: run {
+            addChild(emptyBlock, firstChild)
+            addChild(ASTFactory.whitespace(" "), emptyBlock)
+        }
+        emptyBlock.addChild(ASTFactory.leaf(LBRACE, "{"))
+        emptyBlock.addChild(ASTFactory.whitespace("\n${" ".repeat(indent)}"))
+        emptyBlock.addChild(ASTFactory.leaf(RBRACE, "}"))
         secondChild?.let {
-            replaceChild(it, PsiWhiteSpaceImpl(" "))
+            replaceChild(it, ASTFactory.whitespace(" "))
         }
     }
     companion object {

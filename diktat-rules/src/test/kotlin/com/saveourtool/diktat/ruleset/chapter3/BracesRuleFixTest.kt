@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", ::BracesInConditionalsAndLoopsRule) {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
+//    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add braces to if-else statements - 1`() {
         fixAndCompare("IfElseBraces1Expected.kt", "IfElseBraces1Test.kt")
     }
