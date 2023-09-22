@@ -9,7 +9,6 @@ import com.saveourtool.diktat.ruleset.utils.isSingleLineIfElse
 import com.saveourtool.diktat.ruleset.utils.loopType
 import com.saveourtool.diktat.ruleset.utils.prevSibling
 
-import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.ELSE
@@ -21,7 +20,6 @@ import org.jetbrains.kotlin.KtNodeTypes.WHEN
 import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.lexer.KtTokens.DO_KEYWORD
@@ -38,6 +36,8 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.astReplace
 import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 
 /**
  * Rule that checks that all conditionals and loops have braces.
@@ -195,13 +195,14 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         firstChild: ASTNode,
         secondChild: ASTNode?,
         indent: Int,
-        elementType: IElementType? = null,
+        conditionTypeOpt: IElementType? = null,
     ) {
         val emptyBlock = ASTFactory.composite(BLOCK)
-        elementType?.let {
-            val anotherBlock = ASTFactory.composite(it)
-            addChild(anotherBlock, firstChild)
-            addChild(ASTFactory.whitespace(" "), anotherBlock)
+        conditionTypeOpt?.let { conditionType ->
+            val anotherBlock: CompositeElement = firstChild.siblings(true)
+                .filter { it.elementType == conditionType }
+                .firstIsInstance()
+            addChild(ASTFactory.whitespace(" "), anotherBlock.treeNext)
             anotherBlock.addChild(emptyBlock)
         } ?: run {
             addChild(emptyBlock, firstChild)
