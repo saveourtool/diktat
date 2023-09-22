@@ -3,7 +3,6 @@ import org.gradle.accessors.dm.LibrariesForLibs
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
-    id("com.saveourtool.diktat.buildutils.publishing-signing-default-configuration")
 }
 
 project.description = "This module builds diktat-api implementation using ktlint"

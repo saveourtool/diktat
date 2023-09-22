@@ -38,7 +38,8 @@ run {
     }*/
         implementation(libs.sarif4k)
         implementation(libs.gradle.plugin.spotless)
-        implementation(libs.publish.gradle.plugin)
+        implementation(libs.dokka.gradle.plugin)
+        implementation(libs.gradle.nexus.publish.plugin)
         // extra dependencies
         implementation(libs.kotlin.stdlib)
         implementation(libs.kotlin.stdlib.common)

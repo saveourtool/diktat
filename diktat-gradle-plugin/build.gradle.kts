@@ -1,4 +1,3 @@
-import com.saveourtool.diktat.buildutils.configureSigning
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -98,5 +97,3 @@ tasks.jacocoTestReport {
         xml.required.set(true)
     }
 }
-
-configureSigning()
