@@ -119,7 +119,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
                 (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
                 elseNode?.run {
-                    (psi as KtElement).replaceWithBlock(indent)
+                    replaceWithBlock(indent)
                 }
                     ?: run {
                         // `else` can have empty body e.g. when there is a semicolon after: `else ;`
@@ -141,7 +141,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                     .lines()
                     .last()
                     .count { it == ' ' }
-                loopBody?.run {
+                loopBodyNode?.run {
                     replaceWithBlock(indent)
                 }
                     ?: run {
@@ -172,13 +172,6 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                     it.astReplace(it.firstStatement!!.node.psi)
                 }
             }
-    }
-
-    private fun KtElement.replaceWithBlock(indent: Int) {
-        val ktBlockNode = KtBlockExpression(
-            "{\n${" ".repeat(indent + INDENT_STEP)}$text\n${" ".repeat(indent)}}"
-        )
-        this.astReplace(ktBlockNode)
     }
 
     private fun ASTNode.replaceWithBlock(indent: Int) {
