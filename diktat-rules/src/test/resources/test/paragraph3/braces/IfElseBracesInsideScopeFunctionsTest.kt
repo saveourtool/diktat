@@ -37,3 +37,11 @@ fun foo5() {
         }
     }
 }
+
+fun foo6() {
+    str.apply {
+        if (x > 0) foo()
+        else if (y > 0) abc()
+        else bar()
+    }
+}

@@ -12,6 +12,7 @@ import com.saveourtool.diktat.ruleset.utils.prevSibling
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
+import org.jetbrains.kotlin.KtNodeTypes.ELSE
 import org.jetbrains.kotlin.KtNodeTypes.IF
 import org.jetbrains.kotlin.KtNodeTypes.LAMBDA_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
@@ -146,17 +147,20 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     }
 
     private fun ASTNode.findIndentBeforeNode(): Int {
-        val indentNode = if (treeParent?.treeParent?.treeParent?.elementType == LAMBDA_EXPRESSION) {
-            treeParent.prevSibling { it.elementType == WHITE_SPACE }
+        val isElseIfStatement = treeParent.elementType == ELSE
+        val primaryIfNode = if (isElseIfStatement) treeParent.treeParent else this
+
+        val indentNode = if (primaryIfNode.treeParent?.treeParent?.treeParent?.elementType == LAMBDA_EXPRESSION) {
+            primaryIfNode.treeParent.prevSibling { it.elementType == WHITE_SPACE }
         } else {
-            prevSibling { it.elementType == WHITE_SPACE }
+            primaryIfNode.prevSibling { it.elementType == WHITE_SPACE }
         }
 
-        return indentNode!!
-            .text
-            .lines()
-            .last()
-            .count { it == ' ' }
+        return indentNode
+            ?.text
+            ?.lines()
+            ?.last()
+            ?.count { it == ' ' } ?: 0
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -201,6 +205,6 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     companion object {
         private const val INDENT_STEP = 4
         const val NAME_ID = "races-rule"
-        private val scopeFunctions = listOf("let", "run", "apply", "also")
+        private val scopeFunctions = listOf("let", "run", "with", "apply", "also")
     }
 }
