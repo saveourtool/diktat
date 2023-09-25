@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.incremental.createDirectory
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.shadow)
 }

@@ -28,7 +28,11 @@ project.description = "diKTat kotlin formatter and fixer"
 configurePublishing()
 
 tasks.create("generateLibsForDiktatSnapshot") {
-    val dir = rootProject.buildDir.resolve("diktat-snapshot")
+    val dir = rootProject.layout
+        .buildDirectory
+        .dir("diktat-snapshot")
+        .get()
+        .asFile
 
     val dependencies = setOf(
         rootProject.project(":diktat-common"),
@@ -85,13 +89,15 @@ fun File.pathToMavenArtifact(project: Project): File = project.group.toString()
 /**
  * @return generated pom.xml for project dependency
  */
-fun Project.pomFile(): File = buildDir.resolve("publications")
-    .let { publicationsDir ->
-        publicationsDir.resolve("pluginMaven")
-            .takeIf { it.exists() }
-            ?: publicationsDir.resolve("maven")
+fun Project.pomFile(): File = layout.buildDirectory
+    .dir("publications")
+    .map { publicationsDir ->
+        publicationsDir.dir("pluginMaven")
+            .takeIf { it.asFile.exists() }
+            ?: publicationsDir.dir("maven")
     }
-    .resolve("pom-default.xml")
+    .map { it.file("pom-default.xml").asFile }
+    .get()
 
 /**
  * @return file name of pom.xml for project
@@ -101,7 +107,10 @@ fun Project.pomFileName(): String = "$name-$version.pom"
 /**
  * @return generated artifact for project dependency
  */
-fun Project.artifactFile(): File = buildDir.resolve("libs/${artifactFileName()}")
+fun Project.artifactFile(): File = layout.buildDirectory
+    .dir("libs")
+    .map { it.file("artifactFileName()").asFile }
+    .get()
 
 /**
  * @return file name of artifact for project dependency

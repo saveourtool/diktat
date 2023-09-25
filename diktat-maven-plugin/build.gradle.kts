@@ -4,6 +4,7 @@ import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescri
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.publishing-configuration")
     id("de.benediktritter.maven-plugin-development") version "0.4.2"
     `maven-publish`
 }

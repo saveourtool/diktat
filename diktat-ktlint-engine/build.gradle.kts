@@ -3,6 +3,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
 }
 
 project.description = "This module builds diktat-api implementation using ktlint"
@@ -33,7 +34,7 @@ val ktlintVersion: String = the<LibrariesForLibs>()
     .get()
 
 val generateKtlintVersionFile by tasks.registering {
-    val outputDir = File("$buildDir/generated/src")
+    val outputDir = layout.buildDirectory.dir("generated/src").get().asFile
     val versionsFile = outputDir.resolve("generated/KtLintVersion.kt")
 
     inputs.property("ktlint version", ktlintVersion)
