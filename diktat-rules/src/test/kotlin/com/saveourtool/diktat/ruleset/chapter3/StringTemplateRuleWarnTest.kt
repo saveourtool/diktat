@@ -122,4 +122,20 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(STRING_TEMPLATE_QUOTES)
+    fun `should trigger on long string template`() {
+        lintMethod(
+            """
+                    |class Some {
+                    |   fun some() {
+                    |       val x = "asd"
+                    |       val trippleQuotes = ""${'"'}${'$'}x""${'"'}
+                    |   }
+                    |}
+            """.trimMargin(),
+            DiktatError(4, 31, ruleId, "${Warnings.STRING_TEMPLATE_QUOTES.warnText()} ${'$'}x", true)
+        )
+    }
 }

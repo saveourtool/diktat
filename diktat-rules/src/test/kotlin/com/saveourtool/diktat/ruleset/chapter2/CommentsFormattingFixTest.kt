@@ -32,7 +32,6 @@ class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::Comment
         Tag(IF_ELSE_COMMENTS),
         Tag(FIRST_COMMENT_NO_BLANK_LINE)
     )
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `check lines and spaces in comments`() {
         fixAndCompare("KdocCodeBlocksFormattingExpected.kt", "KdocCodeBlocksFormattingTest.kt")
     }

@@ -27,20 +27,26 @@ class FileComparator(
     )
 
     /**
+     * expected result without lines with warns
+     */
+    val expectedResultWithoutWarns: String by lazy {
+        val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
+        expectedResult
+            .split("\n")
+            .filterNot { line ->
+                line.contains(regex)
+            }
+            .joinToString("\n")
+    }
+
+    /**
      * delta in files
      */
     val delta: String? by lazy {
         if (expectedResult.isEmpty()) {
             return@lazy null
         }
-        val regex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
-        val expectWithoutWarn = expectedResult
-            .split("\n")
-            .filterNot { line ->
-                line.contains(regex)
-            }
-            .joinToString("\n")
-        val patch = diff(expectWithoutWarn, actualResult, null)
+        val patch = diff(expectedResultWithoutWarns, actualResult, null)
 
         if (patch.deltas.isEmpty()) {
             return@lazy null
