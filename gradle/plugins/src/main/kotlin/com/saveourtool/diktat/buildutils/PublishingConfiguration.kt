@@ -40,7 +40,9 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
  */
 fun Project.configurePublishing() {
     apply<MavenPublishPlugin>()
-    configureNexusPublishing()
+    if (this == rootProject) {
+        configureNexusPublishing()
+    }
     configureGitHubPublishing()
     configurePublications()
 

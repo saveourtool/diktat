@@ -29,7 +29,10 @@ dependencies {
 
 val addLicenseTask = tasks.register("addLicense") {
     val licenseFile = rootProject.file("LICENSE")
-    val outputDir = File("$buildDir/generated/src")
+    val outputDir = layout.buildDirectory
+        .dir("generated/src")
+        .get()
+        .asFile
 
     inputs.file(licenseFile)
     outputs.dir(outputDir)

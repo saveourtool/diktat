@@ -89,9 +89,14 @@ jacocoTestKit {
 tasks.jacocoTestReport {
     shouldRunAfter(tasks.withType<Test>())
     executionData(
-        fileTree("$buildDir/jacoco").apply {
-            include("*.exec")
-        }
+        layout.buildDirectory
+            .dir("jacoco")
+            .map { jacocoDir ->
+                jacocoDir.asFileTree
+                    .matching {
+                        include("*.exec")
+                    }
+            }
     )
     reports {
         // xml report is used by codecov
