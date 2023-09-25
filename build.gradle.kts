@@ -7,6 +7,7 @@ plugins {
     id("com.saveourtool.diktat.buildutils.versioning-configuration")
     id("com.saveourtool.diktat.buildutils.git-hook-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.publishing-configuration")
     alias(libs.plugins.talaiot.base)
     java
     `maven-publish`
@@ -24,8 +25,6 @@ talaiot {
 }
 
 project.description = "diKTat kotlin formatter and fixer"
-
-configurePublishing()
 
 tasks.create("generateLibsForDiktatSnapshot") {
     val dir = rootProject.layout
