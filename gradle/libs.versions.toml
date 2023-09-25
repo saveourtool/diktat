@@ -8,7 +8,6 @@ junit-platfrom = "1.10.0"
 guava = "32.1.2-jre"
 commons-cli = "1.5.0"
 commons-io = "2.13.0"
-kotlinpoet = "1.12.0"
 detekt = "1.23.1"
 dokka = "1.9.0"
 gradle-nexus-publish-plugin = "1.3.0"
@@ -20,7 +19,6 @@ maven-plugin-testing-harness = "3.3.0"
 plexus = "2.0"
 
 jbool = "1.24"
-# downgraded to be compliance with ktlint
 kotlin-logging = "5.1.0"
 log4j2 = "2.20.0"
 kaml = "0.55.0"
@@ -36,25 +34,11 @@ gradle-shadow = "8.1.1"
 
 # copied from save-cloud
 jetbrains-annotations = "24.0.1"
-save-cli = "0.3.9"
-ktor = "2.2.4"
-okio = "3.3.0"
-kotlinx-datetime = "0.4.0"
 kotlinx-coroutines = "1.7.3"
 assertj = "3.24.2"
 diktat = "2.0.0"
-jgit = "6.5.0.202303070854-r"
-mockito = "5.2.0"
-mockito-kotlin = "4.1.0"
-testcontainers = "1.17.6"
-okhttp3 = "4.10.0"
 reckon = "0.18.0"
-commons-compress = "1.22"
-zip4j = "2.11.5"
-ktoml = "0.4.1"
-springdoc = "1.6.15"
 spotless = "6.21.0"
-arrow-kt = "1.1.5"
 download = "5.5.0"
 
 [plugins]
@@ -76,16 +60,6 @@ shadow = { id = "com.github.johnrengelman.shadow", version.ref = "gradle-shadow"
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-nexus-publish-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "gradle-nexus-publish-plugin"}
 download-plugin = { module = "de.undercouch:gradle-download-task", version.ref = "download" }
-
-save-common = { module = "com.saveourtool.save:save-common", version.ref = "save-cli" }
-save-common-jvm = { module = "com.saveourtool.save:save-common-jvm", version.ref = "save-cli" }
-save-core = { module = "com.saveourtool.save:save-core", version.ref = "save-cli" }
-save-core-jvm = { module = "com.saveourtool.save:save-core-jvm", version.ref = "save-cli" }
-save-plugins-fix = { module = "com.saveourtool.save:fix-plugin", version.ref = "save-cli" }
-save-plugins-fix-jvm = { module = "com.saveourtool.save:fix-plugin-jvm", version.ref = "save-cli" }
-save-plugins-warn-jvm = { module = "com.saveourtool.save:warn-plugin-jvm", version.ref = "save-cli" }
-save-plugins-fixAndWarn-jvm = { module = "com.saveourtool.save:fix-and-warn-plugin-jvm", version.ref = "save-cli" }
-save-reporters = { module = "com.saveourtool.save:save-reporters", version.ref = "save-cli" }
 
 # kotlin
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
