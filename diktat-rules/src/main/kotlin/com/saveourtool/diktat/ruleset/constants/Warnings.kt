@@ -148,7 +148,7 @@ enum class Warnings(
 
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "4.1.1", "floating-point values shouldn't be used in accurate calculations"),
-    AVOID_NULL_CHECKS(false, "4.3.3", "Try to avoid explicit null-checks"),
+    AVOID_NULL_CHECKS(true, "4.3.3", "Try to avoid explicit null-checks"),
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "5.1.1", "function is too long: split it or make more primitive"),
