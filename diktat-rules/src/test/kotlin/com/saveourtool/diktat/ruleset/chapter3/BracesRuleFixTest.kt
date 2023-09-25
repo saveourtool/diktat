@@ -4,14 +4,12 @@ import com.saveourtool.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoop
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", ::BracesInConditionalsAndLoopsRule) {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add braces to if-else statements - 1`() {
         fixAndCompare("IfElseBraces1Expected.kt", "IfElseBraces1Test.kt")
     }
@@ -36,7 +34,6 @@ class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", ::BracesInCondit
 
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `should add braces to do-while loops with empty body`() {
         fixAndCompare("DoWhileBracesExpected.kt", "DoWhileBracesTest.kt")
     }
