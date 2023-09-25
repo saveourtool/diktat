@@ -8,10 +8,6 @@ import com.saveourtool.diktat.ruleset.generation.EnumNames
 import com.saveourtool.diktat.ruleset.utils.isSuppressed
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-typealias ListOfList = MutableList<MutableList<ASTNode>>
-
-typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
-
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.

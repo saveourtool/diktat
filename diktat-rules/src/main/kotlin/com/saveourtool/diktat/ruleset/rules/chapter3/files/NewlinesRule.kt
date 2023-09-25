@@ -3,7 +3,6 @@ package com.saveourtool.diktat.ruleset.rules.chapter3.files
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
-import com.saveourtool.diktat.ruleset.constants.ListOfList
 import com.saveourtool.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import com.saveourtool.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
@@ -103,6 +102,8 @@ import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+
+private typealias ListOfList = MutableList<MutableList<ASTNode>>
 
 /**
  * Rule that checks line break styles.
