@@ -86,17 +86,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                     }
                 }
                     ?: run {
-                        val emptyThenNode = node.findChildByType(THEN)!!
-
-                        if (emptyThenNode.findChildByType(BLOCK_CODE_FRAGMENT) == null) {
-                            val whiteSpacesAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
-
-                            node.replaceChild(whiteSpacesAfterCondition, PsiWhiteSpaceImpl(" "))
-                            emptyThenNode.insertEmptyBlock(indent)
-                            if (elseKeyword != null) {
-                                node.addChild(PsiWhiteSpaceImpl(" "), elseKeyword.node)
-                            }
-                        }
+                        node.insertEmptyBlockInsideThenNode(indent)
                     }
             }
         }
@@ -127,16 +117,38 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                 }
                     ?: run {
                         // `else` can have empty body e.g. when there is a semicolon after: `else ;`
-                        val emptyElseNode = node.findChildByType(ELSE)!!
-
-                        if (emptyElseNode.findChildByType(BLOCK_CODE_FRAGMENT) == null) {
-                            val whiteSpacesAfterElseKeyword = elseKeyword.node.treeNext
-
-                            node.replaceChild(whiteSpacesAfterElseKeyword, PsiWhiteSpaceImpl(" "))
-                            emptyElseNode.insertEmptyBlock(indent)
-                        }
+                        node.insertEmptyBlockInsideElseNode(indent)
                     }
             }
+        }
+    }
+
+    private fun ASTNode.insertEmptyBlockInsideThenNode(indent: Int) {
+        val ifPsi = psi as KtIfExpression
+        val elseKeyword = ifPsi.elseKeyword
+        val emptyThenNode = findChildByType(THEN)!!
+
+        emptyThenNode.findChildByType(BLOCK_CODE_FRAGMENT) ?: run {
+            val whiteSpacesAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
+
+            replaceChild(whiteSpacesAfterCondition, PsiWhiteSpaceImpl(" "))
+            emptyThenNode.insertEmptyBlock(indent)
+            elseKeyword?.let {
+                addChild(PsiWhiteSpaceImpl(" "), elseKeyword.node)
+            }
+        }
+    }
+
+    private fun ASTNode.insertEmptyBlockInsideElseNode(indent: Int) {
+        val ifPsi = psi as KtIfExpression
+        val elseKeyword = ifPsi.elseKeyword
+        val emptyElseNode = findChildByType(ELSE)!!
+
+        emptyElseNode.findChildByType(BLOCK_CODE_FRAGMENT) ?: run {
+            val whiteSpacesAfterElseKeyword = elseKeyword!!.node.treeNext
+
+            replaceChild(whiteSpacesAfterElseKeyword, PsiWhiteSpaceImpl(" "))
+            emptyElseNode.insertEmptyBlock(indent)
         }
     }
 
@@ -146,7 +158,8 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         val loopBodyNode = loopBody?.node
 
         if (loopBodyNode == null || loopBodyNode.elementType != BLOCK) {
-            NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset, node) {
+            NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode,
+                node.elementType.toString(), node.startOffset, node) {
                 // fixme proper way to calculate indent? or get step size (instead of hardcoded 4)
                 val indent = node.findIndentBeforeNode()
 
@@ -155,21 +168,24 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                 }
                     ?: run {
                         // this corresponds to do-while with empty body
-
-                        if (node.findChildByType(BODY) == null) {
-                            val doKeyword = node.findChildByType(DO_KEYWORD)!!
-                            val whileKeyword = node.findChildByType(WHILE_KEYWORD)!!
-                            val whiteSpacesAfterDoKeyword = doKeyword.treeNext
-
-                            node.addChild(CompositeElement(BODY), whileKeyword)
-                            val emptyWhenNode = node.findChildByType(BODY)!!
-
-                            node.replaceChild(whiteSpacesAfterDoKeyword, PsiWhiteSpaceImpl(" "))
-                            emptyWhenNode.insertEmptyBlock(indent)
-                            node.addChild(PsiWhiteSpaceImpl(" "), whileKeyword)
-                        }
+                        node.insertEmptyBlockInsideDoWhileNode(indent)
                     }
             }
+        }
+    }
+
+    private fun ASTNode.insertEmptyBlockInsideDoWhileNode(indent: Int) {
+        findChildByType(BODY) ?: run {
+            val doKeyword = findChildByType(DO_KEYWORD)!!
+            val whileKeyword = findChildByType(WHILE_KEYWORD)!!
+            val whiteSpacesAfterDoKeyword = doKeyword.treeNext
+
+            addChild(CompositeElement(BODY), whileKeyword)
+            val emptyWhenNode = findChildByType(BODY)!!
+
+            replaceChild(whiteSpacesAfterDoKeyword, PsiWhiteSpaceImpl(" "))
+            emptyWhenNode.insertEmptyBlock(indent)
+            addChild(PsiWhiteSpaceImpl(" "), whileKeyword)
         }
     }
 
@@ -202,7 +218,8 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                         block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
             }
             .forEach {
-                NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
+                NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode,
+                    "WHEN", it.node.startOffset, it.node) {
                     it.astReplace(it.firstStatement!!.node.psi)
                 }
             }
