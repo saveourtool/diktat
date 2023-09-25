@@ -123,6 +123,9 @@ fun Project.configurePublications() {
         from(tasks.named("dokkaHtml"))
     }
     configure<PublishingExtension> {
+        repositories {
+            mavenLocal()
+        }
         publications.withType<MavenPublication>().configureEach {
             artifact(dokkaJarProvider)
             pom {
