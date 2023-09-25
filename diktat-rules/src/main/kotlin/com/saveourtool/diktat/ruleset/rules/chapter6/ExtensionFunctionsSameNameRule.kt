@@ -119,7 +119,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
         firstFunc: ExtensionFunction,
         secondFunc: ExtensionFunction
     ) {
-        EXTENSION_FUNCTION_SAME_SIGNATURE.warn(configRules, emitWarn, isFixMode, "$firstFunc and $secondFunc", node.startOffset, node)
+        EXTENSION_FUNCTION_SAME_SIGNATURE.warn(configRules, emitWarn, "$firstFunc and $secondFunc", node.startOffset, node)
     }
 
     /**

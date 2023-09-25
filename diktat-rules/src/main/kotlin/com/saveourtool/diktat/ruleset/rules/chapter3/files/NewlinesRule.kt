@@ -288,7 +288,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             // this inspection is softened for gradle scripts, see https://github.com/saveourtool/diktat/issues/1148
             return
         }
-        COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+        COMPLEX_EXPRESSION.warn(configRules, emitWarn, node.text, node.startOffset, node)
     }
 
     private fun handleOpeningParentheses(node: ASTNode) {

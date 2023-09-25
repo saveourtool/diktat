@@ -46,7 +46,7 @@ class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
                     ?.count { it.hasChildOfType(LBRACE) }
                     ?: return
                 if (blockParent > maxNestedBlockCount) {
-                    NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)?.text ?: node.text,
+                    NESTED_BLOCK.warn(configRules, emitWarn, node.findChildByType(IDENTIFIER)?.text ?: node.text,
                         node.startOffset, node)
                     return
                 }

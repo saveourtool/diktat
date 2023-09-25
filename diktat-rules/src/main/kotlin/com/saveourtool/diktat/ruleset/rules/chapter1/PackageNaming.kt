@@ -168,7 +168,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         // all words should contain only ASCII letters or digits
         wordsInPackageName
             .filter { word -> !areCorrectSymbolsUsed(word.text) }
-            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
+            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, it.text, it.startOffset, it) }
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName.forEach { correctPackageWordSeparatorsUsed(it) }

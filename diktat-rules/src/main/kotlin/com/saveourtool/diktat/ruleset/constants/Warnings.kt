@@ -1,15 +1,12 @@
 package com.saveourtool.diktat.ruleset.constants
 
+import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.common.config.rules.Rule
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.isRuleEnabled
 import com.saveourtool.diktat.ruleset.generation.EnumNames
 import com.saveourtool.diktat.ruleset.utils.isSuppressed
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-
-typealias EmitType = ((offset: Int,
-                       errorMessage: String,
-                       canBeAutoCorrected: Boolean) -> Unit)
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
@@ -204,50 +201,92 @@ enum class Warnings(
     /**
      * @param configRules list of [RulesConfig]
      * @param emit function that will be called on warning
+     * @param freeText text that will be added to the warning message
+     * @param offset offset from the beginning of the file
+     * @param node the [ASTNode] on which the warning was triggered
+     * @param shouldBeAutoCorrected should be auto corrected or not
+     * @param isFixMode whether autocorrect mode is on
+     * @param autoFix function that will be called to autocorrect the warning
+     */
+    @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
+    fun warnOnlyOrWarnAndFix(
+        configRules: List<RulesConfig>,
+        emit: DiktatErrorEmitter,
+        freeText: String,
+        offset: Int,
+        node: ASTNode,
+        shouldBeAutoCorrected: Boolean,
+        isFixMode: Boolean,
+        autoFix: () -> Unit,
+    ) {
+        if (shouldBeAutoCorrected) {
+            warnAndFix(configRules, emit, isFixMode, freeText, offset, node, autoFix)
+        } else {
+            warn(configRules, emit, freeText, offset, node)
+        }
+    }
+
+    /**
+     * @param configRules list of [RulesConfig]
+     * @param emit function that will be called on warning
      * @param isFixMode whether autocorrect mode is on
      * @param freeText text that will be added to the warning message
      * @param offset offset from the beginning of the file
      * @param node the [ASTNode] on which the warning was triggered
-     * @param canBeAutoCorrected whether this warning can be autocorrected
      * @param autoFix function that will be called to autocorrect the warning
      */
     @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
-    fun warnAndFix(configRules: List<RulesConfig>,
-                   emit: EmitType,
-                   isFixMode: Boolean,
-                   freeText: String,
-                   offset: Int,
-                   node: ASTNode,
-                   canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
-                   autoFix: () -> Unit) {
-        warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        if (canBeAutoCorrected) {
-            fix(configRules, isFixMode, node, autoFix)
+    fun warnAndFix(
+        configRules: List<RulesConfig>,
+        emit: DiktatErrorEmitter,
+        isFixMode: Boolean,
+        freeText: String,
+        offset: Int,
+        node: ASTNode,
+        autoFix: () -> Unit,
+    ) {
+        require(canBeAutoCorrected) {
+            "warnAndFix is called, but canBeAutoCorrected is false"
         }
+        doWarn(configRules, emit, freeText, offset, node, true)
+        fix(configRules, isFixMode, node, autoFix)
     }
 
     /**
      * @param configs list of [RulesConfig]
      * @param emit function that will be called on warning
-     * @param autoCorrected whether this warning can be autocorrected
      * @param freeText text that will be added to the warning message
      * @param offset offset from the beginning of the file
      * @param node the [ASTNode] on which the warning was triggered
      */
     @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
-    fun warn(configs: List<RulesConfig>,
-             emit: EmitType,
-             autoCorrected: Boolean,
-             freeText: String,
-             offset: Int,
-             node: ASTNode) {
+    fun warn(
+        configs: List<RulesConfig>,
+        emit: DiktatErrorEmitter,
+        freeText: String,
+        offset: Int,
+        node: ASTNode,
+    ) {
+        doWarn(configs, emit, freeText, offset, node, false)
+    }
+
+    @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
+    private fun doWarn(
+        configs: List<RulesConfig>,
+        emit: DiktatErrorEmitter,
+        freeText: String,
+        offset: Int,
+        node: ASTNode,
+        canBeAutoCorrected: Boolean,
+    ) {
         if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.isSuppressed(name, this, configs)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
-            emit(offset,
-                "${this.warnText()} $trimmedFreeText",
-                autoCorrected
+            emit(
+                offset,
+                errorMessage = "${this.warnText()} $trimmedFreeText",
+                canBeAutoCorrected = canBeAutoCorrected,
             )
         }
     }
@@ -264,7 +303,7 @@ enum class Warnings(
 
     companion object {
         val names by lazy {
-            values().map { it.name }
+            entries.map { it.name }
         }
     }
 }

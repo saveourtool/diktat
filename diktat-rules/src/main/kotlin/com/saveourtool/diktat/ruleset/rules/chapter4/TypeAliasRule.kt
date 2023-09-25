@@ -40,7 +40,7 @@ class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.textLength > config.typeReferenceLength) {
             @Suppress("COLLAPSE_IF_STATEMENTS")
             if (node.findAllDescendantsWithSpecificType(LT).size > 1 || node.findAllDescendantsWithSpecificType(VALUE_PARAMETER).size > 1) {
-                TYPE_ALIAS.warn(configRules, emitWarn, isFixMode, "too long type reference", node.startOffset, node)
+                TYPE_ALIAS.warn(configRules, emitWarn, "too long type reference", node.startOffset, node)
             }
         }
     }

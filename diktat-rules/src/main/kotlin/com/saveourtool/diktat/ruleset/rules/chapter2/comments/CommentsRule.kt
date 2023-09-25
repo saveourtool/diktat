@@ -105,7 +105,6 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                     COMMENTED_OUT_CODE.warn(
                         configRules,
                         emitWarn,
-                        isFixMode,
                         parsedNode.text.substringBefore("\n").trim(),
                         offset,
                         invalidNode

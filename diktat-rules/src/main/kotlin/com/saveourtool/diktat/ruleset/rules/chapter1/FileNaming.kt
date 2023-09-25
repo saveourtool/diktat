@@ -46,9 +46,8 @@ class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkFileNaming(node: ASTNode) {
         val (name, extension) = getFileParts(filePath)
         if (!name.isPascalCase() || !validExtensions.contains(extension)) {
-            FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
-                // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
-            }
+            // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
+            FILE_NAME_INCORRECT.warn(configRules, emitWarn, "$name$extension", 0, node)
         }
     }
 
@@ -59,9 +58,8 @@ class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
         if (classes.size == 1) {
             val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
             if (className != fileNameWithoutSuffix) {
-                FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0, fileLevelNode) {
-                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
-                }
+                // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
+                FILE_NAME_MATCH_CLASS.warn(configRules, emitWarn, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0, fileLevelNode)
             }
         } else {
             // FixMe: need to check that if there are several classes - at least one of them should match
