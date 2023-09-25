@@ -126,13 +126,15 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     private fun ASTNode.insertEmptyBlockInsideThenNode(indent: Int) {
         val ifPsi = psi as KtIfExpression
         val elseKeyword = ifPsi.elseKeyword
-        val emptyThenNode = findChildByType(THEN)!!
+        val emptyThenNode = findChildByType(THEN)
 
-        emptyThenNode.findChildByType(BLOCK_CODE_FRAGMENT) ?: run {
-            val whiteSpacesAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
+        emptyThenNode?.findChildByType(BLOCK_CODE_FRAGMENT) ?: run {
+            val whiteSpacesAfterCondition = ifPsi.rightParenthesis?.node?.treeNext
 
-            replaceChild(whiteSpacesAfterCondition, PsiWhiteSpaceImpl(" "))
-            emptyThenNode.insertEmptyBlock(indent)
+            whiteSpacesAfterCondition?.let {
+                replaceChild(it, PsiWhiteSpaceImpl(" "))
+            }
+            emptyThenNode?.insertEmptyBlock(indent)
             elseKeyword?.let {
                 addChild(PsiWhiteSpaceImpl(" "), elseKeyword.node)
             }
@@ -142,13 +144,15 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     private fun ASTNode.insertEmptyBlockInsideElseNode(indent: Int) {
         val ifPsi = psi as KtIfExpression
         val elseKeyword = ifPsi.elseKeyword
-        val emptyElseNode = findChildByType(ELSE)!!
+        val emptyElseNode = findChildByType(ELSE)
 
-        emptyElseNode.findChildByType(BLOCK_CODE_FRAGMENT) ?: run {
-            val whiteSpacesAfterElseKeyword = elseKeyword!!.node.treeNext
+        emptyElseNode?.findChildByType(BLOCK_CODE_FRAGMENT) ?: run {
+            val whiteSpacesAfterElseKeyword = elseKeyword?.node?.treeNext
 
-            replaceChild(whiteSpacesAfterElseKeyword, PsiWhiteSpaceImpl(" "))
-            emptyElseNode.insertEmptyBlock(indent)
+            whiteSpacesAfterElseKeyword?.let {
+                replaceChild(it, PsiWhiteSpaceImpl(" "))
+            }
+            emptyElseNode?.insertEmptyBlock(indent)
         }
     }
 
@@ -176,15 +180,17 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
 
     private fun ASTNode.insertEmptyBlockInsideDoWhileNode(indent: Int) {
         findChildByType(BODY) ?: run {
-            val doKeyword = findChildByType(DO_KEYWORD)!!
-            val whileKeyword = findChildByType(WHILE_KEYWORD)!!
-            val whiteSpacesAfterDoKeyword = doKeyword.treeNext
+            val doKeyword = findChildByType(DO_KEYWORD)
+            val whileKeyword = findChildByType(WHILE_KEYWORD)
+            val whiteSpacesAfterDoKeyword = doKeyword?.treeNext
 
             addChild(CompositeElement(BODY), whileKeyword)
-            val emptyWhenNode = findChildByType(BODY)!!
+            val emptyWhenNode = findChildByType(BODY)
 
-            replaceChild(whiteSpacesAfterDoKeyword, PsiWhiteSpaceImpl(" "))
-            emptyWhenNode.insertEmptyBlock(indent)
+            whiteSpacesAfterDoKeyword?.let {
+                replaceChild(it, PsiWhiteSpaceImpl(" "))
+            }
+            emptyWhenNode?.insertEmptyBlock(indent)
             addChild(PsiWhiteSpaceImpl(" "), whileKeyword)
         }
     }
