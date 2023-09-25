@@ -171,16 +171,16 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
             """.trimIndent()
 
         lintMethod(code,
-            DiktatError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMEtest", true),
-            DiktatError(2, 11, ruleId, "${CONSTANT_UPPERCASE.warnText()} thisConstantShouldBeUpper", true),
+            DiktatError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMEtest", false),
+            DiktatError(2, 11, ruleId, "${CONSTANT_UPPERCASE.warnText()} thisConstantShouldBeUpper", false),
             DiktatError(3, 7, ruleId, "${CLASS_NAME_INCORRECT.warnText()} className", true),
             DiktatError(4, 16, ruleId, "${CLASS_NAME_INCORRECT.warnText()} badClassName", true),
-            DiktatError(4, 33, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST", true),
-            DiktatError(4, 52, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND", true),
-            DiktatError(7, 19, ruleId, "${CONSTANT_UPPERCASE.warnText()} incorrect_case", true),
-            DiktatError(9, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} INCORRECT", true),
-            DiktatError(12, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} check_me", true),
-            DiktatError(13, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} CHECK_ME", true)
+            DiktatError(4, 33, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST", false),
+            DiktatError(4, 52, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND", false),
+            DiktatError(7, 19, ruleId, "${CONSTANT_UPPERCASE.warnText()} incorrect_case", false),
+            DiktatError(9, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} INCORRECT", false),
+            DiktatError(12, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} check_me", false),
+            DiktatError(13, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} CHECK_ME", false)
         )
     }
 
@@ -212,8 +212,8 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 data class ClassName(val FIRST: String, var SECOND: String)
             """.trimIndent()
         lintMethod(code,
-            DiktatError(1, 26, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST", true),
-            DiktatError(1, 45, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND", true)
+            DiktatError(1, 26, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST", false),
+            DiktatError(1, 45, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND", false)
         )
     }
 
@@ -346,7 +346,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 const val I_AM_CONSTANT2  = ""
             """.trimIndent()
         lintMethod(code,
-            DiktatError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} I_AM_CONSTANT1", true),
+            DiktatError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} I_AM_CONSTANT1", false),
             DiktatError(1, 5, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} I_AM_CONSTANT1", true),
             DiktatError(2, 11, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} I_AM_CONSTANT2", true)
         )

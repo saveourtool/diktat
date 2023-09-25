@@ -7,5 +7,5 @@ object PascalCase4 {}
 object Pascalcase5 {}
 object Pascalcase6 {}
 object PascAlCase7 {}
-object PascaLCase8 {}
+object PascaLcase8 {}
 object PascAlCase9 {}
