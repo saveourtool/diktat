@@ -25,6 +25,56 @@ fun foo4() {
     else ;
 }
 
+fun foo5() {
+    if (x > 0)
+        foo()
+    else
+        bar()
+}
+
+fun foo6() {
+    if (x > 0) foo()
+    else if (y > 0) abc()
+    else bar()
+}
+
+fun foo7() {
+    if (x > 0)
+        foo()
+    else if (y > 0)
+        abc()
+    else
+        bar()
+}
+
+fun foo8() {
+    if (x > 0) if (y > 0) foo() else abc()
+    else bar()
+}
+
+fun foo9() {
+    if (x > 0) foo()
+    else if (y > 0) abc() else bar()
+}
+
+fun foo10() {
+    if (x > 0) foo()
+    else if (z > 0) if (y > 0) abc() else qwe()
+    else bar()
+}
+
+fun foo11() {
+    if (x > 0) else bar()
+}
+
+fun foo12() {
+    if (x > 0) foo() else ;
+}
+
+fun foo13() {
+    if (x > 0) else ;
+}
+
 fun foo() {
     if (a) {
         bar()
