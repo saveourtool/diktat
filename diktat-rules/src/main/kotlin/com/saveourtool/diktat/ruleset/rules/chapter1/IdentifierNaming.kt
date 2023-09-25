@@ -146,6 +146,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "SAY_NO_TO_VAR",
         "TOO_LONG_FUNCTION",
+        "LongMethod",
         "ComplexMethod",
         "UnsafeCallOnNullableType",
     )
