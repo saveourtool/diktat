@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.jetbrains.kotlin.resolve.ImportPath
 
 private typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
+
 /**
  * This rule performs checks if there is any commented code.
  * No commented out code is allowed, including imports.
