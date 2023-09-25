@@ -25,7 +25,7 @@ kotlin-logging = "5.1.0"
 log4j2 = "2.20.0"
 kaml = "0.55.0"
 kotlin-multiplatform-diff = "0.4.0"
-sarif4k = "0.4.0"
+sarif4k = "0.5.0"
 jupiter-itf-extension = "0.12.0"
 # FIXME: need to migrate to mockito
 mockito-all = "1.10.19"
@@ -65,7 +65,7 @@ kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization"
 kotlin-plugin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
 kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
-talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "2.0.1" }
+talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "2.0.2" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.gradle.spotless", version.ref = "spotless" }
 download = { id = "de.undercouch.download", version.ref = "download" }
