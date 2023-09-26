@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.incremental.createDirectory
 
@@ -5,7 +6,7 @@ import org.jetbrains.kotlin.incremental.createDirectory
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
-    id("com.saveourtool.diktat.buildutils.publishing-signing-default-configuration")
+    id("com.saveourtool.diktat.buildutils.publishing-configuration")
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.shadow)
 }
@@ -27,9 +28,12 @@ dependencies {
     testImplementation(libs.mockito)
 }
 
-val addLicenseTask = tasks.register("addLicense") {
+val addLicenseTask: TaskProvider<Task> = tasks.register("addLicense") {
     val licenseFile = rootProject.file("LICENSE")
-    val outputDir = File("$buildDir/generated/src")
+    val outputDir = layout.buildDirectory
+        .dir("generated/src")
+        .get()
+        .asFile
 
     inputs.file(licenseFile)
     outputs.dir(outputDir)
@@ -69,5 +73,20 @@ tasks.named("jar") {
 tasks {
     build {
         dependsOn(shadowJar)
+    }
+    test {
+        dependsOn(shadowJar)
+    }
+}
+
+publishing {
+    publications {
+        // it creates a publication for shadowJar
+        create<MavenPublication>("shadow") {
+            // https://github.com/johnrengelman/shadow/issues/417#issuecomment-830668442
+            project.extensions.configure<ShadowExtension> {
+                component(this@create)
+            }
+        }
     }
 }

@@ -9,6 +9,12 @@ dependencyResolutionManagement {
                     url = this@run.toURI()
                 }
             }
+        maven {
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            content {
+                includeGroup("com.saveourtool.diktat")
+            }
+        }
         mavenCentral()
     }
 }
@@ -22,6 +28,12 @@ pluginManagement {
                     url = this@run.toURI()
                 }
             }
+        maven {
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            content {
+                includeGroup("com.saveourtool.diktat")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
     }

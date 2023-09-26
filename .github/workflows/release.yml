@@ -5,101 +5,60 @@ on:
     tags:
       - 'v*'
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.welcome=never
+  GPG_SEC: ${{ secrets.PGP_SEC }}
+  GPG_PASSWORD: ${{ secrets.PGP_PASSWORD }}
+  OSSRH_USERNAME: ${{ secrets.SONATYPE_USER }}
+  OSSRH_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
-  build:
-    name: Build release
+  release:
+    name: 'Release'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up JDK 11
+      - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
+      - name: 'Set up Java'
         uses: actions/setup-java@v3
         with:
-          distribution: zulu
           java-version: 11
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
+          distribution: temurin
+
+      - name: 'Publish a release to GitHub'
+        id: publish-github
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.m2/repository
-          key: maven-build-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-build-
-      - name: Setup environment
-        env:
-          DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}
-          DIKTAT_GPG_SEC: ${{ secrets.DIKTAT_PGP_SEC }}
-        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
-        run: |
-          previous_version=$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
-          echo "PREVIOUS_VERSION=$previous_version" >> $GITHUB_ENV
-          echo "RELEASE_VERSION=${GITHUB_REF#'refs/tags/v'}" >> $GITHUB_ENV
-          echo "$DIKTAT_GPG_PUB" > ~/diktat.pubring.gpg
-          echo "$DIKTAT_GPG_SEC" > ~/diktat.secring.gpg
-          gpg --import ~/diktat.pubring.gpg
-          gpg --batch --import ~/diktat.secring.gpg  # --batch suppresses intercatively asking passphrase
-      - name: Set version
-        run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
-      - name: Create settings.xml
-        uses: whelk-io/maven-settings-xml-action@v21
+          gradle-version: wrapper
+          arguments: |
+            publishAllPublicationsToGitHubRepository
+
+      - name: 'Publish a release to Maven Central'
+        id: publish-sonatype
+        uses: gradle/gradle-build-action@v2
         with:
-          servers: |
-            [
-              { "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" },
-              { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" },
-              { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
-            ]
-      - name: Deploy artifacts
-        run: mvn -B -Dstyle.color=always clean deploy -Prelease --projects '!diktat-ruleset'
-      - name: Build diktat.jar
-        run: mvn -B -Dstyle.color=always package --projects diktat-ruleset
-      - name: Create Github Release
-        id: create_release
+          gradle-version: wrapper
+          arguments: |
+            publishToSonatype
+            closeAndReleaseSonatypeStagingRepository
+
+  github_release:
+    needs: release
+    name: 'Github Release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Github Release'
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ env.RELEASE_VERSION }}
+          release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload assets to github releases
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-ruleset/target/diktat-${{ env.RELEASE_VERSION }}.jar
-          asset_name: diktat-${{ env.RELEASE_VERSION }}.jar
-          asset_content_type: application/zip
-      - name: Update versions in pom.xml and documentation, update examples
-        id: update-versions
-        run: |
-          mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
-          mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
-          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md || echo "File README.md hasn't been updated!"
-          for file in examples/{maven/pom.xml,gradle-groovy-dsl/build.gradle,{gradle-kotlin-dsl,gradle-kotlin-dsl-multiproject}/build.gradle.kts}
-          do
-            sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file || echo "File $file hasn't been updated!"
-            cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
-          done
-          next_snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
-          # Update the version in `examples/maven/pom.xml`
-          # (which is not a part of the multi-module project).
-          for file in examples/maven/pom.xml
-          do
-            sed -i "s|\(<version>\)[[:digit:]]\(\.[[:digit:]]\)\+-SNAPSHOT\(</version>\)|\1${next_snapshot_version}\3|g" "${file}" || echo "File ${file} hasn't been updated (2nd sed pass)"
-          done
-          echo "version=$next_snapshot_version" > info/buildSrc/gradle.properties
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          author: GitHub <noreply@github.com>
-          commit-message: Prepare next development iteration after release ${{ env.RELEASE_VERSION }}
-          branch: infra/diktat-version-update-to-${{ env.RELEASE_VERSION }}
-          title: Update versions in pom.xml and documentation after ${{ env.RELEASE_VERSION }} release
-          body: |
-            * Versions are updated in pom.xml, README.md and in examples
-            * Current project version is incremented to the next snapshot
-          base: master
