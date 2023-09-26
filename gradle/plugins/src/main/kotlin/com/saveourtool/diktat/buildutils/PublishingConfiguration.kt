@@ -145,7 +145,7 @@ private fun Project.configureGitHubPublishing() {
         repositories {
             maven {
                 name = "GitHub"
-                url = uri("https://maven.pkg.github.com/saveourtool/cosv4k")
+                url = uri("https://maven.pkg.github.com/saveourtool/diktat")
                 credentials {
                     username = findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                     password = findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
