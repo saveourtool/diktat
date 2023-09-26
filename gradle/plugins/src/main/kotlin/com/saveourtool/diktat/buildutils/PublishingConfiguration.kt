@@ -42,8 +42,8 @@ fun Project.configurePublishing() {
     apply<MavenPublishPlugin>()
     if (this == rootProject) {
         configureNexusPublishing()
+        configureGitHubPublishing()
     }
-    configureGitHubPublishing()
     configurePublications()
 
     configureSigning()

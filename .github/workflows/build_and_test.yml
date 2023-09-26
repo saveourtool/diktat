@@ -324,8 +324,6 @@ jobs:
           arguments: |
             -Preckon.stage=snapshot
             publishAllPublicationsToGitHubRepository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Publish a snapshot to Maven Central'
         id: publish-sonatype
@@ -337,8 +335,6 @@ jobs:
             -Preckon.stage=snapshot
             publishToSonatype
             closeAndReleaseSonatypeStagingRepository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   report:
     name: Publish JUnit test results

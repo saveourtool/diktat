@@ -11,6 +11,7 @@ env:
   GPG_PASSWORD: ${{ secrets.PGP_PASSWORD }}
   OSSRH_USERNAME: ${{ secrets.SONATYPE_USER }}
   OSSRH_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   release:
@@ -39,8 +40,6 @@ jobs:
           gradle-version: wrapper
           arguments: |
             publishAllPublicationsToGitHubRepository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Publish a release to Maven Central'
         id: publish-sonatype
@@ -50,8 +49,6 @@ jobs:
           arguments: |
             publishToSonatype
             closeAndReleaseSonatypeStagingRepository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   github_release:
     needs: release
@@ -60,8 +57,6 @@ jobs:
     steps:
       - name: 'Github Release'
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
