@@ -108,7 +108,7 @@ fun Project.pomFileName(): String = "$name-$version.pom"
  */
 fun Project.artifactFile(): File = layout.buildDirectory
     .dir("libs")
-    .map { it.file("artifactFileName()").asFile }
+    .map { it.file(artifactFileName()).asFile }
     .get()
 
 /**

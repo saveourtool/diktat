@@ -46,7 +46,6 @@ fun Project.configurePublishing() {
     configureGitHubPublishing()
     configurePublications()
 
-    apply<SigningPlugin>()
     configureSigning()
 }
 
@@ -233,6 +232,7 @@ private fun Project.configureSigning() {
  * @see SigningExtension.useGpgCmd
  */
 private fun Project.configureSigningCommon(useKeys: SigningExtension.() -> Unit = {}) {
+    apply<SigningPlugin>()
     configure<SigningExtension> {
         useKeys()
         val publications = extensions.getByType<PublishingExtension>().publications
