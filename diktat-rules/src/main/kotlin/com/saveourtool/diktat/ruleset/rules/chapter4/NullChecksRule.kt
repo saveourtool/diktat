@@ -287,14 +287,14 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         freeText: String,
         autofix: () -> Unit
     ) {
-        AVOID_NULL_CHECKS.warnAndFix(
+        AVOID_NULL_CHECKS.warnOnlyOrWarnAndFix(
             configRules,
             emitWarn,
-            isFixMode,
             freeText,
             condition.node.startOffset,
             condition.node,
             canBeAutoFixed,
+            isFixMode,
         ) {
             autofix()
         }

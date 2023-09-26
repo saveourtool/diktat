@@ -71,7 +71,7 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
         }
 
         if (leftSide == null && rightSide != null) {
-            GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+            GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, node.text, node.startOffset, node)
         }
     }
 

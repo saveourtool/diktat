@@ -59,12 +59,12 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
                     typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
                     (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||
                             node.findChildByType(CALL_EXPRESSION)!!.findChildByType(REFERENCE_EXPRESSION)!!.text in allowExpression)) {
-                NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
+                NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, "don't use nullable type",
                     node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
             } else if (node.hasChildOfType(NULL)) {
                 val fixedParam = findFixableParam(node)
-                NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
-                    node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
+                NULLABLE_PROPERTY_TYPE.warnOnlyOrWarnAndFix(configRules, emitWarn, "initialize explicitly",
+                    node.findChildByType(NULL)!!.startOffset, node, shouldBeAutoCorrected = fixedParam != null, isFixMode) {
                     fixedParam?.let {
                         findSubstitution(node, fixedParam)
                     }

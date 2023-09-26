@@ -45,7 +45,7 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
             .toList()
 
         if (allOverloadFunction.isNotEmpty()) {
-            WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warn(configRules, emitWarn, isFixMode, funPsi.node.findChildByType(IDENTIFIER)!!.text, funPsi.startOffset, funPsi.node)
+            WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warn(configRules, emitWarn, funPsi.node.findChildByType(IDENTIFIER)!!.text, funPsi.startOffset, funPsi.node)
         }
     }
 

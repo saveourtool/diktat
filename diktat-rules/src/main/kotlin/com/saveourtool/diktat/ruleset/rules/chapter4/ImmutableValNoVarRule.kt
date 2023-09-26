@@ -47,7 +47,7 @@ class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
 
                 if (!usedInAccumulators) {
-                    SAY_NO_TO_VAR.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, property.node)
+                    SAY_NO_TO_VAR.warn(configRules, emitWarn, property.text, property.node.startOffset, property.node)
                 }
             }
 

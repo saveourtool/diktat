@@ -55,7 +55,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         if (!configuration.emptyBlockExist) {
-            EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
+            EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, "empty blocks are forbidden unless it is function with override keyword",
                 node.startOffset, node)
         } else {
             node.findParentNodeWithSpecificType(KtNodeTypes.LAMBDA_ARGUMENT)?.let {

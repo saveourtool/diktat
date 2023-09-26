@@ -32,7 +32,7 @@ class AsyncAndSyncRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkRunBlocking(node: ASTNode) {
         node.parent { it.isAsync() || it.isSuspend() }?.let {
-            RUN_BLOCKING_INSIDE_ASYNC.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+            RUN_BLOCKING_INSIDE_ASYNC.warn(configRules, emitWarn, node.text, node.startOffset, node)
         }
     }
 

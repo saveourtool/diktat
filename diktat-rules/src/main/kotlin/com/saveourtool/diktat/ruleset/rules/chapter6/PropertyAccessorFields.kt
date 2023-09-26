@@ -52,7 +52,7 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
             ?.none { firstReferenceWithSameName?.isGoingAfter(it) ?: false } ?: true
         val isNotCallExpression = firstReferenceWithSameName?.treeParent?.treeParent?.elementType != CALL_EXPRESSION
         if (firstReferenceWithSameName != null && isContainLocalVarSameName && isNotCallExpression && isNotExtensionProperty) {
-            WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+            WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, node.text, node.startOffset, node)
         }
     }
 

@@ -50,7 +50,7 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
                     ?.getChildren(null)
                     ?.all { it.elementType in goodModifiers } != false) {
             // Fixme: since it's an experimental feature we shouldn't do fixer
-            INLINE_CLASS_CAN_BE_USED.warn(configRules, emitWarn, isFixMode, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node)
+            INLINE_CLASS_CAN_BE_USED.warn(configRules, emitWarn, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node)
         }
     }
 

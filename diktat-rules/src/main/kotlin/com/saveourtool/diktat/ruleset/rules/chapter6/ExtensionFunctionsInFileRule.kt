@@ -66,7 +66,7 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun fireWarning(node: ASTNode) {
-        EXTENSION_FUNCTION_WITH_CLASS.warn(configRules, emitWarn, isFixMode, "fun ${(node.psi as KtFunction).name}", node.startOffset, node)
+        EXTENSION_FUNCTION_WITH_CLASS.warn(configRules, emitWarn, "fun ${(node.psi as KtFunction).name}", node.startOffset, node)
     }
 
     private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> =
