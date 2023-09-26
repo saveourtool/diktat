@@ -46,7 +46,9 @@ fun Project.configurePublishing() {
     }
     configurePublications()
 
-    configureSigning()
+    afterEvaluate {
+        configureSigning()
+    }
 }
 
 /**
