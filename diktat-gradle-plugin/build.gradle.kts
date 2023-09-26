@@ -111,4 +111,7 @@ afterEvaluate {
     tasks.named("generateMetadataFileForPluginMavenPublication") {
         dependsOn(tasks.named("dokkaJar"))
     }
+    tasks.named("generateMetadataFileForMavenPublication") {
+        dependsOn(tasks.named("dokkaJar"))
+    }
 }
