@@ -50,6 +50,50 @@ fun Project.configurePublishing() {
 }
 
 /**
+ * Configures _pom.xml_
+ *
+ * @param project
+ */
+@Suppress("TOO_LONG_FUNCTION")
+fun MavenPom.configurePom(project: Project) {
+    name.set(project.name)
+    description.set(project.description ?: project.name)
+    url.set("https://github.com/saveourtool/diktat")
+    licenses {
+        license {
+            name.set("MIT License")
+            url.set("https://opensource.org/license/MIT")
+            distribution.set("repo")
+        }
+    }
+    developers {
+        developer {
+            id.set("akuleshov7")
+            name.set("Andrey Kuleshov")
+            email.set("andrewkuleshov7@gmail.com")
+            url.set("https://github.com/akuleshov7")
+        }
+        developer {
+            id.set("petertrr")
+            name.set("Peter Trifanov")
+            email.set("peter.trifanov@gmail.com")
+            url.set("https://github.com/petertrr")
+        }
+        developer {
+            id.set("nulls")
+            name.set("Nariman Abdullin")
+            email.set("nulls.narik@gmail.com")
+            url.set("https://github.com/nulls")
+        }
+    }
+    scm {
+        url.set("https://github.com/saveourtool/diktat")
+        connection.set("scm:git:git://github.com/saveourtool/diktat.git")
+        developerConnection.set("scm:git:git@github.com:saveourtool/diktat.git")
+    }
+}
+
+/**
  * Configures Maven Central as the publish destination.
  */
 @Suppress("TOO_LONG_FUNCTION")
@@ -133,49 +177,6 @@ private fun Project.configurePublications() {
                 configurePom(project)
             }
         }
-    }
-}
-
-/**
- * Configures _pom.xml_
- *
- * @param project
- */
-fun MavenPom.configurePom(project: Project) {
-    name.set(project.name)
-    description.set(project.description ?: project.name)
-    url.set("https://github.com/saveourtool/diktat")
-    licenses {
-        license {
-            name.set("MIT License")
-            url.set("https://opensource.org/license/MIT")
-            distribution.set("repo")
-        }
-    }
-    developers {
-        developer {
-            id.set("akuleshov7")
-            name.set("Andrey Kuleshov")
-            email.set("andrewkuleshov7@gmail.com")
-            url.set("https://github.com/akuleshov7")
-        }
-        developer {
-            id.set("petertrr")
-            name.set("Peter Trifanov")
-            email.set("peter.trifanov@gmail.com")
-            url.set("https://github.com/petertrr")
-        }
-        developer {
-            id.set("nulls")
-            name.set("Nariman Abdullin")
-            email.set("nulls.narik@gmail.com")
-            url.set("https://github.com/nulls")
-        }
-    }
-    scm {
-        url.set("https://github.com/saveourtool/diktat")
-        connection.set("scm:git:git://github.com/saveourtool/diktat.git")
-        developerConnection.set("scm:git:git@github.com:saveourtool/diktat.git")
     }
 }
 
