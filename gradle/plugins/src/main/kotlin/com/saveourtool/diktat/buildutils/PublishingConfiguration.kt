@@ -39,12 +39,12 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
  * Configures all aspects of the publishing process.
  */
 fun Project.configurePublishing() {
+    configurePublications()
     apply<MavenPublishPlugin>()
     if (this == rootProject) {
         configureNexusPublishing()
         configureGitHubPublishing()
     }
-    configurePublications()
 
     afterEvaluate {
         configureSigning()
@@ -162,6 +162,9 @@ private fun Project.configureGitHubPublishing() {
  */
 @Suppress("TOO_LONG_FUNCTION")
 private fun Project.configurePublications() {
+    if (this == rootProject) {
+        return
+    }
     apply<DokkaPlugin>()
     @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
     val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {

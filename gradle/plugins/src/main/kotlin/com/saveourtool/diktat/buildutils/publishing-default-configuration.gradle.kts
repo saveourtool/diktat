@@ -6,7 +6,6 @@ import org.gradle.kotlin.dsl.get
 
 plugins {
     `maven-publish`
-    id("com.saveourtool.diktat.buildutils.publishing-configuration")
 }
 
 publishing {
@@ -16,3 +15,5 @@ publishing {
         }
     }
 }
+
+configurePublishing()
