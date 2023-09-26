@@ -121,7 +121,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kdoc == null && !isReferenceExpressionWithSameName(node)) {
-            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
+            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, name, node.startOffset, node)
         } else {
             if (paramCheckFailed) {
                 handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
@@ -216,7 +216,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                                  kdocTags: Collection<KDocTag>?
     ) {
         kdocMissingParameters.forEach {
-            KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
+            KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn,
                 "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,
                 it.node)
         }
@@ -295,7 +295,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                 .text
                 .trim()
             if (kdocText.matches(uselessKdocRegex)) {
-                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset, node)
+                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, kdocText, kdocTextNodes.first().startOffset, node)
             }
         }
     }

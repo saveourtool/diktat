@@ -50,7 +50,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme: Need to know types of vars and props to create data class
     private fun raiseWarn(node: ASTNode) {
-        USE_DATA_CLASS.warn(configRules, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
+        USE_DATA_CLASS.warn(configRules, emitWarn, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
     @Suppress(

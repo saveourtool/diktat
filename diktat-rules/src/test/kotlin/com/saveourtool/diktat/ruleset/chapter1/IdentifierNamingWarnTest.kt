@@ -83,7 +83,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
             """.trimIndent()
         lintMethod(code, DiktatError(
-            3, 15, ruleId, "${GENERIC_NAME.warnText()} <a>", true)
+            3, 15, ruleId, "${GENERIC_NAME.warnText()} <a>", false)
         )
     }
 
@@ -98,7 +98,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
             """.trimIndent()
         lintMethod(code, DiktatError(
-            3, 15, ruleId, "${GENERIC_NAME.warnText()} <TBBB>", true)
+            3, 15, ruleId, "${GENERIC_NAME.warnText()} <TBBB>", false)
         )
     }
 
@@ -413,10 +413,10 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     fun ASTNode.empty(): Boolean { }
                     fun empty(): Boolean { }
             """.trimIndent(),
-            DiktatError(1, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", true),
-            DiktatError(2, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", true),
-            DiktatError(3, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", true),
-            DiktatError(4, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", true)
+            DiktatError(1, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", false),
+            DiktatError(2, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", false),
+            DiktatError(3, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", false),
+            DiktatError(4, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", false)
         )
     }
 
@@ -656,10 +656,10 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 interface Test6<Tr: String>
             """.trimIndent()
         lintMethod(code,
-            DiktatError(1, 15, ruleId, "${GENERIC_NAME.warnText()} <String>", true),
-            DiktatError(7, 16, ruleId, "${GENERIC_NAME.warnText()} <in T, A, Br>", true),
-            DiktatError(8, 16, ruleId, "${GENERIC_NAME.warnText()} <in Tr>", true),
-            DiktatError(9, 16, ruleId, "${GENERIC_NAME.warnText()} <Tr: String>", true),
+            DiktatError(1, 15, ruleId, "${GENERIC_NAME.warnText()} <String>", false),
+            DiktatError(7, 16, ruleId, "${GENERIC_NAME.warnText()} <in T, A, Br>", false),
+            DiktatError(8, 16, ruleId, "${GENERIC_NAME.warnText()} <in Tr>", false),
+            DiktatError(9, 16, ruleId, "${GENERIC_NAME.warnText()} <Tr: String>", false),
         )
     }
 }

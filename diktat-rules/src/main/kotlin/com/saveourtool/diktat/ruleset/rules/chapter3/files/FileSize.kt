@@ -35,7 +35,7 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
             .split("\n")
             .size
         if (size > maxSize) {
-            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, size.toString(), node.startOffset, node)
+            FILE_IS_TOO_LONG.warn(configRules, emitWarn, size.toString(), node.startOffset, node)
         }
     }
 

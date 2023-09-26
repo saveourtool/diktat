@@ -29,7 +29,7 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
             .isNotEmpty()
         if (hasInnerLambda && doesLambdaContainIt(node)) {
             PARAMETER_NAME_IN_OUTER_LAMBDA.warn(
-                configRules, emitWarn, isFixMode,
+                configRules, emitWarn,
                 "lambda without arguments has inner lambda",
                 node.startOffset, node,
             )
