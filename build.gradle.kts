@@ -1,4 +1,3 @@
-import com.saveourtool.diktat.buildutils.configurePublishing
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.nio.file.Files
 

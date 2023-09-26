@@ -115,7 +115,7 @@ private fun Project.configureGitHubPublishing() {
  * Configures all publications. The publications must already exist.
  */
 @Suppress("TOO_LONG_FUNCTION")
-fun Project.configurePublications() {
+private fun Project.configurePublications() {
     apply<DokkaPlugin>()
     @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
     val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {
