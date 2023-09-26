@@ -28,7 +28,7 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        // kotlin 1.4 api is latest support for kotlin 1.9
+        // kotlin 1.4 api is the latest support version in kotlin 1.9
         // min supported Gradle is 7.0
         languageVersion = "1.4"
         apiVersion = "1.4"
