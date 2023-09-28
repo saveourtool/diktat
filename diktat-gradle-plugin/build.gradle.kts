@@ -1,10 +1,10 @@
-import com.saveourtool.diktat.buildutils.configureSigning
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
+    id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
     id("org.gradle.test-retry") version "1.5.5"
     id("com.gradle.plugin-publish") version "1.2.1"
@@ -28,7 +28,7 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        // kotlin 1.4 api is latest support for kotlin 1.9
+        // kotlin 1.4 api is the latest support version in kotlin 1.9
         // min supported Gradle is 7.0
         languageVersion = "1.4"
         apiVersion = "1.4"
@@ -89,9 +89,14 @@ jacocoTestKit {
 tasks.jacocoTestReport {
     shouldRunAfter(tasks.withType<Test>())
     executionData(
-        fileTree("$buildDir/jacoco").apply {
-            include("*.exec")
-        }
+        layout.buildDirectory
+            .dir("jacoco")
+            .map { jacocoDir ->
+                jacocoDir.asFileTree
+                    .matching {
+                        include("*.exec")
+                    }
+            }
     )
     reports {
         // xml report is used by codecov
@@ -99,4 +104,14 @@ tasks.jacocoTestReport {
     }
 }
 
-configureSigning()
+afterEvaluate {
+    tasks.named("javadocJar") {
+        enabled = false
+    }
+    tasks.named("generateMetadataFileForPluginMavenPublication") {
+        dependsOn(tasks.named("dokkaJar"))
+    }
+    tasks.named("generateMetadataFileForMavenPublication") {
+        dependsOn(tasks.named("dokkaJar"))
+    }
+}

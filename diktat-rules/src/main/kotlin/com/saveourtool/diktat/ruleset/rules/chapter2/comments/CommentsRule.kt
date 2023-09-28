@@ -1,7 +1,6 @@
 package com.saveourtool.diktat.ruleset.rules.chapter2.comments
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.constants.ListOfPairs
 import com.saveourtool.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
@@ -19,6 +18,8 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.jetbrains.kotlin.resolve.ImportPath
+
+private typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
 
 /**
  * This rule performs checks if there is any commented code.
@@ -105,7 +106,6 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                     COMMENTED_OUT_CODE.warn(
                         configRules,
                         emitWarn,
-                        isFixMode,
                         parsedNode.text.substringBefore("\n").trim(),
                         offset,
                         invalidNode

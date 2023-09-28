@@ -69,7 +69,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val result = listOf(isHashFunction, isPropertyDeclaration, isLocalVariable, isValueParameter, isConstant,
             isCompanionObjectProperty, isEnums, isRanges, isExtensionFunctions).zip(mapConfiguration.map { configuration.getParameter(it.key) })
         if (result.any { it.first && it.first != it.second } && !isIgnoreNumber) {
-            MAGIC_NUMBER.warn(configRules, emitWarn, isFixMode, nodeText, node.startOffset, node)
+            MAGIC_NUMBER.warn(configRules, emitWarn, nodeText, node.startOffset, node)
         }
     }
 

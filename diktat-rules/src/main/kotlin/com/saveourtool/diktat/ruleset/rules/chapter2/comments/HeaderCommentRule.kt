@@ -72,7 +72,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
                 val numDeclaredClassesAndObjects = node.getAllChildrenWithType(KtNodeTypes.CLASS).size +
                         node.getAllChildrenWithType(KtNodeTypes.OBJECT_DECLARATION).size
                 if (numDeclaredClassesAndObjects != 1) {
-                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode,
+                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn,
                         "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
                 }
             }

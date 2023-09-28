@@ -124,7 +124,7 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
 
         blocks.forEach {
             if (it.length > configuration.maxBlockLength) {
-                LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, false, "this block is too long $it", node.startOffset, node)
+                LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, "this block is too long $it", node.startOffset, node)
             }
         }
     }

@@ -119,6 +119,6 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     return false
                 }
             """.trimIndent()
-        lintMethod(code, DiktatError(1, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck", true))
+        lintMethod(code, DiktatError(1, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck", false))
     }
 }

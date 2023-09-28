@@ -107,10 +107,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 if ((newNode.elementType != TEXT && newNode.elementType != MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
-                    LONG_LINE.warnAndFix(
-                        configRules, emitWarn, isFixMode,
+                    LONG_LINE.warnOnlyOrWarnAndFix(
+                        configRules, emitWarn,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
-                        offset + node.startOffset, node, fixableType !is None
+                        offset + node.startOffset, node,
+                        shouldBeAutoCorrected = fixableType !is None,
+                        isFixMode,
                     ) {
                         // we should keep in mind, that in the course of fixing we change the offset
                         val textLenBeforeFix = node.textLength

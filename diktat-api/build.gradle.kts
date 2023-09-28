@@ -1,7 +1,7 @@
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
-    id("com.saveourtool.diktat.buildutils.publishing-signing-default-configuration")
+    id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 
@@ -13,7 +13,7 @@ dependencies {
 }
 
 val generateDiktatVersionFile by tasks.registering {
-    val outputDir = File("$buildDir/generated/src")
+    val outputDir = layout.buildDirectory.dir("generated/src").get().asFile
     val versionsFile = outputDir.resolve("generated/DiktatVersion.kt")
 
     val diktatVersion = version.toString()

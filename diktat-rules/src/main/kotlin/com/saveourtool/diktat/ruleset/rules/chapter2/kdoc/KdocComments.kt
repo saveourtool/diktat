@@ -100,12 +100,12 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY }
-        val propertyNamesForKdoc = node.findChildrenMatching { it.elementType == VALUE_PARAMETER }
+        val propertyNames = node.findChildrenMatching { it.elementType == VALUE_PARAMETER }
             .filter { it.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !it.isOverridden() }
             .map { it.findChildByType(IDENTIFIER)!!.text }
         propertiesInKdoc
-            .filterNot { it.getSubjectName() == null || it.getSubjectName() in propertyNamesForKdoc }
-            .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it.text, it.node.startOffset, node) }
+            .filterNot { it.getSubjectName() == null || it.getSubjectName() in propertyNames }
+            .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, it.text, it.node.startOffset, node) }
     }
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
@@ -295,9 +295,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             commentText = " $commentText"
         }
 
+
+        // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
+        // complicated structure, that will be hard to move automatically
         val isFixable = !hasTagsInLocalKdoc
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, propertyName,
-            prevComment.startOffset, node, isFixable) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, propertyName, prevComment.startOffset, node, shouldBeAutoCorrected = isFixable, isFixMode) {
             propertyInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(propertyInClassKdoc, commentText)
@@ -351,8 +353,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val traversedNodes: MutableSet<String?> = mutableSetOf()
         propertiesAndParams.forEach { property ->
             if (!traversedNodes.add(property.getSubjectName())) {
-                KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, isFixMode, property.text,
-                    property.node.startOffset, kdoc)
+                KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, property.text, property.node.startOffset, kdoc)
             }
         }
     }
@@ -408,8 +409,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                         propertyInClassKdoc?.let {
                             // if property is documented as `@property`, then we suggest to move docs to the
                             // declaration inside the class body
-                            KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warn(configRules, emitWarn, isFixMode,
-                                classElement.text, classElement.startOffset, classElement)
+                            KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warn(configRules, emitWarn, classElement.text, classElement.startOffset, classElement)
                             return
                         }
                     }
@@ -442,7 +442,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         if (isModifierAccessibleOutsideOrActual && kdoc == null && !isTopLevelFunctionStandard(node)) {
-            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
+            warning.warn(configRules, emitWarn, name!!.text, node.startOffset, node)
         }
     }
 
