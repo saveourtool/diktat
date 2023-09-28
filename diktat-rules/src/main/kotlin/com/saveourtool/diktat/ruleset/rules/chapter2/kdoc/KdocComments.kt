@@ -150,8 +150,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .kDocTags()
             .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == propertyName }
 
-        if (propertyInClassKdoc == null && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() &&
-            !node.isOverridden()) {
+        if (propertyInClassKdoc == null && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc",
                 node.startOffset, node) {
                 insertTextInKdoc(kdocBeforeClass, "* @property $propertyName\n ")
@@ -186,7 +185,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
                 prevComment.startOffset, node, false, isFixMode) {
-            }
+                }
         }
     }
 
@@ -217,42 +216,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             val isFixable = !hasTagsInLocalKdoc
             KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
                 prevComment.startOffset, node, isFixable, isFixMode) {
-                val newKdocText = when (prevComment.elementType) {
-                    KDOC -> {
-                        var commentText = prevComment.text
-                            .removePrefix("/**")
-                            .removeSuffix("*/")
-                            .replace("\n( )+\\*".toRegex(), "\n *")
-                            .trimStart(' ')
-                            .trimEnd(' ', '\n')
-                        if (!commentText.startsWith("\n")) {
-                            commentText = " $commentText"
-                        }
-
-                        "/**\n * @property $propertyName$commentText\n */"
-                    }
-                    EOL_COMMENT -> {
-                        val commentText = prevComment.text
-                            .removePrefix("//")
-                            .trimStart(' ')
-                            .trimEnd(' ', '\n')
-
-                        "/**\n * @property $propertyName $commentText\n */"
-                    }
-                    else -> {
-                        var commentText = prevComment.text
-                            .removePrefix("/*")
-                            .removeSuffix("*/")
-                            .replace("\n( )+\\*".toRegex(), "\n *")
-                            .trimStart(' ')
-                            .trimEnd(' ', '\n')
-                        if (!commentText.startsWith("\n")) {
-                            commentText = " $commentText"
-                        }
-
-                        "/**\n * @property $propertyName$commentText\n */"
-                    }
-                }
+                val newKdocText = createClassKdocTextFromComment(prevComment, propertyName)
                 val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
 
                 classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
@@ -262,9 +226,40 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
                 prevComment.startOffset, node, false, isFixMode) {
-            }
+                }
         }
     }
+
+    private fun createClassKdocTextFromComment(prevComment: ASTNode, propertyName: String) =
+        when (prevComment.elementType) {
+            KDOC -> "/**\n * @property $propertyName${createClassKdocTextFromKdocComment(prevComment)}\n */"
+            EOL_COMMENT -> "/**\n * @property $propertyName ${createClassKdocTextFromEolComment(prevComment)}\n */"
+            else -> "/**\n * @property $propertyName${createClassKdocTextFromBlockComment(prevComment)}\n */"
+        }
+
+    private fun createClassKdocTextFromKdocComment(prevComment: ASTNode) =
+        prevComment.text
+            .removePrefix("/**")
+            .removeSuffix("*/")
+            .replace("\n( )+\\*".toRegex(), "\n *")
+            .trimStart(' ')
+            .trimEnd(' ', '\n')
+            .let { if (!it.startsWith("\n")) " $it" else it }
+
+    private fun createClassKdocTextFromEolComment(prevComment: ASTNode) =
+        prevComment.text
+            .removePrefix("//")
+            .trimStart(' ')
+            .trimEnd(' ', '\n')
+
+    private fun createClassKdocTextFromBlockComment(prevComment: ASTNode) =
+        prevComment.text
+            .removePrefix("/*")
+            .removeSuffix("*/")
+            .replace("\n( )+\\*".toRegex(), "\n *")
+            .trimStart(' ')
+            .trimEnd(' ', '\n')
+            .let { if (!it.startsWith("\n")) " $it" else it }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleKdocAndBlock(
@@ -277,24 +272,10 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
         // complicated structure, that will be hard to move automatically
         val propertyName = node.findChildByType(IDENTIFIER)!!.text
-        var commentText = if (prevComment.elementType == KDOC) {
-            prevComment.text
-                .removePrefix("/**")
-                .removeSuffix("*/")
-                .replace("\n( )+\\*".toRegex(), "\n *")
-                .trimStart(' ')
-                .trimEnd(' ', '\n')
+        val commentText = if (prevComment.elementType == KDOC) {
+            createClassKdocTextFromKdocComment(prevComment)
         } else {
-            prevComment.text
-                .removePrefix("/*")
-                .removeSuffix("*/")
-                .replace("\n( )+\\*".toRegex(), "\n *")
-                .trimStart(' ')
-                .trimEnd(' ', '\n')
-        }
-
-        if (!commentText.startsWith("\n")) {
-            commentText = " $commentText"
+            createClassKdocTextFromBlockComment(prevComment)
         }
 
         // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
@@ -321,28 +302,15 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         propertyInClassKdoc?.let {
             if (propertyInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
-                val commentText = prevComment.text
-                    .removePrefix("//")
-                    .trimStart(' ')
-                    .trimEnd(' ', '\n')
                 val kdocText = propertyInClassKdoc.findChildrenMatching { it.elementType == KDocTokens.TEXT }.lastOrNull()
-                (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text}\n * $commentText")
+                (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text}\n * ${createClassKdocTextFromEolComment(prevComment)}")
             } else {
-                val commentText = prevComment.text
-                    .removePrefix("//")
-                    .trimStart(' ')
-                    .trimEnd(' ', '\n')
-                propertyInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, " $commentText"), null)
+                propertyInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, " ${createClassKdocTextFromEolComment(prevComment)}"), null)
             }
         }
             ?: run {
                 val propertyName = node.findChildByType(IDENTIFIER)!!.text
-                val commentText = prevComment.text
-                    .removePrefix("//")
-                    .trimStart(' ')
-                    .trimEnd(' ', '\n')
-
-                insertTextInKdoc(kdocBeforeClass, "* @property $propertyName $commentText\n ")
+                insertTextInKdoc(kdocBeforeClass, "* @property $propertyName ${createClassKdocTextFromEolComment(prevComment)}\n ")
             }
 
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment,
