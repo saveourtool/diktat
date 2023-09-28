@@ -120,7 +120,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 it.elementType != KDocTokens.LEADING_ASTERISK && it.elementType != WHITE_SPACE
             } ?: false
         if (!isKdocNotEmpty) {
-            KDOC_EMPTY_KDOC.warn(configRules, emitWarn, isFixMode,
+            KDOC_EMPTY_KDOC.warn(configRules, emitWarn,
                 node.treeParent.getIdentifierName()?.text
                     ?: node.nextSibling { it.elementType in KtTokens.KEYWORDS }?.text
                     ?: node.text, node.startOffset, node)
@@ -152,7 +152,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         kdocTags?.filter {
             it.getSubjectName() == null && it.getContent().isEmpty()
         }?.forEach {
-            KDOC_NO_EMPTY_TAGS.warn(configRules, emitWarn, isFixMode, "@${it.name!!}", it.node.startOffset, it.node)
+            KDOC_NO_EMPTY_TAGS.warn(configRules, emitWarn, "@${it.name!!}", it.node.startOffset, it.node)
         }
     }
 
@@ -347,7 +347,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                         it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
             }
             .forEach {
-                KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
+                KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, it.text.trim(), it.startOffset, it.node)
             }
     }
 

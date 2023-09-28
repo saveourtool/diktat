@@ -33,7 +33,7 @@ class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkFun(node: ASTNode, maxParameterSize: Long) {
         val parameterListSize = (node.psi as KtFunction).valueParameters.size
         if (parameterListSize > maxParameterSize) {
-            TOO_MANY_PARAMETERS.warn(configRules, emitWarn, isFixMode,
+            TOO_MANY_PARAMETERS.warn(configRules, emitWarn,
                 "${node.findChildByType(IDENTIFIER)!!.text} has $parameterListSize, but allowed $maxParameterSize", node.startOffset, node)
         }
     }

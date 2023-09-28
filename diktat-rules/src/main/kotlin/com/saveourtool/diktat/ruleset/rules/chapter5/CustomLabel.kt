@@ -33,7 +33,7 @@ class CustomLabel(configRules: List<RulesConfig>) : DiktatRule(
                         (it.elementType == CALL_EXPRESSION && it.findChildByType(REFERENCE_EXPRESSION)?.text in forEachReference)
             }
             if (nestedCount == 1) {
-                CUSTOM_LABEL.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                CUSTOM_LABEL.warn(configRules, emitWarn, node.text, node.startOffset, node)
             }
         }
     }

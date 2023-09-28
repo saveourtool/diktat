@@ -42,8 +42,8 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
         if (isNestedFunction(node)) {
             val funcName = node.getFirstChildWithType(IDENTIFIER)!!.text
 
-            AVOID_NESTED_FUNCTIONS.warnAndFix(configRules, emitWarn, isFixMode, "fun $funcName", node.startOffset, node,
-                canBeAutoCorrected = checkFunctionReferences(node)) {
+            AVOID_NESTED_FUNCTIONS.warnOnlyOrWarnAndFix(configRules, emitWarn, "fun $funcName", node.startOffset, node,
+                shouldBeAutoCorrected = checkFunctionReferences(node), isFixMode) {
                 // We take last nested function, then add and remove child from bottom to top
                 val lastFunc = node.findAllDescendantsWithSpecificType(FUN).last()
                 val funcSeq = lastFunc

@@ -78,7 +78,7 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkFloatValue(floatValue: PsiElement?, expression: KtExpression) {
         floatValue?.let {
             // float value is used in comparison
-            FLOAT_IN_ACCURATE_CALCULATIONS.warn(configRules, emitWarn, isFixMode,
+            FLOAT_IN_ACCURATE_CALCULATIONS.warn(configRules, emitWarn,
                 "float value of <${it.text}> used in arithmetic expression in ${expression.text}", expression.startOffset, expression.node)
         }
     }

@@ -109,7 +109,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         val hasCode = node.getChildren(codeTokens).isNotEmpty()
         if (!hasCode) {
             val freeText = if (node.text.isEmpty()) "file is empty" else "file contains no code"
-            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, freeText, node.startOffset, node)
+            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, freeText, node.startOffset, node)
         }
         return hasCode
     }
@@ -208,7 +208,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                     isAllUnder && toString() !in wildCardImportsConfig.allowedWildcards
                 }
             }
-            .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
+            .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, it.text, it.startOffset, it) }
         val sortedImportsGroups = if (importsGroupingConfig.useRecommendedImportsOrder) {
             regroupImports(imports.map { it.psi as KtImportDirective })
                 .map { group -> group.map { it.node } }

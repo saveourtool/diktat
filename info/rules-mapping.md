@@ -98,7 +98,7 @@
 | TYPE_ALIAS | [4.2.2](guide/diktat-coding-convention.md#r4.2.2) | no | Variables |
 | NULLABLE_PROPERTY_TYPE | [4.3.1](guide/diktat-coding-convention.md#r4.3.1) | yes | Variables |
 | GENERIC_VARIABLE_WRONG_DECLARATION | [4.3.2](guide/diktat-coding-convention.md#r4.3.2) | yes | Variables |
-| AVOID_NULL_CHECKS | [4.3.3](guide/diktat-coding-convention.md#r4.3.3) | no | Variables |
+| AVOID_NULL_CHECKS | [4.3.3](guide/diktat-coding-convention.md#r4.3.3) | yes | Variables |
 | TOO_LONG_FUNCTION | [5.1.1](guide/diktat-coding-convention.md#r5.1.1) | no | Functions |
 | NESTED_BLOCK | [5.1.2](guide/diktat-coding-convention.md#r5.1.2) | no | Functions |
 | AVOID_NESTED_FUNCTIONS | [5.1.3](guide/diktat-coding-convention.md#r5.1.3) | yes | Functions |

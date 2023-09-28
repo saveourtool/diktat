@@ -40,7 +40,7 @@ class FunctionLength(configRules: List<RulesConfig>) : DiktatRule(
         }
         val sizeFun = countCodeLines(copyNode)
         if (sizeFun > configuration.maxFunctionLength) {
-            TOO_LONG_FUNCTION.warn(configRules, emitWarn, isFixMode,
+            TOO_LONG_FUNCTION.warn(configRules, emitWarn,
                 "max length is ${configuration.maxFunctionLength}, but you have $sizeFun",
                 node.startOffset, node)
         }

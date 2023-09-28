@@ -131,7 +131,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             if (identifierText.startsWith('`') && identifierText.endsWith('`')) {
                 val isTestFun = node.elementType == KtNodeTypes.FUN && node.hasTestAnnotation()
                 if (!isTestFun) {
-                    BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset, identifier)
+                    BACKTICKS_PROHIBITED.warn(configRules, emitWarn, identifierText, identifier.startOffset, identifier)
                 }
                 return true
             }
@@ -146,6 +146,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "SAY_NO_TO_VAR",
         "TOO_LONG_FUNCTION",
+        "LongMethod",
         "ComplexMethod",
         "UnsafeCallOnNullableType",
     )
@@ -158,13 +159,13 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val isNonPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
             hasValOrVar() && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true && !isPrivate()
         } ?: false
-        val canBeAutoCorrected = !(isPublicOrNonLocalProperty || isNonPrivatePrimaryConstructorParameter)
+        val shouldBeAutoCorrected = !(isPublicOrNonLocalProperty || isNonPrivatePrimaryConstructorParameter)
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
                 // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
                 if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                    VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, false, variableName.text, variableName.startOffset, node)
+                    VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, variableName.text, variableName.startOffset, node)
                 }
                 // check if identifier of a property has a confusing name
                 if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
@@ -176,13 +177,29 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                 if (node.isConstant()) {
                     if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected) {
+                        CONSTANT_UPPERCASE.warnOnlyOrWarnAndFix(
+                            configRules = configRules,
+                            emit = emitWarn,
+                            freeText = variableName.text,
+                            offset = variableName.startOffset,
+                            node = node,
+                            shouldBeAutoCorrected = shouldBeAutoCorrected,
+                            isFixMode = isFixMode,
+                        ) {
                             (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.toDeterministic { toUpperSnakeCase() })
                         }
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
                     // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node, canBeAutoCorrected) {
+                    VARIABLE_NAME_INCORRECT_FORMAT.warnOnlyOrWarnAndFix(
+                        configRules = configRules,
+                        emit = emitWarn,
+                        freeText = variableName.text,
+                        offset = variableName.startOffset,
+                        node = node,
+                        shouldBeAutoCorrected = shouldBeAutoCorrected,
+                        isFixMode = isFixMode,
+                    ) {
                         // FixMe: cover fixes with tests
                         val correctVariableName = variableName.text.toDeterministic { toLowerCamelCase() }
                         variableName
@@ -240,7 +257,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             else -> ""
 
         }
-        CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, false, warnText, variableName.startOffset, variableName)
+        CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, warnText, variableName.startOffset, variableName)
     }
 
     /**
@@ -274,9 +291,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkClassNamings(node: ASTNode): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
         if (genericType != null && !validGenericTypeName(genericType)) {
-            GENERIC_NAME.warnAndFix(configRules, emitWarn, isFixMode, genericType.text, genericType.startOffset, genericType) {
-                // FixMe: should fix generic name here
-            }
+            // FixMe: should fix generic name here
+            GENERIC_NAME.warn(configRules, emitWarn, genericType.text, genericType.startOffset, genericType)
         }
 
         val className: ASTNode = node.getIdentifierName() ?: return emptyList()
@@ -397,9 +413,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
                 @Suppress("COLLAPSE_IF_STATEMENTS")
                 if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
-                    FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
-                        // FixMe: add agressive autofix for this
-                    }
+                    // FixMe: add agressive autofix for this
+                    FUNCTION_BOOLEAN_PREFIX.warn(configRules, emitWarn, functionName.text, functionName.startOffset, functionName)
                 }
             }
         }
@@ -441,7 +456,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             if (it.text != "_" && !it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) &&
                     !isValidOneCharVariable && !isValidCatchIdentifier(it)
             ) {
-                IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
+                IDENTIFIER_LENGTH.warn(configRules, emitWarn, it.text, it.startOffset, it)
             }
         }
     }

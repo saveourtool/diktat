@@ -36,14 +36,14 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         setter?.let {
             // only private custom setters are allowed
             if (!isPrivateSetter) {
-                CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, isFixMode, setter.text, setter.startOffset, node)
+                CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, setter.text, setter.startOffset, node)
             }
         }
 
         getter?.let {
             // only override getter are allowed
             if (!isOverrideGetter) {
-                CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, isFixMode, getter.text, getter.startOffset, node)
+                CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, getter.text, getter.startOffset, node)
             }
         }
     }

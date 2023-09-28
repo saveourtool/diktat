@@ -22,7 +22,7 @@ if (path == rootProject.path) {
     }
 
     tasks.register("mergeDetektReports", ReportMergeTask::class) {
-        output.set(buildDir.resolve("detekt-sarif-reports/detekt-merged.sarif"))
+        output.set(layout.buildDirectory.file("detekt-sarif-reports/detekt-merged.sarif").get().asFile)
     }
 }
 

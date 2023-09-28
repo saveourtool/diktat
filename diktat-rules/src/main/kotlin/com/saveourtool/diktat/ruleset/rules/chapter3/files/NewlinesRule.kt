@@ -3,7 +3,6 @@ package com.saveourtool.diktat.ruleset.rules.chapter3.files
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
-import com.saveourtool.diktat.ruleset.constants.ListOfList
 import com.saveourtool.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import com.saveourtool.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
@@ -103,6 +102,8 @@ import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+
+private typealias ListOfList = MutableList<MutableList<ASTNode>>
 
 /**
  * Rule that checks line break styles.
@@ -288,7 +289,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             // this inspection is softened for gradle scripts, see https://github.com/saveourtool/diktat/issues/1148
             return
         }
-        COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+        COMPLEX_EXPRESSION.warn(configRules, emitWarn, node.text, node.startOffset, node)
     }
 
     private fun handleOpeningParentheses(node: ASTNode) {

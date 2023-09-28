@@ -172,7 +172,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
 
         if (firstUsageStatementLine - numLinesToSkip != property.node.lastLineNumber() + 1 + offset) {
-            LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode,
+            LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn,
                 warnMessage(property.name!!, property.node.getLineNumber(), firstUsageLine
                     ?: firstUsageStatementLine), property.startOffset, property.node)
         }
