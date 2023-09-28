@@ -17,15 +17,20 @@ class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments)
 
     @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `check fix without class kdoc`() {
+        fixAndCompare("ConstructorCommentNoKDocExpected.kt", "ConstructorCommentNoKDocTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check fix with class kdoc`() {
         fixAndCompare("ConstructorCommentExpected.kt", "ConstructorCommentTest.kt")
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
-    fun `check fix without class kdoc`() {
-        fixAndCompare("ConstructorCommentNoKDocExpected.kt", "ConstructorCommentNoKDocTest.kt")
+    fun `check fix with properties in class kdoc`() {
+        fixAndCompare("ConstructorCommentPropertiesExpected.kt", "ConstructorCommentPropertiesTest.kt")
     }
 
     @Test

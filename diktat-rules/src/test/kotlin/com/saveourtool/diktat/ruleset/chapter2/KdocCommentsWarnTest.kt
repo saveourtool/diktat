@@ -329,7 +329,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `shouldn't trigger because not primary constructor`() {
         lintMethod(
             """
@@ -370,7 +370,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check constructor with block comment`() {
         lintMethod(
             """
@@ -384,12 +384,12 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
             """.trimMargin(),
-            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check not property`() {
         lintMethod(
             """
@@ -408,7 +408,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check constructor with kdoc`() {
         lintMethod(
             """
@@ -418,53 +418,58 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |class Example (
                     |   /**
                     |    * some descriptions
-                    |    * @return fdv
                     |    */
-                    |
                     |   val name: String,
                     |   anotherName: String,
                     |   OneMoreName: String
                     |   ) {
                     |}
             """.trimMargin(),
-            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
-    fun `shouldn't fix`() {
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
+    fun `shouldn't fix because KDoc comment and property tag inside`() {
         lintMethod(
             """
                     |/**
-                    | * @property name text
+                    | * @return some
                     | */
                     |class Example (
                     |   /**
                     |    * sdcjkh
                     |    * @property name text2
+                    |    * fdfdfd
                     |    */
                     |   val name: String,
                     |   ) {
                     |}
             """.trimMargin(),
-            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
-    fun `shouldn't trigger`() {
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
+    fun `shouldn't fix because KDoc comment and any tag inside`() {
         lintMethod(
             """
                     |/**
-                    | * text
+                    | * @return some
                     | */
                     |class Example (
-                    |   private val name: String,
+                    |   /**
+                    |    * sdcjkh
+                    |    * @return name text2
+                    |    * fdfdfd
+                    |    */
+                    |   val name: String,
                     |   ) {
                     |}
-            """.trimMargin()
+            """.trimMargin(),
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", false)
         )
     }
 
@@ -475,7 +480,6 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """
                     |/**
                     | * @property Name text
-                    | * @property
                     | */
                     |class Example (
                     |   val name: String,
@@ -483,23 +487,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |}
             """.trimMargin(),
             DiktatError(2, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property Name text", false),
-            DiktatError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
-        )
-    }
-
-    @Test
-    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.MISSING_KDOC_TOP_LEVEL))
-    fun `no property kdoc and class`() {
-        lintMethod(
-            """
-                    |class Example (
-                    |   val name: String,
-                    |   private val surname: String
-                    |   ) {
-                    |}
-            """.trimMargin(),
-            DiktatError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
-            DiktatError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 
@@ -519,6 +507,73 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |}
             """.trimMargin(),
             DiktatError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
+    fun `extra property in kdoc on private parameter`() {
+        lintMethod(
+            """
+                    |/**
+                    | * @property name abc
+                    | */
+                    |class Example (
+                    |   private val name: String,
+                    |   ) {
+                    |}
+            """.trimMargin(),
+            DiktatError(2, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property name abc", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
+    fun `comment on private parameter`() {
+        lintMethod(
+            """
+                    |/**
+                    | * abc
+                    | */
+                    |class Example (
+                    |   // single-line comment
+                    |   private val name: String,
+                    |   ) {
+                    |}
+            """.trimMargin(),
+            DiktatError(5, 4, ruleId,"${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `shouldn't trigger on private parameter`() {
+        lintMethod(
+            """
+                    |/**
+                    | * text
+                    | */
+                    |class Example (
+                    |   private val name: String,
+                    |   ) {
+                    |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.MISSING_KDOC_TOP_LEVEL))
+    fun `no property kdoc and class`() {
+        lintMethod(
+            """
+                    |class Example (
+                    |   val name: String,
+                    |   private val surname: String
+                    |   ) {
+                    |}
+            """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
+            DiktatError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 

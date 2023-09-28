@@ -1,14 +1,23 @@
 package test.paragraph2.kdoc
 
+/**
+ * @property name property info
+ */
 class A constructor(
     val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     //single-line comment
     val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /*
      * block
@@ -17,6 +26,9 @@ class A constructor(
     val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /**
      * kdoc property
@@ -25,6 +37,9 @@ class A constructor(
     val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /**
      * @property name property
@@ -33,15 +48,24 @@ class A constructor(
     val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     private val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     //single-line comment
     private val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /*
      * block
@@ -50,6 +74,9 @@ class A constructor(
     private val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /**
      * kdoc property
@@ -58,6 +85,9 @@ class A constructor(
     private val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /**
      * @property name property
@@ -66,15 +96,24 @@ class A constructor(
     private val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     override val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     //single-line comment
     override val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /*
      * block
@@ -83,6 +122,9 @@ class A constructor(
     override val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /**
      * kdoc property
@@ -91,6 +133,9 @@ class A constructor(
     override val name: String
 ) {}
 
+/**
+ * @property name property info
+ */
 class A constructor(
     /**
      * @property name property
@@ -99,6 +144,15 @@ class A constructor(
     override val name: String
 ) {}
 
+/**
+ * @property openName open property info
+ * @property openLastName
+ * open last property
+ * info
+ * @property openAddr
+ * property
+ * info
+ */
 open class B constructor(
     //single-line comment
     open val openName: String,
@@ -119,16 +173,26 @@ open class B constructor(
     open val openAddr: String
 ) {}
 
+/**
+ * @property internalName internal
+ * property info
+ * @property openName override
+ * property info
+ * @property privateLastName private
+ * property info
+ * @property openAddr override
+ * property info
+ */
 class A constructor(
-    //single-line comment
+    // single-line comment
     private val privateName: String,
-    //single-line comment
+    // single-line comment
     protected val protectedName: String,
-    //single-line comment
+    // single-line comment
     internal val internalName: String,
-    //single-line comment
+    // single-line comment
     override val openName: String,
-    //single-line comment
+    // single-line comment
     val name: String,
     /*
      * block
