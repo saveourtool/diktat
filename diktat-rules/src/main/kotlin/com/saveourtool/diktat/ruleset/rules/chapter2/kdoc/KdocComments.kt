@@ -103,7 +103,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
         val propertyNames = node.findChildrenMatching { it.elementType == VALUE_PARAMETER }
             .filter { it.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !it.isOverridden() }
-            .map { it.findChildByType(IDENTIFIER)!!.text }
+            .mapNotNull { it.findChildByType(IDENTIFIER)?.text }
 
         propertiesInKdoc
             .filterNot { it.getSubjectName() == null || it.getSubjectName() in propertyNames }
