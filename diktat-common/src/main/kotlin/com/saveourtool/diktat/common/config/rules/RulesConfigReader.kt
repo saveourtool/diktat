@@ -76,7 +76,7 @@ open class RulesConfigReader : AbstractConfigReader<List<RulesConfig>>() {
 /**
  * class returns the list of common configurations that we have read from a configuration map
  *
- * @param configuration map of common configuration
+ * @property configuration map of common configuration
  */
 data class CommonConfiguration(private val configuration: Map<String, String>?) {
     /**

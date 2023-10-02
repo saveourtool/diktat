@@ -8,8 +8,10 @@ import kotlinx.serialization.Serializable
  * This class is used to serialize/deserialize json representation
  * that is used to store command line arguments
  * @property shortName short argument representation like -h
+ * @property helpDescr
  * @property longName long argument representation like --help
  * @property hasArgs indicates if option should have explicit argument
+ * @property isRequired
  */
 @Serializable
 data class CliArgument(

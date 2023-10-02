@@ -30,6 +30,9 @@ import kotlinx.cli.vararg
  * @property mode mode of `diktat`
  * @property reporterProviderId
  * @property output
+ * @property groupByFileInPlain
+ * @property colorNameInPlain
+ * @property logLevel
  * @property patterns
  */
 data class DiktatProperties(
