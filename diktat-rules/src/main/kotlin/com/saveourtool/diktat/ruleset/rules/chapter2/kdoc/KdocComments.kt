@@ -150,9 +150,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .kDocTags()
             .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == propertyName }
 
-        if (propertyInClassKdoc == null) {
+        propertyInClassKdoc?.let {
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc", node.startOffset, node) {
-                insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass,"* @property $propertyName\n "))
+                insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass, "* @property $propertyName\n "))
             }
         }
     }
@@ -244,7 +244,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .let { if (!it.startsWith("\n")) " $it" else it }
 
     private fun checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass: ASTNode, newKdocText: String) =
-     newKdocText.let {if (kdocBeforeClass.kDocTags().isEmpty()) "*\n $it" else it }
+        newKdocText.let { if (kdocBeforeClass.kDocTags().isEmpty()) "*\n $it" else it }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleKdocAndBlock(
@@ -292,7 +292,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
             ?: run {
                 val propertyName = node.findChildByType(IDENTIFIER)!!.text
-                insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass, "* @property $propertyName ${createClassKdocTextFromEolComment(prevComment)}\n "))
+                insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass,
+                    "* @property $propertyName ${createClassKdocTextFromEolComment(prevComment)}\n "))
             }
 
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment,
