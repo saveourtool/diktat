@@ -49,109 +49,13 @@ class A constructor(
 ) {}
 
 /**
- * @property name property info
- */
-class A constructor(
-    private val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    //single-line comment
-    private val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    /*
-     * block
-     * comment
-     */
-    private val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    /**
-     * kdoc property
-     * comment
-     */
-    private val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    /**
-     * @property name property
-     * comment
-     */
-    private val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    override val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    //single-line comment
-    override val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    /*
-     * block
-     * comment
-     */
-    override val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    /**
-     * kdoc property
-     * comment
-     */
-    override val name: String
-) {}
-
-/**
- * @property name property info
- */
-class A constructor(
-    /**
-     * @property name property
-     * comment
-     */
-    override val name: String
-) {}
-
-/**
  * @property openName open property info
  * @property openLastName
- * open last property
- * info
+ *     open last property
+ *     info
  * @property openAddr
- * property
- * info
+ *     property
+ *     info
  */
 open class B constructor(
     //single-line comment
@@ -175,13 +79,13 @@ open class B constructor(
 
 /**
  * @property internalName internal
- * property info
+ *     property info
  * @property openName override
- * property info
+ *     property info
  * @property privateLastName private
- * property info
+ *     property info
  * @property openAddr override
- * property info
+ *     property info
  */
 class A constructor(
     // single-line comment

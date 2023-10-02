@@ -3,6 +3,7 @@ package com.saveourtool.diktat.ruleset.rules.chapter2.kdoc
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings
+import com.saveourtool.diktat.ruleset.constants.Warnings.COMMENTED_BY_KDOC
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
@@ -52,7 +53,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL,
-        KDOC_DUPLICATE_PROPERTY
+        KDOC_DUPLICATE_PROPERTY, COMMENTED_BY_KDOC
     )
 ) {
     private val config by lazy { configRules.getCommonConfiguration() }
@@ -83,7 +84,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun warnKdocInsideBlock(kdocNode: ASTNode) {
-        Warnings.COMMENTED_BY_KDOC.warnAndFix(
+        COMMENTED_BY_KDOC.warnAndFix(
             configRules, emitWarn, isFixMode,
             "Redundant asterisk in block comment: \\**", kdocNode.startOffset, kdocNode
         ) {
@@ -102,7 +103,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .filter { it.knownTag == KDocKnownTag.PROPERTY }
 
         val propertyNames = node.findChildrenMatching { it.elementType == VALUE_PARAMETER }
-            .filter { it.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !it.isOverridden() }
             .mapNotNull { it.findChildByType(IDENTIFIER)?.text }
 
         propertiesInKdoc
@@ -150,10 +150,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .kDocTags()
             .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == propertyName }
 
-        if (propertyInClassKdoc == null && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc",
-                node.startOffset, node) {
-                insertTextInKdoc(kdocBeforeClass, "* @property $propertyName\n ")
+        if (propertyInClassKdoc == null) {
+            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc", node.startOffset, node) {
+                insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass,"* @property $propertyName\n "))
             }
         }
     }
@@ -165,68 +164,51 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         prevComment: ASTNode
     ) {
         val propertyName = node.findChildByType(IDENTIFIER)!!.text
+        val propertyInClassKdoc = kdocBeforeClass
+            .kDocTags()
+            .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == propertyName }
+            ?.node
+        val hasTagsInLocalKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
 
-        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            val propertyInClassKdoc = kdocBeforeClass
-                .kDocTags()
-                .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == propertyName }
-                ?.node
-            val hasTagsInLocalKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
-
-            if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
-                // there is a documentation before property that we can extract, and there is class KDoc, where we can move it to
-                handleKdocAndBlock(node, prevComment, kdocBeforeClass, propertyInClassKdoc, hasTagsInLocalKdoc)
-            } else {
-                KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, propertyName,
-                    prevComment.startOffset, node) {
-                    handleCommentBefore(node, kdocBeforeClass, prevComment, propertyInClassKdoc)
-                }
-            }
+        if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
+            // there is a documentation before property that we can extract, and there is class KDoc, where we can move it to
+            handleKdocAndBlock(node, prevComment, kdocBeforeClass, propertyInClassKdoc, hasTagsInLocalKdoc)
         } else {
-            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
-                prevComment.startOffset, node, false, isFixMode) {
-                }
+            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, propertyName, prevComment.startOffset, node) {
+                handleCommentBefore(node, kdocBeforeClass, prevComment, propertyInClassKdoc)
+            }
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocBasicKdoc(node: ASTNode) {
-        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            val propertyName = node.findChildByType(IDENTIFIER)!!.text
+        val propertyName = node.findChildByType(IDENTIFIER)!!.text
 
-            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc",
-                node.startOffset, node) {
-                val classNode = node.parent { it.elementType == CLASS }!!
-                val newKdoc = KotlinParser().createNode("/**\n * @property $propertyName\n */")
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc", node.startOffset, node) {
+            val classNode = node.parent { it.elementType == CLASS }!!
+            val newKdoc = KotlinParser().createNode("/**\n * @property $propertyName\n */")
 
-                classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
-                classNode.addChild(newKdoc.findChildByType(KDOC)!!, classNode.firstChildNode)
-            }
+            classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
+            classNode.addChild(newKdoc.findChildByType(KDOC)!!, classNode.firstChildNode)
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocWithProperty(node: ASTNode, prevComment: ASTNode) {
         val propertyName = node.findChildByType(IDENTIFIER)!!.text
+        val classNode = node.parent { it.elementType == CLASS }!!
 
-        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            val classNode = node.parent { it.elementType == CLASS }!!
+        // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
+        // complicated structure, that will be hard to move automatically
+        val hasTagsInLocalKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
+        val isFixable = !hasTagsInLocalKdoc
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName, prevComment.startOffset, node, isFixable, isFixMode) {
+            val newKdocText = createClassKdocTextFromComment(prevComment, propertyName)
+            val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
 
-            val hasTagsInLocalKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
-            val isFixable = !hasTagsInLocalKdoc
-            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
-                prevComment.startOffset, node, isFixable, isFixMode) {
-                val newKdocText = createClassKdocTextFromComment(prevComment, propertyName)
-                val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
-
-                classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
-                classNode.addChild(newKdoc, classNode.firstChildNode)
-                node.removeWithWhiteSpace(prevComment)
-            }
-        } else {
-            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
-                prevComment.startOffset, node, false, isFixMode) {
-                }
+            classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
+            classNode.addChild(newKdoc, classNode.firstChildNode)
+            node.removeWithWhiteSpace(prevComment)
         }
     }
 
@@ -241,7 +223,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         prevComment.text
             .removePrefix("/**")
             .removeSuffix("*/")
-            .replace("\n( )+\\*".toRegex(), "\n *")
+            .replace("\n( )*\\*( )*".toRegex(), "\n *     ")
             .trimStart(' ')
             .trimEnd(' ', '\n')
             .let { if (!it.startsWith("\n")) " $it" else it }
@@ -256,10 +238,13 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         prevComment.text
             .removePrefix("/*")
             .removeSuffix("*/")
-            .replace("\n( )+\\*".toRegex(), "\n *")
+            .replace("\n( )*\\*( )*".toRegex(), "\n *     ")
             .trimStart(' ')
             .trimEnd(' ', '\n')
             .let { if (!it.startsWith("\n")) " $it" else it }
+
+    private fun checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass: ASTNode, newKdocText: String) =
+     newKdocText.let {if (kdocBeforeClass.kDocTags().isEmpty()) "*\n $it" else it }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleKdocAndBlock(
@@ -269,8 +254,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         propertyInClassKdoc: ASTNode?,
         hasTagsInLocalKdoc: Boolean
     ) {
-        // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
-        // complicated structure, that will be hard to move automatically
         val propertyName = node.findChildByType(IDENTIFIER)!!.text
         val commentText = if (prevComment.elementType == KDOC) {
             createClassKdocTextFromKdocComment(prevComment)
@@ -281,13 +264,12 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
         // complicated structure, that will be hard to move automatically
         val isFixable = !hasTagsInLocalKdoc
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName,
-            prevComment.startOffset, node, isFixable, isFixMode) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, propertyName, prevComment.startOffset, node, isFixable, isFixMode) {
             propertyInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(propertyInClassKdoc, commentText)
             }
-                ?: insertTextInKdoc(kdocBeforeClass, "* @property $propertyName$commentText\n ")
+                ?: insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass, "* @property $propertyName$commentText\n "))
 
             node.removeWithWhiteSpace(prevComment)
         }
@@ -302,15 +284,15 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         propertyInClassKdoc?.let {
             if (propertyInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
-                val kdocText = propertyInClassKdoc.findChildrenMatching { it.elementType == KDocTokens.TEXT }.lastOrNull()
-                (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text}\n * ${createClassKdocTextFromEolComment(prevComment)}")
+                val kdocText = propertyInClassKdoc.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT }.lastOrNull()
+                (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text}\n *     ${createClassKdocTextFromEolComment(prevComment)}")
             } else {
                 propertyInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, " ${createClassKdocTextFromEolComment(prevComment)}"), null)
             }
         }
             ?: run {
                 val propertyName = node.findChildByType(IDENTIFIER)!!.text
-                insertTextInKdoc(kdocBeforeClass, "* @property $propertyName ${createClassKdocTextFromEolComment(prevComment)}\n ")
+                insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass, "* @property $propertyName ${createClassKdocTextFromEolComment(prevComment)}\n "))
             }
 
         node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment,
@@ -333,9 +315,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val allKdocText = kdocBeforeClass.text
         val endKdoc = kdocBeforeClass.findChildByType(KDocTokens.END)!!.text
         val newKdocText = StringBuilder(allKdocText).insert(allKdocText.indexOf(endKdoc), insertText).toString()
-        kdocBeforeClass.treeParent.replaceChild(kdocBeforeClass, KotlinParser().createNode(newKdocText).findChildByType(
-            KDOC
-        )!!)
+        kdocBeforeClass.treeParent.replaceChild(kdocBeforeClass, KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!)
     }
 
     /**
@@ -345,7 +325,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun appendKdocTagContent(
         kdocTagNode: ASTNode, content: String,
     ) {
-        kdocTagNode.findChildrenMatching { it.elementType == KDocTokens.TEXT }.lastOrNull()?.let {
+        kdocTagNode.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT }.lastOrNull()?.let {
             kdocTagNode.replaceChild(
                 it,
                 LeafPsiElement(KDocTokens.TEXT, "${it.text}$content"),
