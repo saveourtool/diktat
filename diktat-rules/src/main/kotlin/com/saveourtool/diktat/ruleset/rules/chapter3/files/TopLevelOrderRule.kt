@@ -81,6 +81,8 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class containing different groups of properties in file
+     *
+     * @property properties
      */
     private data class Properties(private val properties: List<ASTNode>) : Elements {
         override fun sortElements(): MutableList<ASTNode> {
@@ -94,6 +96,11 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class containing different children in file
+     *
+     * @property properties
+     * @property typealiases
+     * @property functions
+     * @property classes
      */
     private data class Blocks(
         private val properties: List<ASTNode>,
