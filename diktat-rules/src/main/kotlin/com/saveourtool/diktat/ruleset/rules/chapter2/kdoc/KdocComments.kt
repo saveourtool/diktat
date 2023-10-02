@@ -150,7 +150,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .kDocTags()
             .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == propertyName }
 
-        propertyInClassKdoc?.let {
+        propertyInClassKdoc ?: run {
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, "add <$propertyName> to KDoc", node.startOffset, node) {
                 insertTextInKdoc(kdocBeforeClass, checkAndAddNewLineAfterKdocClassDescription(kdocBeforeClass, "* @property $propertyName\n "))
             }
