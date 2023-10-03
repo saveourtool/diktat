@@ -53,6 +53,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.COLON
 import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
@@ -106,11 +107,10 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
         val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node) + getRethrownExceptions(node)
         val missingExceptions = explicitlyThrownExceptions
-            .minus(kdocTags
+            .minus((kdocTags
                 ?.filter { it.knownTag == KDocKnownTag.THROWS }
-                ?.mapNotNull { it.getSubjectName() }
-                ?.toSet() ?: emptySet(),
-            )
+                ?.mapNotNull { it.getSubjectLinkName() }
+                ?.toSet() ?: emptySet()).toSet())
 
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
         val returnCheckFailed = hasReturnCheckFailed(node, kdocTags)
@@ -135,14 +135,21 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun KDocTag.getSubjectLinkName(): String? =
+        node.getChildren(null)
+            .dropWhile { it.elementType == KDocTokens.TAG_NAME }
+            .dropWhile { it.elementType == WHITE_SPACE }
+            .firstOrNull { it.elementType == KDocTokens.MARKDOWN_LINK }
+            ?.text
+
     @Suppress("TYPE_ALIAS")
     private fun getMissingParameters(node: ASTNode, kdocTags: Collection<KDocTag>?): Pair<List<String?>, List<KDocTag>> {
         val parameterNames = node.parameterNames()
-        val kdocParamList = kdocTags?.filter { it.knownTag == KDocKnownTag.PARAM && it.getSubjectName() != null }
+        val kdocParamList = kdocTags?.filter { it.knownTag == KDocKnownTag.PARAM && it.getSubjectLinkName() != null }
         return if (parameterNames.isEmpty()) {
             Pair(emptyList(), kdocParamList ?: emptyList())
-        } else if (kdocParamList != null && kdocParamList.isNotEmpty()) {
-            Pair(parameterNames.minus(kdocParamList.map { it.getSubjectName() }), kdocParamList.filter { it.getSubjectName() !in parameterNames })
+        } else if (!kdocParamList.isNullOrEmpty()) {
+            Pair(parameterNames.minus(kdocParamList.map { it.getSubjectLinkName() }.toSet()), kdocParamList.filter { it.getSubjectLinkName() !in parameterNames })
         } else {
             Pair(parameterNames.toList(), emptyList())
         }
@@ -217,7 +224,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         kdocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn,
-                "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,
+                "${ it.getSubjectLinkName() } param isn't present in argument list", it.node.startOffset,
                 it.node)
         }
         if (missingParameters.isNotEmpty()) {
@@ -229,7 +236,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                     kdoc?.insertTagBefore(beforeTag?.node) {
                         addChild(LeafPsiElement(KDocTokens.TAG_NAME, "@param"))
                         addChild(PsiWhiteSpaceImpl(" "))
-                        addChild(LeafPsiElement(KDocTokens.TEXT, it))
+                        addChild(LeafPsiElement(KDocTokens.MARKDOWN_LINK, it))
                     }
                 }
             }
@@ -260,8 +267,8 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             missingExceptions.forEach {
                 kdoc?.insertTagBefore(null) {
                     addChild(LeafPsiElement(KDocTokens.TAG_NAME, "@throws"))
-                    addChild(LeafPsiElement(KDocTokens.TEXT, " "))
-                    addChild(LeafPsiElement(KDocTokens.TEXT, it))
+                    addChild(PsiWhiteSpaceImpl(" "))
+                    addChild(LeafPsiElement(KDocTokens.MARKDOWN_LINK, it))
                 }
             }
         }
