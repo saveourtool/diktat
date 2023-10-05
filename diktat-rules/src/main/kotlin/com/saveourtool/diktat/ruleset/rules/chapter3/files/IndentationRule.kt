@@ -82,7 +82,6 @@ import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.math.abs
 import kotlin.reflect.KCallable
 
 import java.util.ArrayDeque as Stack
