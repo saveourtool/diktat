@@ -226,8 +226,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             addException(exceptionInitiatorNode, expectedIndent - indentError.expected, checkResult.includeLastChild)
         }
 
-        if (astNode.treeParent.elementType == LONG_STRING_TEMPLATE_ENTRY && indentError.expected != indentError.actual) {
-            addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
+        if (astNode.treeParent.elementType == LONG_STRING_TEMPLATE_ENTRY && astNode.treeNext.elementType != LONG_TEMPLATE_ENTRY_END) {
+            addException(astNode.treeParent, SINGLE.level() * configuration.indentationSize, false)
         }
 
         val alignedOpeningAndClosingQuotes = hasAlignedOpeningAndClosingQuotes(astNode, indentError.actual)
