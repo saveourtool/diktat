@@ -4,7 +4,6 @@ import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.LONG_LINE
 import com.saveourtool.diktat.ruleset.rules.chapter3.LineLength
 import com.saveourtool.diktat.util.FixTestBase
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
@@ -29,7 +28,6 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
             mapOf("lineLength" to "151"))
     )
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix long comment`() {
         fixAndCompare("LongLineCommentExpected.kt", "LongLineCommentTest.kt", rulesConfigListLineLength)
@@ -40,55 +38,46 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
         fixAndCompare("LongInlineCommentsExpected.kt", "LongInlineCommentsTest.kt", rulesConfigListLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
-    fun `should not fix long comment which located on the line length limit`() {
+    fun `should fix long comment 2`() {
         fixAndCompare("LongLineCommentExpected2.kt", "LongLineCommentTest2.kt", rulesConfigListDefaultLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix long string template while some fix is already done`() {
         fixAndCompare("LongStringTemplateExpected.kt", "LongStringTemplateTest.kt", rulesConfigListDefaultLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix long binary expression`() {
         fixAndCompare("LongLineExpressionExpected.kt", "LongLineExpressionTest.kt", rulesConfigListLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix complex long binary expressions`() {
         fixAndCompare("LongBinaryExpressionExpected.kt", "LongBinaryExpressionTest.kt", rulesConfigListLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix long function`() {
         fixAndCompare("LongLineFunExpected.kt", "LongLineFunTest.kt", rulesConfigListLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix long right value`() {
         fixAndCompare("LongLineRValueExpected.kt", "LongLineRValueTest.kt", rulesConfigListLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix short long right value`() {
         fixAndCompare("LongShortRValueExpected.kt", "LongShortRValueTest.kt", rulesConfigListShortLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `shouldn't fix`() {
         fixAndCompare("LongExpressionNoFixExpected.kt", "LongExpressionNoFixTest.kt", rulesConfigListShortLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `should fix annotation`() {
         fixAndCompare("LongLineAnnotationExpected.kt", "LongLineAnnotationTest.kt", rulesConfigListLineLength)
@@ -104,7 +93,6 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
         fixAndCompare("LongExpressionInConditionExpected.kt", "LongExpressionInConditionTest.kt", rulesConfigListLineLength)
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     fun `fix long Dot Qualified Expression`() {
         fixAndCompare("LongDotQualifiedExpressionExpected.kt", "LongDotQualifiedExpressionTest.kt", rulesConfigListLineLength)
