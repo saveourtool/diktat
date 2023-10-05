@@ -568,6 +568,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
     }
 
@@ -595,6 +596,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             node.treeParent.replaceChild(node, correctNode)
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
     }
 
@@ -621,6 +623,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             binNode?.appendNewlineMergingWhiteSpace(nextNode, nextNode)
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
     }
 
@@ -665,6 +668,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
 
         /**
@@ -764,6 +768,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)?.treePrev, node.findChildByType(RBRACE)?.treePrev)
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
     }
 
@@ -783,6 +788,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             node.appendNewlineMergingWhiteSpace(nodeBeforeDot, splitNode)
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
     }
 
@@ -865,6 +871,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun unFix() {}
     }
 
