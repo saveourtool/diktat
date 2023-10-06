@@ -97,6 +97,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     override fun logic(node: ASTNode) {
         var isFixedSmthInPreviousStep: Boolean
 
+        // loop that trying to fix LineLength rule warnings until warnings run out
         do {
             isFixedSmthInPreviousStep = false
 
@@ -149,12 +150,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         val textLenAfterFix = node.textLength
                         val blankLinesAfterFix = node.text.lines().size - countCodeLines(node)
 
+                        // checking that any fix may have been made
                         isFixedSmthInChildNode = fixableType !is None
 
+                        // for cases when text doesn't change, and then we need to stop fixes
                         if (textBeforeFix == textAfterFix) {
                             isFixedSmthInChildNode = false
                         }
 
+                        // for cases when fixes don't stop and start generate blank lines due to adding \n at each fix step
+                        // then we need to make unFix last change and stop fixes
                         if (blankLinesAfterFix > blankLinesBeforeFix) {
                             isFixedSmthInChildNode = false
                             fixableType.unFix()
@@ -548,6 +553,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     node.treeParent.removeChild(node.treePrev)
                 }
 
+                // for cases when property has multiline initialization, and then we need to move comment before first line
                 val newLineNodeOnPreviousLine = if (node.treeParent.elementType == PROPERTY) {
                     node.treeParent.treeParent.findChildrenMatching {
                         it.elementType == WHITE_SPACE && node.treeParent.treeParent.isChildAfterAnother(node.treeParent, it) && it.textContains('\n')
@@ -744,11 +750,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         override fun unFix() {
-            node.findChildAfter(EQ, WHITE_SPACE)?.let {
-                if (it.textContains('\n')) {
-                    it.nextSibling()?.let { it2 ->
-                        if (it2.textContains('\n')) {
-                            node.removeChild(it2)
+            node.findChildAfter(EQ, WHITE_SPACE)?.let { correctWhiteSpace ->
+                if (correctWhiteSpace.textContains('\n')) {
+                    correctWhiteSpace.nextSibling()?.let { wrongWhiteSpace ->
+                        if (wrongWhiteSpace.textContains('\n')) {
+                            node.removeChild(wrongWhiteSpace)
                         }
                     }
                 }
@@ -830,11 +836,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         override fun unFix() {
-            node.findChildBefore(RPAR, WHITE_SPACE)?.let {
-                if (it.textContains('\n')) {
-                    it.prevSibling()?.let { it2 ->
-                        if (it2.textContains('\n')) {
-                            node.removeChild(it2)
+            node.findChildBefore(RPAR, WHITE_SPACE)?.let { correctWhiteSpace ->
+                if (correctWhiteSpace.textContains('\n')) {
+                    correctWhiteSpace.prevSibling()?.let { wrongWhiteSpace ->
+                        if (wrongWhiteSpace.textContains('\n')) {
+                            node.removeChild(wrongWhiteSpace)
                         }
                     }
                 }
