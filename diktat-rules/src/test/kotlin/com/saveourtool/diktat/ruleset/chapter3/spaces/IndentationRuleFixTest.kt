@@ -18,7 +18,6 @@ import com.saveourtool.diktat.util.FixTestBase
 import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -57,7 +56,6 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
         fixAndCompare("IndentationParametersExpected.kt", "IndentationParametersTest.kt")
     }
 
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `indentation rule - example 1`() {
