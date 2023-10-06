@@ -95,11 +95,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
+        var currentFixNumber = 0
         var isFixedSmthInPreviousStep: Boolean
 
         // loop that trying to fix LineLength rule warnings until warnings run out
         do {
             isFixedSmthInPreviousStep = false
+            currentFixNumber++
 
             if (node.elementType == KtFileElementType.INSTANCE) {
                 node.getChildren(null).forEach {
@@ -112,7 +114,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     }
                 }
             }
-        } while (isFixedSmthInPreviousStep)
+        } while (isFixedSmthInPreviousStep && currentFixNumber < MAX_FIX_NUMBER)
     }
 
     @Suppress(
@@ -158,8 +160,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                             isFixedSmthInChildNode = false
                         }
 
-                        // for cases when fixes don't stop and start generate blank lines due to adding \n at each fix step
-                        // then we need to make unFix last change and stop fixes
+                        // in some kernel cases of long lines, when in fix step we adding `\n` to certain place of the line
+                        // and part of the line is transferred to the new line, this part may still be too long,
+                        // and then in next fix step we can start generating unnecessary blank lines,
+                        // to detect this we count blank lines and make unfix, if necessary
                         if (blankLinesAfterFix > blankLinesBeforeFix) {
                             isFixedSmthInChildNode = false
                             fixableType.unFix()
@@ -882,6 +886,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private const val MAX_FIX_NUMBER = 10
         private const val MAX_LENGTH = 120L
         const val NAME_ID = "line-length"
     }
