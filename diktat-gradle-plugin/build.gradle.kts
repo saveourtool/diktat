@@ -6,7 +6,7 @@ plugins {
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
     id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
-    id("org.gradle.test-retry") version "1.5.5"
+    id("org.gradle.test-retry") version "1.5.6"
     id("com.gradle.plugin-publish") version "1.2.1"
 }
 
