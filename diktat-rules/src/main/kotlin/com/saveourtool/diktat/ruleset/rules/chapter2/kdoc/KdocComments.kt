@@ -212,7 +212,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val isHasTagsInConstructorKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
 
         if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
-            // there is a documentation before property that we can extract, and there is class KDoc, where we can move it to
+            // there is a documentation before property or parameter that we can extract, and there is class KDoc, where we can move it to
             handleKdocAndBlock(node, prevComment, kdocBeforeClass, parameterTagInClassKdoc, isHasTagsInConstructorKdoc, isParam)
         } else {
             val warningText = if (isParam) "add comment for param <$parameterName> to KDoc" else "add comment for property <$parameterName> to KDoc"
@@ -246,7 +246,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val parameterName = node.findChildByType(IDENTIFIER)!!.text
         val classNode = node.parent { it.elementType == CLASS }!!
 
-        // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
+        // if property or parameter is documented with KDoc, which has a tag inside, then it can contain some additional more
         // complicated structure, that will be hard to move automatically
         val isHasTagsInConstructorKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
         val isFixable = !isHasTagsInConstructorKdoc
@@ -343,7 +343,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             createClassKdocTextFromBlockComment(prevComment)
         }
 
-        // if property is documented with KDoc, which has a tag inside, then it can contain some additional more
+        // if property or parameter is documented with KDoc, which has a tag inside, then it can contain some additional more
         // complicated structure, that will be hard to move automatically
         val isFixable = !isHasTagsInConstructorKdoc
         val warningText = if (isParam) "add comment for param <$parameterName> to KDoc" else "add comment for property <$parameterName> to KDoc"
