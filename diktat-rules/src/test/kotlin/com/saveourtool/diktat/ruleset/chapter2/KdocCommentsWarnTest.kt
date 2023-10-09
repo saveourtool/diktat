@@ -384,7 +384,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |class Example (
                     |   /*some descriptions*/val name: String,
                     |   anotherName: String,
-                    |   oneMoreName: String
+                    |   private val oneMoreName: String
                     |   ) {
                     |}
             """.trimMargin(),
@@ -404,9 +404,9 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     | */
                     |class Example (
                     |   //some descriptions
-                    |   name: String,
+                    |   private val name: String,
                     |   anotherName: String,
-                    |   oneMoreName: String
+                    |   private val oneMoreName: String
                     |   ) {
                     |}
             """.trimMargin(),
@@ -430,7 +430,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |    */
                     |   val name: String,
                     |   anotherName: String,
-                    |   oneMoreName: String
+                    |   private val oneMoreName: String
                     |   ) {
                     |}
             """.trimMargin(),
@@ -521,8 +521,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
-    fun `property in kdoc for private parameter`() {
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `change property to param in kdoc for private parameter`() {
         lintMethod(
             """
                     |/**
@@ -532,7 +532,61 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   private val name: String,
                     |   ) {
                     |}
-            """.trimMargin()
+            """.trimMargin(),
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} change `@property` tag to `@param` tag for <name> to KDoc", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `change param to property in kdoc for property`() {
+        lintMethod(
+            """
+                    |/**
+                    | * @param name abc
+                    | */
+                    |class Example (
+                    |   val name: String,
+                    |   ) {
+                    |}
+            """.trimMargin(),
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} change `@param` tag to `@property` tag for <name> to KDoc", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
+    fun `change param to property in kdoc for property with single comment`() {
+        lintMethod(
+            """
+                    |/**
+                    | * @param name abc
+                    | */
+                    |class Example (
+                    |   //some descriptions
+                    |   val name: String,
+                    |   ) {
+                    |}
+            """.trimMargin(),
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} change `@param` tag to `@property` tag for <name> and add comment to KDoc", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
+    fun `change param to property in kdoc for property with block comment`() {
+        lintMethod(
+            """
+                    |/**
+                    | * @param name abc
+                    | */
+                    |class Example (
+                    |   /*some descriptions*/
+                    |   val name: String,
+                    |   ) {
+                    |}
+            """.trimMargin(),
+            DiktatError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} change `@param` tag to `@property` tag for <name> and add comment to KDoc", true),
         )
     }
 
