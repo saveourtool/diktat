@@ -6,6 +6,64 @@ package test.paragraph2.kdoc
  * comment
  */
 class A constructor(
+    name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    //single-line comment
+    name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    /*
+     * block
+     * comment
+     */
+    name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    /**
+     * kdoc property
+     * comment
+     */
+    name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    /**
+     * @property name property
+     * comment
+     */
+    name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
     val name: String
 ) {}
 
@@ -63,6 +121,64 @@ class A constructor(
  * class
  * comment
  */
+class A constructor(
+    private val name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    //single-line comment
+    private val name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    /*
+     * block
+     * comment
+     */
+    private val name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    /**
+     * kdoc property
+     * comment
+     */
+    private val name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
+class A constructor(
+    /**
+     * @property name property
+     * comment
+     */
+    private val name: String
+) {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ */
 open class B constructor(
     //single-line comment
     open val openName: String,
@@ -99,6 +215,8 @@ class A constructor(
     override val openName: String,
     //single-line comment
     val name: String,
+    //single-line comment
+    paramName: String,
     /*
      * block
      * comment
@@ -124,6 +242,11 @@ class A constructor(
      * comment
      */
     val lastName: String,
+    /*
+     * block
+     * comment
+     */
+    paramLastName: String,
     /**
      * kdoc property
      * comment
@@ -150,6 +273,11 @@ class A constructor(
      */
     val birthDate: String,
     /**
+     * kdoc property
+     * comment
+     */
+    paramBirthDate: String,
+    /**
      * @property privateAddr property
      * comment
      */
@@ -174,4 +302,9 @@ class A constructor(
      * comment
      */
     val addr: String,
+    /**
+     * @property paramAddr property
+     * comment
+     */
+    paramAddr: String,
 ) : B() {}

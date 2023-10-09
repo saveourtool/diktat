@@ -1,6 +1,39 @@
 package test.paragraph2.kdoc
 
 class A constructor(
+    name: String
+) {}
+
+class A constructor(
+    //single-line comment
+    name: String
+) {}
+
+class A constructor(
+    /*
+     * block
+     * comment
+     */
+    name: String
+) {}
+
+class A constructor(
+    /**
+     * kdoc property
+     * comment
+     */
+    name: String
+) {}
+
+class A constructor(
+    /**
+     * @property name property
+     * comment
+     */
+    name: String
+) {}
+
+class A constructor(
     val name: String
 ) {}
 
@@ -31,6 +64,39 @@ class A constructor(
      * comment
      */
     val name: String
+) {}
+
+class A constructor(
+    private val name: String
+) {}
+
+class A constructor(
+    //single-line comment
+    private val name: String
+) {}
+
+class A constructor(
+    /*
+     * block
+     * comment
+     */
+    private val name: String
+) {}
+
+class A constructor(
+    /**
+     * kdoc property
+     * comment
+     */
+    private val name: String
+) {}
+
+class A constructor(
+    /**
+     * @property name property
+     * comment
+     */
+    private val name: String
 ) {}
 
 open class B constructor(
@@ -64,6 +130,8 @@ class A constructor(
     override val openName: String,
     //single-line comment
     val name: String,
+    //single-line comment
+    paramName: String,
     /*
      * block
      * comment
@@ -89,6 +157,11 @@ class A constructor(
      * comment
      */
     val lastName: String,
+    /*
+     * block
+     * comment
+     */
+    paramLastName: String,
     /**
      * kdoc property
      * comment
@@ -115,6 +188,11 @@ class A constructor(
      */
     val birthDate: String,
     /**
+     * kdoc property
+     * comment
+     */
+    paramBirthDate: String,
+    /**
      * @property privateAddr property
      * comment
      */
@@ -139,4 +217,9 @@ class A constructor(
      * comment
      */
     val addr: String,
+    /**
+     * @property paramAddr property
+     * comment
+     */
+    paramAddr: String,
 ) : B() {}

@@ -4,7 +4,6 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test

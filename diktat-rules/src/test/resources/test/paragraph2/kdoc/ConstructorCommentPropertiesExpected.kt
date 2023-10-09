@@ -1,6 +1,50 @@
 package test.paragraph2.kdoc
 
 /**
+ * @param name property info
+ */
+class A constructor(
+    name: String
+) {}
+
+/**
+ * @param name property info
+ *     single-line comment
+ */
+class A constructor(
+    name: String
+) {}
+
+/**
+ * @param name property info
+ *     block
+ *     comment
+ */
+class A constructor(
+    name: String
+) {}
+
+/**
+ * @param name property info
+ *     kdoc property
+ *     comment
+ */
+class A constructor(
+    name: String
+) {}
+
+/**
+ * @param name property info
+ */
+class A constructor(
+    /**
+     * @property name property
+     * comment
+     */
+    name: String
+) {}
+
+/**
  * @property name property info
  */
 class A constructor(
@@ -45,6 +89,50 @@ class A constructor(
 ) {}
 
 /**
+ * @param name property info
+ */
+class A constructor(
+    private val name: String
+) {}
+
+/**
+ * @param name property info
+ *     single-line comment
+ */
+class A constructor(
+    private val name: String
+) {}
+
+/**
+ * @param name property info
+ *     block
+ *     comment
+ */
+class A constructor(
+    private val name: String
+) {}
+
+/**
+ * @param name property info
+ *     kdoc property
+ *     comment
+ */
+class A constructor(
+    private val name: String
+) {}
+
+/**
+ * @property name property info
+ */
+class A constructor(
+    /**
+     * @property name property
+     * comment
+     */
+    private val name: String
+) {}
+
+/**
  * @property openName open property info
  *     single-line comment
  * @property openLastName
@@ -77,15 +165,16 @@ open class B constructor(
  * @property openName override
  *     property info
  *     single-line comment
- * @property privateLastName private
+ * @param privateLastName private
  *     property info
  *     block
  *     comment
  * @property openAddr override
  *     property info
- * @property privateName single-line comment
+ * @param privateName single-line comment
  * @property protectedName single-line comment
  * @property name single-line comment
+ * @param paramName single-line comment
  * @property protectedLastName
  *     block
  *     comment
@@ -98,7 +187,10 @@ open class B constructor(
  * @property lastName
  *     block
  *     comment
- * @property privateBirthDate
+ * @param paramLastName
+ *     block
+ *     comment
+ * @param privateBirthDate
  *     kdoc property
  *     comment
  * @property protectedBirthDate
@@ -113,6 +205,9 @@ open class B constructor(
  * @property birthDate
  *     kdoc property
  *     comment
+ * @param paramBirthDate
+ *     kdoc property
+ *     comment
  */
 class A constructor(
     private val privateName: String,
@@ -120,16 +215,19 @@ class A constructor(
     internal val internalName: String,
     override val openName: String,
     val name: String,
+    paramName: String,
     private val privateLastName: String,
     protected val protectedLastName: String,
     internal val internalLastName: String,
     override val openLastName: String,
     val lastName: String,
+    paramLastName: String,
     private val privateBirthDate: String,
     protected val protectedBirthDate: String,
     internal val internalBirthDate: String,
     override val openBirthDate: String,
     val birthDate: String,
+    paramBirthDate: String,
     /**
      * @property privateAddr property
      * comment
@@ -155,4 +253,9 @@ class A constructor(
      * comment
      */
     val addr: String,
+    /**
+     * @property paramAddr property
+     * comment
+     */
+    paramAddr: String,
 ) : B() {}
