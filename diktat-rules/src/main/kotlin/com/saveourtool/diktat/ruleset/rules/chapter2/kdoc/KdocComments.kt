@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
@@ -325,7 +326,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleKdocAndBlock(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
@@ -349,21 +350,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val isHasTagsInConstructorKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
         val isFixable = !isHasTagsInConstructorKdoc
 
-        val correctTag = if (isParam) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
-        val isHasWrongTag = parameterTagInClassKdoc != null && parameterTagInClassKdoc.knownTag != correctTag
-        val warningText = if (isHasWrongTag) {
-            if (isParam) {
-                "change `@property` tag to `@param` tag for <$parameterName> and add comment to KDoc"
-            } else {
-                "change `@param` tag to `@property` tag for <$parameterName> and add comment to KDoc"
-            }
-        } else {
-            if (isParam) {
-                "add comment for param <$parameterName> to KDoc"
-            } else {
-                "add comment for property <$parameterName> to KDoc"
-            }
-        }
+        val (isHasWrongTag, warningText) = checkWrongTagAndMakeWarningText(parameterTagInClassKdoc, parameterName, isParam)
 
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
             parameterInClassKdoc?.let {
@@ -383,7 +370,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleCommentBefore(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
@@ -396,21 +383,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .firstOrNull { (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName }
         val parameterInClassKdoc = parameterTagInClassKdoc?.node
 
-        val correctTag = if (isParam) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
-        val isHasWrongTag = parameterTagInClassKdoc != null && parameterTagInClassKdoc.knownTag != correctTag
-        val warningText = if (isHasWrongTag) {
-            if (isParam) {
-                "change `@property` tag to `@param` tag for <$parameterName> and add comment to KDoc"
-            } else {
-                "change `@param` tag to `@property` tag for <$parameterName> and add comment to KDoc"
-            }
-        } else {
-            if (isParam) {
-                "add comment for param <$parameterName> to KDoc"
-            } else {
-                "add comment for property <$parameterName> to KDoc"
-            }
-        }
+        val (isHasWrongTag, warningText) = checkWrongTagAndMakeWarningText(parameterTagInClassKdoc, parameterName, isParam)
 
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
             parameterInClassKdoc?.let {
@@ -439,6 +412,30 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
             node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment, prevComment.treeNext)
         }
+    }
+
+    private fun checkWrongTagAndMakeWarningText(
+        parameterTagInClassKdoc: KDocTag?,
+        parameterName: String,
+        isParam: Boolean
+    ): Pair<Boolean, String> {
+        val correctTag = if (isParam) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
+        val isHasWrongTag = parameterTagInClassKdoc != null && parameterTagInClassKdoc.knownTag != correctTag
+        val warningText = if (isHasWrongTag) {
+            if (isParam) {
+                "change `@property` tag to `@param` tag for <$parameterName> and add comment to KDoc"
+            } else {
+                "change `@param` tag to `@property` tag for <$parameterName> and add comment to KDoc"
+            }
+        } else {
+            if (isParam) {
+                "add comment for param <$parameterName> to KDoc"
+            } else {
+                "add comment for property <$parameterName> to KDoc"
+            }
+        }
+
+        return Pair(isHasWrongTag, warningText)
     }
 
     private fun checkDuplicateProperties(kdoc: ASTNode) {
