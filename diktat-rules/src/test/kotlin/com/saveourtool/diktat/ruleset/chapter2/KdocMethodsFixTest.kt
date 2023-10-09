@@ -4,7 +4,6 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
@@ -37,7 +36,6 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `@param tag should be added to existing KDoc`() {
         fixAndCompare("ParamTagInsertionExpected.kt", "ParamTagInsertionTested.kt")
     }
@@ -50,7 +48,6 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `@throws tag should be added to existing KDoc`() {
         fixAndCompare("ThrowsTagInsertionExpected.kt", "ThrowsTagInsertionTested.kt")
     }
@@ -61,7 +58,6 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
         Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG),
         Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     )
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `KdocMethods rule should reformat code (full example)`() {
         fixAndCompare("KdocMethodsFullExpected.kt", "KdocMethodsFullTested.kt")
     }
