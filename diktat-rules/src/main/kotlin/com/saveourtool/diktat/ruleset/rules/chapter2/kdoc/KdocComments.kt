@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -115,7 +116,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(valueParameterNode: ASTNode) {
-        if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR }) {
+        if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } || valueParameterNode.parents().any { it.elementType == TYPE_REFERENCE }) {
             return
         }
         val prevComment = if (valueParameterNode.siblings(forward = false)
@@ -152,7 +153,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         kdocBeforeClass: ASTNode,
         isParam: Boolean
     ) {
-        val parameterName = node.findChildByType(IDENTIFIER)?.text
+        val parameterName = node.findChildByType(IDENTIFIER)!!.text
         val parameterTagInClassKdoc = kdocBeforeClass
             .kDocTags()
             .firstOrNull { (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName }
@@ -183,7 +184,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun replaceWrongTagInClassKdoc(
         kdocBeforeClass: ASTNode,
-        parameterName: String?,
+        parameterName: String,
         isParam: Boolean
     ) {
         val wrongTagText = if (isParam) "* @property $parameterName" else "* @param $parameterName"
