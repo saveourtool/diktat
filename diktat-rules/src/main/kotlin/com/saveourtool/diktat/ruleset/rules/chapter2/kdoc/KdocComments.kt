@@ -169,7 +169,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 }
 
                 KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
-                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParam)
+                    val isFirstTagInKdoc = parameterTagInClassKdoc.node == kdocBeforeClass.kDocTags().first().node
+                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParam, isFirstTagInKdoc)
                 }
             }
         } ?: run {
@@ -177,7 +178,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
                 val newKdocText = if (isParam) "* @param $parameterName\n " else "* @property $parameterName\n "
-                insertTextInKdoc(kdocBeforeClass, checkNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText))
+                insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, false))
             }
         }
     }
@@ -185,15 +186,13 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun replaceWrongTagInClassKdoc(
         kdocBeforeClass: ASTNode,
         parameterName: String,
-        isParam: Boolean
+        isParam: Boolean,
+        isFirstTagInKdoc: Boolean
     ) {
         val wrongTagText = if (isParam) "* @property $parameterName" else "* @param $parameterName"
         val replaceText = if (isParam) "* @param $parameterName" else "* @property $parameterName"
-        val isOnlyWrongTag = kdocBeforeClass.kDocTags().filterNot {
-            (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName
-        }.isEmpty()
 
-        changeTagInKdoc(kdocBeforeClass, wrongTagText, checkNewLineAfterKdocClassDescription(kdocBeforeClass, replaceText, isOnlyWrongTag))
+        changeTagInKdoc(kdocBeforeClass, wrongTagText, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, replaceText, isFirstTagInKdoc))
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -307,22 +306,35 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .trimEnd(' ', '\n')
             .let { if (!it.startsWith("\n")) " $it" else it }
 
-    private fun checkNewLineAfterKdocClassDescription(
+    private fun checkOneNewLineAfterKdocClassDescription(
         kdocBeforeClass: ASTNode,
         newKdocText: String,
-        isOnlyWrongTag: Boolean = false
+        isFirstTagInKdoc: Boolean
     ): String {
-        val isHasDescription = kdocBeforeClass
+        val firstSection = kdocBeforeClass
             .findChildrenMatching { it.elementType == KDocElementTypes.KDOC_SECTION }
             .firstOrNull()
+        val lastTextInDescription = firstSection
             ?.findChildrenMatching { it.elementType == KDocTokens.TEXT }
-            ?.any { it.text.trim().isNotEmpty() }
+            ?.lastOrNull { it.text.trim().isNotEmpty() }
 
-        return newKdocText.let {
-            if (isHasDescription == true && (kdocBeforeClass.kDocTags().isEmpty() || isOnlyWrongTag)) {
-                "*\n $it"
+        val isHasDescription = lastTextInDescription != null
+
+        return newKdocText.let {text ->
+            if (isHasDescription && (kdocBeforeClass.kDocTags().isEmpty() || isFirstTagInKdoc)) {
+                // if we have any existing tags and current is first of them, we need to save last three nodes which are KDOC_LEADING_ASTERISK and two WHITE_SPACE around it
+                val beforeChild = if (isFirstTagInKdoc) firstSection!!.lastChildNode.treePrev.treePrev.treePrev else firstSection!!.lastChildNode
+
+                // remove all KDOC_LEADING_ASTERISK and WHITE_SPACE between last text in description and end of description
+                firstSection
+                    .findChildrenMatching {
+                        firstSection.isChildAfterAnother(it, lastTextInDescription!!) && (firstSection.isChildBeforeAnother(it, beforeChild) || it == beforeChild)
+                    }
+                    .forEach { firstSection.removeChild(it) }
+
+                "*\n $text"
             } else {
-                it
+                text
             }
         }
     }
@@ -354,17 +366,19 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val (isHasWrongTag, warningText) = checkWrongTagAndMakeWarningText(parameterTagInClassKdoc, parameterName, isParam)
 
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
+            val isFirstTagInKdoc = parameterTagInClassKdoc?.node != null && parameterTagInClassKdoc.node == kdocBeforeClass.kDocTags().first().node
+
             parameterInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(parameterInClassKdoc, commentText)
 
                 if (isHasWrongTag) {
-                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParam)
+                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParam, isFirstTagInKdoc)
                 }
             }
                 ?: run {
                     val newKdocText = if (isParam) "* @param $parameterName$commentText\n " else "* @property $parameterName$commentText\n "
-                    insertTextInKdoc(kdocBeforeClass, checkNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText))
+                    insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, isFirstTagInKdoc))
                 }
 
             node.removeWithWhiteSpace(prevComment)
@@ -387,6 +401,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val (isHasWrongTag, warningText) = checkWrongTagAndMakeWarningText(parameterTagInClassKdoc, parameterName, isParam)
 
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
+            val isFirstTagInKdoc = parameterTagInClassKdoc?.node != null && parameterTagInClassKdoc.node == kdocBeforeClass.kDocTags().first().node
+
             parameterInClassKdoc?.let {
                 if (parameterInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
                     val newKdocText = parameterInClassKdoc
@@ -398,7 +414,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 }
 
                 if (isHasWrongTag) {
-                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParam)
+                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParam, isFirstTagInKdoc)
                 }
             }
                 ?: run {
@@ -408,7 +424,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                         "* @property $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
                     }
 
-                    insertTextInKdoc(kdocBeforeClass, checkNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText))
+                    insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, isFirstTagInKdoc))
                 }
 
             node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment, prevComment.treeNext)
