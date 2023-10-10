@@ -152,7 +152,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         kdocBeforeClass: ASTNode,
         isParam: Boolean
     ) {
-        val parameterName = node.findChildByType(IDENTIFIER)!!.text
+        val parameterName = node.findChildByType(IDENTIFIER)?.text
         val parameterTagInClassKdoc = kdocBeforeClass
             .kDocTags()
             .firstOrNull { (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName }
@@ -183,7 +183,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun replaceWrongTagInClassKdoc(
         kdocBeforeClass: ASTNode,
-        parameterName: String,
+        parameterName: String?,
         isParam: Boolean
     ) {
         val wrongTagText = if (isParam) "* @property $parameterName" else "* @param $parameterName"
