@@ -365,7 +365,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .trimEnd(' ', '\n')
             .let { if (!it.startsWith("\n")) " $it" else it }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "ComplexMethod")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod"
+    )
     private fun handleKdocAndBlock(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
@@ -419,7 +423,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "ComplexMethod")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod"
+    )
     private fun handleCommentBefore(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
