@@ -12,7 +12,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 /**
  * [SymbolProcessor] to generate a class with contacts for names from provided enum
  *
- * @property codeGenerator
+ * @param codeGenerator
  */
 class EnumNamesSymbolProcessor(
     private val codeGenerator: CodeGenerator,

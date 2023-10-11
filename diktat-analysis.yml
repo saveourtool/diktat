@@ -450,6 +450,9 @@
 # Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
+  configuration:
+    isParamTagsForParameters: false # create param tags for parameters without val or var
+    isParamTagsForPrivateProperties: true # create param tags for private properties
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true

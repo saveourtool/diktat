@@ -9,7 +9,7 @@ class A constructor(
 
 /**
  * @param name property info
- *     single-line comment
+ *   single-line comment
  */
 class A constructor(
     name: String
@@ -17,8 +17,8 @@ class A constructor(
 
 /**
  * @param name property info
- *     block
- *     comment
+ *   block
+ *   comment
  */
 class A constructor(
     name: String
@@ -26,8 +26,8 @@ class A constructor(
 
 /**
  * @param name property info
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     name: String
@@ -53,7 +53,7 @@ class A constructor(
 
 /**
  * @property name property info
- *     single-line comment
+ *   single-line comment
  */
 class A constructor(
     val name: String
@@ -61,8 +61,8 @@ class A constructor(
 
 /**
  * @property name property info
- *     block
- *     comment
+ *   block
+ *   comment
  */
 class A constructor(
     val name: String
@@ -70,8 +70,8 @@ class A constructor(
 
 /**
  * @property name property info
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     val name: String
@@ -97,7 +97,7 @@ class A constructor(
 
 /**
  * @param name property info
- *     single-line comment
+ *   single-line comment
  */
 class A constructor(
     private val name: String
@@ -105,8 +105,8 @@ class A constructor(
 
 /**
  * @param name property info
- *     block
- *     comment
+ *   block
+ *   comment
  */
 class A constructor(
     private val name: String
@@ -114,8 +114,8 @@ class A constructor(
 
 /**
  * @param name property info
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     private val name: String
@@ -134,18 +134,18 @@ class A constructor(
 
 /**
  * @property openName open property info
- *     single-line comment
+ *   single-line comment
  * @property openLastName
- *     open last property
- *     info
- *     block
- *     comment
+ *   open last property
+ *   info
+ *   block
+ *   comment
  * @property openAddr
- *     property
- *     info
+ *   property
+ *   info
  * @property openBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 open class B constructor(
     open val openName: String,
@@ -160,54 +160,54 @@ open class B constructor(
 
 /**
  * @property internalName internal
- *     property info
- *     single-line comment
+ *   property info
+ *   single-line comment
  * @property openName override
- *     property info
- *     single-line comment
+ *   property info
+ *   single-line comment
  * @param privateLastName private
- *     property info
- *     block
- *     comment
+ *   property info
+ *   block
+ *   comment
  * @property openAddr override
- *     property info
+ *   property info
  * @param privateName single-line comment
  * @property protectedName single-line comment
  * @property name single-line comment
  * @param paramName single-line comment
  * @property protectedLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property internalLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property openLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property lastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @param paramLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @param privateBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property protectedBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property internalBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property openBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property birthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @param paramBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     private val privateName: String,

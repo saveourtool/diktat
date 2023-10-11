@@ -11,9 +11,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
+ *
+ * @param warn description of the inspection
  * @property canBeAutoCorrected whether this inspection can automatically fix the code. Should be public to be able to use it in docs generator.
  * @property ruleId number of the inspection according to [diktat code style](https://github.com/saveourtool/diktat/blob/master/info/guide/diktat-coding-convention.md)
- * @property warn description of the inspection
  */
 @Suppress(
     "ForbiddenComment",

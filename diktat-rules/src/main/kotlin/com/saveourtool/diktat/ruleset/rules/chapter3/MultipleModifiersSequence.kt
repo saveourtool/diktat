@@ -16,9 +16,6 @@ import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.children
 
-/**
- * @property configRules
- */
 class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,

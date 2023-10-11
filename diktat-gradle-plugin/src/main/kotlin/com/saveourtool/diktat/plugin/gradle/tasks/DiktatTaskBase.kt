@@ -32,8 +32,9 @@ import java.nio.file.Path
 
 /**
  * A base task to run `diktat`
+ *
+ * @param inputs
  * @property extension
- * @property inputs
  */
 @Suppress("WRONG_NEWLINES", "Deprecation")
 abstract class DiktatTaskBase(

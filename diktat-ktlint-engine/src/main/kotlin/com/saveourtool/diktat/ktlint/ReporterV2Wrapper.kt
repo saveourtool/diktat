@@ -6,7 +6,7 @@ import com.pinterest.ktlint.cli.reporter.core.api.ReporterV2
 /**
  * Wrapper for [ReporterV2]
  *
- * @property reporterV2
+ * @param reporterV2
  */
 open class ReporterV2Wrapper(private val reporterV2: ReporterV2) : ReporterV2 {
     override fun beforeAll() = reporterV2.beforeAll()

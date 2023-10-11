@@ -26,13 +26,13 @@ import kotlinx.cli.default
 import kotlinx.cli.vararg
 
 /**
+ * @param groupByFileInPlain
+ * @param colorNameInPlain
+ * @param logLevel
  * @property config path to `diktat-analysis.yml`
  * @property mode mode of `diktat`
  * @property reporterProviderId
  * @property output
- * @property groupByFileInPlain
- * @property colorNameInPlain
- * @property logLevel
  * @property patterns
  */
 data class DiktatProperties(

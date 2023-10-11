@@ -10,7 +10,7 @@ import java.io.File
 /**
  * An extension to configure diktat in build.gradle(.kts) file
  *
- * @property patternSet
+ * @param patternSet
  */
 open class DiktatExtension(
     private val patternSet: PatternSet

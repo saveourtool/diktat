@@ -16,8 +16,8 @@ class A constructor(
 
 /**
  * @param name
- *     block
- *     comment
+ *   block
+ *   comment
  */
 class A constructor(
     name: String
@@ -25,8 +25,8 @@ class A constructor(
 
 /**
  * @param name
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     name: String
@@ -56,8 +56,8 @@ class A constructor(
 
 /**
  * @property name
- *     block
- *     comment
+ *   block
+ *   comment
  */
 class A constructor(
     val name: String
@@ -65,8 +65,8 @@ class A constructor(
 
 /**
  * @property name
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     val name: String
@@ -96,8 +96,8 @@ class A constructor(
 
 /**
  * @param name
- *     block
- *     comment
+ *   block
+ *   comment
  */
 class A constructor(
     private val name: String
@@ -105,8 +105,8 @@ class A constructor(
 
 /**
  * @param name
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     private val name: String
@@ -123,11 +123,11 @@ class A constructor(
 /**
  * @property openName single-line comment
  * @property openLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property openBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 open class B constructor(
     open val openName: String,
@@ -148,41 +148,41 @@ open class B constructor(
  * @property name single-line comment
  * @param paramName single-line comment
  * @param privateLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property protectedLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property internalLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property openLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @property lastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @param paramLastName
- *     block
- *     comment
+ *   block
+ *   comment
  * @param privateBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property protectedBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property internalBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property openBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @property birthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  * @param paramBirthDate
- *     kdoc property
- *     comment
+ *   kdoc property
+ *   comment
  */
 class A constructor(
     private val privateName: String,

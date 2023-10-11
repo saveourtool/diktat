@@ -9,8 +9,8 @@ import java.nio.file.Path
 /**
  * [DiktatReporter] using __KtLint__
  *
- * @property ktLintReporter
- * @property sourceRootDir
+ * @param ktLintReporter
+ * @param sourceRootDir
  */
 class DiktatReporterImpl(
     private val ktLintReporter: ReporterV2,

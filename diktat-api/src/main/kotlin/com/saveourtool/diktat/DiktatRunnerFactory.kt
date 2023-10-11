@@ -15,10 +15,10 @@ import java.nio.file.Path
 /**
  * A factory to create [DiktatRunner]
  *
- * @property diktatRuleConfigReader a reader for [DiktatRuleConfig]
- * @property diktatRuleSetFactory a factory for [DiktatRuleSet]
- * @property diktatProcessorFactory a factory for [DiktatProcessor]
- * @property diktatBaselineFactory a factory for [DiktatBaseline]
+ * @param diktatRuleConfigReader a reader for [DiktatRuleConfig]
+ * @param diktatRuleSetFactory a factory for [DiktatRuleSet]
+ * @param diktatProcessorFactory a factory for [DiktatProcessor]
+ * @param diktatBaselineFactory a factory for [DiktatBaseline]
  * @property diktatReporterFactory a factory for [DiktatReporter]
  */
 class DiktatRunnerFactory(
