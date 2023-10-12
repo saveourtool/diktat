@@ -437,7 +437,7 @@
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
   configuration:
-    isParamTagsForParameters: false # create param tags for parameters without val or var
+    isParamTagsForParameters: true # create param tags for parameters without val or var
     isParamTagsForPrivateProperties: true # create param tags for private properties
 # Checks that the long lambda has parameters
 - name: TOO_MANY_LINES_IN_LAMBDA
