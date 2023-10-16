@@ -229,7 +229,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .findChildrenMatching { it.elementType == KDocElementTypes.KDOC_SECTION }
             .firstOrNull()
         val lastTextInDescription = firstDescriptionSection
-            ?.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.MARKDOWN_LINK }
+            ?.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT || it.elementType == KDocTokens.MARKDOWN_LINK }
             ?.lastOrNull { it.text.trim().isNotEmpty() }
 
         val isHasDescription = lastTextInDescription != null
