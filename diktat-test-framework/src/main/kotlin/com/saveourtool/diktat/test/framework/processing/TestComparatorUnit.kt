@@ -10,9 +10,9 @@ import kotlin.io.path.name
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
  *
- * @property resourceFilePath only used when the files are loaded as resources,
+ * @param resourceFilePath only used when the files are loaded as resources,
  *   via [compareFilesFromResources].
- * @property function a transformation that will be applied to the file
+ * @param function a transformation that will be applied to the file
  */
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(

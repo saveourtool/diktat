@@ -5,7 +5,9 @@ import com.saveourtool.diktat.api.DiktatBaselineFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporter
 import com.saveourtool.diktat.api.DiktatReporterFactory
+import com.saveourtool.diktat.api.DiktatRuleConfig
 import com.saveourtool.diktat.api.DiktatRuleConfigReader
+import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.api.DiktatRuleSetFactory
 import java.io.OutputStream
 import java.nio.file.Path
@@ -13,6 +15,10 @@ import java.nio.file.Path
 /**
  * A factory to create [DiktatRunner]
  *
+ * @param diktatRuleConfigReader a reader for [DiktatRuleConfig]
+ * @param diktatRuleSetFactory a factory for [DiktatRuleSet]
+ * @param diktatProcessorFactory a factory for [DiktatProcessor]
+ * @param diktatBaselineFactory a factory for [DiktatBaseline]
  * @property diktatReporterFactory a factory for [DiktatReporter]
  */
 class DiktatRunnerFactory(

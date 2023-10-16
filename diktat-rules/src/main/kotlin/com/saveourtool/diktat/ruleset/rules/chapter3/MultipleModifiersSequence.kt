@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.children
 
 /**
- * @property configRules
+ * @param configRules
  */
 class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,

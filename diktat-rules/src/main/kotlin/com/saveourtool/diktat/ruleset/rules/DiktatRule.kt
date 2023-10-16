@@ -14,9 +14,9 @@ private typealias DiktatRuleApi = com.saveourtool.diktat.api.DiktatRule
 /**
  * This is a wrapper around _KtLint_ `com.pinterest.ktlint.core.Rule`.
  *
+ * @param inspections warnings that are used in the rule's code
  * @property id id of the rule
  * @property configRules all rules from configuration
- * @property inspections warnings that are used in the rule's code
  */
 @Suppress("TooGenericExceptionCaught")
 abstract class DiktatRule(

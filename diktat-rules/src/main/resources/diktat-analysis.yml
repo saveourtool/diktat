@@ -436,6 +436,9 @@
 # Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
+  configuration:
+    isParamTagsForParameters: true # create param tags for parameters without val or var
+    isParamTagsForPrivateProperties: true # create param tags for private properties
 # Checks that the long lambda has parameters
 - name: TOO_MANY_LINES_IN_LAMBDA
   enabled: true
