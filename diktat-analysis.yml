@@ -452,7 +452,7 @@
   enabled: true
   configuration:
     isParamTagsForParameters: false # create param tags for parameters without val or var
-    isParamTagsForPrivateProperties: true # create param tags for private properties
+    isParamTagsForPrivateProperties: false # create param tags for private properties
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true
