@@ -24,6 +24,7 @@ import com.saveourtool.diktat.ruleset.utils.isWhiteSpaceWithNewline
 import com.saveourtool.diktat.ruleset.utils.nextSibling
 import com.saveourtool.diktat.ruleset.utils.prevSibling
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
@@ -115,6 +116,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         } while (isFixedSmthInPreviousStep && currentFixNumber < MAX_FIX_NUMBER)
+
+        if (currentFixNumber == MAX_FIX_NUMBER) {
+            log.error {
+                "The limit on the number of consecutive fixes has been reached. There may be a bug causing an endless loop of fixes."
+            }
+        }
     }
 
     @Suppress(
@@ -515,9 +522,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         abstract fun fix()
 
         /**
-         * Abstract unFix - unfix fix-changes in anything nodes
+         * Function unFix - unfix fix-changes in anything nodes
          */
-        abstract fun unFix()
+        @Suppress("EmptyFunctionBlock")
+        open fun unFix() {}
     }
 
     /**
@@ -526,9 +534,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private class None : LongLineFixableCases(KotlinParser().createNode("ERROR")) {
         @Suppress("EmptyFunctionBlock")
         override fun fix() {}
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     /**
@@ -577,9 +582,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     /**
@@ -605,9 +607,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val correctNode = KotlinParser().createNode("$firstPart$textBetweenParts$secondPart")
             node.treeParent.replaceChild(node, correctNode)
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     /**
@@ -632,9 +631,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
             binNode?.appendNewlineMergingWhiteSpace(nextNode, nextNode)
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     /**
@@ -677,9 +673,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
 
         /**
          * This method stored all the nodes that have [BINARY_EXPRESSION] or [PREFIX_EXPRESSION] element type.
@@ -777,9 +770,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             node.appendNewlineMergingWhiteSpace(node.findChildByType(LBRACE)?.treeNext, node.findChildByType(LBRACE)?.treeNext)
             node.appendNewlineMergingWhiteSpace(node.findChildByType(RBRACE)?.treePrev, node.findChildByType(RBRACE)?.treePrev)
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     /**
@@ -797,9 +787,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val nodeBeforeDot = splitNode?.treePrev
             node.appendNewlineMergingWhiteSpace(nodeBeforeDot, splitNode)
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     /**
@@ -880,12 +867,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 node.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
             }
         }
-
-        @Suppress("EmptyFunctionBlock")
-        override fun unFix() {}
     }
 
     companion object {
+        private val log = KotlinLogging.logger {}
         private const val MAX_FIX_NUMBER = 10
         private const val MAX_LENGTH = 120L
         const val NAME_ID = "line-length"
