@@ -522,10 +522,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         abstract fun fix()
 
         /**
-         * Function unFix - unfix fix-changes in anything nodes
+         * Function unFix - unfix incorrect unnecessary fix-changes
          */
         @Suppress("EmptyFunctionBlock")
-        open fun unFix() {}
+        open fun unFix() {
+            // Nothing to do here by default.
+        }
     }
 
     /**
