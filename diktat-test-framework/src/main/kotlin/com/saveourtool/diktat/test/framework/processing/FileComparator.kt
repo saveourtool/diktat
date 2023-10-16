@@ -11,6 +11,10 @@ import java.io.File
 
 /**
  * A class that is capable of comparing files content
+ *
+ * @param fileName
+ * @param expectedResult
+ * @param actualResult
  */
 class FileComparator(
     private val fileName: String,

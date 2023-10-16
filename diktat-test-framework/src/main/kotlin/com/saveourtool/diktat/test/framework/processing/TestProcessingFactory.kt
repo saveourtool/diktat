@@ -17,6 +17,8 @@ import kotlin.system.exitProcess
 
 /**
  * A class that runs tests based on configuration
+ *
+ * @param argReader
  */
 @Suppress("ForbiddenComment")
 class TestProcessingFactory(private val argReader: TestArgumentsReader) {

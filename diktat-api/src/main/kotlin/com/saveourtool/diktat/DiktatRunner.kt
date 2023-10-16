@@ -15,9 +15,9 @@ private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
 /**
  * A runner for diktat on bunch of files using baseline and reporter
  *
+ * @param diktatBaselineGenerator
  * @property diktatProcessor
  * @property diktatBaseline
- * @property diktatBaselineGenerator
  * @property diktatReporter
  */
 data class DiktatRunner(

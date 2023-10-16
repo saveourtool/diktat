@@ -1,18 +1,14 @@
 package test.paragraph2.kdoc
 
 /**
- * kdoc
- * class
- * comment
+ * @param name property info
  */
 class A constructor(
     name: String
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @param name property info
  */
 class A constructor(
     //single-line comment
@@ -20,9 +16,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @param name property info
  */
 class A constructor(
     /*
@@ -33,9 +27,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @param name property info
  */
 class A constructor(
     /**
@@ -46,9 +38,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @param name property info
  */
 class A constructor(
     /**
@@ -59,18 +49,14 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     val name: String
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     //single-line comment
@@ -78,9 +64,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     /*
@@ -91,9 +75,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     /**
@@ -104,9 +86,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     /**
@@ -117,18 +97,14 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     private val name: String
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     //single-line comment
@@ -136,9 +112,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     /*
@@ -149,9 +123,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     /**
@@ -162,9 +134,7 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property name property info
  */
 class A constructor(
     /**
@@ -175,9 +145,13 @@ class A constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property openName open property info
+ * @param openLastName
+ *   open last property
+ *   info
+ * @property openAddr
+ *   property
+ *   info
  */
 open class B constructor(
     //single-line comment
@@ -200,9 +174,14 @@ open class B constructor(
 ) {}
 
 /**
- * kdoc
- * class
- * comment
+ * @property internalName internal
+ *   property info
+ * @param openName override
+ *   property info
+ * @property privateLastName private
+ *   property info
+ * @property openAddr override
+ *   property info
  */
 class A constructor(
     //single-line comment

@@ -14,6 +14,9 @@ import kotlinx.coroutines.runBlocking
 
 /**
  * Class that wraps shell [command] and can execute it
+ *
+ * @param command
+ * @param ioDispatcher
  */
 class LocalCommandExecutor internal constructor(
     private val command: String,

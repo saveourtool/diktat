@@ -22,8 +22,8 @@ import kotlinx.serialization.json.decodeFromStream
 /**
  * Class that gives access to properties of a test
  *
+ * @param args CLI arguments
  * @param classLoader [ClassLoader] which is used to load properties file
- * @property args CLI arguments
  * @property properties properties from properties file
  */
 class TestArgumentsReader(

@@ -1,8 +1,11 @@
 package com.saveourtool.diktat.ruleset.rules.chapter2.kdoc
 
+import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
+import com.saveourtool.diktat.common.config.rules.getRuleConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings
+import com.saveourtool.diktat.ruleset.constants.Warnings.COMMENTED_BY_KDOC
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
@@ -20,6 +23,7 @@ import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -29,7 +33,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
+import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.BLOCK_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
@@ -37,7 +43,6 @@ import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.VAR_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
@@ -46,23 +51,27 @@ import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
  * This rule checks the following features in KDocs:
  * 1) All top-level (file level) functions and classes with public or internal access should have KDoc
  * 2) All internal elements in class like class, property or function should be documented with KDoc
- * 3) All properties declared in the primary constructor are documented using `@property` tag in class KDoc
+ * 3) All non-private properties declared in the primary constructor are documented using `@property` tag in class KDoc
  */
 class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL,
-        KDOC_DUPLICATE_PROPERTY
+        KDOC_DUPLICATE_PROPERTY, COMMENTED_BY_KDOC
     )
 ) {
-    private val config by lazy { configRules.getCommonConfiguration() }
+    private val configuration by lazy {
+        KdocCommentsConfiguration(configRules.getRuleConfig(KDOC_NO_CONSTRUCTOR_PROPERTY)?.configuration ?: emptyMap())
+    }
 
     /**
      * @param node
      */
     override fun logic(node: ASTNode) {
         val filePath = node.getFilePath()
+        val config = configRules.getCommonConfiguration()
+
         if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             when (node.elementType) {
                 KtFileElementType.INSTANCE -> checkTopLevelDoc(node)
@@ -84,7 +93,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun warnKdocInsideBlock(kdocNode: ASTNode) {
-        Warnings.COMMENTED_BY_KDOC.warnAndFix(
+        COMMENTED_BY_KDOC.warnAndFix(
             configRules, emitWarn, isFixMode,
             "Redundant asterisk in block comment: \\**", kdocNode.startOffset, kdocNode
         ) {
@@ -98,25 +107,26 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             ?.parent { it.elementType == CLASS }
             ?.findChildByType(KDOC) ?: return
 
-        val propertiesInKdoc = kdocBeforeClass
+        val parametersInKdoc = kdocBeforeClass
             .kDocTags()
-            .filter { it.knownTag == KDocKnownTag.PROPERTY }
-        val propertyNames = (node.psi as KtParameterList)
-            .parameters
-            .mapNotNull { it.nameIdentifier?.text }
-        propertiesInKdoc
-            .filterNot { it.getSubjectName() == null || it.getSubjectName() in propertyNames }
+            .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
+
+        val parametersInConstructor = node
+            .findChildrenMatching { it.elementType == VALUE_PARAMETER }
+            .mapNotNull { it.findChildByType(IDENTIFIER)?.text }
+
+        parametersInKdoc
+            .filterNot { it.getSubjectName() == null || it.getSubjectName() in parametersInConstructor }
             .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, it.text, it.node.startOffset, node) }
     }
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(valueParameterNode: ASTNode) {
         if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
-                        !valueParameterNode.hasChildOfType(VAR_KEYWORD)
-        ) {
+                valueParameterNode.parents().any { it.elementType == TYPE_REFERENCE }) {
             return
         }
+
         val prevComment = if (valueParameterNode.siblings(forward = false)
             .takeWhile { it.elementType != EOL_COMMENT && it.elementType != BLOCK_COMMENT }
             .all { it.elementType == WHITE_SPACE }
@@ -128,68 +138,151 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             null
         }
+
         val kdocBeforeClass = valueParameterNode.parent { it.elementType == CLASS }!!.findChildByType(KDOC)
+        val isParamTagNeeded = (!valueParameterNode.hasChildOfType(VAL_KEYWORD) && !valueParameterNode.hasChildOfType(VAR_KEYWORD)) ||
+                !valueParameterNode.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
 
         prevComment?.let {
             kdocBeforeClass?.let {
-                checkKdocBeforeClass(valueParameterNode, kdocBeforeClass, prevComment)
+                checkKdocBeforeClass(valueParameterNode, kdocBeforeClass, prevComment, isParamTagNeeded)
             }
-                ?: createKdocWithProperty(valueParameterNode, prevComment)
+                ?: createKdocWithProperty(valueParameterNode, prevComment, isParamTagNeeded)
         }
             ?: kdocBeforeClass?.let {
-                checkBasicKdocBeforeClass(valueParameterNode, kdocBeforeClass)
+                checkBasicKdocBeforeClass(valueParameterNode, kdocBeforeClass, isParamTagNeeded)
             }
-            ?: createKdocBasicKdoc(valueParameterNode)
+            ?: createKdocBasicKdoc(valueParameterNode, isParamTagNeeded)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
-    private fun checkBasicKdocBeforeClass(node: ASTNode, kdocBeforeClass: ASTNode) {
-        val propertyInClassKdoc = kdocBeforeClass
+    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
+    private fun checkBasicKdocBeforeClass(
+        node: ASTNode,
+        kdocBeforeClass: ASTNode,
+        isParamTagNeeded: Boolean
+    ) {
+        val parameterName = node.findChildByType(IDENTIFIER)!!.text
+        val parameterTagInClassKdoc = kdocBeforeClass
             .kDocTags()
-            .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
-        if (propertyInClassKdoc == null && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
-            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
-                "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
-                insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text}\n")
+            .firstOrNull { (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName }
+
+        parameterTagInClassKdoc?.let {
+            val correctTag = if (isParamTagNeeded) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
+
+            if (parameterTagInClassKdoc.knownTag != correctTag) {
+                val warningText = if (isParamTagNeeded) {
+                    "change `@property` tag to `@param` tag for <$parameterName> to KDoc"
+                } else {
+                    "change `@param` tag to `@property` tag for <$parameterName> to KDoc"
+                }
+
+                KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
+                    val isFirstTagInKdoc = parameterTagInClassKdoc.node == kdocBeforeClass.kDocTags().first().node
+                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded, isFirstTagInKdoc)
+                }
+            }
+        } ?: run {
+            val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
+            val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
+
+            if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+                val warningText = if (isParamTagNeeded) "add param <$parameterName> to KDoc" else "add property <$parameterName> to KDoc"
+
+                KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
+                    val newKdocText = if (isParamTagNeeded) "* @param $parameterName\n " else "* @property $parameterName\n "
+                    insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, false))
+                }
             }
         }
     }
 
+    private fun replaceWrongTagInClassKdoc(
+        kdocBeforeClass: ASTNode,
+        parameterName: String,
+        isParamTagNeeded: Boolean,
+        isFirstTagInKdoc: Boolean
+    ) {
+        val wrongTagText = if (isParamTagNeeded) "* @property $parameterName" else "* @param $parameterName"
+        val replaceText = if (isParamTagNeeded) "* @param $parameterName" else "* @property $parameterName"
+
+        changeTagInKdoc(kdocBeforeClass, wrongTagText, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, replaceText, isFirstTagInKdoc))
+    }
+
     @Suppress("UnsafeCallOnNullableType")
+    private fun changeTagInKdoc(
+        kdocBeforeClass: ASTNode,
+        wrongTagText: String,
+        correctTagText: String
+    ) {
+        val allKdocText = kdocBeforeClass.text
+        val newKdocText = allKdocText.replaceFirst(wrongTagText, correctTagText)
+        kdocBeforeClass.treeParent.replaceChild(kdocBeforeClass, KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!)
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun checkOneNewLineAfterKdocClassDescription(
+        kdocBeforeClass: ASTNode,
+        newKdocText: String,
+        isFirstTagInKdoc: Boolean
+    ): String {
+        val firstDescriptionSection = kdocBeforeClass
+            .findChildrenMatching { it.elementType == KDocElementTypes.KDOC_SECTION }
+            .firstOrNull()
+        val lastTextInDescription = firstDescriptionSection
+            ?.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT || it.elementType == KDocTokens.MARKDOWN_LINK }
+            ?.lastOrNull { it.text.trim().isNotEmpty() }
+
+        val isHasDescription = lastTextInDescription != null
+
+        return newKdocText.let {text ->
+            if (isHasDescription && (kdocBeforeClass.kDocTags().isEmpty() || isFirstTagInKdoc)) {
+                // if we have any existing tags and current is first of them, we need to save last three nodes which are KDOC_LEADING_ASTERISK and two WHITE_SPACE around it
+                // this is necessary so that first tag is on new line immediately after description
+                val beforeChild = if (isFirstTagInKdoc) firstDescriptionSection!!.lastChildNode.treePrev.treePrev.treePrev else firstDescriptionSection!!.lastChildNode
+
+                // remove all KDOC_LEADING_ASTERISK and WHITE_SPACE between last text in description and end of description
+                firstDescriptionSection
+                    .findChildrenMatching {
+                        firstDescriptionSection.isChildAfterAnother(it, lastTextInDescription!!) &&
+                                (firstDescriptionSection.isChildBeforeAnother(it, beforeChild) || it == beforeChild)
+                    }
+                    .forEach { firstDescriptionSection.removeChild(it) }
+
+                "*\n $text"
+            } else {
+                text
+            }
+        }
+    }
+
     private fun checkKdocBeforeClass(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
-        prevComment: ASTNode
+        prevComment: ASTNode,
+        isParamTagNeeded: Boolean
     ) {
-        val propertyInClassKdoc = kdocBeforeClass
-            .kDocTags()
-            .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
-            ?.node
-        val propertyInLocalKdoc = if (prevComment.elementType == KDOC) {
-            prevComment
-                .kDocTags()
-                .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
-                ?.node
-        } else {
-            null
-        }
         if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
-            // there is a documentation before property that we can extract, and there is class KDoc, where we can move it to
-            handleKdocAndBlock(node, prevComment, kdocBeforeClass, propertyInClassKdoc, propertyInLocalKdoc)
+            // there is a documentation before property or parameter that we can extract, and there is class KDoc, where we can move it to
+            handleKdocAndBlock(node, kdocBeforeClass, prevComment, isParamTagNeeded)
         } else {
-            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text, prevComment.startOffset, node) {
-                handleCommentBefore(node, kdocBeforeClass, prevComment, propertyInClassKdoc)
-            }
+            handleCommentBefore(node, kdocBeforeClass, prevComment, isParamTagNeeded)
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun createKdocBasicKdoc(node: ASTNode) {
-        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
-                "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
-                val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
+    private fun createKdocBasicKdoc(node: ASTNode, isParamTagNeeded: Boolean) {
+        val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
+        val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
+
+        if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+            val parameterName = node.findChildByType(IDENTIFIER)!!.text
+            val warningText = if (isParamTagNeeded) "add param <$parameterName> to KDoc" else "add property <$parameterName> to KDoc"
+
+            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
                 val classNode = node.parent { it.elementType == CLASS }!!
+                val newKdocText = if (isParamTagNeeded) "/**\n * @param $parameterName\n */" else "/**\n * @property $parameterName\n */"
+                val newKdoc = KotlinParser().createNode(newKdocText)
+
                 classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
                 classNode.addChild(newKdoc.findChildByType(KDOC)!!, classNode.firstChildNode)
             }
@@ -197,84 +290,229 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun createKdocWithProperty(valueParameterNode: ASTNode, prevComment: ASTNode) {
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, valueParameterNode) {
-            val classNode = valueParameterNode.parent { it.elementType == CLASS }!!
-            val newKdocText = if (prevComment.elementType == KDOC) {
-                prevComment.text
-            } else if (prevComment.elementType == EOL_COMMENT) {
-                "/**\n * @property ${valueParameterNode.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removePrefix("//")}\n */"
-            } else {
-                "/**\n * @property ${valueParameterNode.findChildByType(IDENTIFIER)!!.text}${prevComment.text.removePrefix("/*").removeSuffix("*/")} */"
-            }
-            val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
-            classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
-            classNode.addChild(newKdoc, classNode.firstChildNode)
-            valueParameterNode.removeWithWhiteSpace(prevComment)
-        }
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun handleKdocAndBlock(
+    private fun createKdocWithProperty(
         node: ASTNode,
         prevComment: ASTNode,
-        kdocBeforeClass: ASTNode,
-        propertyInClassKdoc: ASTNode?,
-        propertyInLocalKdoc: ASTNode?
+        isParamTagNeeded: Boolean
     ) {
-        val kdocText = if (prevComment.elementType == KDOC) {
-            prevComment.text
-                .removePrefix("/**")
-                .removeSuffix("*/")
-                .trim('\n', ' ')
-        } else {
-            prevComment.text
-                .removePrefix("/*")
-                .removeSuffix("*/")
-                .trim('\n', ' ')
-        }
-        // if property is documented with KDoc, which has a property tag inside, then it can contain some additional more complicated
-        // structure, that will be hard to move automatically
-        val isFixable = propertyInLocalKdoc == null
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnOnlyOrWarnAndFix(configRules, emitWarn, prevComment.text, prevComment.startOffset, node, shouldBeAutoCorrected = isFixable, isFixMode) {
-            propertyInClassKdoc?.let {
-                // local docs should be appended to docs in class
-                appendKdocTagContent(propertyInClassKdoc, "\n$kdocText")
-            }
-                ?: insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
+        val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
+        val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
 
-            node.removeWithWhiteSpace(prevComment)
+        if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+            val parameterName = node.findChildByType(IDENTIFIER)!!.text
+            val classNode = node.parent { it.elementType == CLASS }!!
+
+            // if property or parameter is documented with KDoc, which has a tag inside, then it can contain some additional more
+            // complicated structure, that will be hard to move automatically
+            val isHasTagsInConstructorKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
+            val isFixable = !isHasTagsInConstructorKdoc
+            val warningText = if (isParamTagNeeded) "add comment for param <$parameterName> to KDoc" else "add comment for property <$parameterName> to KDoc"
+
+            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
+                val newKdocText = createClassKdocTextFromComment(prevComment, parameterName, isParamTagNeeded)
+                val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
+
+                classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
+                classNode.addChild(newKdoc, classNode.firstChildNode)
+                node.removeWithWhiteSpace(prevComment)
+            }
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    private fun createClassKdocTextFromComment(
+        prevComment: ASTNode,
+        parameterName: String,
+        isParamTagNeeded: Boolean
+    ) = when (prevComment.elementType) {
+        KDOC -> if (isParamTagNeeded) {
+            "/**\n * @param $parameterName${createClassKdocTextFromKdocComment(prevComment)}\n */"
+        } else {
+            "/**\n * @property $parameterName${createClassKdocTextFromKdocComment(prevComment)}\n */"
+        }
+        EOL_COMMENT -> if (isParamTagNeeded) {
+            "/**\n * @param $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n */"
+        } else {
+            "/**\n * @property $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n */"
+        }
+        else -> if (isParamTagNeeded) {
+            "/**\n * @param $parameterName${createClassKdocTextFromBlockComment(prevComment)}\n */"
+        } else {
+            "/**\n * @property $parameterName${createClassKdocTextFromBlockComment(prevComment)}\n */"
+        }
+    }
+
+    private fun createClassKdocTextFromKdocComment(prevComment: ASTNode) =
+        prevComment.text
+            .removePrefix("/**")
+            .removeSuffix("*/")
+            .replace("\n( )*\\*( )*".toRegex(), "\n *   ")
+            .trimStart(' ')
+            .trimEnd(' ', '\n')
+            .let { if (!it.startsWith("\n")) " $it" else it }
+
+    private fun createClassKdocTextFromEolComment(prevComment: ASTNode) =
+        prevComment.text
+            .removePrefix("//")
+            .trimStart(' ')
+            .trimEnd(' ', '\n')
+
+    private fun createClassKdocTextFromBlockComment(prevComment: ASTNode) =
+        prevComment.text
+            .removePrefix("/*")
+            .removeSuffix("*/")
+            .replace("\n( )*\\*( )*".toRegex(), "\n *   ")
+            .trimStart(' ')
+            .trimEnd(' ', '\n')
+            .let { if (!it.startsWith("\n")) " $it" else it }
+
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod"
+    )
+    private fun handleKdocAndBlock(
+        node: ASTNode,
+        kdocBeforeClass: ASTNode,
+        prevComment: ASTNode,
+        isParamTagNeeded: Boolean
+    ) {
+        val parameterName = node.findChildByType(IDENTIFIER)!!.text
+        val parameterTagInClassKdoc = kdocBeforeClass
+            .kDocTags()
+            .firstOrNull { (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName }
+        val parameterInClassKdoc = parameterTagInClassKdoc?.node
+
+        val commentText = if (prevComment.elementType == KDOC) {
+            createClassKdocTextFromKdocComment(prevComment)
+        } else {
+            createClassKdocTextFromBlockComment(prevComment)
+        }
+
+        // if property or parameter is documented with KDoc, which has a tag inside, then it can contain some additional more
+        // complicated structure, that will be hard to move automatically
+        val isHasTagsInConstructorKdoc = prevComment.elementType == KDOC && prevComment.kDocTags().isNotEmpty()
+        val isFixable = !isHasTagsInConstructorKdoc
+
+        val (isHasWrongTag, warningText) = checkWrongTagAndMakeWarningText(parameterTagInClassKdoc, parameterName, isParamTagNeeded)
+        val isFirstTagInKdoc = parameterTagInClassKdoc?.node != null && parameterTagInClassKdoc.node == kdocBeforeClass.kDocTags().first().node
+
+        parameterInClassKdoc?.let {
+            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
+                // local docs should be appended to docs in class
+                appendKdocTagContent(parameterInClassKdoc, commentText)
+
+                if (isHasWrongTag) {
+                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded, isFirstTagInKdoc)
+                }
+
+                node.removeWithWhiteSpace(prevComment)
+            }
+        }
+            ?: run {
+                val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
+                val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
+
+                if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+                    KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
+                        val newKdocText = if (isParamTagNeeded) "* @param $parameterName$commentText\n " else "* @property $parameterName$commentText\n "
+                        insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, isFirstTagInKdoc))
+
+                        node.removeWithWhiteSpace(prevComment)
+                    }
+                }
+            }
+    }
+
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod"
+    )
     private fun handleCommentBefore(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
         prevComment: ASTNode,
-        propertyInClassKdoc: ASTNode?
+        isParamTagNeeded: Boolean
     ) {
-        propertyInClassKdoc?.let {
-            if (propertyInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
-                val kdocText = propertyInClassKdoc.findChildByType(KDocTokens.TEXT)!!
-                (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text} ${prevComment.text}")
-            } else {
-                propertyInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, prevComment.text), null)
+        val parameterName = node.findChildByType(IDENTIFIER)!!.text
+        val parameterTagInClassKdoc = kdocBeforeClass
+            .kDocTags()
+            .firstOrNull { (it.knownTag == KDocKnownTag.PARAM || it.knownTag == KDocKnownTag.PROPERTY) && it.getSubjectName() == parameterName }
+        val parameterInClassKdoc = parameterTagInClassKdoc?.node
+
+        val (isHasWrongTag, warningText) = checkWrongTagAndMakeWarningText(parameterTagInClassKdoc, parameterName, isParamTagNeeded)
+        val isFirstTagInKdoc = parameterTagInClassKdoc?.node != null && parameterTagInClassKdoc.node == kdocBeforeClass.kDocTags().first().node
+
+        parameterInClassKdoc?.let {
+            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
+                if (parameterInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
+                    val newKdocText = parameterInClassKdoc
+                        .findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT }
+                        .lastOrNull()
+                    (newKdocText as LeafPsiElement).rawReplaceWithText("${newKdocText.text}\n *   ${createClassKdocTextFromEolComment(prevComment)}")
+                } else {
+                    parameterInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, " ${createClassKdocTextFromEolComment(prevComment)}"), null)
+                }
+
+                if (isHasWrongTag) {
+                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded, isFirstTagInKdoc)
+                }
+
+                node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment, prevComment.treeNext)
             }
         }
             ?: run {
-                insertTextInKdoc(kdocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
+                val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
+                val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
+
+                if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+                    KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
+                        val newKdocText = if (isParamTagNeeded) {
+                            "* @param $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
+                        } else {
+                            "* @property $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
+                        }
+
+                        insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, isFirstTagInKdoc))
+
+                        node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment, prevComment.treeNext)
+                    }
+                }
             }
-        node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
+    }
+
+    private fun checkWrongTagAndMakeWarningText(
+        parameterTagInClassKdoc: KDocTag?,
+        parameterName: String,
+        isParamTagNeeded: Boolean
+    ): Pair<Boolean, String> {
+        val correctTag = if (isParamTagNeeded) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
+        val isHasWrongTag = parameterTagInClassKdoc != null && parameterTagInClassKdoc.knownTag != correctTag
+        val warningText = if (isHasWrongTag) {
+            if (isParamTagNeeded) {
+                "change `@property` tag to `@param` tag for <$parameterName> and add comment to KDoc"
+            } else {
+                "change `@param` tag to `@property` tag for <$parameterName> and add comment to KDoc"
+            }
+        } else {
+            if (isParamTagNeeded) {
+                "add comment for param <$parameterName> to KDoc"
+            } else {
+                "add comment for property <$parameterName> to KDoc"
+            }
+        }
+
+        return Pair(isHasWrongTag, warningText)
     }
 
     private fun checkDuplicateProperties(kdoc: ASTNode) {
-        val propertiesAndParams = kdoc.kDocTags()
+        val propertiesAndParams = kdoc
+            .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
         val traversedNodes: MutableSet<String?> = mutableSetOf()
-        propertiesAndParams.forEach { property ->
-            if (!traversedNodes.add(property.getSubjectName())) {
-                KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, property.text, property.node.startOffset, kdoc)
+        propertiesAndParams.forEach { parameter ->
+            if (!traversedNodes.add(parameter.getSubjectName())) {
+                KDOC_DUPLICATE_PROPERTY.warn(configRules, emitWarn, parameter.text, parameter.node.startOffset, kdoc)
             }
         }
     }
@@ -291,19 +529,15 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      * Append [content] to [kdocTagNode], e.g.
      * (`@property foo bar`, "baz") -> `@property foo bar baz`
      */
-    private fun appendKdocTagContent(
-        kdocTagNode: ASTNode, content: String,
-    ) {
-        kdocTagNode.findChildByType(KDocTokens.TEXT)?.let {
-            kdocTagNode.replaceChild(
-                it,
-                LeafPsiElement(KDocTokens.TEXT, "${it.text}$content"),
-            )
-        }
-            ?: kdocTagNode.addChild(
-                LeafPsiElement(KDocTokens.TEXT, content),
-                null,
-            )
+    private fun appendKdocTagContent(kdocTagNode: ASTNode, content: String) {
+        kdocTagNode.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT }
+            .lastOrNull()
+            ?.let {
+                kdocTagNode.replaceChild(
+                    it,
+                    LeafPsiElement(KDocTokens.TEXT, "${it.text}$content"),
+                )
+            } ?: kdocTagNode.addChild(LeafPsiElement(KDocTokens.TEXT, content), null)
     }
 
     private fun checkClassElements(node: ASTNode) {
@@ -319,13 +553,15 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 .forEach { classElement ->
                     if (classElement.elementType == PROPERTY) {
-                        // we check if property declared in class body is also documented in class header via `@property` tag
+                        // we check if property declared in class body is also documented in class header via
+                        // `@property` tag
                         val classKdoc = node.getFirstChildWithType(KDOC)
                         val propertyInClassKdoc = classKdoc?.kDocTags()?.find {
                             it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == classElement.getIdentifierName()?.text
                         }
                         propertyInClassKdoc?.let {
-                            // if property is documented as `@property`, then we suggest to move docs to the declaration inside the class body
+                            // if property is documented as `@property`, then we suggest to move docs to the
+                            // declaration inside the class body
                             KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warn(configRules, emitWarn, classElement.text, classElement.startOffset, classElement)
                             return
                         }
@@ -365,6 +601,21 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isTopLevelFunctionStandard(node: ASTNode): Boolean = node.elementType == FUN && node.isStandardMethod()
 
+    /**
+     * [RuleConfiguration] for param tags creation
+     */
+    private class KdocCommentsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Create param tags for parameters without val or var
+         */
+        val isParamTagsForParameters = config["isParamTagsForParameters"]?.toBoolean() ?: true
+
+        /**
+         * Create param tags for private properties
+         */
+        val isParamTagsForPrivateProperties = config["isParamTagsForPrivateProperties"]?.toBoolean() ?: true
+    }
+
     companion object {
         const val NAME_ID = "kdoc-comments"
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
@@ -372,14 +623,10 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 }
 
 private fun ASTNode.removeWithWhiteSpace(prevComment: ASTNode) {
-    if (prevComment.elementType == KDOC) {
-        if (prevComment.treeNext.elementType == WHITE_SPACE) {
-            removeChild(prevComment.treeNext)
-        }
-        removeChild(prevComment)
-    } else {
-        removeChildMergingSurroundingWhitespaces(prevComment)
-    }
+    removeChildMergingSurroundingWhitespaces(
+        if (prevComment.elementType == KDOC) prevComment.treeParent.treePrev else prevComment.treePrev,
+        prevComment, prevComment.treeNext
+    )
 }
 
 /**
@@ -387,18 +634,21 @@ private fun ASTNode.removeWithWhiteSpace(prevComment: ASTNode) {
  * preserving only a single newline if present (i.e. leaving no empty lines after merging). In any case, [child] is removed
  * from the tree.
  */
-private fun ASTNode.removeChildMergingSurroundingWhitespaces(child: ASTNode) {
-    with(child) {
-        if (treeNext?.elementType == WHITE_SPACE && treePrev?.elementType == WHITE_SPACE) {
-            val mergedText = (treePrev.text + treeNext.text)
-            val mergedSpace = if (mergedText.contains('\n')) {
-                '\n' + mergedText.substringAfterLast('\n')
-            } else {
-                mergedText
-            }
-            treeParent.replaceWhiteSpaceText(treePrev, mergedSpace)
+private fun ASTNode.removeChildMergingSurroundingWhitespaces(
+    prevWhiteSpaces: ASTNode,
+    child: ASTNode,
+    nextWhitespaces: ASTNode
+) {
+    if (nextWhitespaces.elementType == WHITE_SPACE && prevWhiteSpaces.elementType == WHITE_SPACE) {
+        val mergedText = (prevWhiteSpaces.text + nextWhitespaces.text)
+        val mergedSpace = if (mergedText.contains('\n')) {
+            '\n' + mergedText.substringAfterLast('\n')
+        } else {
+            mergedText
         }
-        treeParent.removeChild(treeNext)
+
+        child.treeParent.removeChild(prevWhiteSpaces)
+        child.treeParent.replaceWhiteSpaceText(nextWhitespaces, mergedSpace)
     }
     removeChild(child)
 }

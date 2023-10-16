@@ -4,8 +4,8 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments) {
@@ -16,20 +16,25 @@ class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments)
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
-    fun `check fix with class kdoc`() {
-        fixAndCompare("ConstructorCommentExpected.kt", "ConstructorCommentTest.kt")
-    }
-
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
-    @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT), Tag(WarningNames.MISSING_KDOC_TOP_LEVEL))
     fun `check fix without class kdoc`() {
         fixAndCompare("ConstructorCommentNoKDocExpected.kt", "ConstructorCommentNoKDocTest.kt")
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT))
+    fun `check fix with class kdoc`() {
+        fixAndCompare("ConstructorCommentExpected.kt", "ConstructorCommentTest.kt")
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT))
+    fun `check fix with properties in class kdoc`() {
+        fixAndCompare("ConstructorCommentPropertiesExpected.kt", "ConstructorCommentPropertiesTest.kt")
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT))
     fun `should preserve newlines when moving comments from value parameters`() {
         fixAndCompare("ConstructorCommentNewlineExpected.kt", "ConstructorCommentNewlineTest.kt")
     }

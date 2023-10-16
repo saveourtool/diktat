@@ -32,6 +32,8 @@ import java.nio.file.Path
 
 /**
  * A base task to run `diktat`
+ *
+ * @param inputs
  * @property extension
  */
 @Suppress("WRONG_NEWLINES", "Deprecation")
