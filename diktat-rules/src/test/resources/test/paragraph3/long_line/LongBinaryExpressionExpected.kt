@@ -37,12 +37,14 @@ fun foo() {
 ?: 123 + Methood().linelength
 
     val variable =
- Methoooooooooooooooooooooooooood() ?: "some loooooong string"
+ Methoooooooooooooooooooooooooood()
+ ?: "some loooooong string"
 
     val variable = Methooooood()
  ?: "some looong string"
 
     var headerKdoc = firstCodeNode.prevSibling {
  it.elementType == KDOC
- } ?: if (firstCodeNode == packageDirectiveNode) importsList?.prevSibling { it.elementType == KDOC } else null
+ }
+ ?: if (firstCodeNode == packageDirectiveNode) importsList?.prevSibling { it.elementType == KDOC } else null
 }

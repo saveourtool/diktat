@@ -25,4 +25,6 @@ value = "select * from test inner join test_execution on test.id = test_executio
  nativeQuery = true
 )
 fun some(limit: Int, offset: Int, executionId: Long) =
- println("testtesttesttesttesttesttesttesttesttesttesttest")
+ println(
+"testtesttesttesttesttesttesttesttesttesttesttest"
+)

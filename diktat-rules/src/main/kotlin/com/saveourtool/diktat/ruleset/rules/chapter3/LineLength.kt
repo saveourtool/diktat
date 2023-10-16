@@ -8,15 +8,23 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.KotlinParser
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.calculateLineColByOffset
+import com.saveourtool.diktat.ruleset.utils.countCodeLines
 import com.saveourtool.diktat.ruleset.utils.findAllNodesWithConditionOnLine
+import com.saveourtool.diktat.ruleset.utils.findChildAfter
+import com.saveourtool.diktat.ruleset.utils.findChildBefore
+import com.saveourtool.diktat.ruleset.utils.findChildrenMatching
 import com.saveourtool.diktat.ruleset.utils.findParentNodeWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.getFirstChildWithType
 import com.saveourtool.diktat.ruleset.utils.getLineNumber
 import com.saveourtool.diktat.ruleset.utils.hasChildOfType
+import com.saveourtool.diktat.ruleset.utils.isChildAfterAnother
 import com.saveourtool.diktat.ruleset.utils.isWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.isWhiteSpaceWithNewline
+import com.saveourtool.diktat.ruleset.utils.nextSibling
+import com.saveourtool.diktat.ruleset.utils.prevSibling
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.BINARY_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.BLOCK
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
@@ -38,7 +46,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
-import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.MARKDOWN_INLINE_LINK
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.TEXT
 import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
@@ -89,24 +96,52 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
-        if (node.elementType == KtFileElementType.INSTANCE) {
-            node.getChildren(null).forEach {
-                if (it.elementType != PACKAGE_DIRECTIVE && it.elementType != IMPORT_LIST) {
-                    checkLength(it, configuration)
+        var currentFixNumber = 0
+        var isFixedSmthInPreviousStep: Boolean
+
+        // loop that trying to fix LineLength rule warnings until warnings run out
+        do {
+            isFixedSmthInPreviousStep = false
+            currentFixNumber++
+
+            if (node.elementType == KtFileElementType.INSTANCE) {
+                node.getChildren(null).forEach {
+                    if (it.elementType != PACKAGE_DIRECTIVE && it.elementType != IMPORT_LIST) {
+                        val isFixedSmthInChildNode = checkLength(it, configuration)
+
+                        if (!isFixedSmthInPreviousStep && isFixedSmthInChildNode) {
+                            isFixedSmthInPreviousStep = true
+                        }
+                    }
                 }
+            }
+        } while (isFixedSmthInPreviousStep && currentFixNumber < MAX_FIX_NUMBER)
+
+        if (currentFixNumber == MAX_FIX_NUMBER) {
+            log.error {
+                "The limit on the number of consecutive fixes has been reached. There may be a bug causing an endless loop of fixes."
             }
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
-    private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration) {
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "FUNCTION_BOOLEAN_PREFIX"
+    )
+    private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration): Boolean {
+        var isFixedSmthInChildNode = false
+
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
+
                 if ((newNode.elementType != TEXT && newNode.elementType != MARKDOWN_INLINE_LINK) || !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
+
                     val fixableType = isFixable(newNode, configuration)
+
                     LONG_LINE.warnOnlyOrWarnAndFix(
                         configRules, emitWarn,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
@@ -114,17 +149,44 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         shouldBeAutoCorrected = fixableType !is None,
                         isFixMode,
                     ) {
-                        // we should keep in mind, that in the course of fixing we change the offset
+                        val textBeforeFix = node.text
                         val textLenBeforeFix = node.textLength
+                        val blankLinesBeforeFix = node.text.lines().size - countCodeLines(node)
+
                         fixableType.fix()
+
+                        val textAfterFix = node.text
                         val textLenAfterFix = node.textLength
-                        // offset for all next nodes changed to this delta
-                        offset += (textLenAfterFix - textLenBeforeFix)
+                        val blankLinesAfterFix = node.text.lines().size - countCodeLines(node)
+
+                        // checking that any fix may have been made
+                        isFixedSmthInChildNode = fixableType !is None
+
+                        // for cases when text doesn't change, and then we need to stop fixes
+                        if (textBeforeFix == textAfterFix) {
+                            isFixedSmthInChildNode = false
+                        }
+
+                        // in some kernel cases of long lines, when in fix step we adding `\n` to certain place of the line
+                        // and part of the line is transferred to the new line, this part may still be too long,
+                        // and then in next fix step we can start generating unnecessary blank lines,
+                        // to detect this we count blank lines and make unfix, if necessary
+                        if (blankLinesAfterFix > blankLinesBeforeFix) {
+                            isFixedSmthInChildNode = false
+                            fixableType.unFix()
+                        } else {
+                            // we should keep in mind, that in the course of fixing we change the offset
+                            // offset for all next nodes changed to this delta
+                            offset += (textLenAfterFix - textLenBeforeFix)
+                        }
                     }
                 }
             }
+
             offset += line.length + 1
         }
+
+        return isFixedSmthInChildNode
     }
 
     @Suppress(
@@ -342,7 +404,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     // fixme json method
     private fun isKdocValid(node: ASTNode) = try {
-        if (node.elementType == KDocTokens.TEXT) {
+        if (node.elementType == TEXT) {
             URL(node.text.split("\\s".toRegex()).last { it.isNotEmpty() })
         } else {
             URL(node.text.substring(node.text.indexOfFirst { it == ']' } + 2, node.textLength - 1))
@@ -458,10 +520,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
          * Abstract fix - fix anything nodes
          */
         abstract fun fix()
+
+        /**
+         * Function unFix - unfix incorrect unnecessary fix-changes
+         */
+        @Suppress("EmptyFunctionBlock")
+        open fun unFix() {
+            // Nothing to do here by default.
+        }
     }
 
     /**
-     * Class None show error long line have unidentified type or something else that we can't analyze
+     * Class None show error that long line have unidentified type or something else that we can't analyze
      */
     private class None : LongLineFixableCases(KotlinParser().createNode("ERROR")) {
         @Suppress("EmptyFunctionBlock")
@@ -493,9 +563,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 if (node.treePrev.isWhiteSpace()) {
                     node.treeParent.removeChild(node.treePrev)
                 }
-                val newLineNodeOnPreviousLine = node.findAllNodesWithConditionOnLine(node.getLineNumber() - 1) {
-                    it.elementType == WHITE_SPACE && it.textContains('\n')
-                }?.lastOrNull()
+
+                // for cases when property has multiline initialization, and then we need to move comment before first line
+                val newLineNodeOnPreviousLine = if (node.treeParent.elementType == PROPERTY) {
+                    node.treeParent.treeParent.findChildrenMatching {
+                        it.elementType == WHITE_SPACE && node.treeParent.treeParent.isChildAfterAnother(node.treeParent, it) && it.textContains('\n')
+                    }
+                        .lastOrNull()
+                } else {
+                    node.findAllNodesWithConditionOnLine(node.getLineNumber() - 1) {
+                        it.elementType == WHITE_SPACE && it.textContains('\n')
+                    }?.lastOrNull()
+                }
+
                 newLineNodeOnPreviousLine?.let {
                     val parent = node.treeParent
                     parent.removeChild(node)
@@ -667,6 +747,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         override fun fix() {
             node.appendNewlineMergingWhiteSpace(null, node.findChildByType(EQ)?.treeNext)
         }
+
+        override fun unFix() {
+            node.findChildAfter(EQ, WHITE_SPACE)?.let { correctWhiteSpace ->
+                if (correctWhiteSpace.textContains('\n')) {
+                    correctWhiteSpace.nextSibling()?.let { wrongWhiteSpace ->
+                        if (wrongWhiteSpace.textContains('\n')) {
+                            node.removeChild(wrongWhiteSpace)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -736,6 +828,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        override fun unFix() {
+            node.findChildBefore(RPAR, WHITE_SPACE)?.let { correctWhiteSpace ->
+                if (correctWhiteSpace.textContains('\n')) {
+                    correctWhiteSpace.prevSibling()?.let { wrongWhiteSpace ->
+                        if (wrongWhiteSpace.textContains('\n')) {
+                            node.removeChild(wrongWhiteSpace)
+                        }
+                    }
+                }
+            }
+        }
+
         private fun fixFirst(): Int {
             val lineLength = maximumLineLength.lineLength
             var startOffset = 0
@@ -768,6 +872,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = KotlinLogging.logger {}
+        private const val MAX_FIX_NUMBER = 10
         private const val MAX_LENGTH = 120L
         const val NAME_ID = "line-length"
     }
