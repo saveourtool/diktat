@@ -427,9 +427,9 @@ abstract class DiktatSmokeTestBase {
                 .toPath()
             resourceFilePath.walk(PathWalkOption.INCLUDE_DIRECTORIES).forEach { file ->
                 if (file.isDirectory()) {
-                    tempDir.resolve(file.relativize(resourceFilePath)).createDirectories()
+                    tempDir.resolve(resourceFilePath.relativize(file)).createDirectories()
                 } else {
-                    val dest = tempDir.resolve(file.relativize(resourceFilePath))
+                    val dest = tempDir.resolve(resourceFilePath.relativize(file))
                     file.copyTo(dest)
                     when (file.name) {
                         "build.gradle.kts_" -> dest.moveTo(dest.parent.resolve("build.gradle.kts"))
