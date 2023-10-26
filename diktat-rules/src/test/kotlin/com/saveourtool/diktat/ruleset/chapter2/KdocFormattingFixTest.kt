@@ -4,9 +4,12 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class KdocFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocFormatting) {
     @Test
@@ -62,4 +65,49 @@ class KdocFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocFormatt
     fun `KdocFormatting - sort order`() {
         fixAndCompare("KdocFormattingOrderExpected.kt", "KdocFormattingOrderTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_EMPTY_TAGS)
+    fun `several empty lines after package`(@TempDir tempDir: Path) {
+        fixAndCompareContent(
+            actualContent = """
+                /**
+                 * @param bar lorem ipsum
+                 *
+                 * dolor sit amet
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+
+                /**
+                 * @param bar lorem ipsum
+                 *
+                 * dolor sit amet
+                 *
+                 */
+                fun foo2(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent(),
+            expectedContent = """
+                package com.saveourtool.diktat
+
+                /**
+                 * @param bar
+                 * @return
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent(),
+            tempDir = tempDir,
+        )
+            .run {
+                Assertions.assertEquals(expectedContentWithoutWarns, actualContent)
+            }
+
+    }
+
+
 }

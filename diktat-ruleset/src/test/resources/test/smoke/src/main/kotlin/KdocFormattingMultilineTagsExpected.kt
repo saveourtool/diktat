@@ -5,7 +5,7 @@ package com.saveourtool.diktat
  * @param bar lorem ipsum
  *
  * dolor sit amet
-// ;warn:4: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected) (diktat-ruleset:kdoc-formatting)
+// ;warn:1: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected) (diktat-ruleset:kdoc-formatting)
  * @return
  */
 fun foo1(bar: Bar): Baz {
@@ -16,7 +16,7 @@ fun foo1(bar: Bar): Baz {
  * @param bar lorem ipsum
  *
  * dolor sit amet
-// ;warn:4: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected) (diktat-ruleset:kdoc-formatting)
+// ;warn:1: [KDOC_NO_EMPTY_TAGS] no empty descriptions in tag blocks are allowed: @return (cannot be auto-corrected) (diktat-ruleset:kdoc-formatting)
  * @return
  */
 fun foo2(bar: Bar): Baz {
