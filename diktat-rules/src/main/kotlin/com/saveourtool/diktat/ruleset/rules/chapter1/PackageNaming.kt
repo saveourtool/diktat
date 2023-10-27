@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
-import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -256,7 +255,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                     packageDirectiveParent.removeChild(packageDirectiveNode)
                     packageDirectiveParent.addChild(newPackageDirective, addBefore)
                     if (newPackageDirective.treePrev.elementType != WHITE_SPACE) {
-                        packageDirectiveParent.addChild(ASTFactory.whitespace("\n"), newPackageDirective)
+                        packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n"), newPackageDirective)
                     }
                 } else {
                     packageDirectiveParent.replaceChild(packageDirectiveNode, newPackageDirective)
