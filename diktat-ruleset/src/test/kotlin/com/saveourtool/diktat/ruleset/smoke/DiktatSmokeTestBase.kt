@@ -400,7 +400,6 @@ abstract class DiktatSmokeTestBase {
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private const val ROOT_RESOURCE_FILE_PATH = "test/smoke"
-        private const val RESOURCE_FILE_PATH = "$ROOT_RESOURCE_FILE_PATH/src/main/kotlin"
         private const val TEST_TIMEOUT_SECONDS = 30L
 
         @JvmStatic
