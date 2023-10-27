@@ -95,7 +95,6 @@ class PackagePathFixTest : FixTestBase(
         val expectedFile = folder.resolve("expected.kt").also {
             it.writeText("""
                 package com.saveourtool.diktat
-
                 /**
                  * @param bar
                  * @return something
