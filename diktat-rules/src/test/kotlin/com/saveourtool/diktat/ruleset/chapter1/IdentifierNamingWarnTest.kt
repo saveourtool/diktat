@@ -448,6 +448,16 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
+    fun `fixed false positive result on operator functions`() {
+        lintMethod(
+            """
+                    inline operator fun component3(): Boolean = asDynamic()[2].unsafeCast<Boolean>()
+            """.trimIndent()
+        )
+    }
+
+    @Test
     @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `regression - function argument type`() {
         // valid example, should not cause exceptions

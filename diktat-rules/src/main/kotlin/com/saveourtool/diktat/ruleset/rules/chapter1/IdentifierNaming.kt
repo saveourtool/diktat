@@ -412,7 +412,9 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             @Suppress("COLLAPSE_IF_STATEMENTS")
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
                 @Suppress("COLLAPSE_IF_STATEMENTS")
-                if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
+                val isOperatorFun = node.firstChildNode?.findChildrenMatching { it.elementType == KtNodeTypes.OPERATION_REFERENCE }
+
+                if (isOperatorFun == null && allMethodPrefixes.none { functionName.text.startsWith(it) }) {
                     // FixMe: add agressive autofix for this
                     FUNCTION_BOOLEAN_PREFIX.warn(configRules, emitWarn, functionName.text, functionName.startOffset, functionName)
                 }
