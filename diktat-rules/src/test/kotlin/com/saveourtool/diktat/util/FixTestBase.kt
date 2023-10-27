@@ -44,7 +44,7 @@ open class FixTestBase(
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
      * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
-     * @param overrideResourceReader [ResourceReader] to read resource content.
+     * @param overrideResourceReader function to override [ResourceReader] to read resource content.
      * @see fixAndCompareContent
      */
     protected fun fixAndCompare(

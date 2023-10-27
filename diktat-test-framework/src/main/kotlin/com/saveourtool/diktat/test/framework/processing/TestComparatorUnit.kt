@@ -23,7 +23,11 @@ class TestComparatorUnit(
     constructor(
         resourceFilePath: String,
         function: (testFile: Path) -> String,
-    ): this(resourceReader = ResourceReader.default.withPrefix(resourceFilePath), function = function)
+    ) : this(
+        resourceReader = ResourceReader.default.withPrefix(resourceFilePath),
+        function = function,
+    )
+
     /**
      * @param expectedResult the name of the resource which has the expected
      *   content. The trailing newline, if any, **won't be read** as a separate
@@ -32,7 +36,7 @@ class TestComparatorUnit(
      *   `newlineAtEnd` is `true`), then the file should end with **two**
      *   consecutive linebreaks.
      * @param testFileStr the name of the resource which has the original content.
-     * @param overrideResourceReader [ResourceReader] to read resource content
+     * @param overrideResourceReader function to override [ResourceReader] to read resource content
      * @return the result of file comparison by their content.
      * @see compareFilesFromFileSystem
      */
