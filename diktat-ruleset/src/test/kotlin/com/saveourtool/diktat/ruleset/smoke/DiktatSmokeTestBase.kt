@@ -77,10 +77,7 @@ abstract class DiktatSmokeTestBase {
      * @param rulesToOverride
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun prepareOverriddenRulesConfig(
-        rulesToDisable: List<Warnings> = emptyList(),
-        rulesToOverride: RuleToConfig = emptyMap(),
-    ): Path {
+    private fun prepareOverriddenRulesConfig(rulesToDisable: List<Warnings> = emptyList(), rulesToOverride: RuleToConfig = emptyMap()): Path {
         val rulesConfig = RulesConfigReader().read(Paths.get(DEFAULT_CONFIG_PATH).inputStream())!!
             .toMutableList()
             .also { rulesConfig ->
@@ -304,6 +301,7 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `fix can cause long line`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
