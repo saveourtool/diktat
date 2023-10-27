@@ -121,7 +121,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
         return when {
             System.getProperty("os.name").isWindows() -> arrayOf(savePath, *saveArgs)
-            else -> arrayOf("sh", "-c", "chmod 777 $savePath ; ./$savePath ${saveArgs.joinToString(" ")}")
+            else -> arrayOf("sh", "-c", "chmod 777 $savePath ; $savePath ${saveArgs.joinToString(" ")}")
         }.let { args ->
             ProcessBuilder(*args)
         }
