@@ -25,7 +25,9 @@ fun interface ResourceReader : Function1<String, Path?> {
          * Default implementation of [ResourceReader]
          */
         val default: ResourceReader = ResourceReader { resourceName ->
-            javaClass.classLoader.getResource(resourceName)
+            ResourceReader::class.java
+                .classLoader
+                .getResource(resourceName)
                 ?.toURI()
                 ?.toPath()
                 .also {
