@@ -24,8 +24,8 @@ fun interface ResourceReader : Function1<String, Path?> {
         /**
          * Default implementation of [ResourceReader]
          */
-        val default: ResourceReader = object : ResourceReader {
-            override fun invoke(resourceName: String): Path? = javaClass.classLoader.getResource(resourceName)
+        val default: ResourceReader = ResourceReader { resourceName ->
+            javaClass.classLoader.getResource(resourceName)
                 ?.toURI()
                 ?.toPath()
                 .also {
@@ -43,8 +43,8 @@ fun interface ResourceReader : Function1<String, Path?> {
         fun ResourceReader.withReplacements(
             tempDir: Path,
             replacements: Map<String, String>,
-        ): ResourceReader = object : ResourceReader {
-            override fun invoke(resourceName: String): Path? = this@withReplacements.invoke(resourceName)
+        ): ResourceReader = ResourceReader { resourceName ->
+            this@withReplacements.invoke(resourceName)
                 ?.let { originalFile ->
                     tempDir.resolve(resourceName)
                         .also { resultFile ->
@@ -63,9 +63,7 @@ fun interface ResourceReader : Function1<String, Path?> {
          */
         fun ResourceReader.withPrefix(
             resourceFilePath: String,
-        ): ResourceReader = object : ResourceReader {
-            override fun invoke(resourceName: String): Path? = this@withPrefix.invoke("$resourceFilePath/$resourceName")
-        }
+        ): ResourceReader = ResourceReader { resourceName -> this@withPrefix.invoke("$resourceFilePath/$resourceName") }
 
         private fun String.replaceAll(replacements: Map<String, String>): String = replacements.entries
             .fold(this) { result, replacement ->
