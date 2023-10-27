@@ -28,19 +28,20 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     ) {
         val result = getTestComparatorUnit(config)
             .compareFilesFromResources(expected, test)
-        if (!result.isSuccessful) {
-            Assertions.assertAll(
-                {
-                    assertUnfixedLintErrors {
-                        org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).isEmpty()
-                    }
-                },
-                {
-                    Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent)
+        Assertions.assertAll(
+            {
+                Assertions.assertTrue(result.isSuccessful)
+            },
+            {
+                Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent)
+            },
+            {
+                assertUnfixedLintErrors {
+                    org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).isEmpty()
                 }
-            )
-        }
-        Assertions.assertTrue(result.isSuccessful)
+            },
+        )
+
     }
 
     @BeforeEach
@@ -53,7 +54,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     }
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
-        resourceFilePath = RESOURCE_FILE_PATH,
+        resourceReader = { tempDir.resolve("src/main/kotlin").resolve(it).normalize() },
         function = { testFile ->
             lint(
                 ruleSetSupplier = {

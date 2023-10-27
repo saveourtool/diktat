@@ -43,7 +43,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     override fun assertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) = Unit
 
     /**
-     * @param testPath path to file with code that will be transformed by formatter, relative to [TestComparatorUnit.resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, loaded by [TestComparatorUnit.resourceReader]
      * @param configFilePath path of diktat-analysis file
      */
     @Suppress("TOO_LONG_FUNCTION")
@@ -107,13 +107,13 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     }
 
     /**
-     * @param testPath path to file with code that will be transformed by formatter, relative to [TestComparatorUnit.resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, loaded by [TestComparatorUnit.resourceReader]
      * @return ProcessBuilder
      */
     private fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
-        val savePath = "$BASE_DIRECTORY/${getSaveForCurrentOs()}"
+        val savePath = baseDirectoryPath.resolve(getSaveForCurrentOs()).toString()
         val saveArgs = arrayOf(
-            "$BASE_DIRECTORY/src/main/kotlin",
+            baseDirectoryPath.resolve("src/main/kotlin").toString(),
             testPath,
             "--log",
             "all"
@@ -121,7 +121,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
         return when {
             System.getProperty("os.name").isWindows() -> arrayOf(savePath, *saveArgs)
-            else -> arrayOf("sh", "-c", "chmod 777 $savePath ; ./$savePath ${saveArgs.joinToString(" ")}")
+            else -> arrayOf("sh", "-c", "chmod 777 $savePath ; $savePath ${saveArgs.joinToString(" ")}")
         }.let { args ->
             ProcessBuilder(*args)
         }
@@ -129,10 +129,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
         private const val SAVE_VERSION: String = "0.3.4"
         private const val TEMP_DIRECTORY = ".save-cli"
-        private val baseDirectoryPath = Path(BASE_DIRECTORY).absolute()
+        private val baseDirectoryPath = tempDir.absolute()
 
         private fun getSaveForCurrentOs(): String {
             val osName = System.getProperty("os.name")

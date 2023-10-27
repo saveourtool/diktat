@@ -33,12 +33,10 @@ import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_BEFORE_DOT
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
-import com.saveourtool.diktat.test.framework.util.deleteIfExistsSilently
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
@@ -46,14 +44,23 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.io.TempDir
-import java.io.File
+import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
 import java.nio.file.Paths
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit.SECONDS
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.PathWalkOption
+import kotlin.io.path.copyTo
+import kotlin.io.path.createDirectories
 import kotlin.io.path.createTempFile
 import kotlin.io.path.inputStream
+import kotlin.io.path.isDirectory
+import kotlin.io.path.moveTo
+import kotlin.io.path.name
+import kotlin.io.path.toPath
+import kotlin.io.path.walk
 import kotlin.io.path.writeText
 
 import kotlinx.serialization.builtins.ListSerializer
@@ -390,9 +397,12 @@ abstract class DiktatSmokeTestBase {
 
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
-        const val RESOURCE_FILE_PATH = "test/smoke/src/main/kotlin"
+        private const val ROOT_RESOURCE_FILE_PATH = "test/smoke"
         private const val TEST_TIMEOUT_SECONDS = 30L
-        private val tmpFiles: MutableList<File> = mutableListOf()
+
+        @JvmStatic
+        @TempDir
+        internal var tempDir: Path = Paths.get("/invalid")
 
         @TempDir
         @JvmStatic
@@ -400,30 +410,31 @@ abstract class DiktatSmokeTestBase {
 
         @BeforeAll
         @JvmStatic
+        @OptIn(ExperimentalPathApi::class)
         @Suppress("AVOID_NULL_CHECKS")
         internal fun createTmpFiles() {
-            listOf(
-                "$RESOURCE_FILE_PATH/../../../build.gradle.kts_" to "build.gradle.kts",
-                "$RESOURCE_FILE_PATH/Example1Test.kt" to "Example1-2Test.kt",
-            )
-                .map { (resource, targetFileName) ->
-                    DiktatSmokeTestBase::class.java
-                        .classLoader
-                        .getResource(resource)!!
-                        .toURI()
-                        .let {
-                            val tmpTestFile = File(it).parentFile.resolve(targetFileName)
-                            File(it).copyTo(tmpTestFile, true)
-                        }
-                        .let { tmpFiles.add(it) }
+            val resourceFilePath = DiktatSmokeTestBase::class.java
+                .classLoader
+                .getResource(ROOT_RESOURCE_FILE_PATH)
+                .let { resource ->
+                    requireNotNull(resource) {
+                        "$ROOT_RESOURCE_FILE_PATH not found"
+                    }
                 }
-        }
+                .toURI()
+                .toPath()
+            resourceFilePath.walk(PathWalkOption.INCLUDE_DIRECTORIES).forEach { file ->
+                if (file.isDirectory()) {
+                    tempDir.resolve(resourceFilePath.relativize(file)).createDirectories()
+                } else {
+                    val dest = tempDir.resolve(resourceFilePath.relativize(file))
+                    file.copyTo(dest)
+                    when (file.name) {
+                        "build.gradle.kts_" -> dest.moveTo(dest.parent.resolve("build.gradle.kts"))
+                        "Example1Test.kt" -> dest.copyTo(dest.parent.resolve("Example1-2Test.kt"))
+                    }
+                }
 
-        @AfterAll
-        @JvmStatic
-        internal fun deleteTmpFiles() {
-            tmpFiles.forEach {
-                it.toPath().deleteIfExistsSilently()
             }
         }
     }

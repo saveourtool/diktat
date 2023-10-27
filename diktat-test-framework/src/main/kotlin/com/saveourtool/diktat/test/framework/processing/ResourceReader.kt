@@ -11,7 +11,7 @@ import kotlin.io.path.writeText
 /**
  * A base interface to read resources for testing purposes
  */
-interface ResourceReader : Function1<String, Path?> {
+fun interface ResourceReader : Function1<String, Path?> {
     /**
      * @param resourceName
      * @return [Path] for provider [resourceName]
@@ -24,8 +24,10 @@ interface ResourceReader : Function1<String, Path?> {
         /**
          * Default implementation of [ResourceReader]
          */
-        val default: ResourceReader = object : ResourceReader {
-            override fun invoke(resourceName: String): Path? = javaClass.classLoader.getResource(resourceName)
+        val default: ResourceReader = ResourceReader { resourceName ->
+            ResourceReader::class.java
+                .classLoader
+                .getResource(resourceName)
                 ?.toURI()
                 ?.toPath()
                 .also {
@@ -40,11 +42,11 @@ interface ResourceReader : Function1<String, Path?> {
          * @param replacements a map of replacements which will be applied to actual and expected content before comparing.
          * @return Instance of [ResourceReader] with replacements of content
          */
-        fun withReplacements(
+        fun ResourceReader.withReplacements(
             tempDir: Path,
             replacements: Map<String, String>,
-        ): ResourceReader = object : ResourceReader {
-            override fun invoke(resourceName: String): Path? = default.invoke(resourceName)
+        ): ResourceReader = ResourceReader { resourceName ->
+            this@withReplacements.invoke(resourceName)
                 ?.let { originalFile ->
                     tempDir.resolve(resourceName)
                         .also { resultFile ->
@@ -56,6 +58,14 @@ interface ResourceReader : Function1<String, Path?> {
                         }
                 }
         }
+
+        /**
+         * @param resourceFilePath a prefix for loading resources
+         * @return Instance of [ResourceReader] which loads resource with [resourceFilePath] as prefix
+         */
+        fun ResourceReader.withPrefix(
+            resourceFilePath: String,
+        ): ResourceReader = ResourceReader { resourceName -> this@withPrefix.invoke("$resourceFilePath/$resourceName") }
 
         private fun String.replaceAll(replacements: Map<String, String>): String = replacements.entries
             .fold(this) { result, replacement ->
