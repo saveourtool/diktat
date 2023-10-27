@@ -4,7 +4,7 @@ import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import com.saveourtool.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import com.saveourtool.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
-import com.saveourtool.diktat.test.framework.processing.ResourceReader
+import com.saveourtool.diktat.test.framework.processing.ResourceReader.Companion.withReplacements
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
@@ -31,13 +31,13 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.HEADER_WRONG_FORMAT)
     fun `new line should be inserted after header KDoc`(@TempDir tempDir: Path) {
-        fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
+        fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt", overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) })
     }
 
     @Test
     @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
     fun `if no copyright is present and mandatoryCopyright=true, it is added`(@TempDir tempDir: Path) {
-        fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
+        fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt", overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) })
     }
 
     @Test
@@ -54,7 +54,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 ),
                 RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())
             ),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -64,7 +64,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
     fun `header KDoc should be moved before package`(@TempDir tempDir: Path) {
-        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt", resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement))
+        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt", overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) })
     }
 
     @Test
@@ -72,7 +72,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
     fun `header KDoc should be moved before package - no copyright`(@TempDir tempDir: Path) {
         fixAndCompare("MisplacedHeaderKdocNoCopyrightExpected.kt", "MisplacedHeaderKdocNoCopyrightTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, emptyMap()), RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -82,7 +82,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare(
             "MisplacedHeaderKdocAppendedCopyrightExpected.kt",
             "MisplacedHeaderKdocAppendedCopyrightTest.kt",
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -94,7 +94,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -106,7 +106,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2021. All rights reserved."
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -118,7 +118,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -130,7 +130,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -142,7 +142,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2021. All rights reserved."
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -168,7 +168,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 |    limitations under the License.
                 """.trimMargin()
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 
@@ -186,7 +186,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                     |   You may obtain a copy of the License at
             """.trimMargin()
             ))),
-            resourceReader = ResourceReader.withReplacements(tempDir, currentYearReplacement),
+            overrideResourceReader = { it.withReplacements(tempDir, currentYearReplacement) },
         )
     }
 

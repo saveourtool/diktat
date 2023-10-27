@@ -1,5 +1,6 @@
 package com.saveourtool.diktat.test.framework.processing
 
+import com.saveourtool.diktat.test.framework.processing.ResourceReader.Companion.withPrefix
 import com.saveourtool.diktat.test.framework.util.readTextOrNull
 import com.saveourtool.diktat.test.framework.util.toUnixEndLines
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -10,15 +11,19 @@ import kotlin.io.path.name
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
  *
- * @param resourceFilePath only used when the files are loaded as resources,
+ * @param resourceReader only used when the files are loaded as resources,
  *   via [compareFilesFromResources].
  * @param function a transformation that will be applied to the file
  */
 @Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(
-    private val resourceFilePath: String,
+    private val resourceReader: ResourceReader = ResourceReader.default,
     private val function: (testFile: Path) -> String,
 ) {
+    constructor(
+        resourceFilePath: String,
+        function: (testFile: Path) -> String,
+    ): this(resourceReader = ResourceReader.default.withPrefix(resourceFilePath), function = function)
     /**
      * @param expectedResult the name of the resource which has the expected
      *   content. The trailing newline, if any, **won't be read** as a separate
@@ -27,7 +32,7 @@ class TestComparatorUnit(
      *   `newlineAtEnd` is `true`), then the file should end with **two**
      *   consecutive linebreaks.
      * @param testFileStr the name of the resource which has the original content.
-     * @param resourceReader [ResourceReader] to read resource content
+     * @param overrideResourceReader [ResourceReader] to read resource content
      * @return the result of file comparison by their content.
      * @see compareFilesFromFileSystem
      */
@@ -35,17 +40,18 @@ class TestComparatorUnit(
     fun compareFilesFromResources(
         expectedResult: String,
         testFileStr: String,
-        resourceReader: ResourceReader = ResourceReader.default,
+        overrideResourceReader: (ResourceReader) -> ResourceReader = { it },
     ): FileComparisonResult {
-        val expectedPath = resourceReader("$resourceFilePath/$expectedResult")
-        val testPath = resourceReader("$resourceFilePath/$testFileStr")
+        val overriddenResourceReader = overrideResourceReader(resourceReader)
+        val expectedPath = overriddenResourceReader(expectedResult)
+        val testPath = overriddenResourceReader(testFileStr)
         if (testPath == null || expectedPath == null) {
             log.error { "Not able to find files for running test: $expectedResult and $testFileStr" }
             return FileComparisonResult(
                 isSuccessful = false,
                 delta = null,
-                actualContent = "// $resourceFilePath/$expectedResult is found: ${testPath != null}",
-                expectedContent = "// $resourceFilePath/$testFileStr is found: ${expectedPath != null}")
+                actualContent = "// $expectedResult is found: ${testPath != null}",
+                expectedContent = "// $testFileStr is found: ${expectedPath != null}")
         }
 
         return compareFilesFromFileSystem(

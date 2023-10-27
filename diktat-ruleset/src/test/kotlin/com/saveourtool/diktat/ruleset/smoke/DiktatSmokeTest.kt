@@ -4,6 +4,7 @@ import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.ktlint.format
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
+import com.saveourtool.diktat.test.framework.processing.ResourceReader
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -46,7 +47,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     }
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
-        resourceFilePath = tempDir.toString(),
+        resourceReader = { tempDir.resolve("src/main/kotlin").resolve(it) },
         function = { testFile ->
             format(
                 ruleSetSupplier = {

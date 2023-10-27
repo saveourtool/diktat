@@ -44,18 +44,18 @@ open class FixTestBase(
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
      * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
-     * @param resourceReader [ResourceReader] to read resource content.
+     * @param overrideResourceReader [ResourceReader] to read resource content.
      * @see fixAndCompareContent
      */
     protected fun fixAndCompare(
         expectedPath: String,
         testPath: String,
         overrideRulesConfigList: List<RulesConfig>? = null,
-        resourceReader: ResourceReader = ResourceReader.default,
+        overrideResourceReader: (ResourceReader) -> ResourceReader = { it },
     ) {
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
-            .compareFilesFromResources(expectedPath, testPath, resourceReader)
+            .compareFilesFromResources(expectedPath, testPath, overrideResourceReader)
         if (!result.isSuccessful) {
             Assertions.assertEquals(
                 result.expectedContentWithoutWarns,
