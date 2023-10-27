@@ -9,6 +9,10 @@ import com.saveourtool.diktat.util.FixTestBase
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 
 class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", ::FileStructureRule) {
     @Test
@@ -95,5 +99,51 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
     fun `invalid move in kts files`() {
         fixAndCompare("ScriptPackageDirectiveExpected.kts", "ScriptPackageDirectiveTest.kts")
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS)
+    fun `several empty lines after package`(@TempDir tempDir: Path) {
+        val folder = tempDir.resolve("src/main/kotlin/com/saveourtool/diktat").also {
+            it.createDirectories()
+        }
+        val testFile = folder.resolve("test.kt").also {
+            it.writeText("""
+                package com.saveourtool.diktat
+                /**
+                 * @param bar
+                 * @return something
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent())
+        }
+        val expectedFile = folder.resolve("expected.kt").also {
+            it.writeText("""
+                package com.saveourtool.diktat
+                /**
+                 * @param bar
+                 * @return something
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent())
+        }
+        fixAndCompare(
+            expectedFile,
+            testFile,
+            overrideRulesConfigList = listOf(
+                RulesConfig(
+                    name = WarningNames.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
+                    enabled = true,
+                ),
+                RulesConfig(
+                    name = WarningNames.WRONG_NEWLINES_AROUND_KDOC,
+                    enabled = true,
+                )
+            ),
+        )
     }
 }

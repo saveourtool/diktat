@@ -1,3 +1,4 @@
+package com.saveourtool.diktat
 /**
  * @param bar lorem ipsum
  *
