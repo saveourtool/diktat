@@ -39,11 +39,9 @@ import com.charleskorn.kaml.YamlConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
-import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -403,10 +401,6 @@ abstract class DiktatSmokeTestBase {
         @JvmStatic
         @TempDir
         internal var tempDir: Path = Paths.get("/invalid")
-
-        @TempDir
-        @JvmStatic
-        internal var tempDir: Path? = null
 
         @BeforeAll
         @JvmStatic
