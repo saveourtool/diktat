@@ -43,7 +43,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     override fun assertUnfixedLintErrors(diktatErrorConsumer: (List<DiktatError>) -> Unit) = Unit
 
     /**
-     * @param testPath path to file with code that will be transformed by formatter, relative to [TestComparatorUnit.resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, loaded by [TestComparatorUnit.resourceReader]
      * @param configFilePath path of diktat-analysis file
      */
     @Suppress("TOO_LONG_FUNCTION")
@@ -107,7 +107,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
     }
 
     /**
-     * @param testPath path to file with code that will be transformed by formatter, relative to [TestComparatorUnit.resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, loaded by [TestComparatorUnit.resourceReader]
      * @return ProcessBuilder
      */
     private fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
