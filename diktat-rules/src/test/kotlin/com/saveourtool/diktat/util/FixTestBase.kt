@@ -56,19 +56,56 @@ open class FixTestBase(
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
             .compareFilesFromResources(expectedPath, testPath, overrideResourceReader)
-        if (!result.isSuccessful) {
-            Assertions.assertEquals(
-                result.expectedContentWithoutWarns,
-                result.actualContent,
-            ) {
-                "Content are different"
+        Assertions.assertAll(
+            {
+                Assertions.assertTrue(
+                    result.isSuccessful
+                ) {
+                    "Detected delta: ${result.delta}"
+                }
+            },
+            {
+                Assertions.assertEquals(
+                    result.expectedContentWithoutWarns,
+                    result.actualContent,
+                ) {
+                    "Content are different"
+                }
             }
-        }
-        Assertions.assertTrue(
-            result.isSuccessful
-        ) {
-            "Detected delta: ${result.delta}"
-        }
+        )
+    }
+
+    /**
+     * @param expectedPath path to file with expected result
+     * @param testPath path to file with code that will be transformed by formatter
+     * @param overrideRulesConfigList optional override to [defaultRulesConfigList]
+     * @see fixAndCompareContent
+     */
+    protected fun fixAndCompare(
+        expectedPath: Path,
+        testPath: Path,
+        overrideRulesConfigList: List<RulesConfig>? = null,
+    ) {
+        val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
+        val result = testComparatorUnit
+            .compareFilesFromFileSystem(expectedPath, testPath)
+        Assertions.assertAll(
+            {
+                Assertions.assertTrue(
+                    result.isSuccessful
+                ) {
+                    "Detected delta: ${result.delta}"
+                }
+            },
+            {
+                Assertions.assertEquals(
+                    result.expectedContentWithoutWarns,
+                    result.actualContent,
+                ) {
+                    "Content are different"
+                }
+            }
+        )
     }
 
     /**

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 
 class PackagePathFixTest : FixTestBase(
     "test/paragraph1/naming/package/src/main/kotlin",
@@ -76,8 +78,11 @@ class PackagePathFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `several empty lines after package`(@TempDir tempDir: Path) {
-        fixAndCompareContent(
-            """
+        val folder = tempDir.resolve("src/main/kotlin/com/saveourtool/diktat").also {
+            it.createDirectories()
+        }
+        val testFile = folder.resolve("test.kt").also {
+            it.writeText("""
                 /**
                  * @param bar
                  * @return something
@@ -85,8 +90,10 @@ class PackagePathFixTest : FixTestBase(
                 fun foo1(bar: Bar): Baz {
                     // placeholder
                 }
-            """.trimIndent(),
-            """
+            """.trimIndent())
+        }
+        val expectedFile = folder.resolve("expected.kt").also {
+            it.writeText("""
                 package com.saveourtool.diktat
 
                 /**
@@ -96,12 +103,8 @@ class PackagePathFixTest : FixTestBase(
                 fun foo1(bar: Bar): Baz {
                     // placeholder
                 }
-            """.trimIndent(),
-            tempDir = tempDir,
-        )
-            .run {
-                Assertions.assertEquals(expectedContentWithoutWarns, actualContent)
-            }
-
+            """.trimIndent())
+        }
+        fixAndCompare(expectedFile, testFile)
     }
 }
