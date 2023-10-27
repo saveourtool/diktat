@@ -111,9 +111,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
      * @return ProcessBuilder
      */
     private fun createProcessBuilderWithCmd(testPath: String): ProcessBuilder {
-        val savePath = "$BASE_DIRECTORY/${getSaveForCurrentOs()}"
+        val savePath = baseDirectoryPath.resolve(getSaveForCurrentOs()).toString()
         val saveArgs = arrayOf(
-            "$BASE_DIRECTORY/src/main/kotlin",
+            baseDirectoryPath.resolve("src/main/kotlin").toString(),
             testPath,
             "--log",
             "all"
@@ -129,10 +129,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val BASE_DIRECTORY = "src/test/resources/test/smoke"
         private const val SAVE_VERSION: String = "0.3.4"
         private const val TEMP_DIRECTORY = ".save-cli"
-        private val baseDirectoryPath = Path(BASE_DIRECTORY).absolute()
+        private val baseDirectoryPath = tempDir.absolute()
 
         private fun getSaveForCurrentOs(): String {
             val osName = System.getProperty("os.name")
