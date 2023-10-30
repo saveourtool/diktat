@@ -33,7 +33,7 @@ jobs:
           java-version: 11
 
       - name: 'Run snapshot action'
-        uses: mikepenz/gradle-dependency-submission@v0.9.0
+        uses: mikepenz/gradle-dependency-submission@v0.9.1
         with:
           use-gradlew: true
           gradle-build-module: |-
