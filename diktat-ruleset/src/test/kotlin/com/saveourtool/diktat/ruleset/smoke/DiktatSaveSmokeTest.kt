@@ -131,7 +131,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         private val logger = KotlinLogging.logger {}
         private const val SAVE_VERSION: String = "0.3.4"
         private const val TEMP_DIRECTORY = ".save-cli"
-        private val baseDirectoryPath = tempDir.absolute()
+        private val baseDirectoryPath by lazy { tempDir.absolute() }
 
         private fun getSaveForCurrentOs(): String {
             val osName = System.getProperty("os.name")
@@ -182,21 +182,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
                 diktatFrom?.copyTo(diktat, overwrite = true)
             }
-        }
-
-        @AfterAll
-        @JvmStatic
-        internal fun afterAll() {
-            val diktat = baseDirectoryPath / DIKTAT_FAT_JAR
-            val save = baseDirectoryPath / getSaveForCurrentOs()
-            val ktlint = baseDirectoryPath / KTLINT_FAT_JAR
-            val tempDirectory = baseDirectoryPath / TEMP_DIRECTORY
-
-            diktat.deleteIfExistsSilently()
-            ktlint.deleteIfExistsSilently()
-            save.deleteIfExistsSilently()
-
-            tempDirectory.deleteIfExistsRecursively()
         }
     }
 }
