@@ -35,7 +35,6 @@ import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
-import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
@@ -403,21 +402,15 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-        // check for methods that return Boolean
-        val functionReturnType = node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.text
-
         // We don't need to ask subclasses to rename superclass methods
         if (!node.isOverridden()) {
+            // check for methods that return Boolean
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             @Suppress("COLLAPSE_IF_STATEMENTS")
-            if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-                @Suppress("COLLAPSE_IF_STATEMENTS")
-                val isOperatorFun = node.firstChildNode?.findChildrenMatching { it.elementType == KtNodeTypes.OPERATION_REFERENCE }
 
-                if (isOperatorFun == null && allMethodPrefixes.none { functionName.text.startsWith(it) }) {
-                    // FixMe: add agressive autofix for this
-                    FUNCTION_BOOLEAN_PREFIX.warn(configRules, emitWarn, functionName.text, functionName.startOffset, functionName)
-                }
+            if (node.hasBooleanReturnType() && !node.isOperatorFun() && allMethodPrefixes.none { functionName.text.startsWith(it) }) {
+                // FixMe: add agressive autofix for this
+                FUNCTION_BOOLEAN_PREFIX.warn(configRules, emitWarn, functionName.text, functionName.startOffset, functionName)
             }
         }
 
