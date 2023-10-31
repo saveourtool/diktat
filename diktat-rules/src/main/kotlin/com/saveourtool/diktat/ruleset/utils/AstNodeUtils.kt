@@ -7,7 +7,7 @@
     "FILE_NAME_MATCH_CLASS",
     "KDOC_WITHOUT_RETURN_TAG",
     "KDOC_WITHOUT_PARAM_TAG",
-    "MatchingDeclarationName",
+    "MatchingDeclarationName"
 )
 
 package com.saveourtool.diktat.ruleset.utils
@@ -186,6 +186,7 @@ fun ASTNode.isAnonymousFunction(): Boolean {
 
 /**
  * Checks if the function has boolean return type
+ *
  * @return true if the function has boolean return type
  */
 fun ASTNode.hasBooleanReturnType(): Boolean {
@@ -195,6 +196,7 @@ fun ASTNode.hasBooleanReturnType(): Boolean {
 
 /**
  * Checks if the function is an operator function
+ *
  * @return true if the function is an operator function
  */
 fun ASTNode.isOperatorFun(): Boolean {

@@ -1,3 +1,7 @@
+@file:Suppress(
+    "LargeClass"
+)
+
 package com.saveourtool.diktat.ruleset.chapter1
 
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
