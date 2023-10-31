@@ -23,11 +23,17 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         expected: String,
         test: String,
     ) {
-        Assertions.assertTrue(
-            getTestComparatorUnit(config)
-                .compareFilesFromResources(expected, test)
-                .isSuccessful
+        val result = getTestComparatorUnit(config)
+            .compareFilesFromResources(expected, test)
+        Assertions.assertAll(
+            {
+                Assertions.assertTrue(result.isSuccessful)
+            },
+            {
+                Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent)
+            }
         )
+
     }
 
     @BeforeEach
@@ -40,7 +46,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     }
 
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
-        resourceFilePath = RESOURCE_FILE_PATH,
+        resourceReader = { tempDir.resolve("src/main/kotlin").resolve(it).normalize() },
         function = { testFile ->
             format(
                 ruleSetSupplier = {
