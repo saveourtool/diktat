@@ -186,6 +186,7 @@ fun ASTNode.isAnonymousFunction(): Boolean {
 
 /**
  * Checks if the function has boolean return type
+ * @return true if the function has boolean return type
  */
 fun ASTNode.hasBooleanReturnType(): Boolean {
     val functionReturnType = this.findChildAfter(VALUE_PARAMETER_LIST, KtNodeTypes.TYPE_REFERENCE)?.text
@@ -194,6 +195,7 @@ fun ASTNode.hasBooleanReturnType(): Boolean {
 
 /**
  * Checks if the function is an operator function
+ * @return true if the function is an operator function
  */
 fun ASTNode.isOperatorFun(): Boolean {
     val modifierListNode = this.findChildByType(MODIFIER_LIST)
