@@ -7,7 +7,7 @@
     "FILE_NAME_MATCH_CLASS",
     "KDOC_WITHOUT_RETURN_TAG",
     "KDOC_WITHOUT_PARAM_TAG",
-    "MatchingDeclarationName"
+    "MatchingDeclarationName",
 )
 
 package com.saveourtool.diktat.ruleset.utils
