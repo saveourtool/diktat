@@ -13,6 +13,7 @@ import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
+import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 
 /**
@@ -126,14 +127,16 @@ open class FixTestBase(
         @Language("kotlin") actualContent: String,
         @Language("kotlin") expectedContent: String = actualContent,
         tempDir: Path,
+        subFolder: String? = null,
         overrideRulesConfigList: List<RulesConfig>? = null
     ): FileComparisonResult {
-        val actual = tempDir / "actual.kt"
+        val folder = subFolder?.let { tempDir / it }?.also { it.createDirectories() } ?: tempDir
+        val actual = folder / "actual.kt"
         actual.bufferedWriter().use { out ->
             out.write(actualContent)
         }
 
-        val expected = tempDir / "expected.kt"
+        val expected = folder / "expected.kt"
         expected.bufferedWriter().use { out ->
             out.write(expectedContent)
         }

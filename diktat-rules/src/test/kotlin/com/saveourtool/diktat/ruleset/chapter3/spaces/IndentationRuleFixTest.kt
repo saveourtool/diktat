@@ -234,7 +234,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                                          tempDir: Path
         ): FileComparisonResult {
             val config = IndentationConfig(NEWLINE_AT_END to false).withCustomParameters().asRulesConfigList()
-            return fixAndCompareContent(actualCode, expectedCode, tempDir, config)
+            return fixAndCompareContent(actualCode, expectedCode, tempDir, overrideRulesConfigList = config)
         }
     }
 }

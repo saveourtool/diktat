@@ -78,22 +78,8 @@ class PackagePathFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `several empty lines after package`(@TempDir tempDir: Path) {
-        val folder = tempDir.resolve("src/main/kotlin/com/saveourtool/diktat").also {
-            it.createDirectories()
-        }
-        val testFile = folder.resolve("test.kt").also {
-            it.writeText("""
-                /**
-                 * @param bar
-                 * @return something
-                 */
-                fun foo1(bar: Bar): Baz {
-                    // placeholder
-                }
-            """.trimIndent())
-        }
-        val expectedFile = folder.resolve("expected.kt").also {
-            it.writeText("""
+        fixAndCompareContent(
+            expectedContent = """
                 package com.saveourtool.diktat
                 /**
                  * @param bar
@@ -102,8 +88,23 @@ class PackagePathFixTest : FixTestBase(
                 fun foo1(bar: Bar): Baz {
                     // placeholder
                 }
-            """.trimIndent())
+            """.trimIndent(),
+            actualContent = """
+                /**
+                 * @param bar
+                 * @return something
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent(),
+            subFolder = "src/main/kotlin/com/saveourtool/diktat",
+            tempDir = tempDir,
+        ).also { result ->
+            Assertions.assertAll(
+                { Assertions.assertTrue(result.isSuccessful) },
+                { Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent) }
+            )
         }
-        fixAndCompare(expectedFile, testFile)
     }
 }

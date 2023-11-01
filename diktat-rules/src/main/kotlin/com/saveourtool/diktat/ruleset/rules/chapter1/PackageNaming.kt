@@ -54,6 +54,11 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         configuration.domainName?.let {
             domainName = it
             if (node.elementType == PACKAGE_DIRECTIVE) {
+                println("Before")
+                println(
+                    node.treeParent.prettyPrint()
+                )
+                println("Before--END")
                 val filePath = node.getFilePath()
 
                 // getting all identifiers from existing package name into the list like [org, diktat, project]
@@ -77,6 +82,11 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 checkPackageName(wordsInPackageName, node)
                 // fix in checkFilePathMatchesWithPackageName is much more aggressive than fixes in checkPackageName, they can conflict
                 checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
+                println("After")
+                println(
+                    node.treeParent.prettyPrint()
+                )
+                println("After--END")
             }
         } ?: if (visitorCounter.incrementAndGet() == 1) {
             log.error {
