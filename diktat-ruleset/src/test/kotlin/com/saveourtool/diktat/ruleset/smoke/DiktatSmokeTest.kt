@@ -2,7 +2,6 @@ package com.saveourtool.diktat.ruleset.smoke
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.ktlint.format
-import com.saveourtool.diktat.ktlint.lint
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
@@ -33,11 +32,6 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             {
                 Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent)
             },
-//            {
-//                assertUnfixedLintErrors {
-//                    org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).isEmpty()
-//                }
-//            },
         )
 
     }
@@ -54,15 +48,6 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     private fun getTestComparatorUnit(config: Path) = TestComparatorUnit(
         resourceReader = { tempDir.resolve("src/main/kotlin").resolve(it).normalize() },
         function = { testFile ->
-            lint(
-                ruleSetSupplier = {
-                    val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
-                    val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
-                    diktatRuleSetFactory(diktatRuleConfigReader(config.inputStream()))
-                },
-                file = testFile,
-                cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
-            )
             format(
                 ruleSetSupplier = {
                     val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
@@ -70,7 +55,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
                     diktatRuleSetFactory(diktatRuleConfigReader(config.inputStream()))
                 },
                 file = testFile,
-                cb = { _, _ -> },
+                cb = { lintError, _ -> unfixedLintErrors.add(lintError) },
             )
         },
     )
