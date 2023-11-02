@@ -62,19 +62,18 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 deleteIfExistsSilently()
             }
 
-            try {
-                configFilePath.copyTo(configFile, overwrite = true)
+            configFilePath.copyTo(configFile, overwrite = true)
 
-                val processBuilder = createProcessBuilderWithCmd(testPath).apply {
-                    redirectErrorStream(true)
-                    redirectOutput(ProcessBuilder.Redirect.appendTo(saveLog.toFile()))
+            val processBuilder = createProcessBuilderWithCmd(testPath).apply {
+                redirectErrorStream(true)
+                redirectOutput(ProcessBuilder.Redirect.appendTo(saveLog.toFile()))
 
-                    /*
+                /*
                      * Inherit JAVA_HOME for the child process.
                      */
-                    inheritJavaHome()
+                inheritJavaHome()
 
-                    /*
+                /*
                      * On Windows, ktlint is often unable to relativize paths
                      * (see https://github.com/pinterest/ktlint/issues/1608).
                      *
@@ -83,26 +82,22 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                      * So let's force the temporary directory to be the
                      * sub-directory of the project root.
                      */
-                    temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
-                }
-
-                val saveProcess = processBuilder.start()
-                val saveExitCode = saveProcess.waitFor()
-                softly.assertThat(saveExitCode).describedAs("The exit code of SAVE").isZero
-
-                softly.assertThat(saveLog).isRegularFile
-
-                val saveOutput = saveLog.readText()
-
-                val saveCommandLine = processBuilder.command().joinToString(separator = " ")
-                softly.assertThat(saveOutput)
-                    .describedAs("The output of \"$saveCommandLine\"")
-                    .isNotEmpty
-                    .contains("SUCCESS")
-            } finally {
-                configFile.deleteIfExistsSilently()
-                saveLog.deleteIfExistsSilently()
+                temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
             }
+
+            val saveProcess = processBuilder.start()
+            val saveExitCode = saveProcess.waitFor()
+            softly.assertThat(saveExitCode).describedAs("The exit code of SAVE").isZero
+
+            softly.assertThat(saveLog).isRegularFile
+
+            val saveOutput = saveLog.readText()
+
+            val saveCommandLine = processBuilder.command().joinToString(separator = " ")
+            softly.assertThat(saveOutput)
+                .describedAs("The output of \"$saveCommandLine\"")
+                .isNotEmpty
+                .contains("SUCCESS")
         }
     }
 

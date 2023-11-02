@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.lexer.KtTokens.EOL_COMMENT
 import org.jetbrains.kotlin.lexer.KtTokens.EQ
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.KtNodeTypes.INTEGER_CONSTANT
@@ -27,9 +26,6 @@ import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.lexer.KtTokens.VAL_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
-import com.saveourtool.diktat.ruleset.utils.isLeaf
-import com.saveourtool.diktat.ruleset.utils.nextCodeSibling
-import com.saveourtool.diktat.ruleset.utils.nextSibling
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl

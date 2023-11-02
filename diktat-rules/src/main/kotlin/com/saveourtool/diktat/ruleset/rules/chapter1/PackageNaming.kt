@@ -16,6 +16,7 @@ import com.saveourtool.diktat.util.isKotlinScript
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -264,13 +265,13 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                     val addBefore = packageDirectiveParent.children().first { it.elementType !in possibleTypesBeforePackageDirective }
                     packageDirectiveParent.removeChild(packageDirectiveNode)
                     packageDirectiveParent.addChild(newPackageDirective, addBefore)
-                    if (newPackageDirective.treePrev.elementType != WHITE_SPACE) {
+                    if (newPackageDirective.treePrev.run { elementType != WHITE_SPACE && !isEmptyImportList()}) {
                         packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n"), newPackageDirective)
                     }
                 } else {
                     packageDirectiveParent.replaceChild(packageDirectiveNode, newPackageDirective)
                 }
-                if (newPackageDirective.treeNext.elementType != WHITE_SPACE) {
+                if (newPackageDirective.treeNext.run { elementType != WHITE_SPACE && !isEmptyImportList()}) {
                     packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n"), newPackageDirective.treeNext)
                 }
             }
@@ -324,5 +325,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
          */
         val languageDirNames = listOf("src", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+
+        private fun ASTNode.isEmptyImportList() = elementType == IMPORT_LIST && children().none()
     }
 }
