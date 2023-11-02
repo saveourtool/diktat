@@ -2,9 +2,11 @@ package com.saveourtool.diktat.ruleset.smoke
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.ktlint.format
+import com.saveourtool.diktat.ktlint.lint
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
+import com.saveourtool.diktat.util.isKotlinScript
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path

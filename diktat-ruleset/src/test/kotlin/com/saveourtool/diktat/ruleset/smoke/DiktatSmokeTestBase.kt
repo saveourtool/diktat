@@ -220,10 +220,11 @@ abstract class DiktatSmokeTestBase {
             assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
                 DiktatError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
                     "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
-                DiktatError(15, 30, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}",
-                    "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
                 DiktatError(31, 21, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
-                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
+                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
+                // second run
+                DiktatError(32, 18, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
+                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
             )
         }
     }
