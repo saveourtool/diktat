@@ -283,13 +283,7 @@ abstract class DiktatSmokeTestBase {
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should correctly handle tags with empty lines`() {
-        fixAndCompare(
-            prepareOverriddenRulesConfig(
-//                listOf(Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, Warnings.KDOC_WITHOUT_RETURN_TAG),
-            ),
-            expected = "KdocFormattingMultilineTagsExpected.kt",
-            test = "KdocFormattingMultilineTagsTest.kt",
-        )
+        fixAndCompare(prepareOverriddenRulesConfig(), "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
     @Test

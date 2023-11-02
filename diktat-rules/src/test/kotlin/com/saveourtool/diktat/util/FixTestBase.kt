@@ -57,23 +57,7 @@ open class FixTestBase(
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
             .compareFilesFromResources(expectedPath, testPath, overrideResourceReader)
-        Assertions.assertAll(
-            {
-                Assertions.assertTrue(
-                    result.isSuccessful
-                ) {
-                    "Detected delta: ${result.delta}"
-                }
-            },
-            {
-                Assertions.assertEquals(
-                    result.expectedContentWithoutWarns,
-                    result.actualContent,
-                ) {
-                    "Content are different"
-                }
-            }
-        )
+        result.assertSuccessful()
     }
 
     /**
@@ -90,23 +74,7 @@ open class FixTestBase(
         val testComparatorUnit = testComparatorUnitSupplier(overrideRulesConfigList)
         val result = testComparatorUnit
             .compareFilesFromFileSystem(expectedPath, testPath)
-        Assertions.assertAll(
-            {
-                Assertions.assertTrue(
-                    result.isSuccessful
-                ) {
-                    "Detected delta: ${result.delta}"
-                }
-            },
-            {
-                Assertions.assertEquals(
-                    result.expectedContentWithoutWarns,
-                    result.actualContent,
-                ) {
-                    "Content are different"
-                }
-            }
-        )
+        result.assertSuccessful()
     }
 
     /**
@@ -151,6 +119,24 @@ open class FixTestBase(
 
         private val defaultCallback = DiktatCallback { error, _ ->
             log.warn { "Received linting error: $error" }
+        }
+
+        /**
+         * Asserts [FileComparisonResult] as [this] that content are equal and status is successful
+         */
+        internal fun FileComparisonResult.assertSuccessful() {
+            Assertions.assertAll(
+                {
+                    Assertions.assertTrue(isSuccessful) {
+                        "Detected delta: $delta"
+                    }
+                },
+                {
+                    Assertions.assertEquals(expectedContentWithoutWarns, actualContent) {
+                        "Content are different"
+                    }
+                }
+            )
         }
     }
 }

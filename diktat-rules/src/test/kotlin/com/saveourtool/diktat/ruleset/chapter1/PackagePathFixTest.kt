@@ -1,18 +1,14 @@
 package com.saveourtool.diktat.ruleset.chapter1
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.rules.chapter1.PackageNaming
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.writeText
 
 class PackagePathFixTest : FixTestBase(
     "test/paragraph1/naming/package/src/main/kotlin",
@@ -100,11 +96,6 @@ class PackagePathFixTest : FixTestBase(
             """.trimIndent(),
             subFolder = "src/main/kotlin/com/saveourtool/diktat",
             tempDir = tempDir,
-        ).also { result ->
-            Assertions.assertAll(
-                { Assertions.assertTrue(result.isSuccessful) },
-                { Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent) }
-            )
-        }
+        ).assertSuccessful()
     }
 }
