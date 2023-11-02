@@ -828,7 +828,7 @@ fun ASTNode.getFilePathSafely(): String? = run {
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFilePath(): String = requireNotNull(getFilePathSafely()) {
-    "Failed to retrieve a file path for node ${this::javaClass}"
+    "Failed to retrieve a file path for node $this (${this.javaClass.simpleName})"
 }
 
 /**

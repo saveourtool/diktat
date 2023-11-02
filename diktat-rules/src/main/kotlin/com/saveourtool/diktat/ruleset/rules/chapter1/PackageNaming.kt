@@ -272,11 +272,9 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         }
         if (!packageNode.treeNext.isEmptyImportList()) {
             packageParentNode.addChild(ASTFactory.whitespace("\n"), packageNode.treeNext)
-            return
-        }
-        // IMPORT_LIST without imports is after PACKAGE_NODE
-        // WHITE_SPACE needs to be after IMPORT_LIST only
-        if (!packageNode.treeNext.treeNext.isWhiteSpace()) {
+        } else {
+            // IMPORT_LIST without imports is after PACKAGE_NODE
+            // WHITE_SPACE needs to be after IMPORT_LIST only
             packageParentNode.addChild(ASTFactory.whitespace("\n"), packageNode.treeNext.treeNext)
         }
     }
