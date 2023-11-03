@@ -35,6 +35,7 @@ import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
+import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.openapi.util.Key
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -181,6 +182,26 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
 fun ASTNode.isAnonymousFunction(): Boolean {
     require(this.elementType == FUN)
     return this.getIdentifierName() == null
+}
+
+/**
+ * Checks if the function has boolean return type
+ *
+ * @return true if the function has boolean return type
+ */
+fun ASTNode.hasBooleanReturnType(): Boolean {
+    val functionReturnType = this.findChildAfter(VALUE_PARAMETER_LIST, KtNodeTypes.TYPE_REFERENCE)?.text
+    return functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()
+}
+
+/**
+ * Checks if the function is an operator function
+ *
+ * @return true if the function is an operator function
+ */
+fun ASTNode.isOperatorFun(): Boolean {
+    val modifierListNode = this.findChildByType(MODIFIER_LIST)
+    return modifierListNode?.hasChildMatching { it.elementType == KtTokens.OPERATOR_KEYWORD } ?: false
 }
 
 /**

@@ -1,3 +1,7 @@
+@file:Suppress(
+    "LargeClass"
+)
+
 package com.saveourtool.diktat.ruleset.chapter1
 
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
@@ -444,6 +448,16 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     fun equivalentToAnother(): Boolean { }
             """.trimIndent(),
             rulesConfigList = rulesConfigBooleanFunctions
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
+    fun `fixed false positive result on operator functions`() {
+        lintMethod(
+            """
+                    inline operator fun component3(): Boolean = asDynamic()[2].unsafeCast<Boolean>()
+            """.trimIndent()
         )
     }
 
