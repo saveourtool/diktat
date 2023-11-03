@@ -117,9 +117,9 @@ class DiktatRuleSetFactoryImpl : DiktatRuleSetFactory {
             // comments & documentation
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
+            ::KdocComments,
             ::KdocMethods,
             ::KdocFormatting,
-            ::KdocComments,
             ::CommentsFormatting,
             // naming
             ::FileNaming,
