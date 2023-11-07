@@ -1,6 +1,16 @@
 /**
  * Copied from KtLint and open the constructor
  */
+@file:Suppress(
+    "TOO_LONG_FUNCTION",
+    "PACKAGE_NAME_INCORRECT_PREFIX",
+    "PACKAGE_NAME_INCORRECT_PATH",
+    "KDOC_NO_CONSTRUCTOR_PROPERTY",
+    "MISSING_KDOC_CLASS_ELEMENTS",
+    "MISSING_KDOC_ON_FUNCTION",
+    "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG",
+)
 
 package com.pinterest.ktlint.rule.engine.api
 
