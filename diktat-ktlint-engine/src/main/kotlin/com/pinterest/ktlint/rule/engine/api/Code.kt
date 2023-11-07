@@ -1,6 +1,7 @@
 /**
  * Copied from KtLint and open the constructor
  */
+
 @file:Suppress(
     "TOO_LONG_FUNCTION",
     "PACKAGE_NAME_INCORRECT_PREFIX",
