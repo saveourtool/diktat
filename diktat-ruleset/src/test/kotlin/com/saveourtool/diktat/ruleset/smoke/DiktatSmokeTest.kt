@@ -31,7 +31,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
             },
             {
                 Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent)
-            },
+            }
         )
 
     }
