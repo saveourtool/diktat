@@ -45,7 +45,8 @@ class IndentationTestFixExtension(
             actualCode,
             expectedCode,
             tempDir,
-            defaultConfig.withCustomParameters(customConfig).asRulesConfigList())
+            overrideRulesConfigList = defaultConfig.withCustomParameters(customConfig).asRulesConfigList(),
+        )
 
         if (!lintResult.isSuccessful) {
             assertThat(lintResult.actualContent)

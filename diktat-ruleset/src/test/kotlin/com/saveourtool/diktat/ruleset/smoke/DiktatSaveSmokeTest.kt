@@ -62,47 +62,42 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 deleteIfExistsSilently()
             }
 
-            try {
-                configFilePath.copyTo(configFile, overwrite = true)
+            configFilePath.copyTo(configFile, overwrite = true)
 
-                val processBuilder = createProcessBuilderWithCmd(testPath).apply {
-                    redirectErrorStream(true)
-                    redirectOutput(ProcessBuilder.Redirect.appendTo(saveLog.toFile()))
+            val processBuilder = createProcessBuilderWithCmd(testPath).apply {
+                redirectErrorStream(true)
+                redirectOutput(ProcessBuilder.Redirect.appendTo(saveLog.toFile()))
 
-                    /*
-                     * Inherit JAVA_HOME for the child process.
-                     */
-                    inheritJavaHome()
+                /*
+                 * Inherit JAVA_HOME for the child process.
+                 */
+                inheritJavaHome()
 
-                    /*
-                     * On Windows, ktlint is often unable to relativize paths
-                     * (see https://github.com/pinterest/ktlint/issues/1608).
-                     *
-                     * Also, ktlint needs `.editorconfig` to disable standard rules
-                     *
-                     * So let's force the temporary directory to be the
-                     * sub-directory of the project root.
-                     */
-                    temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
-                }
-
-                val saveProcess = processBuilder.start()
-                val saveExitCode = saveProcess.waitFor()
-                softly.assertThat(saveExitCode).describedAs("The exit code of SAVE").isZero
-
-                softly.assertThat(saveLog).isRegularFile
-
-                val saveOutput = saveLog.readText()
-
-                val saveCommandLine = processBuilder.command().joinToString(separator = " ")
-                softly.assertThat(saveOutput)
-                    .describedAs("The output of \"$saveCommandLine\"")
-                    .isNotEmpty
-                    .contains("SUCCESS")
-            } finally {
-                configFile.deleteIfExistsSilently()
-                saveLog.deleteIfExistsSilently()
+                /*
+                 * On Windows, ktlint is often unable to relativize paths
+                 * (see https://github.com/pinterest/ktlint/issues/1608).
+                 *
+                 * Also, ktlint needs `.editorconfig` to disable standard rules
+                 *
+                 * So let's force the temporary directory to be the
+                 * sub-directory of the project root.
+                 */
+                temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
             }
+
+            val saveProcess = processBuilder.start()
+            val saveExitCode = saveProcess.waitFor()
+            softly.assertThat(saveExitCode).describedAs("The exit code of SAVE").isZero
+
+            softly.assertThat(saveLog).isRegularFile
+
+            val saveOutput = saveLog.readText()
+
+            val saveCommandLine = processBuilder.command().joinToString(separator = " ")
+            softly.assertThat(saveOutput)
+                .describedAs("The output of \"$saveCommandLine\"")
+                .isNotEmpty
+                .contains("SUCCESS")
         }
     }
 
@@ -131,7 +126,7 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
         private val logger = KotlinLogging.logger {}
         private const val SAVE_VERSION: String = "0.3.4"
         private const val TEMP_DIRECTORY = ".save-cli"
-        private val baseDirectoryPath = tempDir.absolute()
+        private val baseDirectoryPath by lazy { tempDir.absolute() }
 
         private fun getSaveForCurrentOs(): String {
             val osName = System.getProperty("os.name")
@@ -182,21 +177,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
                 diktatFrom?.copyTo(diktat, overwrite = true)
             }
-        }
-
-        @AfterAll
-        @JvmStatic
-        internal fun afterAll() {
-            val diktat = baseDirectoryPath / DIKTAT_FAT_JAR
-            val save = baseDirectoryPath / getSaveForCurrentOs()
-            val ktlint = baseDirectoryPath / KTLINT_FAT_JAR
-            val tempDirectory = baseDirectoryPath / TEMP_DIRECTORY
-
-            diktat.deleteIfExistsSilently()
-            ktlint.deleteIfExistsSilently()
-            save.deleteIfExistsSilently()
-
-            tempDirectory.deleteIfExistsRecursively()
         }
     }
 }

@@ -4,7 +4,6 @@ import com.saveourtool.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import com.saveourtool.diktat.util.applyToCode
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
