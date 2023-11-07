@@ -69,19 +69,19 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 redirectOutput(ProcessBuilder.Redirect.appendTo(saveLog.toFile()))
 
                 /*
-                     * Inherit JAVA_HOME for the child process.
-                     */
+                 * Inherit JAVA_HOME for the child process.
+                 */
                 inheritJavaHome()
 
                 /*
-                     * On Windows, ktlint is often unable to relativize paths
-                     * (see https://github.com/pinterest/ktlint/issues/1608).
-                     *
-                     * Also, ktlint needs `.editorconfig` to disable standard rules
-                     *
-                     * So let's force the temporary directory to be the
-                     * sub-directory of the project root.
-                     */
+                 * On Windows, ktlint is often unable to relativize paths
+                 * (see https://github.com/pinterest/ktlint/issues/1608).
+                 *
+                 * Also, ktlint needs `.editorconfig` to disable standard rules
+                 *
+                 * So let's force the temporary directory to be the
+                 * sub-directory of the project root.
+                 */
                 temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
             }
 
