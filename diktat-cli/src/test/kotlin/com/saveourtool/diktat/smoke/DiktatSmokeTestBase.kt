@@ -336,7 +336,7 @@ abstract class DiktatSmokeTestBase {
             )
         )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
-        val tmpFilePath = "build.gradle.kts"
+        val tmpFilePath = "../../../build.gradle.kts"
         fixAndCompare(configFilePath, tmpFilePath, tmpFilePath)
         assertUnfixedLintErrors { unfixedLintErrors ->
             assertThat(unfixedLintErrors).isEmpty()
@@ -397,7 +397,7 @@ abstract class DiktatSmokeTestBase {
 
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
-        private const val ROOT_RESOURCE_FILE_PATH = "smoke"
+        private const val ROOT_RESOURCE_FILE_PATH = "test/smoke"
         private const val TEST_TIMEOUT_SECONDS = 30L
 
         @JvmStatic
