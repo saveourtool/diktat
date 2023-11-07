@@ -1,9 +1,8 @@
-package com.saveourtool.diktat.ruleset.smoke
+package com.saveourtool.diktat.smoke
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
 import com.saveourtool.diktat.test.framework.util.checkForkedJavaHome
-import com.saveourtool.diktat.test.framework.util.deleteIfExistsRecursively
 import com.saveourtool.diktat.test.framework.util.deleteIfExistsSilently
 import com.saveourtool.diktat.test.framework.util.inheritJavaHome
 import com.saveourtool.diktat.test.framework.util.isWindows
@@ -13,7 +12,6 @@ import generated.KTLINT_VERSION
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.Assertions.fail
 import org.assertj.core.api.SoftAssertions.assertSoftly
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.condition.DisabledOnOs
 import org.junit.jupiter.api.condition.OS

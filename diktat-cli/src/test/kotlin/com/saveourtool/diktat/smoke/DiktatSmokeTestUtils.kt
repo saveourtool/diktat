@@ -1,6 +1,6 @@
 @file:Suppress("HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE")
 
-package com.saveourtool.diktat.ruleset.smoke
+package com.saveourtool.diktat.smoke
 
 import com.saveourtool.diktat.test.framework.util.retry
 import io.github.oshai.kotlinlogging.KotlinLogging

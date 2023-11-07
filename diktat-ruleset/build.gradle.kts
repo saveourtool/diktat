@@ -31,18 +31,6 @@ dependencies {
     implementation(libs.ktlint.cli.ruleset.core)
     implementation(libs.ktlint.logger)
     implementation(libs.slf4j.api)
-    testImplementation(projects.diktatTestFramework)
-    testImplementation(projects.diktatKtlintEngine)
-    testImplementation(libs.log4j2.slf4j2)
-    testImplementation(libs.kotlin.stdlib.common)
-    testImplementation(libs.kotlin.stdlib.jdk7)
-    testImplementation(libs.kotlin.stdlib.jdk8)
-    testImplementation(libs.kotlin.stdlib)
-    testImplementation(libs.kotlin.compiler.embeddable)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.platform.suite)
-    testImplementation(libs.assertj.core)
-    testImplementation(libs.mockito)
 }
 
 tasks.named<ShadowJar>("shadowJar") {
