@@ -16,8 +16,10 @@ import com.saveourtool.diktat.util.isKotlinScript
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.FILE_ANNOTATION_LIST
+import org.jetbrains.kotlin.KtNodeTypes.IMPORT_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PACKAGE_DIRECTIVE
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -260,10 +262,21 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 } else {
                     packageDirectiveParent.replaceChild(packageDirectiveNode, newPackageDirective)
                 }
-                if (newPackageDirective.treeNext.elementType != WHITE_SPACE) {
-                    packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n"), newPackageDirective.treeNext)
-                }
+                addWhiteSpaceIfRequired(newPackageDirective, packageDirectiveParent)
             }
+    }
+
+    private fun addWhiteSpaceIfRequired(packageNode: ASTNode, packageParentNode: ASTNode) {
+        if (packageNode.treeNext.isWhiteSpace()) {
+            return
+        }
+        if (!packageNode.treeNext.isEmptyImportList()) {
+            packageParentNode.addChild(ASTFactory.whitespace("\n"), packageNode.treeNext)
+        } else {
+            // IMPORT_LIST without imports is after PACKAGE_NODE
+            // WHITE_SPACE needs to be after IMPORT_LIST only
+            packageParentNode.addChild(ASTFactory.whitespace("\n"), packageNode.treeNext.treeNext)
+        }
     }
 
     /**
@@ -314,5 +327,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
          */
         val languageDirNames = listOf("src", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+
+        private fun ASTNode.isEmptyImportList() = elementType == IMPORT_LIST && children().none()
     }
 }
