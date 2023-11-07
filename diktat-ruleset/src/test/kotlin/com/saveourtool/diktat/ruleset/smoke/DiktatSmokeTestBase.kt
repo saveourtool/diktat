@@ -164,8 +164,8 @@ abstract class DiktatSmokeTestBase {
         fixAndCompare(configFilePath, "Example5Expected.kt", "Example5Test.kt")
 
         assertUnfixedLintErrors { unfixedLintErrors ->
-            Assertions.assertFalse(
-                unfixedLintErrors.contains(
+            assertThat(unfixedLintErrors).let { errors ->
+                errors.doesNotContain(
                     DiktatError(
                         line = 1,
                         col = 1,
@@ -173,11 +173,10 @@ abstract class DiktatSmokeTestBase {
                         detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"
                     )
                 )
-            )
-
-            Assertions.assertTrue(
-                unfixedLintErrors.contains(DiktatError(1, 1, "diktat-ruleset:${InlineClassesRule.NAME_ID}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some"))
-            )
+                errors.contains(
+                    DiktatError(1, 1, "diktat-ruleset:${InlineClassesRule.NAME_ID}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some")
+                )
+            }
         }
     }
 

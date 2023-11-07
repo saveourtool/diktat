@@ -23,12 +23,28 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
             override fun fix(
                 file: Path,
                 callback: DiktatCallback,
-            ): String = ktLintRuleEngine.format(file.toKtLint(), callback.toKtLintForFormat())
+            ): String {
+                val code = file.toKtLint()
+                val fixedCode = ktLintRuleEngine.format(code, DiktatCallback.empty.toKtLintForFormat())
+                val ktlintFixedCode = Code(
+                    content = fixedCode,
+                    fileName = code.fileName,
+                    filePath = code.filePath,
+                    script = code.script,
+                    isStdIn = code.isStdIn,
+                )
+                ktLintRuleEngine.lint(ktlintFixedCode, callback.toKtLintForLint())
+                return fixedCode
+            }
             override fun fix(
                 code: String,
                 isScript: Boolean,
                 callback: DiktatCallback
-            ): String = ktLintRuleEngine.format(code.toKtLint(isScript), callback.toKtLintForFormat())
+            ): String {
+                val fixedCode = ktLintRuleEngine.format(code.toKtLint(isScript), DiktatCallback.empty.toKtLintForFormat())
+                ktLintRuleEngine.lint(fixedCode.toKtLint(isScript), callback.toKtLintForLint())
+                return fixedCode
+            }
             override fun check(
                 file: Path,
                 callback: DiktatCallback,
