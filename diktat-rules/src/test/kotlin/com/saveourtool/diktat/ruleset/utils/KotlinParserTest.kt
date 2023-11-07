@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CLASS_BODY
 import org.jetbrains.kotlin.lexer.KtTokens.CLASS_KEYWORD
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes.FILE
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.IMPORT_DIRECTIVE
 import org.jetbrains.kotlin.lexer.KtTokens.IMPORT_KEYWORD
