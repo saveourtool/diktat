@@ -71,15 +71,6 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                  */
                 inheritJavaHome()
 
-                /*
-                 * On Windows, ktlint is often unable to relativize paths
-                 * (see https://github.com/pinterest/ktlint/issues/1608).
-                 *
-                 * Also, ktlint needs `.editorconfig` to disable standard rules
-                 *
-                 * So let's force the temporary directory to be the
-                 * sub-directory of the project root.
-                 */
                 temporaryDirectory(baseDirectoryPath / TEMP_DIRECTORY)
             }
 
@@ -150,9 +141,9 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                 }
 
                 /*
-                 * The fat JAR should reside in the same directory as `ktlint` and
-                 * `save*` and be named `diktat.jar`
-                 * (see `diktat-rules/src/test/resources/test/smoke/save.toml`).
+                 * The fat JAR should reside in the same directory as `save*` and
+                 * be named `diktat.jar`
+                 * (see `diktat-cli/src/test/resources/test/smoke/save.toml`).
                  */
                 val buildDirectory = Path(BUILD_DIRECTORY)
                 softly.assertThat(buildDirectory)
@@ -168,10 +159,8 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
 
                 val diktat = baseDirectoryPath / DIKTAT_FAT_JAR
                 val save = baseDirectoryPath / getSaveForCurrentOs()
-                val ktlint = baseDirectoryPath / KTLINT_FAT_JAR
 
                 downloadFile(URL("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}"), save)
-                downloadFile(URL("https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint"), ktlint)
 
                 diktatFrom?.copyTo(diktat, overwrite = true)
             }

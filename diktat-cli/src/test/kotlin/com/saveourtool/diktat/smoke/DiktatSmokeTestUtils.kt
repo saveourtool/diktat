@@ -14,7 +14,6 @@ import kotlin.system.measureNanoTime
 internal const val BUILD_DIRECTORY = "build/libs"
 internal const val DIKTAT_FAT_JAR = "diktat.jar"
 internal const val DIKTAT_FAT_JAR_GLOB = "diktat-*.jar"
-internal const val KTLINT_FAT_JAR = "ktlint"
 
 private val logger = KotlinLogging.logger {}
 
