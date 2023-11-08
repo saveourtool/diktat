@@ -1,12 +1,12 @@
 package com.saveourtool.diktat.test.framework.processing
 
 import com.saveourtool.diktat.test.framework.processing.ResourceReader.Companion.withPrefix
+import com.saveourtool.diktat.test.framework.util.NEWLINE
 import com.saveourtool.diktat.test.framework.util.readTextOrNull
 import com.saveourtool.diktat.test.framework.util.toUnixEndLines
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
-import kotlin.io.path.name
 
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.
@@ -45,17 +45,18 @@ class TestComparatorUnit(
         expectedResult: String,
         testFileStr: String,
         overrideResourceReader: (ResourceReader) -> ResourceReader = { it },
-    ): FileComparisonResult {
+    ): TestFileContent {
         val overriddenResourceReader = overrideResourceReader(resourceReader)
         val expectedPath = overriddenResourceReader(expectedResult)
         val testPath = overriddenResourceReader(testFileStr)
         if (testPath == null || expectedPath == null) {
             log.error { "Not able to find files for running test: $expectedResult and $testFileStr" }
-            return FileComparisonResult(
-                isSuccessful = false,
-                delta = null,
-                actualContent = "// $expectedResult is found: ${testPath != null}",
-                expectedContent = "// $testFileStr is found: ${expectedPath != null}")
+            return NotFoundResourcesTestFileContent(
+                expectedResource = expectedResult,
+                expectedPath = expectedPath,
+                actualResource = testFileStr,
+                actualPath = testPath,
+            )
         }
 
         return compareFilesFromFileSystem(
@@ -78,35 +79,37 @@ class TestComparatorUnit(
     fun compareFilesFromFileSystem(
         expectedFile: Path,
         testFile: Path,
-    ): FileComparisonResult {
+    ): TestFileContent {
         if (!testFile.isRegularFile() || !expectedFile.isRegularFile()) {
             log.error { "Not able to find files for running test: $expectedFile and $testFile" }
-            return FileComparisonResult(
-                isSuccessful = false,
-                delta = null,
-                actualContent = "// $testFile is a regular file: ${testFile.isRegularFile()}",
-                expectedContent = "// $expectedFile is a regular file: ${expectedFile.isRegularFile()}")
+            return NotFoundFilesTestFileContent(
+                expectedPath = expectedFile,
+                actualPath = testFile,
+            )
         }
 
         val actualFileContent = function(testFile).toUnixEndLines()
         val expectedFileContent = expectedFile.readTextOrNull().orEmpty()
 
-        val comparator = FileComparator(
-            expectedFile.name,
-            expectedFileContent,
-            actualFileContent,
-        )
-
-        return FileComparisonResult(
-            isSuccessful = comparator.compareFilesEqual(),
-            delta = comparator.delta,
+        return DefaultTestFileContent(
             actualContent = actualFileContent,
             expectedContent = expectedFileContent,
-            expectedContentWithoutWarns = comparator.expectedResultWithoutWarns,
+            expectedContentWithoutWarns = expectedFileContent.withoutWarns(),
         )
     }
 
     private companion object {
         private val log = KotlinLogging.logger {}
+
+        private val warnRegex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
+
+        /**
+         * @return Expected result without lines with warns
+         */
+        private fun String.withoutWarns(): String = split(NEWLINE)
+            .filterNot { line ->
+                line.contains(warnRegex)
+            }
+            .joinToString(NEWLINE.toString())
     }
 }

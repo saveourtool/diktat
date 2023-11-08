@@ -55,8 +55,6 @@ class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::Comment
     @Tag(COMMENT_WHITE_SPACE)
     fun `indent-style header in a block comment should be preserved`(@TempDir tempDir: Path) {
         val lintResult = fixAndCompareContent(indentStyleComment, tempDir = tempDir)
-        assertThat(lintResult.actualContent)
-            .describedAs("lint result for ${indentStyleComment.describe()}")
-            .isEqualTo(lintResult.expectedContent)
+        lintResult.assertSuccessful()
     }
 }

@@ -4,7 +4,7 @@ plugins {
     id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
 }
 
-project.description = "Diktat coommon for tests"
+project.description = "Diktat common for tests"
 
 dependencies {
     api(projects.diktatCommon)
@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.apache.commons.io)
     implementation(libs.kotlin.logging)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlin.multiplatform.diff)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.assertj.core)
+    implementation(libs.junit.jupiter.api)
+    implementation(libs.assertj.core)
 }

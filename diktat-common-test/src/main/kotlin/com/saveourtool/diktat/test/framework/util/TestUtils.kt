@@ -34,6 +34,8 @@ import kotlin.io.path.readText
 
 private val logger = KotlinLogging.logger {}
 
+const val NEWLINE = '\n'
+
 /**
  * Deletes the file if it exists, retrying as necessary if the file is
  * blocked by another process (on Windows).
@@ -348,5 +350,25 @@ fun checkForkedJavaHome() {
         logger.warn {
             "Make sure JAVA_HOME ($forkedJavaHome) points to a Java 8 or Java 11 home. Java 17 is not yet supported."
         }
+    }
+}
+
+/**
+ * @return a brief description of this code fragment.
+ */
+fun String.describe(): String {
+    val lines = splitToSequence(NEWLINE)
+
+    var first: String? = null
+
+    val count = lines.onEachIndexed { index, line ->
+        if (index == 0) {
+            first = line
+        }
+    }.count()
+
+    return when (count) {
+        1 -> "\"$this\""
+        else -> "\"$first\u2026\" ($count line(s))"
     }
 }

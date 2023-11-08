@@ -25,15 +25,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
     ) {
         val result = getTestComparatorUnit(config)
             .compareFilesFromResources(expected, test)
-        Assertions.assertAll(
-            {
-                Assertions.assertTrue(result.isSuccessful)
-            },
-            {
-                Assertions.assertEquals(result.expectedContentWithoutWarns, result.actualContent)
-            }
-        )
-
+        result.assertSuccessful()
     }
 
     @BeforeEach

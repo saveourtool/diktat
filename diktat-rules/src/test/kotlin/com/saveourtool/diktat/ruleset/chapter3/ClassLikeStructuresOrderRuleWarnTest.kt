@@ -8,6 +8,7 @@ import com.saveourtool.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRul
 import com.saveourtool.diktat.util.LintTestBase
 
 import com.saveourtool.diktat.api.DiktatError
+import com.saveourtool.diktat.test.framework.util.describe
 import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language

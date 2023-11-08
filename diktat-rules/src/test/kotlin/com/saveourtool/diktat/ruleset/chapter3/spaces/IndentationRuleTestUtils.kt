@@ -63,23 +63,3 @@ internal fun Map<String, String>.asRulesConfigList(): List<RulesConfig> =
             configuration = this
         )
     )
-
-/**
- * @return a brief description of this code fragment.
- */
-internal fun String.describe(): String {
-    val lines = splitToSequence(NEWLINE)
-
-    var first: String? = null
-
-    val count = lines.onEachIndexed { index, line ->
-        if (index == 0) {
-            first = line
-        }
-    }.count()
-
-    return when (count) {
-        1 -> "\"$this\""
-        else -> "\"$first\u2026\" ($count line(s))"
-    }
-}

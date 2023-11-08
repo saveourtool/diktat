@@ -48,11 +48,7 @@ class IndentationTestFixExtension(
             overrideRulesConfigList = defaultConfig.withCustomParameters(customConfig).asRulesConfigList(),
         )
 
-        if (!lintResult.isSuccessful) {
-            assertThat(lintResult.actualContent)
-                .describedAs("lint result for ${actualCode.describe()}")
-                .isEqualTo(lintResult.expectedContent)
-        }
+        lintResult.assertSuccessful()
     }
 
     private companion object {
