@@ -10,7 +10,6 @@ import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
 import com.pinterest.ktlint.rule.engine.api.LintError
 import java.nio.file.Path
 
-private typealias FormatCallback = (LintError, Boolean) -> Unit
 private typealias LintCallback = (LintError) -> Unit
 
 /**
@@ -23,12 +22,12 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
             override fun fix(
                 file: Path,
                 callback: DiktatCallback,
-            ): String = ktLintRuleEngine.format(file.toKtLint(), callback.toKtLintForFormat())
+            ): String = ktLintRuleEngine.formatSilentlyThenLint(file.toKtLint(), callback.toKtLintForLint())
             override fun fix(
                 code: String,
                 isScript: Boolean,
                 callback: DiktatCallback
-            ): String = ktLintRuleEngine.format(code.toKtLint(isScript), callback.toKtLintForFormat())
+            ): String = ktLintRuleEngine.formatSilentlyThenLint(code.toKtLint(isScript), callback.toKtLintForLint())
             override fun check(
                 file: Path,
                 callback: DiktatCallback,
@@ -48,12 +47,26 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
 
         private fun String.toKtLint(isScript: Boolean): Code = Code.fromSnippet(this, isScript)
 
-        private fun DiktatCallback.toKtLintForFormat(): FormatCallback = { error, isCorrected ->
-            this(error.wrap(), isCorrected)
-        }
-
         private fun DiktatCallback.toKtLintForLint(): LintCallback = { error ->
             this(error.wrap(), false)
+        }
+
+        private fun KtLintRuleEngine.formatSilentlyThenLint(
+            code: Code,
+            callback: LintCallback,
+        ): String {
+            val formatResult = format(code)
+            lint(
+                code = Code(
+                    content = formatResult,
+                    fileName = code.fileName,
+                    filePath = code.filePath,
+                    script = code.script,
+                    isStdIn = code.isStdIn,
+                ),
+                callback = callback,
+            )
+            return formatResult
         }
     }
 }

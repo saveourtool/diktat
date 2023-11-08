@@ -39,7 +39,6 @@ import com.charleskorn.kaml.YamlConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -143,7 +142,6 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test #5`() {
         val configFilePath = prepareOverriddenRulesConfig(emptyList(),
             mapOf(
@@ -166,8 +164,8 @@ abstract class DiktatSmokeTestBase {
         fixAndCompare(configFilePath, "Example5Expected.kt", "Example5Test.kt")
 
         assertUnfixedLintErrors { unfixedLintErrors ->
-            Assertions.assertFalse(
-                unfixedLintErrors.contains(
+            assertThat(unfixedLintErrors).let { errors ->
+                errors.doesNotContain(
                     DiktatError(
                         line = 1,
                         col = 1,
@@ -175,11 +173,10 @@ abstract class DiktatSmokeTestBase {
                         detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"
                     )
                 )
-            )
-
-            Assertions.assertTrue(
-                unfixedLintErrors.contains(DiktatError(1, 1, "diktat-ruleset:${InlineClassesRule.NAME_ID}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some"))
-            )
+                errors.contains(
+                    DiktatError(12, 1, "diktat-ruleset:${InlineClassesRule.NAME_ID}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some")
+                )
+            }
         }
     }
 
@@ -207,7 +204,6 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test #2`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
@@ -223,10 +219,8 @@ abstract class DiktatSmokeTestBase {
             assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
                 DiktatError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
                     "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
-                DiktatError(15, 30, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}",
-                    "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
-                DiktatError(31, 21, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
-                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
+                DiktatError(34, 3, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
+                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
             )
         }
     }
@@ -234,7 +228,6 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test #1`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
@@ -248,23 +241,18 @@ abstract class DiktatSmokeTestBase {
         fixAndCompare(configFilePath, "Example1Expected.kt", "Example1Test.kt")
         assertUnfixedLintErrors { unfixedLintErrors ->
             assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
-                DiktatError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
-                DiktatError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                DiktatError(3, 13, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
-                DiktatError(3, 33, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
-                DiktatError(6, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-                DiktatError(8, 15, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-                DiktatError(8, 15, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
-                /*
-                 * This 2nd `MISSING_KDOC_ON_FUNCTION` is a duplicate caused by
-                 * https://github.com/saveourtool/diktat/issues/1538.
-                 */
-                DiktatError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
-                DiktatError(9, 10, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
-                        " empty blocks are forbidden unless it is function with override keyword", false),
-                DiktatError(12, 17, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                DiktatError(14, 15, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                DiktatError(19, 27, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+                DiktatError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", false),
+                DiktatError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
+                DiktatError(4, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+                DiktatError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                DiktatError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                DiktatError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+                DiktatError(8, 19, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
+                    "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
+                DiktatError(13, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                DiktatError(19, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                DiktatError(27, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                DiktatError(36, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             )
         }
     }
@@ -286,7 +274,6 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `regression - should correctly handle tags with empty lines`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
@@ -301,7 +288,6 @@ abstract class DiktatSmokeTestBase {
     @Test
     @Tag("DiktatRuleSetProvider")
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `fix can cause long line`() {
         val configFilePath = prepareOverriddenRulesConfig(
             rulesToDisable = emptyList(),
@@ -345,7 +331,6 @@ abstract class DiktatSmokeTestBase {
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `smoke test with gradle script plugin`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         assertUnfixedLintErrors { unfixedLintErrors ->
@@ -360,7 +345,6 @@ abstract class DiktatSmokeTestBase {
 
     @Test
     @Tag("DiktatRuleSetProvider")
-    @Disabled("https://github.com/saveourtool/diktat/issues/1737")
     fun `disable chapters`() {
         val configFilePath = prepareOverriddenRulesConfig(
             emptyList(),
@@ -374,15 +358,15 @@ abstract class DiktatSmokeTestBase {
         fixAndCompare(configFilePath, "Example1-2Expected.kt", "Example1-2Test.kt")
         assertUnfixedLintErrors { unfixedLintErrors ->
             assertThat(unfixedLintErrors).containsExactlyInAnyOrder(
-                DiktatError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
                 DiktatError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
                 DiktatError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
                 DiktatError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
                 DiktatError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
                 DiktatError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-                DiktatError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                DiktatError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                DiktatError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+                DiktatError(13, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                DiktatError(20, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                DiktatError(28, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                DiktatError(37, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             )
         }
     }

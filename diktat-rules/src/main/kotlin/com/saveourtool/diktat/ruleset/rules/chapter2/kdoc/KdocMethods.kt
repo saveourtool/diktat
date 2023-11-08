@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THIS_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THROW
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
+import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -232,11 +233,15 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                 "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset, node) {
                 val beforeTag = kdocTags?.find { it.knownTag == KDocKnownTag.RETURN }
                     ?: kdocTags?.find { it.knownTag == KDocKnownTag.THROWS }
-                missingParameters.forEach {
+                missingParameters.filterNotNull().forEach { missingParameter ->
                     kdoc?.insertTagBefore(beforeTag?.node) {
-                        addChild(LeafPsiElement(KDocTokens.TAG_NAME, "@param"))
-                        addChild(PsiWhiteSpaceImpl(" "))
-                        addChild(LeafPsiElement(KDocTokens.MARKDOWN_LINK, it))
+                        addChild(ASTFactory.leaf(KDocTokens.TAG_NAME, "@param"))
+                        addChild(ASTFactory.whitespace(" "))
+                        val kdocMarkdownLink = ASTFactory.composite(KDocTokens.MARKDOWN_LINK)
+                            .also { addChild(it) }
+                        val kdocName = ASTFactory.composite(KDocElementTypes.KDOC_NAME)
+                            .also { kdocMarkdownLink.addChild(it) }
+                        kdocName.addChild(ASTFactory.leaf(KtTokens.IDENTIFIER, missingParameter))
                     }
                 }
             }

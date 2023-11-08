@@ -7,6 +7,8 @@ import com.saveourtool.diktat.util.FixTestBase
 import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class PackagePathFixTest : FixTestBase(
     "test/paragraph1/naming/package/src/main/kotlin",
@@ -67,5 +69,33 @@ class PackagePathFixTest : FixTestBase(
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with a proper location`() {
         fixAndCompare("com/saveourtool/diktat/some/name/FixMissingExpected.kt", "com/saveourtool/diktat/some/name/FixMissingTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `several empty lines after package`(@TempDir tempDir: Path) {
+        fixAndCompareContent(
+            expectedContent = """
+                package com.saveourtool.diktat
+                /**
+                 * @param bar
+                 * @return something
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent(),
+            actualContent = """
+                /**
+                 * @param bar
+                 * @return something
+                 */
+                fun foo1(bar: Bar): Baz {
+                    // placeholder
+                }
+            """.trimIndent(),
+            subFolder = "src/main/kotlin/com/saveourtool/diktat",
+            tempDir = tempDir,
+        ).assertSuccessful()
     }
 }
