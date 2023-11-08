@@ -1,13 +1,13 @@
 package com.saveourtool.diktat.ruleset.chapter3
 
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import com.saveourtool.diktat.ruleset.chapter3.spaces.describe
 import com.saveourtool.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import com.saveourtool.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import com.saveourtool.diktat.util.LintTestBase
 
 import com.saveourtool.diktat.api.DiktatError
+import com.saveourtool.diktat.test.framework.util.describe
 import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language

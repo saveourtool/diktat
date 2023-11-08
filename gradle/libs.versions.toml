@@ -22,7 +22,6 @@ jbool = "1.24"
 kotlin-logging = "5.1.0"
 log4j2 = "2.21.1"
 kaml = "0.55.0"
-kotlin-multiplatform-diff = "0.4.0"
 sarif4k = "0.5.0"
 jupiter-itf-extension = "0.12.0"
 # FIXME: need to migrate to mockito
@@ -83,7 +82,6 @@ kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 #kotlin libs
-kotlin-multiplatform-diff = { module = "io.github.petertrr:kotlin-multiplatform-diff", version.ref = "kotlin-multiplatform-diff" }
 
 # ktlint & detekt
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }

@@ -17,7 +17,7 @@ dependencies {
     // guava is used for string case utils
     implementation(libs.guava)
     implementation(libs.kotlin.logging)
-    testImplementation(projects.diktatTestFramework)
+    testImplementation(projects.diktatCommonTest)
     testImplementation(projects.diktatKtlintEngine)
     testImplementation(libs.log4j2.slf4j2)
     testImplementation(libs.junit.jupiter)

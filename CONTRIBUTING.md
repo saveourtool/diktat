@@ -12,7 +12,7 @@ Rules are very simple:
 
 Main components are:
 1) diktat-rules — number of rules that are supported by diKTat;
-2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
+2) diktat-common-test — util methods for functional/unit tests that can be used for running your code fixer on the initial code and compare it with the expected result;
 3) also see our demo: diktat-demo in a separate repository.
 
 Mainly we wanted to create a common configurable mechanism that
@@ -31,7 +31,7 @@ Before you make a pull request, make sure the build is clean as we have lot of t
 $ mvn clean install
 ```
 
-# Hooks 
+# Hooks
 
 We have some hooks to a commit messages:
 1) your commit message should have the following format:
@@ -40,7 +40,7 @@ Brief Description
 
 ### What's done:
 1) Long description
-2) Long description  
+2) Long description
 ```
 
 2) Please also do not forget to update documentation on Wiki after the merge approval and before merge.

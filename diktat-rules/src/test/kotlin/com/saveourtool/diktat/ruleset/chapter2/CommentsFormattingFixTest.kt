@@ -1,7 +1,6 @@
 package com.saveourtool.diktat.ruleset.chapter2
 
 import com.saveourtool.diktat.ruleset.chapter2.CommentsFormattingTest.Companion.indentStyleComment
-import com.saveourtool.diktat.ruleset.chapter3.spaces.describe
 import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import com.saveourtool.diktat.util.FixTestBase
 
@@ -9,8 +8,6 @@ import generated.WarningNames.COMMENT_WHITE_SPACE
 import generated.WarningNames.FIRST_COMMENT_NO_BLANK_LINE
 import generated.WarningNames.IF_ELSE_COMMENTS
 import generated.WarningNames.WRONG_NEWLINES_AROUND_KDOC
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
@@ -55,8 +52,6 @@ class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::Comment
     @Tag(COMMENT_WHITE_SPACE)
     fun `indent-style header in a block comment should be preserved`(@TempDir tempDir: Path) {
         val lintResult = fixAndCompareContent(indentStyleComment, tempDir = tempDir)
-        assertThat(lintResult.actualContent)
-            .describedAs("lint result for ${indentStyleComment.describe()}")
-            .isEqualTo(lintResult.expectedContent)
+        lintResult.assertSuccessful()
     }
 }

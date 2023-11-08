@@ -4,13 +4,12 @@ import com.saveourtool.diktat.api.DiktatCallback
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ktlint.format
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.test.framework.processing.FileComparisonResult
 import com.saveourtool.diktat.test.framework.processing.ResourceReader
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
+import com.saveourtool.diktat.test.framework.processing.TestFileContent
 import com.saveourtool.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Assertions
 import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.createDirectories
@@ -80,7 +79,7 @@ open class FixTestBase(
         tempDir: Path,
         subFolder: String? = null,
         overrideRulesConfigList: List<RulesConfig>? = null
-    ): FileComparisonResult {
+    ): TestFileContent {
         val folder = subFolder?.let { tempDir / it }?.also { it.createDirectories() } ?: tempDir
         val actual = folder / "actual.kt"
         actual.bufferedWriter().use { out ->
@@ -102,24 +101,6 @@ open class FixTestBase(
 
         private val defaultCallback = DiktatCallback { error, _ ->
             log.warn { "Received linting error: $error" }
-        }
-
-        /**
-         * Asserts [FileComparisonResult] as [this] that content are equal and status is successful
-         */
-        internal fun FileComparisonResult.assertSuccessful() {
-            Assertions.assertAll(
-                {
-                    Assertions.assertTrue(isSuccessful) {
-                        "Detected delta: $delta"
-                    }
-                },
-                {
-                    Assertions.assertEquals(expectedContentWithoutWarns, actualContent) {
-                        "Content are different"
-                    }
-                }
-            )
         }
     }
 }

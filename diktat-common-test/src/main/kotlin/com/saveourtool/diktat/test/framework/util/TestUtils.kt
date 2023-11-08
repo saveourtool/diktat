@@ -32,6 +32,8 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.isSameFileAs
 import kotlin.io.path.readText
 
+const val NEWLINE = '\n'
+
 private val logger = KotlinLogging.logger {}
 
 /**
@@ -289,6 +291,26 @@ fun Path.readTextOrNull(): String? = try {
 } catch (e: IOException) {
     logger.error(e) { "Not able to read file: $this" }
     null
+}
+
+/**
+ * @return a brief description of this code fragment.
+ */
+fun String.describe(): String {
+    val lines = splitToSequence(NEWLINE)
+
+    var first: String? = null
+
+    val count = lines.onEachIndexed { index, line ->
+        if (index == 0) {
+            first = line
+        }
+    }.count()
+
+    return when (count) {
+        1 -> "\"$this\""
+        else -> "\"$first\u2026\" ($count line(s))"
+    }
 }
 
 /**

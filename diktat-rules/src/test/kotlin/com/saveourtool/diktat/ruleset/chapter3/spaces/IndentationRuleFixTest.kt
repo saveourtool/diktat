@@ -12,11 +12,10 @@ import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Compan
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
-import com.saveourtool.diktat.test.framework.processing.FileComparisonResult
+import com.saveourtool.diktat.test.framework.processing.TestFileContent
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -110,9 +109,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
             """.trimMargin()
 
             val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
-            assertThat(lintResult.actualContent)
-                .describedAs("lint result for ${actualCode.describe()}")
-                .isEqualTo(lintResult.expectedContent)
+            lintResult.assertSuccessful()
         }
 
         /**
@@ -148,9 +145,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
             """.trimMargin()
 
             val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
-            assertThat(lintResult.actualContent)
-                .describedAs("lint result for ${actualCode.describe()}")
-                .isEqualTo(lintResult.expectedContent)
+            lintResult.assertSuccessful()
         }
 
         /**
@@ -186,9 +181,7 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
             """.trimMargin()
 
             val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
-            assertThat(lintResult.actualContent)
-                .describedAs("lint result for ${actualCode.describe()}")
-                .isEqualTo(lintResult.expectedContent)
+            lintResult.assertSuccessful()
         }
 
         /**
@@ -224,15 +217,13 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
             """.trimMargin()
 
             val lintResult = fixAndCompareContent(actualCode, expectedCode, tempDir)
-            assertThat(lintResult.actualContent)
-                .describedAs("lint result for ${actualCode.describe()}")
-                .isEqualTo(lintResult.expectedContent)
+            lintResult.assertSuccessful()
         }
 
         private fun fixAndCompareContent(@Language("kotlin") actualCode: String,
                                          @Language("kotlin") expectedCode: String,
                                          tempDir: Path
-        ): FileComparisonResult {
+        ): TestFileContent {
             val config = IndentationConfig(NEWLINE_AT_END to false).withCustomParameters().asRulesConfigList()
             return fixAndCompareContent(actualCode, expectedCode, tempDir, overrideRulesConfigList = config)
         }

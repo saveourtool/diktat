@@ -1,8 +1,0 @@
-{
-  "profile": "KT",
-  "executionCommand": "dir",
-  "expectedResultFile": "1_3_a_package_naming_correct_.kt",
-  "inPlace": true,
-  "testFile": "1_3_a_package_naming_incorrect_.kt",
-  "executionType": "COMPARE"
-}

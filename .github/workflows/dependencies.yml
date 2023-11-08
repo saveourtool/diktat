@@ -39,12 +39,12 @@ jobs:
           gradle-build-module: |-
             :diktat-api
             :diktat-common
+            :diktat-common-test
             :diktat-ktlint-engine
             :diktat-gradle-plugin
             :diktat-maven-plugin
             :diktat-rules
             :diktat-ruleset
-            :diktat-test-framework
             :diktat-dev-ksp
             :diktat-cli
           gradle-build-configuration: |-
