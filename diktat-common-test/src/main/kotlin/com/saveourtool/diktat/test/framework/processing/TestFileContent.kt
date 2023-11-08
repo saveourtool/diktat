@@ -1,10 +1,18 @@
+/**
+ * It's a class container for test file content.
+ * Plus exception cases when resource or file is not found
+ */
+
 package com.saveourtool.diktat.test.framework.processing
 
 import com.saveourtool.diktat.test.framework.util.describe
+
 import org.assertj.core.api.Assertions.assertThat
-import org.intellij.lang.annotations.Language
-import java.nio.file.Path
 import org.assertj.core.api.SoftAssertions.assertSoftly
+import org.intellij.lang.annotations.Language
+
+import java.nio.file.Path
+
 import kotlin.io.path.absolutePathString
 
 /**
@@ -65,26 +73,20 @@ data class NotFoundFilesTestFileContent(
     }
 }
 
-
 /**
  * The result of files being compared by their content.
  *
  * @param actualContent the actual file content (possibly slightly different
  *   from the original after `diktat:check` is run).
- * @param expectedContent the expected file content.
- * @param expectedContentWithoutWarns the expected file content without warns.
+ * @param expectedContent the expected file content without warns.
  */
 data class DefaultTestFileContent(
     @Language("kotlin") private val actualContent: String,
     @Language("kotlin") private val expectedContent: String,
-    @Language("kotlin") private val expectedContentWithoutWarns: String = expectedContent,
 ) : TestFileContent {
-    /**
-     * Asserts [DefaultTestFileContent] as [this] that content are equal and status is successful
-     */
     override fun assertSuccessful() {
         assertThat(actualContent)
             .describedAs("lint result for ", actualContent.describe())
-            .isEqualTo(expectedContentWithoutWarns)
+            .isEqualTo(expectedContent)
     }
 }

@@ -93,14 +93,12 @@ class TestComparatorUnit(
 
         return DefaultTestFileContent(
             actualContent = actualFileContent,
-            expectedContent = expectedFileContent,
-            expectedContentWithoutWarns = expectedFileContent.withoutWarns(),
+            expectedContent = expectedFileContent.withoutWarns(),
         )
     }
 
     private companion object {
         private val log = KotlinLogging.logger {}
-
         private val warnRegex = (".*// ;warn:?(.*):(\\d*): (.+)").toRegex()
 
         /**

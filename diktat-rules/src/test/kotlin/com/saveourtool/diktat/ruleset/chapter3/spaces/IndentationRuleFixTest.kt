@@ -12,12 +12,10 @@ import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Compan
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_FOR_EXPRESSION_BODIES
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_OF_PARAMETERS
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.NEWLINE_AT_END
-import com.saveourtool.diktat.test.framework.processing.DefaultTestFileContent
 import com.saveourtool.diktat.test.framework.processing.TestFileContent
 import com.saveourtool.diktat.util.FixTestBase
 
 import generated.WarningNames
-import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag

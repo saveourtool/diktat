@@ -4,7 +4,6 @@ import com.saveourtool.diktat.api.DiktatCallback
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ktlint.format
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.test.framework.processing.DefaultTestFileContent
 import com.saveourtool.diktat.test.framework.processing.ResourceReader
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
 import com.saveourtool.diktat.test.framework.processing.TestFileContent
