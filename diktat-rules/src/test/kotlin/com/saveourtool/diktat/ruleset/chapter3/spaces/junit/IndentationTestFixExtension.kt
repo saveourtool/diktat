@@ -1,12 +1,10 @@
 package com.saveourtool.diktat.ruleset.chapter3.spaces.junit
 
 import com.saveourtool.diktat.ruleset.chapter3.spaces.asRulesConfigList
-import com.saveourtool.diktat.ruleset.chapter3.spaces.describe
 import com.saveourtool.diktat.ruleset.chapter3.spaces.withCustomParameters
 import com.saveourtool.diktat.ruleset.junit.CloseablePath
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.IndentationRule
 import com.saveourtool.diktat.util.FixTestBase
-import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext

@@ -1,7 +1,6 @@
 package com.saveourtool.diktat.ruleset.chapter3
 
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
-import com.saveourtool.diktat.ruleset.chapter3.spaces.describe
 import com.saveourtool.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import com.saveourtool.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
