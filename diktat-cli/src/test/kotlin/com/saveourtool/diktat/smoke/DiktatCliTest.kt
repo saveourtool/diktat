@@ -89,6 +89,7 @@ class DiktatCliTest {
                 .describedAs("The output of \"$commandLine\"")
                 .isNotEmpty
                 .contains("[VARIABLE_NAME_INCORRECT_FORMAT]")
+                .doesNotContain("WARNING:")
         }
     }
 
