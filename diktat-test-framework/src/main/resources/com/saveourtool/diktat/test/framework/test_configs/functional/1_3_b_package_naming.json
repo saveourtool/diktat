@@ -1,8 +1,0 @@
-{
-  "profile": "KT",
-  "executionCommand": "didfgdr",
-  "expectedResultFile": "1_3_b_package_naming.warn",
-  "inPlace": false,
-  "testFile":  "1_3_a_package_naming_correct_.kt",
-  "executionType": "CHECK_WARN"
-}

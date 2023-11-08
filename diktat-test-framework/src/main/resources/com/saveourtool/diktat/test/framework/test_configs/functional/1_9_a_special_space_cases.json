@@ -1,8 +1,0 @@
-{
-  "profile": "PYTHON",
-  "executionCommand": "dir",
-  "expectedResultFile": "1_9_a_special_space_cases_correct_.py",
-  "testFile": "1_9_a_special_space_cases_incorrect_.py",
-  "inPlace": false,
-  "executionType": "MIXED"
-}

@@ -4,7 +4,7 @@ plugins {
     id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
 }
 
-project.description = "Test framework for diktat"
+project.description = "Diktat coommon for tests"
 
 dependencies {
     api(projects.diktatCommon)
