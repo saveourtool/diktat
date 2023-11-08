@@ -17,13 +17,10 @@ import org.junit.jupiter.api.condition.OS
 
 import java.net.URL
 import java.nio.file.Path
-import kotlin.io.path.Path
 import kotlin.io.path.absolute
 import kotlin.io.path.copyTo
 import kotlin.io.path.createDirectories
 import kotlin.io.path.div
-import kotlin.io.path.exists
-import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.readText
 
 @DisabledOnOs(OS.MAC)
@@ -139,29 +136,10 @@ class DiktatSaveSmokeTest : DiktatSmokeTestBase() {
                     "The base directory for the smoke test is $baseDirectoryPath."
                 }
 
-                /*
-                 * The fat JAR should reside in the same directory as `save*` and
-                 * be named `diktat.jar`
-                 * (see `diktat-cli/src/test/resources/test/smoke/save.toml`).
-                 */
-                val buildDirectory = Path(BUILD_DIRECTORY)
-                softly.assertThat(buildDirectory)
-                    .isDirectory
-                val diktatFrom = buildDirectory
-                    .takeIf(Path::exists)
-                    ?.listDirectoryEntries(DIKTAT_FAT_JAR_GLOB)
-                    ?.singleOrNull()
-                softly.assertThat(diktatFrom)
-                    .describedAs(diktatFrom?.toString() ?: "$BUILD_DIRECTORY/$DIKTAT_FAT_JAR_GLOB")
-                    .isNotNull
-                    .isRegularFile
-
-                val diktat = baseDirectoryPath / DIKTAT_FAT_JAR
+                val diktat = baseDirectoryPath / DIKTAT_CLI_JAR
+                copyDiktatCli(softly, diktat)
                 val save = baseDirectoryPath / getSaveForCurrentOs()
-
                 downloadFile(URL("https://github.com/saveourtool/save-cli/releases/download/v$SAVE_VERSION/${getSaveForCurrentOs()}"), save)
-
-                diktatFrom?.copyTo(diktat, overwrite = true)
             }
         }
     }

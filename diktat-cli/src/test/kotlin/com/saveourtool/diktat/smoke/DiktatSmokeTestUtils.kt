@@ -5,15 +5,20 @@ package com.saveourtool.diktat.smoke
 import com.saveourtool.diktat.test.framework.util.retry
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.Assertions.fail
+import org.assertj.core.api.SoftAssertions
 import java.net.URL
 import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.copyTo
+import kotlin.io.path.exists
+import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.outputStream
 import kotlin.io.path.relativeToOrSelf
 import kotlin.system.measureNanoTime
 
 internal const val BUILD_DIRECTORY = "build/libs"
-internal const val DIKTAT_FAT_JAR = "diktat.jar"
-internal const val DIKTAT_FAT_JAR_GLOB = "diktat-cli-*.jar"
+internal const val DIKTAT_CLI_JAR = "diktat.jar"
+internal const val DIKTAT_CLI_JAR_GLOB = "diktat-cli-*.jar"
 
 private val logger = KotlinLogging.logger {}
 
@@ -55,4 +60,34 @@ internal fun downloadFile(
             }
         }
     }
+}
+
+/**
+ * Copies the diktat-cli.jar with assertions
+ *
+ * @param softAssertions
+ * @param to the target path.
+ */
+internal fun copyDiktatCli(
+    softAssertions: SoftAssertions,
+    to: Path
+) {
+    /*
+     * The fat JAR should reside in the same directory as `save*` and
+     * be named `diktat.jar`
+     * (see `diktat-cli/src/test/resources/test/smoke/save.toml`).
+     */
+    val buildDirectory = Path(BUILD_DIRECTORY)
+    softAssertions.assertThat(buildDirectory)
+        .isDirectory
+    val diktatFrom = buildDirectory
+        .takeIf(Path::exists)
+        ?.listDirectoryEntries(DIKTAT_CLI_JAR_GLOB)
+        ?.singleOrNull()
+    softAssertions.assertThat(diktatFrom)
+        .describedAs(diktatFrom?.toString() ?: "$BUILD_DIRECTORY/$DIKTAT_CLI_JAR_GLOB")
+        .isNotNull
+        .isRegularFile
+
+    diktatFrom?.copyTo(to, overwrite = true)
 }

@@ -391,7 +391,6 @@ abstract class DiktatSmokeTestBase {
         @BeforeAll
         @JvmStatic
         @OptIn(ExperimentalPathApi::class)
-        @Suppress("AVOID_NULL_CHECKS")
         internal fun createTmpFiles() {
             val resourceFilePath = DiktatSmokeTestBase::class.java
                 .classLoader
