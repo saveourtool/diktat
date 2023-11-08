@@ -4,7 +4,7 @@
     "BACKTICKS_PROHIBITED",
 )
 
-package com.saveourtool.diktat.ruleset.smoke
+package com.saveourtool.diktat.smoke
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
@@ -414,7 +414,6 @@ abstract class DiktatSmokeTestBase {
                         "Example1Test.kt" -> dest.copyTo(dest.parent.resolve("Example1-2Test.kt"))
                     }
                 }
-
             }
         }
     }

@@ -19,9 +19,11 @@ dependencies {
     implementation(projects.diktatRules)
     implementation(libs.kotlinx.cli)
     implementation(libs.kotlin.logging)
+    implementation(libs.slf4j.api)
     implementation(libs.log4j2.core)
     implementation(libs.log4j2.slf4j2)
 
+    testImplementation(projects.diktatTestFramework)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

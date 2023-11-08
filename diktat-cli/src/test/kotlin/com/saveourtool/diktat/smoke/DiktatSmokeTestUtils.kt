@@ -1,6 +1,6 @@
 @file:Suppress("HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE")
 
-package com.saveourtool.diktat.ruleset.smoke
+package com.saveourtool.diktat.smoke
 
 import com.saveourtool.diktat.test.framework.util.retry
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -13,8 +13,7 @@ import kotlin.system.measureNanoTime
 
 internal const val BUILD_DIRECTORY = "build/libs"
 internal const val DIKTAT_FAT_JAR = "diktat.jar"
-internal const val DIKTAT_FAT_JAR_GLOB = "diktat-*.jar"
-internal const val KTLINT_FAT_JAR = "ktlint"
+internal const val DIKTAT_FAT_JAR_GLOB = "diktat-cli-*.jar"
 
 private val logger = KotlinLogging.logger {}
 

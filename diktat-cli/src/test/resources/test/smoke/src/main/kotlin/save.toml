@@ -1,5 +1,5 @@
 [general]
-execCmd="java -showversion -jar ktlint --log-level=debug -R diktat.jar"
+execCmd="java -showversion -jar diktat.jar --log-level debug"
 tags = ["smokeTest"]
 description = "SmokeTest"
 suiteName = "SmokeTest"
@@ -8,7 +8,7 @@ expectedWarningsPattern = "// ;warn:?(.*):(\\d*): (.+)"
 
 ["fix and warn"]
     ["fix and warn".fix]
-        execFlags="-F"
+        execFlags="--mode fix"
     ["fix and warn".warn]
         actualWarningsPattern = "(\\w+\\..+):(\\d+):(\\d+): (\\[.*\\].*)$"
         exactWarningsMatch = false
