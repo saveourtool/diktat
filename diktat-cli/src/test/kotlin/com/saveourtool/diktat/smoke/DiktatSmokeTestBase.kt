@@ -414,7 +414,6 @@ abstract class DiktatSmokeTestBase {
                         "Example1Test.kt" -> dest.copyTo(dest.parent.resolve("Example1-2Test.kt"))
                     }
                 }
-
             }
         }
     }

@@ -7,7 +7,6 @@ import com.saveourtool.diktat.test.framework.util.deleteIfExistsSilently
 import com.saveourtool.diktat.test.framework.util.inheritJavaHome
 import com.saveourtool.diktat.test.framework.util.isWindows
 import com.saveourtool.diktat.test.framework.util.temporaryDirectory
-import generated.KTLINT_VERSION
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.Assertions.fail
