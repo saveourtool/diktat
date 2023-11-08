@@ -1,7 +1,7 @@
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.20"
     id("com.saveourtool.diktat.diktat-gradle-plugin")
 }
 
