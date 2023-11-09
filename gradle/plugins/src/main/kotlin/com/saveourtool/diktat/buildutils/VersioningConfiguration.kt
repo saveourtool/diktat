@@ -5,7 +5,7 @@
 package com.saveourtool.diktat.buildutils
 
 import org.ajoberstar.reckon.core.Scope
-import org.ajoberstar.reckon.core.Version
+import org.ajoberstar.reckon.core.VersionTagParser
 import org.ajoberstar.reckon.gradle.ReckonExtension
 import org.ajoberstar.reckon.gradle.ReckonPlugin
 import org.eclipse.jgit.api.Git
@@ -28,7 +28,7 @@ fun Project.configureVersioning() {
         setScopeCalc(calcScopeFromProp())
         setStageCalc(calcStageFromProp())
         setTagParser { tagName ->
-            Version.parse(tagName.replace("-rc.[0-9]+".toRegex(), ""))
+            VersionTagParser.getDefault().parse(tagName.replace("-rc.[0-9]+".toRegex(), ""))
         }
     }
 
