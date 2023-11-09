@@ -105,15 +105,3 @@ tasks.jacocoTestReport {
         xml.required.set(true)
     }
 }
-
-afterEvaluate {
-    tasks.named("javadocJar") {
-        enabled = false
-    }
-    tasks.named("generateMetadataFileForPluginMavenPublication") {
-        dependsOn(tasks.named("dokkaJar"))
-    }
-    tasks.named("generateMetadataFileForMavenPublication") {
-        dependsOn(tasks.named("dokkaJar"))
-    }
-}

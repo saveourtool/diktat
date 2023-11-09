@@ -27,9 +27,6 @@ fun Project.configureVersioning() {
         snapshots()
         setScopeCalc(calcScopeFromProp())
         setStageCalc(calcStageFromProp())
-        setTagParser { tagName ->
-            VersionTagParser.getDefault().parse(tagName.replace("-rc.[0-9]+".toRegex(), ""))
-        }
     }
 
     val status = FileRepositoryBuilder()
