@@ -46,11 +46,6 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: |
-            :diktat-api:publishToMavenLocal
-            :diktat-common:publishToMavenLocal
-            :diktat-ktlint-engine:publishToMavenLocal
-            :diktat-rules:publishToMavenLocal
-            :diktat-gradle-plugin:publishToMavenLocal
             :generateLibsForDiktatSnapshot
             -x detekt
             -x test

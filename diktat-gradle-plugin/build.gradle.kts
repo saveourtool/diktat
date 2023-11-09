@@ -42,7 +42,7 @@ gradlePlugin {
     vcsUrl = "https://github.com/saveourtool/diktat"
     plugins {
         create("diktatPlugin") {
-            id = "com.saveourtool.diktat"
+            id = "com.saveourtool.diktat.diktat-gradle-plugin"
             implementationClass = "com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin"
         }
     }

@@ -39,7 +39,7 @@ tasks.create("generateLibsForDiktatSnapshot") {
         rootProject.project(":diktat-rules"),
         rootProject.project(":diktat-gradle-plugin"),
     )
-    mustRunAfter(dependencies.map { "${it.path}:publishToMavenLocal" })
+    dependsOn(dependencies.map { "${it.path}:publishToMavenLocal" })
     val libsFile = rootProject.file("gradle/libs.versions.toml")
 
     inputs.file(libsFile)
