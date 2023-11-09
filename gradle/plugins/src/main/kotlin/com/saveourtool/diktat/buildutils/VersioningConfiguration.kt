@@ -7,6 +7,7 @@ package com.saveourtool.diktat.buildutils
 import org.ajoberstar.reckon.core.Scope
 import org.ajoberstar.reckon.gradle.ReckonExtension
 import org.ajoberstar.reckon.gradle.ReckonPlugin
+import org.ajoberstar.reckon.core.Version
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
@@ -26,6 +27,9 @@ fun Project.configureVersioning() {
         snapshots()
         setScopeCalc(calcScopeFromProp())
         setStageCalc(calcStageFromProp())
+        setTagParser { tagName ->
+            Version.parse(tagName.replace("-rc.[0-9]+".toRegex(), ""))
+        }
     }
 
     val status = FileRepositoryBuilder()
