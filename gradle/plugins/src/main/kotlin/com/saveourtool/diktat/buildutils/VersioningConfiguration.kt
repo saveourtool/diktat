@@ -24,7 +24,7 @@ fun Project.configureVersioning() {
     // should be provided in the gradle.properties
     configure<ReckonExtension> {
         setDefaultInferredScope(Scope.MINOR.name)
-        snapshots()
+        stages("rc", "final")
         setScopeCalc(calcScopeFromProp())
         setStageCalc(calcStageFromProp())
     }
