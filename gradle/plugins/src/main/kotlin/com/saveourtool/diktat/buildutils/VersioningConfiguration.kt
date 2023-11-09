@@ -5,9 +5,9 @@
 package com.saveourtool.diktat.buildutils
 
 import org.ajoberstar.reckon.core.Scope
+import org.ajoberstar.reckon.core.Version
 import org.ajoberstar.reckon.gradle.ReckonExtension
 import org.ajoberstar.reckon.gradle.ReckonPlugin
-import org.ajoberstar.reckon.core.Version
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
