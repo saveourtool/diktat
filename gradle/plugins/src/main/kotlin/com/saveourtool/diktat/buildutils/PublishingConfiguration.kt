@@ -95,6 +95,36 @@ fun MavenPom.configurePom(project: Project) {
 }
 
 /**
+ * Configures all publications. The publications must already exist.
+ */
+@Suppress("TOO_LONG_FUNCTION")
+fun Project.configurePublications() {
+    if (this == rootProject) {
+        return
+    }
+    val sourcesJar = tasks.named(SOURCES_JAR)
+    apply<DokkaPlugin>()
+    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+    val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {
+        group = "documentation"
+        archiveClassifier.set("javadoc")
+        from(tasks.named("dokkaHtml"))
+    }
+    configure<PublishingExtension> {
+        repositories {
+            mavenLocal()
+        }
+        publications.withType<MavenPublication>().configureEach {
+            artifact(sourcesJar)
+            artifact(dokkaJarProvider)
+            pom {
+                configurePom(project)
+            }
+        }
+    }
+}
+
+/**
  * Configures Maven Central as the publish destination.
  */
 @Suppress("TOO_LONG_FUNCTION")
@@ -151,36 +181,6 @@ private fun Project.configureGitHubPublishing() {
                     username = findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                     password = findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
                 }
-            }
-        }
-    }
-}
-
-/**
- * Configures all publications. The publications must already exist.
- */
-@Suppress("TOO_LONG_FUNCTION")
-fun Project.configurePublications() {
-    if (this == rootProject) {
-        return
-    }
-    val sourcesJar = tasks.named(SOURCES_JAR)
-    apply<DokkaPlugin>()
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
-    val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {
-        group = "documentation"
-        archiveClassifier.set("javadoc")
-        from(tasks.named("dokkaHtml"))
-    }
-    configure<PublishingExtension> {
-        repositories {
-            mavenLocal()
-        }
-        publications.withType<MavenPublication>().configureEach {
-            artifact(sourcesJar)
-            artifact(dokkaJarProvider)
-            pom {
-                configurePom(project)
             }
         }
     }
