@@ -14,6 +14,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import java.util.Optional
 
 /**
  * Configures reckon plugin for [this] project, should be applied for root project only
@@ -24,7 +25,19 @@ fun Project.configureVersioning() {
     // should be provided in the gradle.properties
     configure<ReckonExtension> {
         setDefaultInferredScope(Scope.MINOR.name)
-        stages("rc", "final")
+        if (findProperty("reckon.stage")?.toString() == "snapshot") {
+            snapshots()
+            // skip -rc candidates tags
+            setTagParser { tagName ->
+                if (tagName.contains("-rc.[0-9]+".toRegex())) {
+                    Optional.empty()
+                } else {
+                    VersionTagParser.getDefault().parse(tagName)
+                }
+            }
+        } else {
+            stages("rc", "final")
+        }
         setScopeCalc(calcScopeFromProp())
         setStageCalc(calcStageFromProp())
     }
