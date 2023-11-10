@@ -1,3 +1,4 @@
+import com.saveourtool.diktat.buildutils.configurePublications
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.incremental.createDirectory
@@ -92,3 +93,4 @@ publishing {
         }
     }
 }
+configurePublications()

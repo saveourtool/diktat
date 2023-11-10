@@ -1,3 +1,4 @@
+import com.saveourtool.diktat.buildutils.configurePublications
 import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
 import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
 
@@ -47,3 +48,4 @@ publishing {
         }
     }
 }
+configurePublications()

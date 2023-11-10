@@ -39,7 +39,6 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
  * Configures all aspects of the publishing process.
  */
 fun Project.configurePublishing() {
-    configurePublications()
     apply<MavenPublishPlugin>()
     if (this == rootProject) {
         configureNexusPublishing()
@@ -161,7 +160,7 @@ private fun Project.configureGitHubPublishing() {
  * Configures all publications. The publications must already exist.
  */
 @Suppress("TOO_LONG_FUNCTION")
-private fun Project.configurePublications() {
+fun Project.configurePublications() {
     if (this == rootProject) {
         return
     }

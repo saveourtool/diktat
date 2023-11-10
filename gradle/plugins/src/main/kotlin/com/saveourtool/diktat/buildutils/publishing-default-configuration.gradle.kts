@@ -16,4 +16,5 @@ publishing {
     }
 }
 
+configurePublications()
 configurePublishing()

@@ -1,13 +1,16 @@
+import com.saveourtool.diktat.buildutils.configurePom
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
-    id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
+    id("com.saveourtool.diktat.buildutils.publishing-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
     id("org.gradle.test-retry") version "1.5.6"
     id("com.gradle.plugin-publish") version "1.2.1"
+//    alias(libs.plugins.shadow)
 }
 
 dependencies {
@@ -47,6 +50,38 @@ gradlePlugin {
         }
     }
 }
+
+//tasks.named("jar") {
+//    enabled = false
+//}
+//val shadowJar by tasks.existing(ShadowJar::class) {
+//    archiveClassifier.set("")
+//    duplicatesStrategy = DuplicatesStrategy.FAIL
+//}
+//
+//val javadocJar by tasks.registering(Jar::class) {
+//    group = "documentation"
+//    archiveClassifier.set("javadoc")
+//    from(tasks.named("dokkaHtml"))
+//}
+//
+//publishing {
+//    repositories {
+//        mavenLocal()
+//    }
+//    publications {
+//        val pluginMaven by creating(MavenPublication::class) {
+//            artifact(shadowJar)
+//            artifact(javadocJar)
+//            pom {
+//                configurePom(project)
+//            }
+//        }
+//    }
+//}
+
+
+
 
 // === testing & code coverage, jacoco is run independent from maven
 val functionalTestTask by tasks.register<Test>("functionalTest")
@@ -105,3 +140,9 @@ tasks.jacocoTestReport {
         xml.required.set(true)
     }
 }
+
+//afterEvaluate {
+//    tasks.named("publishDiktatPluginPluginMarkerMavenPublicationToMavenLocal") {
+//        dependsOn(javadocJar)
+//    }
+//}
