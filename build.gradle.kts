@@ -40,9 +40,12 @@ tasks.create("generateLibsForDiktatSnapshot") {
         rootProject.project(":diktat-gradle-plugin"),
     )
     dependsOn(dependencies.map { "${it.path}:publishToMavenLocal" })
+
     val libsFile = rootProject.file("gradle/libs.versions.toml")
+    val diktatGradleFile = rootProject.file("gradle/plugins/src/main/kotlin/com/saveourtool/diktat/buildutils/diktat-convention-configuration.gradle.kts")
 
     inputs.file(libsFile)
+    inputs.file(diktatGradleFile)
     inputs.files(dependencies.map { it.pomFile() })
     inputs.files(dependencies.map { it.artifactFile() })
     inputs.property("project-version", version.toString())
@@ -61,8 +64,20 @@ tasks.create("generateLibsForDiktatSnapshot") {
                 }
             }
             .let {
-                val libsFileForDiktatSnapshot = dir.resolve("libs.versions.toml_snapshot")
+                val libsFileForDiktatSnapshot = dir.resolve("libs.versions.toml")
                 Files.write(libsFileForDiktatSnapshot.toPath(), it)
+            }
+
+        Files.readAllLines(diktatGradleFile.toPath())
+            .map { line ->
+                when {
+                    line.contains("com.saveourtool.diktat.diktat-gradle-plugin") -> line.replace("com.saveourtool.diktat.diktat-gradle-plugin", "com.saveourtool.diktat")
+                    else -> line
+                }
+            }
+            .let {
+                val diktatGradleFileForDiktatSnapshot = dir.resolve("diktat-convention-configuration.gradle.kts")
+                Files.write(diktatGradleFileForDiktatSnapshot.toPath(), it)
             }
 
         dependencies.forEach { dependency ->
