@@ -1,10 +1,11 @@
+import com.saveourtool.diktat.buildutils.configurePom
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
-    id("com.saveourtool.diktat.buildutils.publishing-default-configuration")
+    id("com.saveourtool.diktat.buildutils.publishing-configuration")
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
     id("org.gradle.test-retry") version "1.5.6"
     id("com.gradle.plugin-publish") version "1.2.1"
@@ -38,10 +39,24 @@ tasks.withType<KotlinCompile> {
 }
 
 gradlePlugin {
+    website = "https://diktat.saveourtool.com/"
+    vcsUrl = "https://github.com/saveourtool/diktat"
     plugins {
         create("diktatPlugin") {
-            id = "com.saveourtool.diktat.diktat-gradle-plugin"
+            id = "com.saveourtool.diktat"
             implementationClass = "com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin"
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            withType<MavenPublication> {
+                pom {
+                    configurePom(project)
+                }
+            }
         }
     }
 }
@@ -101,17 +116,5 @@ tasks.jacocoTestReport {
     reports {
         // xml report is used by codecov
         xml.required.set(true)
-    }
-}
-
-afterEvaluate {
-    tasks.named("javadocJar") {
-        enabled = false
-    }
-    tasks.named("generateMetadataFileForPluginMavenPublication") {
-        dependsOn(tasks.named("dokkaJar"))
-    }
-    tasks.named("generateMetadataFileForMavenPublication") {
-        dependsOn(tasks.named("dokkaJar"))
     }
 }

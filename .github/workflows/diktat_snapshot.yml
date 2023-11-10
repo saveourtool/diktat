@@ -46,11 +46,6 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: |
-            :diktat-api:publishToMavenLocal
-            :diktat-common:publishToMavenLocal
-            :diktat-ktlint-engine:publishToMavenLocal
-            :diktat-rules:publishToMavenLocal
-            :diktat-gradle-plugin:publishToMavenLocal
             :generateLibsForDiktatSnapshot
             -x detekt
             -x test
@@ -59,7 +54,10 @@ jobs:
       - name: 'Override <gradle/libs.versions.toml>'
         run: |
           mv gradle/libs.versions.toml gradle/libs.versions.toml_current
-          mv build/diktat-snapshot/libs.versions.toml_snapshot gradle/libs.versions.toml
+          mv build/diktat-snapshot/libs.versions.toml gradle/libs.versions.toml
+
+          mv gradle/plugins/src/main/kotlin/com/saveourtool/diktat/buildutils/diktat-convention-configuration.gradle.kts gradle/plugins/src/main/kotlin/com/saveourtool/diktat/buildutils/diktat-convention-configuration.gradle.kts_current
+          mv build/diktat-snapshot/diktat-convention-configuration.gradle.kts gradle/plugins/src/main/kotlin/com/saveourtool/diktat/buildutils/diktat-convention-configuration.gradle.kts
 
       # copied from .github/workflows/diktat.yml
       - uses: gradle/gradle-build-action@v2

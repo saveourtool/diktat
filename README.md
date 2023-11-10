@@ -2,12 +2,12 @@
 
 ![Build and test](https://github.com/saveourtool/diKTat/workflows/Build%20and%20test/badge.svg?branch=master)
 ![deteKT static analysis](https://github.com/saveourtool/diKTat/workflows/Run%20deteKT/badge.svg)
-![diKTat code style](https://github.com/saveourtool/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
+![diKTat code style](https://github.com/saveourtool/diKTat/workflows/Run%20diKTat%20%28release%29/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/saveourtool/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/saveourtool/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/saveourtool/diKTat)](https://github.com/saveourtool/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/com.saveourtool.diktat/diktat-rules)](https://mvnrepository.com/artifact/com.saveourtool.diktat)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaveourtool%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaveourtool%2FdiKTat?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaveourtool%2Fdiktat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaveourtool%2Fdiktat?ref=badge_shield)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
 [![Hits-of-Code](https://hitsofcode.com/github/saveourtool/diktat)](https://hitsofcode.com/view/github/saveourtool/diktat)

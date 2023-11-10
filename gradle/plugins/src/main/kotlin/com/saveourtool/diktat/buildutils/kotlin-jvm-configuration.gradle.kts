@@ -26,6 +26,11 @@ kotlin {
     }
 }
 
+tasks.register<Jar>(SOURCES_JAR) {
+    archiveClassifier.set("sources")
+    from(kotlin.sourceSets.main.map { it.kotlin })
+}
+
 configureJacoco()
 tasks.withType<Test> {
     useJUnitPlatform()

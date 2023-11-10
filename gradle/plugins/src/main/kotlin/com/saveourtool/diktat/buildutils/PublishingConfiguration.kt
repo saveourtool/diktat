@@ -39,7 +39,6 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
  * Configures all aspects of the publishing process.
  */
 fun Project.configurePublishing() {
-    configurePublications()
     apply<MavenPublishPlugin>()
     if (this == rootProject) {
         configureNexusPublishing()
@@ -92,6 +91,36 @@ fun MavenPom.configurePom(project: Project) {
         url.set("https://github.com/saveourtool/diktat")
         connection.set("scm:git:git://github.com/saveourtool/diktat.git")
         developerConnection.set("scm:git:git@github.com:saveourtool/diktat.git")
+    }
+}
+
+/**
+ * Configures all publications. The publications must already exist.
+ */
+@Suppress("TOO_LONG_FUNCTION")
+fun Project.configurePublications() {
+    if (this == rootProject) {
+        return
+    }
+    val sourcesJar = tasks.named(SOURCES_JAR)
+    apply<DokkaPlugin>()
+    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+    val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {
+        group = "documentation"
+        archiveClassifier.set("javadoc")
+        from(tasks.named("dokkaHtml"))
+    }
+    configure<PublishingExtension> {
+        repositories {
+            mavenLocal()
+        }
+        publications.withType<MavenPublication>().configureEach {
+            artifact(sourcesJar)
+            artifact(dokkaJarProvider)
+            pom {
+                configurePom(project)
+            }
+        }
     }
 }
 
@@ -152,34 +181,6 @@ private fun Project.configureGitHubPublishing() {
                     username = findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                     password = findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
                 }
-            }
-        }
-    }
-}
-
-/**
- * Configures all publications. The publications must already exist.
- */
-@Suppress("TOO_LONG_FUNCTION")
-private fun Project.configurePublications() {
-    if (this == rootProject) {
-        return
-    }
-    apply<DokkaPlugin>()
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
-    val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {
-        group = "documentation"
-        archiveClassifier.set("javadoc")
-        from(tasks.named("dokkaHtml"))
-    }
-    configure<PublishingExtension> {
-        repositories {
-            mavenLocal()
-        }
-        publications.withType<MavenPublication>().configureEach {
-            artifact(dokkaJarProvider)
-            pom {
-                configurePom(project)
             }
         }
     }
