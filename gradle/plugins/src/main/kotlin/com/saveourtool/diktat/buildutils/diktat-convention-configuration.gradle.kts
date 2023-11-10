@@ -1,7 +1,7 @@
 package com.saveourtool.diktat.buildutils
 
 plugins {
-    id("com.saveourtool.diktat.diktat-gradle-plugin")
+    id("com.saveourtool.diktat")
 }
 
 diktat {

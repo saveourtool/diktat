@@ -44,6 +44,9 @@ gradlePlugin {
     plugins {
         create("diktatPlugin") {
             id = "com.saveourtool.diktat"
+            displayName = "Static code analysis for Kotlin"
+            description = "Strict coding standard for Kotlin and a custom set of rules for detecting code smells, code style issues and bugs"
+            tags = listOf("kotlin", "code-analysis")
             implementationClass = "com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin"
         }
     }
