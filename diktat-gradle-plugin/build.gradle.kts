@@ -51,6 +51,21 @@ gradlePlugin {
     }
 }
 
+publishing {
+    publications {
+        named<MavenPublication>("pluginMaven") {
+            pom {
+                configurePom(project)
+            }
+        }
+//        @Suppress("UNUSED_VARIABLE")
+//        val pluginMaven = existing(MavenPublication::class) {
+//            pom {
+//                configurePom(project)
+//            }
+//        }
+    }
+}
 //tasks.named("jar") {
 //    enabled = false
 //}

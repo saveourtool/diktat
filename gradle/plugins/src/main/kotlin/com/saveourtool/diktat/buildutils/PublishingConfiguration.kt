@@ -164,6 +164,7 @@ fun Project.configurePublications() {
     if (this == rootProject) {
         return
     }
+    val sourcesJar = tasks.named(SOURCES_JAR)
     apply<DokkaPlugin>()
     @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
     val dokkaJarProvider = tasks.register<Jar>("dokkaJar") {
@@ -176,6 +177,7 @@ fun Project.configurePublications() {
             mavenLocal()
         }
         publications.withType<MavenPublication>().configureEach {
+            artifact(sourcesJar)
             artifact(dokkaJarProvider)
             pom {
                 configurePom(project)
