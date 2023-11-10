@@ -52,7 +52,7 @@ gradlePlugin {
 afterEvaluate {
     publishing {
         publications {
-            named<MavenPublication>("pluginMaven") {
+            withType<MavenPublication> {
                 pom {
                     configurePom(project)
                 }
