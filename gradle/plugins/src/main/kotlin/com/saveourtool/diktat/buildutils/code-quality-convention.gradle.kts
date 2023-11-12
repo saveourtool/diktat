@@ -6,5 +6,6 @@ run {
     plugins {
         id("com.saveourtool.diktat.buildutils.detekt-convention-configuration")
         id("com.saveourtool.diktat.buildutils.diktat-convention-configuration")
+        id("com.saveourtool.diktat.buildutils.spotless-convention-configuration")
     }
 }
