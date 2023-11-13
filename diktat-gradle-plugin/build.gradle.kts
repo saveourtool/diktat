@@ -42,7 +42,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveClassifier.set("all")
+    archiveClassifier.set("")
     isEnableRelocation = true
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
