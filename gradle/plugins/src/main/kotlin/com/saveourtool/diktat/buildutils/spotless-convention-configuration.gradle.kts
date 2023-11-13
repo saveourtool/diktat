@@ -9,7 +9,9 @@ spotless {
         target("**/*.kt")
 
         ktlint()
-        diktat()
+        diktat().configFile(
+            rootProject.file("diktat-analysis-old.yml")
+        )
     }
 }
 

@@ -49,8 +49,6 @@ kotlin-plugin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kot
 kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "2.0.2" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-spotless = { id = "com.diffplug.gradle.spotless", version.ref = "spotless" }
 download = { id = "de.undercouch.download", version.ref = "download" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "gradle-shadow" }
 
@@ -148,6 +146,5 @@ annotation-api = { module = "jakarta.annotation:jakarta.annotation-api"}
 # code quality
 diktat-gradle-plugin = { module = "com.saveourtool.diktat:diktat-gradle-plugin", version.ref = "diktat" }
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-gradle-plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 reckon-gradle-plugin = { module = "org.ajoberstar.reckon:reckon-gradle", version.ref = "reckon" }
 spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
