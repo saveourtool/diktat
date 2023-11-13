@@ -45,6 +45,7 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     isEnableRelocation = true
     duplicatesStrategy = DuplicatesStrategy.FAIL
+    mergeServiceFiles()
 }
 
 gradlePlugin {
