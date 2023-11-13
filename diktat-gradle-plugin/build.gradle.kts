@@ -46,6 +46,7 @@ tasks.named<ShadowJar>("shadowJar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
     relocate("kotlin", "shadow.kotlin")
     relocate("kotlinx", "shadow.kotlinx")
+    relocate("org.jetbrains", "shadow.org.jetbrains")
 }
 
 gradlePlugin {
