@@ -44,6 +44,7 @@ tasks.withType<KotlinCompile> {
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     isEnableRelocation = true
+    relocationPrefix = "com.saveourtool.diktat"
     duplicatesStrategy = DuplicatesStrategy.FAIL
     mergeServiceFiles()
 }
