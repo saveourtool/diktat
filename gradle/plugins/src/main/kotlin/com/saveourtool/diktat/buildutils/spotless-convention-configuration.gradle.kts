@@ -19,9 +19,7 @@ spotless {
                 "build/**/*.kts",
             )
         }
-        diktat().configFile(
-            rootProject.file("diktat-analysis-old.yml")
-        )
+        diktat().configFile(rootProject.file("diktat-analysis.yml"))
     }
 }
 
