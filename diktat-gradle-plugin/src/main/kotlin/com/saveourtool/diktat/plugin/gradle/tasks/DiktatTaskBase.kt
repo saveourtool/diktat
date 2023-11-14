@@ -79,7 +79,7 @@ abstract class DiktatTaskBase(
     private val diktatRunnerArguments by lazy {
         DiktatRunnerArguments(
             configFile = extension.diktatConfigFile.toPath(),
-            sourceRootDir = project.projectDir.toPath(),
+            sourceRootDir = null,
             files = actualInputs.files.map { it.toPath() },
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
             reporterType = project.getReporterType(extension),
