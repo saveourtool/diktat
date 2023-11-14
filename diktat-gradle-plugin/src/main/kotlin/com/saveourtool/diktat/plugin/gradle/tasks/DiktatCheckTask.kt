@@ -15,8 +15,7 @@ import javax.inject.Inject
  */
 abstract class DiktatCheckTask @Inject constructor(
     extension: DiktatExtension,
-    inputs: PatternFilterable
-) : DiktatTaskBase(extension, inputs) {
+) : DiktatTaskBase(extension) {
     override fun doRun(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
