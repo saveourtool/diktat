@@ -44,7 +44,9 @@ tasks.withType<KotlinCompile> {
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     duplicatesStrategy = DuplicatesStrategy.FAIL
+    // serialization
     relocate("kotlinx", "shadow.kotlinx")
+    // all kotlin libs
     relocate("org.jetbrains", "shadow.org.jetbrains")
 }
 
