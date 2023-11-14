@@ -6,7 +6,6 @@ import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import javax.inject.Inject
 
@@ -29,11 +28,10 @@ abstract class DiktatCheckTask @Inject constructor(
          */
         fun Project.registerDiktatCheckTask(
             diktatExtension: DiktatExtension,
-            patternSet: PatternSet
         ): TaskProvider<DiktatCheckTask> =
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_CHECK_TASK, DiktatCheckTask::class.java,
-                diktatExtension, patternSet
+                diktatExtension,
             )
     }
 }

@@ -9,12 +9,8 @@ import java.io.File
 
 /**
  * An extension to configure diktat in build.gradle(.kts) file
- *
- * @param patternSet
  */
-open class DiktatExtension(
-    private val patternSet: PatternSet
-) {
+open class DiktatExtension {
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
      */
@@ -53,13 +49,4 @@ open class DiktatExtension(
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     lateinit var diktatConfigFile: File
-
-    /**
-     * Configure input files for diktat task
-     *
-     * @param action configuration lambda for `PatternFilterable`
-     */
-    fun inputs(action: PatternFilterable.() -> Unit) {
-        action(patternSet)
-    }
 }

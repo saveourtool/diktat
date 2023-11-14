@@ -17,17 +17,15 @@ class DiktatGradlePlugin : Plugin<Project> {
      */
     @Suppress("TOO_LONG_FUNCTION")
     override fun apply(project: Project) {
-        val patternSet = PatternSet()
         val diktatExtension = project.extensions.create(
             DIKTAT_EXTENSION,
             DiktatExtension::class.java,
-            patternSet
         ).apply {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
 
-        project.registerDiktatCheckTask(diktatExtension, patternSet)
-        project.registerDiktatFixTask(diktatExtension, patternSet)
+        project.registerDiktatCheckTask(diktatExtension)
+        project.registerDiktatFixTask(diktatExtension)
         project.configureMergeReportsTask(diktatExtension)
     }
 
