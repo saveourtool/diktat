@@ -14,7 +14,7 @@ import java.nio.file.Path
  */
 class DiktatReporterImpl(
     private val ktLintReporter: ReporterV2,
-    private val sourceRootDir: Path,
+    private val sourceRootDir: Path?,
 ) : DiktatReporter {
     override fun beforeAll(files: Collection<Path>): Unit = ktLintReporter.beforeAll()
     override fun before(file: Path): Unit = ktLintReporter.before(file.relativePathStringTo(sourceRootDir))
@@ -31,7 +31,7 @@ class DiktatReporterImpl(
          * @param sourceRootDir
          * @return [DiktatReporter] which wraps __KtLint__'s [ReporterV2]
          */
-        fun ReporterV2.wrap(sourceRootDir: Path): DiktatReporter = DiktatReporterImpl(this, sourceRootDir)
+        fun ReporterV2.wrap(sourceRootDir: Path?): DiktatReporter = DiktatReporterImpl(this, sourceRootDir)
 
         /**
          * @return __KtLint__'s [ReporterV2]
