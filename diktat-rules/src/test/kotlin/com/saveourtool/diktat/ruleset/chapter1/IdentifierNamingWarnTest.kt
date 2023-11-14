@@ -23,7 +23,14 @@ import com.saveourtool.diktat.ruleset.rules.chapter1.IdentifierNaming
 import com.saveourtool.diktat.util.LintTestBase
 
 import com.saveourtool.diktat.api.DiktatError
+import com.saveourtool.diktat.ruleset.constants.Warnings
+import com.saveourtool.diktat.ruleset.utils.getFirstChildWithType
+import com.saveourtool.diktat.ruleset.utils.hasAnyChildOfTypes
+import com.saveourtool.diktat.ruleset.utils.prettyPrint
 import generated.WarningNames
+import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
@@ -627,6 +634,33 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 }
             """.trimIndent()
         lintMethod(code)
+    }
+
+    @Test
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
+    fun `should not trigger on backing field`() {
+        //language=kotlin
+        lintMethod(
+            """
+                    |package com.example
+                    |
+                    |class MutableTableContainer {
+                    |   private var _table: Map<String, Int>? = null
+                    |
+                    |   val table: Map<String, Int>
+                    |       get() {
+                    |           if (_table == null) {
+                    |               _table = hashMapOf()
+                    |           }
+                    |           return _table ?: throw AssertionError("Set to null by another thread")
+                    |       }
+                    |       set(value) {
+                    |           field = value
+                    |       }
+                    |
+                    |}
+            """.trimMargin(),
+        )
     }
 
     @Test

@@ -102,4 +102,27 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
             DiktatError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
+
+    @Test
+    @Tag(CUSTOM_GETTERS_SETTERS)
+    fun `exception for accessors or modifiers of property`() {
+        lintMethod(
+            """
+                    |package com.example
+                    |
+                    |class MutableTableContainer {
+                    |   private var _table: Map<String, Int>? = null
+                    |
+                    |   val table: Map<String, Int>
+                    |       get() {
+                    |           if (_table == null) {
+                    |               _table = hashMapOf()
+                    |           }
+                    |           return _table ?: throw AssertionError("Set to null by another thread")
+                    |       }
+                    |}
+            """.trimMargin(),
+        )
+    }
 }
+
