@@ -51,11 +51,6 @@ jobs:
             -x test
             -x diktatCheck
 
-      - name: 'Override <gradle/libs.versions.toml>'
-        run: |
-          mv gradle/libs.versions.toml gradle/libs.versions.toml_current
-          mv build/diktat-snapshot/libs.versions.toml gradle/libs.versions.toml
-
       # copied from .github/workflows/diktat.yml
       - uses: gradle/gradle-build-action@v2
         with:
