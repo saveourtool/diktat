@@ -51,7 +51,7 @@ fun Project.getReporterType(diktatExtension: DiktatExtension): String {
     val name = reporter
     val validReporters = listOf("sarif", "plain", "json", "html")
     val reporterType = when {
-        diktatExtension.getGithubActions().getOrElse(false) -> {
+        diktatExtension.githubActions.getOrElse(false) -> {
             if (reporter.isNotEmpty()) {
                 logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
             }
@@ -81,7 +81,7 @@ fun Project.getReporterType(diktatExtension: DiktatExtension): String {
 internal fun Project.getOutputFile(diktatExtension: DiktatExtension): File? {
     val output by lazy { diktatExtension.getOutput().getOrElse("") }
     return when {
-        diktatExtension.getGithubActions().getOrElse(false) -> project.layout.buildDirectory
+        diktatExtension.githubActions.getOrElse(false) -> project.layout.buildDirectory
             .file("reports/diktat/diktat.sarif")
             .get()
             .asFile

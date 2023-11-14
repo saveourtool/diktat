@@ -21,7 +21,7 @@ abstract class DiktatExtension {
     /**
      * @return Property that will be used if you need to publish the report to GitHub
      */
-    abstract fun getGithubActions(): Property<Boolean> // = false
+    abstract val githubActions: Property<Boolean> // = false
 
     /**
      * Type of the reporter to use
