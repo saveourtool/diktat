@@ -7,6 +7,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 
 /**
@@ -14,30 +15,30 @@ import org.gradle.api.tasks.util.PatternFilterable
  */
 abstract class DiktatExtension {
     /**
-     * @return boolean flag to support `ignoreFailures` property of [VerificationTask].
+     * Boolean flag to support `ignoreFailures` property of [VerificationTask].
      */
-    abstract fun getIgnoreFailures(): Property<Boolean>
+    abstract val ignoreFailures: Property<Boolean>
 
     /**
-     * @return Property that will be used if you need to publish the report to GitHub
+     * Property that will be used if you need to publish the report to GitHub
      */
     abstract val githubActions: Property<Boolean> // = false
 
     /**
      * Type of the reporter to use
      */
-    abstract fun getReporter(): Property<String> // = ""
+    abstract val reporter: Property<String>
 
     /**
      * Destination for reporter. If empty, will write to stdout.
      */
-    abstract fun getOutput(): Property<String> // = ""
+    abstract val output: RegularFileProperty
 
     /**
-     * @return Baseline file, containing a list of errors that will be ignored.
+     * Baseline file, containing a list of errors that will be ignored.
      * If this file doesn't exist, it will be created on the first invocation.
      */
-    abstract fun getBaseline(): Property<String> // null
+    abstract val baseline: RegularFileProperty
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -47,8 +48,16 @@ abstract class DiktatExtension {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val diktatConfigFile: RegularFileProperty
 
+    /**
+     * @return [PatternFilterable] to configure input files for diktat task
+     */
     @Nested
     abstract fun getInputs(): PatternFilterable
 
+    /**
+     * Configure input files for diktat task
+     *
+     * @param action configuration lambda for [PatternFilterable]
+     */
     fun inputs(action: Action<in PatternFilterable>) = action.execute(getInputs())
 }

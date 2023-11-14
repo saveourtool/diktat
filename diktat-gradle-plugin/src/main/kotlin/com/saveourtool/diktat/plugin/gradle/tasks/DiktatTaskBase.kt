@@ -44,7 +44,7 @@ abstract class DiktatTaskBase(
             configFile = extension.diktatConfigFile.get().asFile.toPath(),
             sourceRootDir = project.projectDir.toPath(),
             files = source.files.map { it.toPath() },
-            baselineFile = extension.getBaseline().map { project.file(it).toPath() }.orNull,
+            baselineFile = extension.baseline.map { it.asFile.toPath() }.orNull,
             reporterType = project.getReporterType(extension),
             reporterOutput = project.getOutputFile(extension)?.outputStream(),
             loggingListener = object : DiktatProcessorListener {
@@ -68,7 +68,7 @@ abstract class DiktatTaskBase(
     }
 
     init {
-        ignoreFailures = extension.getIgnoreFailures().getOrElse(false)
+        ignoreFailures = extension.ignoreFailures.getOrElse(false)
         extension.getInputs().run {
             if (includes.isEmpty() && excludes.isEmpty()) {
                 patternSet.include("src/**/*.kt")

@@ -47,25 +47,24 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
  * @return CLI flag as string
  */
 fun Project.getReporterType(diktatExtension: DiktatExtension): String {
-    val reporter = diktatExtension.getReporter().getOrElse("")
-    val name = reporter
+    val reporter = diktatExtension.reporter.getOrElse("")
     val validReporters = listOf("sarif", "plain", "json", "html")
     val reporterType = when {
         diktatExtension.githubActions.getOrElse(false) -> {
             if (reporter.isNotEmpty()) {
-                logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
+                logger.warn("`diktat.githubActions` is set to true, so custom reporter [$reporter] will be ignored and SARIF reporter will be used")
             }
             "sarif"
         }
-        name.isEmpty() -> {
+        reporter.isEmpty() -> {
             logger.info("Reporter name was not set. Using 'plain' reporter")
             "plain"
         }
-        name !in validReporters -> {
-            logger.warn("Reporter name is invalid (provided value: [$name]). Falling back to 'plain' reporter")
+        reporter !in validReporters -> {
+            logger.warn("Reporter name is invalid (provided value: [$reporter]). Falling back to 'plain' reporter")
             "plain"
         }
-        else -> name
+        else -> reporter
     }
 
     return reporterType
@@ -78,19 +77,15 @@ fun Project.getReporterType(diktatExtension: DiktatExtension): String {
  * @param diktatExtension extension of type [DiktatExtension]
  * @return destination [File] or null if stdout is used
  */
-internal fun Project.getOutputFile(diktatExtension: DiktatExtension): File? {
-    val output by lazy { diktatExtension.getOutput().getOrElse("") }
-    return when {
-        diktatExtension.githubActions.getOrElse(false) -> project.layout.buildDirectory
-            .file("reports/diktat/diktat.sarif")
-            .get()
-            .asFile
-            .also {
-                Files.createDirectories(it.parentFile.toPath())
-            }
-        output.isNotEmpty() -> file(output)
-        else -> null
-    }
+internal fun Project.getOutputFile(diktatExtension: DiktatExtension): File? = when {
+    diktatExtension.githubActions.getOrElse(false) -> project.layout.buildDirectory
+        .file("reports/diktat/diktat.sarif")
+        .get()
+        .asFile
+        .also {
+            Files.createDirectories(it.parentFile.toPath())
+        }
+    else -> diktatExtension.output.map { it.asFile }.orNull
 }
 
 /**
