@@ -1,46 +1,43 @@
 package com.saveourtool.diktat.plugin.gradle
 
+import org.gradle.api.Action
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.util.PatternFilterable
-import org.gradle.api.tasks.util.PatternSet
-import java.io.File
 
 /**
  * An extension to configure diktat in build.gradle(.kts) file
  */
-open class DiktatExtension {
+abstract class DiktatExtension {
     /**
-     * Boolean flag to support `ignoreFailures` property of [VerificationTask].
+     * @return boolean flag to support `ignoreFailures` property of [VerificationTask].
      */
-    var ignoreFailures: Boolean = false
+    abstract fun getIgnoreFailures(): Property<Boolean>
 
     /**
-     * Flag that indicates whether to turn debug logging on
+     * @return Property that will be used if you need to publish the report to GitHub
      */
-    var debug = false
-
-    /**
-     * Property that will be used if you need to publish the report to GitHub
-     */
-    var githubActions = false
+    abstract fun getGithubActions(): Property<Boolean> // = false
 
     /**
      * Type of the reporter to use
      */
-    var reporter: String = ""
+    abstract fun getReporter(): Property<String> // = ""
 
     /**
      * Destination for reporter. If empty, will write to stdout.
      */
-    var output: String = ""
+    abstract fun getOutput(): Property<String> // = ""
 
     /**
-     * Baseline file, containing a list of errors that will be ignored.
+     * @return Baseline file, containing a list of errors that will be ignored.
      * If this file doesn't exist, it will be created on the first invocation.
      */
-    var baseline: String? = null
+    abstract fun getBaseline(): Property<String> // null
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -48,5 +45,10 @@ open class DiktatExtension {
      */
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    lateinit var diktatConfigFile: File
+    abstract val diktatConfigFile: RegularFileProperty
+
+    @Nested
+    abstract fun getInputs(): PatternFilterable
+
+    fun inputs(action: Action<in PatternFilterable>) = action.execute(getInputs())
 }

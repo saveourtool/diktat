@@ -14,7 +14,6 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import generated.DIKTAT_VERSION
-import generated.KTLINT_VERSION
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceTask
@@ -42,10 +41,10 @@ abstract class DiktatTaskBase(
     }
     private val diktatRunnerArguments by lazy {
         DiktatRunnerArguments(
-            configFile = extension.diktatConfigFile.toPath(),
+            configFile = extension.diktatConfigFile.get().asFile.toPath(),
             sourceRootDir = project.projectDir.toPath(),
             files = source.files.map { it.toPath() },
-            baselineFile = extension.baseline?.let { project.file(it).toPath() },
+            baselineFile = extension.getBaseline().map { project.file(it).toPath() }.orNull,
             reporterType = project.getReporterType(extension),
             reporterOutput = project.getOutputFile(extension)?.outputStream(),
             loggingListener = object : DiktatProcessorListener {
@@ -69,9 +68,14 @@ abstract class DiktatTaskBase(
     }
 
     init {
-        ignoreFailures = extension.ignoreFailures
-        if (patternSet.includes.isEmpty() && patternSet.excludes.isEmpty()) {
-            patternSet.include("src/**/*.kt")
+        ignoreFailures = extension.getIgnoreFailures().getOrElse(false)
+        extension.getInputs().run {
+            if (includes.isEmpty() && excludes.isEmpty()) {
+                patternSet.include("src/**/*.kt")
+            } else {
+                patternSet.setIncludes(includes)
+                patternSet.setExcludes(excludes)
+            }
         }
     }
 
@@ -82,9 +86,7 @@ abstract class DiktatTaskBase(
      */
     @TaskAction
     fun run() {
-        if (extension.debug) {
-            project.logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
-        }
+        project.logger.lifecycle("Running diktat $DIKTAT_VERSION")
         if (source.isEmpty) {
             project.logger.warn("Inputs for $name do not exist, will not run diktat")
             project.logger.info("Skipping diktat execution")

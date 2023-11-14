@@ -5,7 +5,6 @@ import com.saveourtool.diktat.plugin.gradle.tasks.DiktatFixTask.Companion.regist
 import com.saveourtool.diktat.plugin.gradle.tasks.configureMergeReportsTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.util.PatternSet
 
 /**
  * Plugin that configures diktat and registers tasks to run diktat
@@ -21,7 +20,7 @@ class DiktatGradlePlugin : Plugin<Project> {
             DIKTAT_EXTENSION,
             DiktatExtension::class.java,
         ).apply {
-            diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
+            diktatConfigFile.set(project.rootProject.file("diktat-analysis.yml"))
         }
 
         project.registerDiktatCheckTask(diktatExtension)
