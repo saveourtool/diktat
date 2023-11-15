@@ -41,7 +41,7 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
     KotlinClosure1(action, this, this)
 
 /**
-  * @param diktatExtension
+ * @param diktatExtension
  * @return returns sourceRootDir as projectDir for sarif report
  */
 fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
