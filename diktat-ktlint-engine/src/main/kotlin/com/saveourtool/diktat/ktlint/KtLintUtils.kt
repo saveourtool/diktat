@@ -92,7 +92,7 @@ fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = if (canBeAu
  * @param sourceRootDir
  * @return relative path to [sourceRootDir] as [String]
  */
-fun Path.relativePathStringTo(sourceRootDir: Path): String = relativeTo(sourceRootDir).invariantSeparatorsPathString
+fun Path.relativePathStringTo(sourceRootDir: Path?): String = (sourceRootDir?.let { relativeTo(it) } ?: this).invariantSeparatorsPathString
 
 /**
  * @param out [OutputStream] for [ReporterV2]

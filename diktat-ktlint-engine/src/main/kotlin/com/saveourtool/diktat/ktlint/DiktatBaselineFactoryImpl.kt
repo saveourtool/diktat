@@ -22,7 +22,7 @@ class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
 
     override fun tryToLoad(
         baselineFile: Path,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): DiktatBaseline? = loadBaseline(baselineFile.absolutePathString())
         .takeIf { it.status == Baseline.Status.VALID }
         ?.let { ktLintBaseline ->
@@ -34,6 +34,12 @@ class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
             }
         }
 
-    override fun generator(baselineFile: Path, sourceRootDir: Path): DiktatProcessorListener =
-        baselineReporterProvider.get(baselineFile.outputStream(), closeOutAfterAll = true, emptyMap()).wrap(sourceRootDir)
+    override fun generator(
+        baselineFile: Path,
+        sourceRootDir: Path?,
+    ): DiktatProcessorListener = baselineReporterProvider.get(
+        baselineFile.outputStream(),
+        closeOutAfterAll = true,
+        emptyMap(),
+    ).wrap(sourceRootDir)
 }

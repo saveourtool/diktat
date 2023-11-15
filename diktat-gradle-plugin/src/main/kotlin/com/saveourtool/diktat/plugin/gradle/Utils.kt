@@ -10,6 +10,7 @@ import groovy.lang.Closure
 import org.gradle.api.Project
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 
 @Suppress(
     "MISSING_KDOC_TOP_LEVEL",
@@ -38,6 +39,16 @@ class KotlinClosure1<in T : Any?, V : Any>(
 )
 fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
     KotlinClosure1(action, this, this)
+
+/**
+ * @param diktatExtension
+ * @return returns sourceRootDir as projectDir for sarif report
+ */
+fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
+    diktatExtension.githubActions -> projectDir.toPath()
+    diktatExtension.reporter == "sarif" -> projectDir.toPath()
+    else -> null
+}
 
 /**
  * Create CLI flag to set reporter for ktlint based on [diktatExtension].

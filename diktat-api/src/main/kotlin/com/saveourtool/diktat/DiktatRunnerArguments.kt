@@ -21,7 +21,7 @@ import kotlin.io.path.inputStream
  */
 data class DiktatRunnerArguments(
     val configInputStream: InputStream,
-    val sourceRootDir: Path,
+    val sourceRootDir: Path?,
     val files: Collection<Path>,
     val baselineFile: Path?,
     val reporterType: String,
@@ -32,7 +32,7 @@ data class DiktatRunnerArguments(
 ) {
     constructor(
         configFile: Path,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
         files: Collection<Path>,
         baselineFile: Path?,
         reporterType: String,

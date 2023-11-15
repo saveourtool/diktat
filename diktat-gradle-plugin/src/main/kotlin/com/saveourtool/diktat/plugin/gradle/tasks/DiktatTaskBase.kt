@@ -10,6 +10,7 @@ import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
+import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
@@ -79,7 +80,7 @@ abstract class DiktatTaskBase(
     private val diktatRunnerArguments by lazy {
         DiktatRunnerArguments(
             configFile = extension.diktatConfigFile.toPath(),
-            sourceRootDir = project.projectDir.toPath(),
+            sourceRootDir = project.getSourceRootDir(extension),
             files = actualInputs.files.map { it.toPath() },
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
             reporterType = project.getReporterType(extension),

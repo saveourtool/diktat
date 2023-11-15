@@ -38,17 +38,17 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         get() = plainReporterProvider.id
 
     override val colorNamesInPlain: Set<String>
-        get() = Color.values().map { it.name }.toSet()
+        get() = Color.entries.map { it.name }.toSet()
 
     override fun invoke(
         id: String,
         outputStream: OutputStream,
         closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): DiktatReporter {
         val reporterProvider = reporterProviders[id] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
         if (reporterProvider is SarifReporterProvider) {
-            System.setProperty("user.home", sourceRootDir.pathString)
+            sourceRootDir?.let { System.setProperty("user.home", it.pathString) }
         }
         val opt = if (reporterProvider is PlainReporterProvider) {
             mapOf("color_name" to Color.DARK_GRAY.name)
@@ -61,7 +61,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     override fun createPlain(
         outputStream: OutputStream,
         closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
         colorName: String?,
         groupByFile: Boolean?,
     ): DiktatReporter {
