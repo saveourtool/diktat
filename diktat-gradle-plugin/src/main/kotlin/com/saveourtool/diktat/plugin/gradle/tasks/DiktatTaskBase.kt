@@ -4,6 +4,7 @@ import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
+import com.saveourtool.diktat.api.DiktatReporter
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -28,6 +29,7 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
+import java.nio.file.Files
 
 import java.nio.file.Path
 
@@ -68,16 +70,41 @@ abstract class DiktatTaskBase(
     internal val shouldRun: Boolean by lazy {
         !actualInputs.isEmpty
     }
+    private val diktatReporterFactory by lazy {
+        DiktatReporterFactoryImpl()
+    }
     private val diktatRunnerFactory by lazy {
         DiktatRunnerFactory(
             diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
             diktatProcessorFactory = DiktatProcessorFactoryImpl(),
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = DiktatReporterFactoryImpl()
+            diktatReporterFactory = diktatReporterFactory,
         )
     }
     private val diktatRunnerArguments by lazy {
+        val githubActionsReporter = if (extension.githubActions) {
+            val outputStream = project.layout.buildDirectory
+                .file("reports/diktat/diktat.sarif")
+                .get()
+                .asFile
+                .also {
+                    Files.createDirectories(it.parentFile.toPath())
+                }
+                .outputStream()
+            diktatReporterFactory(id = "sarif", outputStream = outputStream, closeOutputStreamAfterAll = true, sourceRootDir = project.projectDir.toPath())
+        } else {
+            DiktatReporter.empty
+        }
+        val loggingListener = object : DiktatProcessorListener {
+            override fun beforeAll(files: Collection<Path>) {
+                project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
+                project.logger.debug("Analyzing {}", files)
+            }
+            override fun before(file: Path) {
+                project.logger.debug("Checking file {}", file)
+            }
+        }
         DiktatRunnerArguments(
             configFile = extension.diktatConfigFile.toPath(),
             sourceRootDir = project.getSourceRootDir(extension),
@@ -85,15 +112,8 @@ abstract class DiktatTaskBase(
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
             reporterType = project.getReporterType(extension),
             reporterOutput = project.getOutputFile(extension)?.outputStream(),
-            loggingListener = object : DiktatProcessorListener {
-                override fun beforeAll(files: Collection<Path>) {
-                    project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
-                    project.logger.debug("Analyzing {}", files)
-                }
-                override fun before(file: Path) {
-                    project.logger.debug("Checking file {}", file)
-                }
-            }
+            additionalReporter = githubActionsReporter,
+            loggingListener = loggingListener,
         )
     }
 

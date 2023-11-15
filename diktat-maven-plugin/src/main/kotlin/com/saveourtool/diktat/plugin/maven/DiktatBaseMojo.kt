@@ -3,6 +3,7 @@ package com.saveourtool.diktat.plugin.maven
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
+import com.saveourtool.diktat.api.DiktatReporter
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -107,13 +108,20 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
+        val diktatReporterFactory = DiktatReporterFactoryImpl()
         val diktatRunnerFactory = DiktatRunnerFactory(
             diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
             diktatProcessorFactory = DiktatProcessorFactoryImpl(),
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = DiktatReporterFactoryImpl()
+            diktatReporterFactory = diktatReporterFactory,
         )
+        val githubActionsReporter = if (githubActions) {
+            val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
+            diktatReporterFactory(id = "sarif", outputStream, closeOutputStreamAfterAll = true, sourceRootDir)
+        } else {
+            DiktatReporter.empty
+        }
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
@@ -121,6 +129,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             baselineFile = baseline?.toPath(),
             reporterType = getReporterType(),
             reporterOutput = getReporterOutput(),
+            additionalReporter = githubActionsReporter,
         )
         val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(
@@ -132,9 +141,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun getReporterType(): String = if (githubActions) {
-        "sarif"
-    } else if (reporter in setOf("sarif", "plain", "json", "html")) {
+    private fun getReporterType(): String = if (reporter in setOf("sarif", "plain", "json", "html")) {
         reporter
     } else {
         log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
@@ -143,8 +150,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
     private fun getReporterOutput(): OutputStream? = if (output.isNotBlank()) {
         FileOutputStream(this.output, false)
-    } else if (githubActions) {
-        FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
     } else {
         null
     }

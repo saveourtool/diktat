@@ -36,6 +36,7 @@ data class DiktatRunner(
             DiktatProcessorListener(
                 args.loggingListener,
                 diktatReporter.skipKnownErrors(diktatBaseline),
+                args.additionalReporter.skipKnownErrors(diktatBaseline),
                 diktatBaselineGenerator,
                 errorCounter.countErrorsAsProcessorListener()
             ),

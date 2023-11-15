@@ -1,6 +1,7 @@
 package com.saveourtool.diktat
 
 import com.saveourtool.diktat.api.DiktatProcessorListener
+import com.saveourtool.diktat.api.DiktatReporter
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Path
@@ -17,6 +18,7 @@ import kotlin.io.path.inputStream
  * @property reporterOutput output for reporter
  * @property groupByFileInPlain a flag `groupByFile` which is applicable for plain reporter only, **null** by default
  * @property colorNameInPlain a color name  which is applicable for plain reporter only, **null** by default
+ * @property additionalReporter an additional report, [DiktatReporter.empty] by default
  * @property loggingListener listener to log diktat runner phases, [DiktatProcessorListener.empty] by default
  */
 data class DiktatRunnerArguments(
@@ -28,6 +30,7 @@ data class DiktatRunnerArguments(
     val reporterOutput: OutputStream?,
     val groupByFileInPlain: Boolean? = null,
     val colorNameInPlain: String? = null,
+    val additionalReporter: DiktatReporter = DiktatReporter.empty,
     val loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
 ) {
     constructor(
@@ -39,6 +42,7 @@ data class DiktatRunnerArguments(
         reporterOutput: OutputStream?,
         groupByFileInPlain: Boolean? = null,
         colorNameInPlain: String? = null,
+        additionalReporter: DiktatReporter = DiktatReporter.empty,
         loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
     ) : this(
         configFile.inputStream(),
@@ -49,6 +53,7 @@ data class DiktatRunnerArguments(
         reporterOutput,
         groupByFileInPlain,
         colorNameInPlain,
+        additionalReporter,
         loggingListener,
     )
 }
