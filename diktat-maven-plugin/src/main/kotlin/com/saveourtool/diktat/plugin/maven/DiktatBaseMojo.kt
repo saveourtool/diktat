@@ -3,7 +3,7 @@ package com.saveourtool.diktat.plugin.maven
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
-import com.saveourtool.diktat.api.DiktatReporterArguments
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -123,10 +123,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val reporterArgsList = buildList {
             if (githubActions) {
                 val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
-                add(DiktatReporterArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir))
+                add(DiktatReporterCreationArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir))
             }
             add(
-                DiktatReporterArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = null)
+                DiktatReporterCreationArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = null)
             )
         }
         val args = DiktatRunnerArguments(

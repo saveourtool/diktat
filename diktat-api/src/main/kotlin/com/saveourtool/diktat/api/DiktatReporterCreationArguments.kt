@@ -10,7 +10,7 @@ import java.nio.file.Path
 /**
  * Arguments to create [DiktatReporter] using [DiktatReporterFactory]
  */
-sealed interface DiktatReporterArguments {
+sealed interface DiktatReporterCreationArguments {
     /**
      * Identifier of [DiktatReporter] which needs to be created
      */
@@ -47,10 +47,10 @@ sealed interface DiktatReporterArguments {
             sourceRootDir: Path?,
             colorNameInPlain: String? = null,
             groupByFileInPlain: Boolean? = null,
-        ): DiktatReporterArguments {
+        ): DiktatReporterCreationArguments {
             val (outputStreamOrStdout, closeOutputStreamAfterAll) = outputStream?.let { it to true } ?: (System.`out` to false)
             return if (id == DiktatReporterFactory.PLAIN_ID) {
-                PlainDiktatReporterArguments(
+                PlainDiktatReporterCreationArguments(
                     outputStreamOrStdout, closeOutputStreamAfterAll, sourceRootDir, colorNameInPlain, groupByFileInPlain
                 )
             } else {
@@ -60,7 +60,7 @@ sealed interface DiktatReporterArguments {
                 require(groupByFileInPlain == null) {
                     "groupByFile is applicable only for plain reporter"
                 }
-                DiktatReporterArgumentsImpl(
+                DiktatReporterCreationArgumentsImpl(
                     id, outputStreamOrStdout, closeOutputStreamAfterAll, sourceRootDir
                 )
             }
@@ -69,7 +69,7 @@ sealed interface DiktatReporterArguments {
 }
 
 /**
- * Implementation of [DiktatReporterArguments] for [DiktatReporterFactory.PLAIN_ID]
+ * Implementation of [DiktatReporterCreationArguments] for [DiktatReporterFactory.PLAIN_ID]
  *
  * @property outputStream
  * @property closeOutputStreamAfterAll
@@ -77,13 +77,13 @@ sealed interface DiktatReporterArguments {
  * @property colorName name of color for colorful output, `null` means to disable colorization.
  * @property groupByFile
  */
-data class PlainDiktatReporterArguments(
+data class PlainDiktatReporterCreationArguments(
     override val outputStream: OutputStream,
     override val closeOutputStreamAfterAll: Boolean,
     override val sourceRootDir: Path?,
     val colorName: String? = null,
     val groupByFile: Boolean? = null,
-) : DiktatReporterArguments {
+) : DiktatReporterCreationArguments {
     override val id: String = DiktatReporterFactory.PLAIN_ID
 }
 
@@ -93,9 +93,9 @@ data class PlainDiktatReporterArguments(
  * @property closeOutputStreamAfterAll
  * @property sourceRootDir
  */
-private data class DiktatReporterArgumentsImpl(
+private data class DiktatReporterCreationArgumentsImpl(
     override val id: String,
     override val outputStream: OutputStream,
     override val closeOutputStreamAfterAll: Boolean,
     override val sourceRootDir: Path?,
-) : DiktatReporterArguments
+) : DiktatReporterCreationArguments

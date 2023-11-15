@@ -1,9 +1,9 @@
 package com.saveourtool.diktat.ktlint
 
 import com.saveourtool.diktat.api.DiktatReporter
-import com.saveourtool.diktat.api.DiktatReporterArguments
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
-import com.saveourtool.diktat.api.PlainDiktatReporterArguments
+import com.saveourtool.diktat.api.PlainDiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatReporterImpl.Companion.wrap
 import com.pinterest.ktlint.cli.reporter.checkstyle.CheckStyleReporterProvider
 import com.pinterest.ktlint.cli.reporter.html.HtmlReporterProvider
@@ -37,12 +37,12 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         get() = Color.entries.map { it.name }.toSet()
 
     override fun invoke(
-        args: DiktatReporterArguments,
+        args: DiktatReporterCreationArguments,
     ): DiktatReporter {
         if (args.id == DiktatReporterFactory.NONE_ID) {
             return DiktatReporter.empty
         }
-        val opts = if (args is PlainDiktatReporterArguments) {
+        val opts = if (args is PlainDiktatReporterCreationArguments) {
             buildMap<String, Any> {
                 args.colorName?.let {
                     put("color", true)

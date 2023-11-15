@@ -4,7 +4,7 @@ import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
-import com.saveourtool.diktat.api.DiktatReporterArguments
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -92,7 +92,7 @@ abstract class DiktatTaskBase(
                     Files.createDirectories(it.parentFile.toPath())
                 }
                 .outputStream()
-            DiktatReporterArguments(
+            DiktatReporterCreationArguments(
                 id = "sarif",
                 outputStream = outputStream,
                 sourceRootDir = project.rootProject.projectDir.toPath()
@@ -100,7 +100,7 @@ abstract class DiktatTaskBase(
         } else {
             null
         }
-        val reporterArguments = DiktatReporterArguments(
+        val reporterArguments = DiktatReporterCreationArguments(
             id = project.getReporterType(extension),
             outputStream = project.getOutputFile(extension)?.outputStream(),
             sourceRootDir = null,

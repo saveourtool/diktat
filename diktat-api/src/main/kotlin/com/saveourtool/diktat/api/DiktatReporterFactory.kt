@@ -5,7 +5,7 @@ typealias DiktatReporter = DiktatProcessorListener
 /**
  * A factory to create [DiktatReporter]
  */
-interface DiktatReporterFactory : Function1<DiktatReporterArguments, DiktatReporter> {
+interface DiktatReporterFactory : Function1<DiktatReporterCreationArguments, DiktatReporter> {
     /**
      * Set of supported IDs, must contain [DiktatReporterFactory.NONE_ID]
      */
@@ -21,7 +21,7 @@ interface DiktatReporterFactory : Function1<DiktatReporterArguments, DiktatRepor
      * @return created [DiktatReporter]
      */
     override operator fun invoke(
-        args: DiktatReporterArguments,
+        args: DiktatReporterCreationArguments,
     ): DiktatReporter
 
     companion object {

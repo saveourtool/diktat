@@ -1,7 +1,7 @@
 package com.saveourtool.diktat
 
 import com.saveourtool.diktat.api.DiktatProcessorListener
-import com.saveourtool.diktat.api.DiktatReporterArguments
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import java.io.InputStream
 import java.nio.file.Path
 import kotlin.io.path.inputStream
@@ -21,7 +21,7 @@ data class DiktatRunnerArguments(
     val sourceRootDir: Path?,
     val files: Collection<Path>,
     val baselineFile: Path?,
-    val reporterArgsList: List<DiktatReporterArguments> = emptyList(),
+    val reporterArgsList: List<DiktatReporterCreationArguments> = emptyList(),
     val loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
 ) {
     constructor(
@@ -29,7 +29,7 @@ data class DiktatRunnerArguments(
         sourceRootDir: Path?,
         files: Collection<Path>,
         baselineFile: Path?,
-        reporterArgsList: List<DiktatReporterArguments> = emptyList(),
+        reporterArgsList: List<DiktatReporterCreationArguments> = emptyList(),
         loggingListener: DiktatProcessorListener = DiktatProcessorListener.empty,
     ) : this(
         configFile.inputStream(),
