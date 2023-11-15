@@ -8,7 +8,7 @@ typealias DiktatReporter = DiktatProcessorListener
 /**
  * A factory to create [DiktatReporter]
  */
-interface DiktatReporterFactory : Function4<String, OutputStream, Boolean, Path, DiktatReporter> {
+interface DiktatReporterFactory : Function4<String, OutputStream, Boolean, Path?, DiktatReporter> {
     /**
      * Set of supported IDs
      */
@@ -35,7 +35,7 @@ interface DiktatReporterFactory : Function4<String, OutputStream, Boolean, Path,
         id: String,
         outputStream: OutputStream,
         closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): DiktatReporter
 
     /**
@@ -49,7 +49,7 @@ interface DiktatReporterFactory : Function4<String, OutputStream, Boolean, Path,
     fun createPlain(
         outputStream: OutputStream,
         closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
         colorName: String? = null,
         groupByFile: Boolean? = null,
     ): DiktatReporter

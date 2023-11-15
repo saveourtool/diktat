@@ -52,7 +52,7 @@ class DiktatRunnerFactory(
 
     private fun resolveBaseline(
         baselineFile: Path?,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): Pair<DiktatBaseline, DiktatProcessorListener> = baselineFile
         ?.let { diktatBaselineFactory.tryToLoad(it, sourceRootDir) }
         ?.let { it to DiktatProcessorListener.empty }
@@ -68,7 +68,7 @@ class DiktatRunnerFactory(
         reporterOutput: OutputStream?,
         colorNameInPlain: String?,
         groupByFileInPlain: Boolean?,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): DiktatReporter {
         val (outputStream, closeOutputStream) = reporterOutput?.let { it to true } ?: (System.`out` to false)
         return if (reporterType == diktatReporterFactory.plainId) {
