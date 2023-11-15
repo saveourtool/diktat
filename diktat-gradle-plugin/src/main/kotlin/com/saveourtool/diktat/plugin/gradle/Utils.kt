@@ -44,7 +44,8 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
  * @return returns sourceRootDir as projectDir for sarif report
  */
 fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
-    diktatExtension.githubActions -> project.projectDir.toPath()
+    diktatExtension.githubActions -> projectDir.toPath()
+    diktatExtension.reporter == "sarif" -> projectDir.toPath()
     else -> null
 }
 /**
