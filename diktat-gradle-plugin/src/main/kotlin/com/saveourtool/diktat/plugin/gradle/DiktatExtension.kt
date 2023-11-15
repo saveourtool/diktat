@@ -1,50 +1,44 @@
 package com.saveourtool.diktat.plugin.gradle
 
+import org.gradle.api.Action
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
-import org.gradle.api.tasks.util.PatternSet
-import java.io.File
 
 /**
  * An extension to configure diktat in build.gradle(.kts) file
- *
- * @param patternSet
  */
-open class DiktatExtension(
-    private val patternSet: PatternSet
-) {
+abstract class DiktatExtension {
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
      */
-    var ignoreFailures: Boolean = false
-
-    /**
-     * Flag that indicates whether to turn debug logging on
-     */
-    var debug = false
+    abstract val ignoreFailures: Property<Boolean>
 
     /**
      * Property that will be used if you need to publish the report to GitHub
      */
-    var githubActions = false
+    abstract val githubActions: Property<Boolean> // = false
 
     /**
      * Type of the reporter to use
      */
-    var reporter: String = ""
+    abstract val reporter: Property<String>
 
     /**
      * Destination for reporter. If empty, will write to stdout.
      */
-    var output: String = ""
+    abstract val output: RegularFileProperty
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
      * If this file doesn't exist, it will be created on the first invocation.
      */
-    var baseline: String? = null
+    abstract val baseline: RegularFileProperty
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -52,14 +46,18 @@ open class DiktatExtension(
      */
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    lateinit var diktatConfigFile: File
+    abstract val diktatConfigFile: RegularFileProperty
+
+    /**
+     * @return [PatternFilterable] to configure input files for diktat task
+     */
+    @Nested
+    abstract fun getInputs(): PatternFilterable
 
     /**
      * Configure input files for diktat task
      *
-     * @param action configuration lambda for `PatternFilterable`
+     * @param action configuration lambda for [PatternFilterable]
      */
-    fun inputs(action: PatternFilterable.() -> Unit) {
-        action(patternSet)
-    }
+    fun inputs(action: Action<in PatternFilterable>) = action.execute(getInputs())
 }

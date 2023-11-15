@@ -96,7 +96,7 @@ internal fun Project.configureMergeReportsTask(diktatExtension: DiktatExtension)
             reportMergeTask.shouldRunAfter(tasks.withType(DiktatTaskBase::class.java))
         }
     }
-    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatJavaExecTaskBase ->
-        diktatJavaExecTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
+    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
+        diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
     }
 }
