@@ -41,6 +41,7 @@ fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
     KotlinClosure1(action, this, this)
 
 /**
+  * @param diktatExtension
  * @return returns sourceRootDir as projectDir for sarif report
  */
 fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
@@ -48,6 +49,7 @@ fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
     diktatExtension.reporter == "sarif" -> projectDir.toPath()
     else -> null
 }
+
 /**
  * Create CLI flag to set reporter for ktlint based on [diktatExtension].
  * [DiktatExtension.githubActions] should have higher priority than a custom input.
