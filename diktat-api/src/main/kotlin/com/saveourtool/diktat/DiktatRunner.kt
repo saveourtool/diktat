@@ -14,11 +14,11 @@ private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
  * A runner for diktat on bunch of files using baseline and reporter
  *
  * @param diktatProcessor
- * @param diktatReporter
+ * @property diktatReporter
  */
 data class DiktatRunner(
     private val diktatProcessor: DiktatProcessor,
-    private val diktatReporter: DiktatReporter,
+    val diktatReporter: DiktatReporter,
 ) {
     private fun doRun(
         args: DiktatRunnerArguments,
