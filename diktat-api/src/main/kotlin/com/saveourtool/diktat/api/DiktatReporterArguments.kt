@@ -36,7 +36,8 @@ sealed interface DiktatReporterArguments {
          * @param id ID of [DiktatReporter]
          * @param outputStream stdout will be used when it's empty
          * @param sourceRootDir a dir to detect relative path for processing files
-         * @param colorNameInPlain a color name for colorful output which is applicable for plain ([DiktatReporterFactory.PLAIN_ID]) reporter only, `null` means to disable colorization.
+         * @param colorNameInPlain a color name for colorful output which is applicable for plain ([DiktatReporterFactory.PLAIN_ID]) reporter only,
+         * `null` means to disable colorization.
          * @param groupByFileInPlain a flag `groupByFile` which is applicable for plain ([DiktatReporterFactory.PLAIN_ID]) reporter only.
          * @return created [DiktatReporter]
          */
@@ -67,13 +68,6 @@ sealed interface DiktatReporterArguments {
     }
 }
 
-private data class DiktatReporterArgumentsImpl(
-    override val id: String,
-    override val outputStream: OutputStream,
-    override val closeOutputStreamAfterAll: Boolean,
-    override val sourceRootDir: Path?,
-) : DiktatReporterArguments
-
 /**
  * Implementation of [DiktatReporterArguments] for [DiktatReporterFactory.PLAIN_ID]
  *
@@ -92,3 +86,16 @@ data class PlainDiktatReporterArguments(
 ) : DiktatReporterArguments {
     override val id: String = DiktatReporterFactory.PLAIN_ID
 }
+
+/**
+ * @property id
+ * @property outputStream
+ * @property closeOutputStreamAfterAll
+ * @property sourceRootDir
+ */
+private data class DiktatReporterArgumentsImpl(
+    override val id: String,
+    override val outputStream: OutputStream,
+    override val closeOutputStreamAfterAll: Boolean,
+    override val sourceRootDir: Path?,
+) : DiktatReporterArguments

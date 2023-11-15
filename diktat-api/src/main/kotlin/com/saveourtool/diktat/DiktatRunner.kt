@@ -13,8 +13,8 @@ private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
 /**
  * A runner for diktat on bunch of files using baseline and reporter
  *
- * @property diktatProcessor
- * @property diktatReporter
+ * @param diktatProcessor
+ * @param diktatReporter
  */
 data class DiktatRunner(
     private val diktatProcessor: DiktatProcessor,

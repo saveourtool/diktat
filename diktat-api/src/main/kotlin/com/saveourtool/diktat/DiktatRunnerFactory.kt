@@ -38,11 +38,9 @@ class DiktatRunnerFactory(
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
 
-        val reporter = args.reporterArgsList.map {
-            diktatReporterFactory(it)
-        }.let {
-            DiktatReporter.union(it)
-        }
+        val reporter = args.reporterArgsList
+            .map { diktatReporterFactory(it) }
+            .let { DiktatReporter.union(it) }
 
         return DiktatRunner(
             diktatProcessor = processor,

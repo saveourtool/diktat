@@ -56,6 +56,18 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.baseline")
     var baseline: File? = null
+    private val diktatReporterFactory by lazy {
+        DiktatReporterFactoryImpl()
+    }
+    private val diktatRunnerFactory by lazy {
+        DiktatRunnerFactory(
+            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
+            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
+            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
+            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
+            diktatReporterFactory = diktatReporterFactory,
+        )
+    }
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -108,19 +120,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val diktatReporterFactory = DiktatReporterFactoryImpl()
-        val diktatRunnerFactory = DiktatRunnerFactory(
-            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
-            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
-            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
-            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = diktatReporterFactory,
-        )
         val reporterArgsList = buildList {
             if (githubActions) {
                 val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
-                val args = DiktatReporterArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir)
-                add(args)
+                add(DiktatReporterArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir))
             }
             add(
                 DiktatReporterArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = null)
