@@ -1,6 +1,7 @@
 package com.saveourtool.diktat
 
 import com.saveourtool.diktat.api.DiktatBaseline
+import com.saveourtool.diktat.api.DiktatBaseline.Companion.skipKnownErrors
 import com.saveourtool.diktat.api.DiktatBaselineFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporter
@@ -9,7 +10,6 @@ import com.saveourtool.diktat.api.DiktatRuleConfig
 import com.saveourtool.diktat.api.DiktatRuleConfigReader
 import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.api.DiktatRuleSetFactory
-import java.io.OutputStream
 import java.nio.file.Path
 
 /**
@@ -37,16 +37,16 @@ class DiktatRunnerFactory(
         val diktatRuleSet = diktatRuleSetFactory(diktatRuleConfigs)
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
-        val reporter = resolveReporter(
-            args.reporterType, args.reporterOutput,
-            args.colorNameInPlain, args.groupByFileInPlain,
-            args.sourceRootDir
-        )
+
+        val reporter = args.reporterArgsList.map {
+            diktatReporterFactory(it)
+        }.let {
+            DiktatReporter.union(it)
+        }
+
         return DiktatRunner(
             diktatProcessor = processor,
-            diktatBaseline = baseline,
-            diktatBaselineGenerator = baselineGenerator,
-            diktatReporter = reporter,
+            diktatReporter = DiktatReporter(reporter.skipKnownErrors(baseline), baselineGenerator),
         )
     }
 
@@ -62,25 +62,4 @@ class DiktatRunnerFactory(
             } ?: DiktatProcessorListener.empty
             DiktatBaseline.empty to baselineGenerator
         }
-
-    private fun resolveReporter(
-        reporterType: String,
-        reporterOutput: OutputStream?,
-        colorNameInPlain: String?,
-        groupByFileInPlain: Boolean?,
-        sourceRootDir: Path?,
-    ): DiktatReporter {
-        val (outputStream, closeOutputStream) = reporterOutput?.let { it to true } ?: (System.`out` to false)
-        return if (reporterType == diktatReporterFactory.plainId) {
-            diktatReporterFactory.createPlain(outputStream, closeOutputStream, sourceRootDir, colorNameInPlain, groupByFileInPlain)
-        } else {
-            require(colorNameInPlain == null) {
-                "colorization is applicable only for plain reporter"
-            }
-            require(groupByFileInPlain == null) {
-                "groupByFile is applicable only for plain reporter"
-            }
-            diktatReporterFactory(reporterType, outputStream, closeOutputStream, sourceRootDir)
-        }
-    }
 }

@@ -1,23 +1,15 @@
 package com.saveourtool.diktat.api
 
-import java.io.OutputStream
-import java.nio.file.Path
-
 typealias DiktatReporter = DiktatProcessorListener
 
 /**
  * A factory to create [DiktatReporter]
  */
-interface DiktatReporterFactory : Function4<String, OutputStream, Boolean, Path?, DiktatReporter> {
+interface DiktatReporterFactory : Function1<DiktatReporterArguments, DiktatReporter> {
     /**
-     * Set of supported IDs
+     * Set of supported IDs, must contain [DiktatReporterFactory.NONE_ID]
      */
     val ids: Set<String>
-
-    /**
-     * ID of [DiktatReporter] for plain output
-     */
-    val plainId: String
 
     /**
      * Names of color for plain output
@@ -25,32 +17,22 @@ interface DiktatReporterFactory : Function4<String, OutputStream, Boolean, Path?
     val colorNamesInPlain: Set<String>
 
     /**
-     * @param id ID of [DiktatReporter]
-     * @param outputStream
-     * @param closeOutputStreamAfterAll close [outputStream] in [DiktatProcessorListener.afterAll]
-     * @param sourceRootDir a dir to detect relative path for processing files
+     * @param args
      * @return created [DiktatReporter]
      */
     override operator fun invoke(
-        id: String,
-        outputStream: OutputStream,
-        closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path?,
+        args: DiktatReporterArguments,
     ): DiktatReporter
 
-    /**
-     * @param outputStream
-     * @param closeOutputStreamAfterAll close [outputStream] in [DiktatProcessorListener.afterAll]
-     * @param sourceRootDir a dir to detect relative path for processing files
-     * @param colorName name of color for colorful output, `null` means to disable colorization.
-     * @param groupByFile
-     * @return [DiktatReporter] for plain output
-     */
-    fun createPlain(
-        outputStream: OutputStream,
-        closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path?,
-        colorName: String? = null,
-        groupByFile: Boolean? = null,
-    ): DiktatReporter
+    companion object {
+        /**
+         * ID of [DiktatReporter] for disabled reporter
+         */
+        const val NONE_ID: String = "none"
+
+        /**
+         * ID of [DiktatReporter] for plain output
+         */
+        const val PLAIN_ID: String = "plain"
+    }
 }

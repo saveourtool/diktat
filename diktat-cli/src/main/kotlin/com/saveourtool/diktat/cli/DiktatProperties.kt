@@ -2,6 +2,7 @@ package com.saveourtool.diktat.cli
 
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.api.DiktatProcessorListener
+import com.saveourtool.diktat.api.DiktatReporterArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.common.config.rules.DIKTAT
 import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
@@ -72,17 +73,23 @@ data class DiktatProperties(
     fun toRunnerArguments(
         sourceRootDir: Path,
         loggingListener: DiktatProcessorListener,
-    ): DiktatRunnerArguments = DiktatRunnerArguments(
-        configInputStream = Paths.get(config).inputStream(),
-        sourceRootDir = sourceRootDir,
-        files = getFiles(sourceRootDir),
-        baselineFile = null,
-        reporterType = reporterProviderId,
-        reporterOutput = getReporterOutput(),
-        groupByFileInPlain = groupByFileInPlain,
-        colorNameInPlain = colorNameInPlain,
-        loggingListener = loggingListener,
-    )
+    ): DiktatRunnerArguments {
+        val reporterArguments = DiktatReporterArguments(
+            id = reporterProviderId,
+            outputStream = getReporterOutput(),
+            groupByFileInPlain = groupByFileInPlain,
+            colorNameInPlain = colorNameInPlain,
+            sourceRootDir = sourceRootDir,
+        )
+        return DiktatRunnerArguments(
+            configInputStream = Paths.get(config).inputStream(),
+            sourceRootDir = sourceRootDir,
+            files = getFiles(sourceRootDir),
+            baselineFile = null,
+            reporterArgsList = listOf(reporterArguments),
+            loggingListener = loggingListener
+        )
+    }
 
     private fun getFiles(sourceRootDir: Path): Collection<Path> = patterns
         .asSequence()
@@ -205,7 +212,7 @@ data class DiktatProperties(
             shortName = "r",
             description = "The reporter to use"
         )
-            .default(diktatReporterFactory.plainId)
+            .default(DiktatReporterFactory.NONE_ID)
 
         /**
          * @param diktatReporterFactory

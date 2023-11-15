@@ -57,7 +57,7 @@ interface DiktatProcessorListener {
          * @param listeners
          * @return a single [DiktatProcessorListener] which uses all provided [listeners]
          */
-        operator fun invoke(vararg listeners: DiktatProcessorListener): DiktatProcessorListener = object : DiktatProcessorListener {
+        fun union(listeners: Iterable<DiktatProcessorListener>): DiktatProcessorListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) = listeners.forEach { it.beforeAll(files) }
             override fun before(file: Path) = listeners.forEach { it.before(file) }
             override fun onError(
@@ -68,6 +68,12 @@ interface DiktatProcessorListener {
             override fun after(file: Path) = listeners.forEach { it.after(file) }
             override fun afterAll() = listeners.forEach(DiktatProcessorListener::afterAll)
         }
+
+        /**
+         * @param listeners
+         * @return a single [DiktatProcessorListener] which uses all provided [listeners]
+         */
+        operator fun invoke(vararg listeners: DiktatProcessorListener): DiktatProcessorListener = union(listeners.asIterable())
 
         /**
          * @return An implementation of [DiktatProcessorListener] which counts [DiktatError]s

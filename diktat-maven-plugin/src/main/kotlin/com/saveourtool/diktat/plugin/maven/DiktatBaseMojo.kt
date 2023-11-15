@@ -3,7 +3,7 @@ package com.saveourtool.diktat.plugin.maven
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
-import com.saveourtool.diktat.api.DiktatReporter
+import com.saveourtool.diktat.api.DiktatReporterArguments
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -116,20 +116,22 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),
             diktatReporterFactory = diktatReporterFactory,
         )
-        val githubActionsReporter = if (githubActions) {
-            val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
-            diktatReporterFactory(id = "sarif", outputStream, closeOutputStreamAfterAll = true, sourceRootDir)
-        } else {
-            DiktatReporter.empty
+        val reporterArgsList = buildList {
+            if (githubActions) {
+                val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
+                val args = DiktatReporterArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir)
+                add(args)
+            }
+            add(
+                DiktatReporterArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = null)
+            )
         }
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
             files = inputs.map(::Path),
             baselineFile = baseline?.toPath(),
-            reporterType = getReporterType(),
-            reporterOutput = getReporterOutput(),
-            additionalReporter = githubActionsReporter,
+            reporterArgsList = reporterArgsList,
         )
         val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(

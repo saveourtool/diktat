@@ -5,6 +5,7 @@ import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporter
+import com.saveourtool.diktat.api.DiktatReporterArguments
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -83,7 +84,7 @@ abstract class DiktatTaskBase(
         )
     }
     private val diktatRunnerArguments by lazy {
-        val githubActionsReporter = if (extension.githubActions) {
+        val githubActionsReporterArgs = if (extension.githubActions) {
             val outputStream = project.layout.buildDirectory
                 .file("reports/diktat/diktat.sarif")
                 .get()
@@ -92,10 +93,19 @@ abstract class DiktatTaskBase(
                     Files.createDirectories(it.parentFile.toPath())
                 }
                 .outputStream()
-            diktatReporterFactory(id = "sarif", outputStream = outputStream, closeOutputStreamAfterAll = true, sourceRootDir = project.projectDir.toPath())
+            DiktatReporterArguments(
+                id = "sarif",
+                outputStream = outputStream,
+                sourceRootDir = project.rootProject.projectDir.toPath()
+            )
         } else {
-            DiktatReporter.empty
+            null
         }
+        val reporterArguments = DiktatReporterArguments(
+            id = project.getReporterType(extension),
+            outputStream = project.getOutputFile(extension)?.outputStream(),
+            sourceRootDir = null,
+        )
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
                 project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
@@ -110,9 +120,7 @@ abstract class DiktatTaskBase(
             sourceRootDir = project.getSourceRootDir(extension),
             files = actualInputs.files.map { it.toPath() },
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
-            reporterType = project.getReporterType(extension),
-            reporterOutput = project.getOutputFile(extension)?.outputStream(),
-            additionalReporter = githubActionsReporter,
+            reporterArgsList = listOf(githubActionsReporterArgs, reporterArguments).mapNotNull { it },
             loggingListener = loggingListener,
         )
     }

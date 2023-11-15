@@ -8,13 +8,13 @@ package com.saveourtool.diktat.plugin.gradle
 
 import org.gradle.api.Project
 import java.io.File
+import java.nio.file.Path
 
 /**
  * @param diktatExtension
  * @return returns sourceRootDir as projectDir for sarif report
  */
 fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
-    diktatExtension.githubActions -> projectDir.toPath()
     diktatExtension.reporter == "sarif" -> projectDir.toPath()
     else -> null
 }

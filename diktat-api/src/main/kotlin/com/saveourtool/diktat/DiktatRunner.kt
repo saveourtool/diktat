@@ -1,7 +1,5 @@
 package com.saveourtool.diktat
 
-import com.saveourtool.diktat.api.DiktatBaseline
-import com.saveourtool.diktat.api.DiktatBaseline.Companion.skipKnownErrors
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatProcessorListener.Companion.countErrorsAsProcessorListener
 import com.saveourtool.diktat.api.DiktatReporter
@@ -15,16 +13,12 @@ private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
 /**
  * A runner for diktat on bunch of files using baseline and reporter
  *
- * @param diktatBaselineGenerator
  * @property diktatProcessor
- * @property diktatBaseline
  * @property diktatReporter
  */
 data class DiktatRunner(
-    val diktatProcessor: DiktatProcessor,
-    val diktatBaseline: DiktatBaseline,
-    private val diktatBaselineGenerator: DiktatProcessorListener,
-    val diktatReporter: DiktatReporter,
+    private val diktatProcessor: DiktatProcessor,
+    private val diktatReporter: DiktatReporter,
 ) {
     private fun doRun(
         args: DiktatRunnerArguments,
@@ -35,9 +29,7 @@ data class DiktatRunner(
             diktatProcessor,
             DiktatProcessorListener(
                 args.loggingListener,
-                diktatReporter.skipKnownErrors(diktatBaseline),
-                args.additionalReporter.skipKnownErrors(diktatBaseline),
-                diktatBaselineGenerator,
+                diktatReporter,
                 errorCounter.countErrorsAsProcessorListener()
             ),
         )
