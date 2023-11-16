@@ -9,6 +9,12 @@ plugins {
 diktat {
     diktatConfigFile = rootProject.file("diktat-analysis.yml")
     githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
+    reporters {
+        configure {
+            id = "plain"
+            output = file("text.txt")
+        }
+    }
     inputs {
         // using `Project#path` here, because it must be unique in gradle's project hierarchy
         if (path == rootProject.path) {

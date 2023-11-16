@@ -16,7 +16,7 @@ import java.io.File
  */
 open class DiktatExtension(
     private val patternSet: PatternSet,
-    val reporters: Reporters,
+    private val reporters: Reporters,
 ) {
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
@@ -32,16 +32,6 @@ open class DiktatExtension(
      * Property that will be used if you need to publish the report to GitHub
      */
     var githubActions = false
-
-    /**
-     * Type of the reporter to use
-     */
-    var reporter: String = ""
-
-    /**
-     * Destination for reporter. If empty, will write to stdout.
-     */
-    var output: String = ""
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
@@ -66,5 +56,10 @@ open class DiktatExtension(
         action(patternSet)
     }
 
-    fun reporters(action: Action<in Reporters>): Unit = action.execute(reporters)
+    /**
+     * Configure reporters
+     *
+     * @param action configuration lambda for [Reporters]
+     */
+    fun reporters(action: Action<Reporters>): Unit = action.execute(reporters)
 }

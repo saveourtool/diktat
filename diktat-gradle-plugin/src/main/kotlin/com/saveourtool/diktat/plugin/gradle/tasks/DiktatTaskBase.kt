@@ -9,6 +9,7 @@ import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
+import com.saveourtool.diktat.plugin.gradle.extensions.Reporter
 import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
@@ -47,6 +48,7 @@ import java.nio.file.Path
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable,
+    private val reporters: List<Reporter>,
     private val objectFactory: ObjectFactory,
 ) : DefaultTask(), VerificationTask, com.saveourtool.diktat.plugin.gradle.DiktatJavaExecTaskBase {
     /**
@@ -147,9 +149,9 @@ abstract class DiktatTaskBase(
     }
 
     @get:Internal
-    val reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
+    val _reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
 
-    fun reporters(action: Action<in Reporters>) = action.execute(reporters)
+    fun reporters(action: Action<in Reporters>) = action.execute(_reporters)
 
     /**
      * Function to execute diKTat

@@ -5,10 +5,9 @@ import org.gradle.api.model.ObjectFactory
 import javax.inject.Inject
 
 abstract class Reporters @Inject constructor(
-    private val objectFactory: ObjectFactory
+    private val objectFactory: ObjectFactory,
+    private val values: MutableList<Reporter>,
 ) {
-    val values = mutableListOf<Reporter>()
-
     fun configure(action: Action<in Reporter>): Unit =
             action.execute(objectFactory.newInstance(Reporter::class.java).apply { values.add(this) })
 }

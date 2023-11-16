@@ -1,5 +1,6 @@
 package com.saveourtool.diktat.plugin.gradle
 
+import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import org.gradle.api.Project
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.testfixtures.ProjectBuilder
@@ -22,7 +23,10 @@ class ReporterSelectionTest {
 
     @Test
     fun `should fallback to plain reporter for unknown reporter types`() {
-        val diktatExtension = DiktatExtension(PatternSet()).apply {
+        val diktatExtension = DiktatExtension(
+            PatternSet(),
+            object : Reporters(project.objects) {},
+        ).apply {
             reporter = "jsonx"
         }
 
