@@ -15,7 +15,7 @@ import javax.inject.Inject
  */
 abstract class DiktatFixTask @Inject constructor(
     extension: DiktatExtension,
-    inputs: PatternFilterable,
+    inputs: PatternFilterable
 ) : DiktatTaskBase(extension, inputs) {
     override fun doRun(
         runner: DiktatRunner,
@@ -32,11 +32,11 @@ abstract class DiktatFixTask @Inject constructor(
          */
         fun Project.registerDiktatFixTask(
             diktatExtension: DiktatExtension,
-            patternSet: PatternSet,
+            patternSet: PatternSet
         ): TaskProvider<DiktatFixTask> =
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_FIX_TASK, DiktatFixTask::class.java,
-                diktatExtension, patternSet,
+                diktatExtension, patternSet
             )
     }
 }

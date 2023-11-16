@@ -7,7 +7,6 @@ import com.saveourtool.diktat.util.DiktatProcessorListenerWrapper.Companion.unwr
 import com.pinterest.ktlint.cli.reporter.json.JsonReporter
 import com.pinterest.ktlint.cli.reporter.plain.PlainReporter
 import com.pinterest.ktlint.cli.reporter.sarif.SarifReporter
-import org.gradle.api.Action
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
