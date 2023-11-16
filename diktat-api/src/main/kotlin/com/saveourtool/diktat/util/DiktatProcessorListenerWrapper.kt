@@ -11,8 +11,7 @@ import java.nio.file.Path
  */
 abstract class DiktatProcessorListenerWrapper<T : Any>(
     val wrappedValue: T,
-): DiktatProcessorListener {
-
+) : DiktatProcessorListener {
     override fun beforeAll(files: Collection<Path>): Unit = doBeforeAll(wrappedValue, files)
 
     /**

@@ -23,7 +23,9 @@ fun interface DiktatBaseline {
          * @param baseline
          * @return wrapped [DiktatProcessorListener] which skips known errors based on [baseline]
          */
-        fun DiktatProcessorListener.skipKnownErrors(baseline: DiktatBaseline): DiktatProcessorListener = object : DiktatProcessorListenerWrapper<DiktatProcessorListener>(this@skipKnownErrors) {
+        fun DiktatProcessorListener.skipKnownErrors(baseline: DiktatBaseline): DiktatProcessorListener = object : DiktatProcessorListenerWrapper<DiktatProcessorListener>(
+            this@skipKnownErrors
+        ) {
             override fun doOnError(
                 wrappedValue: DiktatProcessorListener,
                 file: Path,

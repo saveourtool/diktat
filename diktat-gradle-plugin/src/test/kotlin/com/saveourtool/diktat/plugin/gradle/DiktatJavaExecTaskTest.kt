@@ -121,9 +121,7 @@ class DiktatJavaExecTaskTest {
             output = "some.txt"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(
-            task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter
-        )
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter)
     }
 
     @Test
@@ -147,9 +145,7 @@ class DiktatJavaExecTaskTest {
             githubActions = true
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(
-            task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter
-        )
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -191,9 +187,7 @@ class DiktatJavaExecTaskTest {
             reporter = "sarif"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(
-            task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter
-        )
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter)
         Assertions.assertEquals(
             project.rootProject.projectDir.toPath().toString(),
             System.getProperty("user.home")

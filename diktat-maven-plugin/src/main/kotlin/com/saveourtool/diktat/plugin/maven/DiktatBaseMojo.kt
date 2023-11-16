@@ -125,8 +125,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
                 add(DiktatReporterCreationArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir))
             }
+            val reporterId = getReporterType()
             add(
-                DiktatReporterCreationArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = null)
+                DiktatReporterCreationArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" })
             )
         }
         val args = DiktatRunnerArguments(

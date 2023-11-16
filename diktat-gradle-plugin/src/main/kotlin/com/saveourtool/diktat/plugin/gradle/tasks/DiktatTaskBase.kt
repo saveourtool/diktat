@@ -107,7 +107,7 @@ abstract class DiktatTaskBase(
         val reporterArguments = DiktatReporterCreationArguments(
             id = reporterId,
             outputStream = project.getOutputFile(extension)?.outputStream(),
-            sourceRootDir = if (reporterId == "sarif") sourceRootDir else null,
+            sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
         )
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
