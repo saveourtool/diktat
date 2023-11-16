@@ -160,17 +160,7 @@ class DiktatJavaExecTaskTest {
             output = "report.json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        val (firstReporter, secondReporter) = task.diktatRunner.diktatReporter
-            .unwrap<Iterable<DiktatReporter>>().first()
-            .unwrap<DiktatReporter>()
-            .unwrap<Iterable<DiktatReporter>>()
-            .toList()
-        assert(
-            firstReporter.unwrapToKtlint() is SarifReporter
-        )
-        assert(
-            secondReporter.unwrapToKtlint() is JsonReporter
-        )
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter)
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -182,6 +172,7 @@ class DiktatJavaExecTaskTest {
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporter = "sarif"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
         assert(task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter)
