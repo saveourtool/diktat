@@ -1,7 +1,9 @@
 package com.saveourtool.diktat.plugin.gradle
 
-import com.saveourtool.diktat.ktlint.DiktatReporterImpl.Companion.unwrap
+import com.saveourtool.diktat.api.DiktatReporter
+import com.saveourtool.diktat.ktlint.DiktatReporterImpl.Companion.unwrapToKtlint
 import com.saveourtool.diktat.plugin.gradle.tasks.DiktatCheckTask
+import com.saveourtool.diktat.util.DiktatProcessorListenerWrapper.Companion.unwrap
 import com.pinterest.ktlint.cli.reporter.json.JsonReporter
 import com.pinterest.ktlint.cli.reporter.plain.PlainReporter
 import com.pinterest.ktlint.cli.reporter.sarif.SarifReporter
@@ -55,7 +57,7 @@ class DiktatJavaExecTaskTest {
         }
 
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is PlainReporter)
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is PlainReporter)
     }
 
     @Test
@@ -82,7 +84,7 @@ class DiktatJavaExecTaskTest {
         }
 
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is PlainReporter)
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is PlainReporter)
     }
 
     @Test
@@ -119,7 +121,9 @@ class DiktatJavaExecTaskTest {
             output = "some.txt"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is JsonReporter)
+        assert(
+            task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter
+        )
     }
 
     @Test
@@ -130,7 +134,9 @@ class DiktatJavaExecTaskTest {
             reporter = "json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is JsonReporter)
+        assert(
+            task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter
+        )
     }
 
     @Test
@@ -141,7 +147,9 @@ class DiktatJavaExecTaskTest {
             githubActions = true
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is SarifReporter)
+        assert(
+            task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter
+        )
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -158,7 +166,17 @@ class DiktatJavaExecTaskTest {
             output = "report.json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is SarifReporter)
+        val (firstReporter, secondReporter) = task.diktatRunner.diktatReporter
+            .unwrap<Iterable<DiktatReporter>>().first()
+            .unwrap<DiktatReporter>()
+            .unwrap<Iterable<DiktatReporter>>()
+            .toList()
+        assert(
+            firstReporter.unwrapToKtlint() is SarifReporter
+        )
+        assert(
+            secondReporter.unwrapToKtlint() is JsonReporter
+        )
         Assertions.assertEquals(
             project.rootDir.toString(),
             System.getProperty("user.home")
@@ -173,9 +191,11 @@ class DiktatJavaExecTaskTest {
             reporter = "sarif"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(task.diktatRunner.diktatReporter.unwrap() is SarifReporter)
+        assert(
+            task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter
+        )
         Assertions.assertEquals(
-            project.rootDir.toString(),
+            project.rootProject.projectDir.toPath().toString(),
             System.getProperty("user.home")
         )
     }
@@ -262,5 +282,11 @@ class DiktatJavaExecTaskTest {
 
     companion object {
         private const val DIKTAT_CHECK_TASK = "diktatCheck"
+
+        private fun DiktatReporter.unwrapFirst() = this
+            .unwrap<Iterable<DiktatReporter>>().first()
+            .unwrap<DiktatReporter>()
+            .unwrap<Iterable<DiktatReporter>>().first()
+            .unwrapToKtlint()
     }
 }

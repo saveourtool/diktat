@@ -83,6 +83,9 @@ abstract class DiktatTaskBase(
         )
     }
     private val diktatRunnerArguments by lazy {
+        val sourceRootDir by lazy {
+            project.rootProject.projectDir.toPath()
+        }
         val githubActionsReporterArgs = if (extension.githubActions) {
             val outputStream = project.layout.buildDirectory
                 .file("reports/diktat/diktat.sarif")
@@ -95,15 +98,16 @@ abstract class DiktatTaskBase(
             DiktatReporterCreationArguments(
                 id = "sarif",
                 outputStream = outputStream,
-                sourceRootDir = project.rootProject.projectDir.toPath()
+                sourceRootDir = sourceRootDir,
             )
         } else {
             null
         }
+        val reporterId = project.getReporterType(extension)
         val reporterArguments = DiktatReporterCreationArguments(
-            id = project.getReporterType(extension),
+            id = reporterId,
             outputStream = project.getOutputFile(extension)?.outputStream(),
-            sourceRootDir = null,
+            sourceRootDir = if (reporterId == "sarif") sourceRootDir else null,
         )
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
