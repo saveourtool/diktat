@@ -1,7 +1,9 @@
 package com.saveourtool.diktat.ktlint
 
 import com.saveourtool.diktat.api.DiktatReporter
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
+import com.saveourtool.diktat.api.PlainDiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatReporterImpl.Companion.wrap
 import com.pinterest.ktlint.cli.reporter.checkstyle.CheckStyleReporterProvider
 import com.pinterest.ktlint.cli.reporter.html.HtmlReporterProvider
@@ -9,8 +11,6 @@ import com.pinterest.ktlint.cli.reporter.json.JsonReporterProvider
 import com.pinterest.ktlint.cli.reporter.plain.Color
 import com.pinterest.ktlint.cli.reporter.plain.PlainReporterProvider
 import com.pinterest.ktlint.cli.reporter.sarif.SarifReporterProvider
-import java.io.OutputStream
-import java.nio.file.Path
 import kotlin.io.path.pathString
 
 /**
@@ -23,58 +23,46 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
      * All reporters which __KtLint__ provides
      */
     private val reporterProviders = setOf(
-        plainReporterProvider,
         JsonReporterProvider(),
         SarifReporterProvider(),
         CheckStyleReporterProvider(),
         HtmlReporterProvider(),
     )
-        .associateBy { it.id }
+        .associateBy { it.id } + (DiktatReporterFactory.PLAIN_ID to plainReporterProvider)
 
     override val ids: Set<String>
         get() = reporterProviders.keys
-
-    override val plainId: String
-        get() = plainReporterProvider.id
 
     override val colorNamesInPlain: Set<String>
         get() = Color.entries.map { it.name }.toSet()
 
     override fun invoke(
-        id: String,
-        outputStream: OutputStream,
-        closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path?,
+        args: DiktatReporterCreationArguments,
     ): DiktatReporter {
-        val reporterProvider = reporterProviders[id] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
-        if (reporterProvider is SarifReporterProvider) {
-            sourceRootDir?.let { System.setProperty("user.home", it.pathString) }
+        if (args.id == DiktatReporterFactory.NONE_ID) {
+            return DiktatReporter.empty
         }
-        val opt = if (reporterProvider is PlainReporterProvider) {
+        val opts = if (args is PlainDiktatReporterCreationArguments) {
+            buildMap<String, Any> {
+                args.colorName?.let {
+                    put("color", true)
+                    put("color_name", it)
+                } ?: run {
+                    put("color", false)
+                    put("color_name", Color.DARK_GRAY)
+                }
+                args.groupByFile?.let { put("group_by_file", it) }
+            }.mapValues { it.value.toString() }
+        } else if (args.id == DiktatReporterFactory.PLAIN_ID) {
             mapOf("color_name" to Color.DARK_GRAY.name)
         } else {
             emptyMap()
         }
-        return reporterProvider.get(outputStream, closeOutputStreamAfterAll, opt).wrap(sourceRootDir)
-    }
 
-    override fun createPlain(
-        outputStream: OutputStream,
-        closeOutputStreamAfterAll: Boolean,
-        sourceRootDir: Path?,
-        colorName: String?,
-        groupByFile: Boolean?,
-    ): DiktatReporter {
-        val opt = buildMap<String, Any> {
-            colorName?.let {
-                put("color", true)
-                put("color_name", it)
-            } ?: run {
-                put("color", false)
-                put("color_name", Color.DARK_GRAY)
-            }
-            groupByFile?.let { put("group_by_file", it) }
-        }.mapValues { it.value.toString() }
-        return plainReporterProvider.get(outputStream, closeOutputStreamAfterAll, opt).wrap(sourceRootDir)
+        val reporterProvider = reporterProviders[args.id] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
+        if (reporterProvider is SarifReporterProvider) {
+            args.sourceRootDir?.let { System.setProperty("user.home", it.pathString) }
+        }
+        return reporterProvider.get(args.outputStream, args.closeOutputStreamAfterAll, opts).wrap(args.sourceRootDir)
     }
 }

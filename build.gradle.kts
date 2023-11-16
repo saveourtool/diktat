@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
@@ -60,7 +61,7 @@ tasks.create("generateLibsForDiktatSnapshot") {
             .let {
                 val libsFileForDiktatSnapshot = dir.resolve(libsFileName)
                 Files.write(libsFileForDiktatSnapshot.toPath(), it)
-                Files.move(libsFile.toPath(), libsFileBackup.toPath())
+                Files.move(libsFile.toPath(), libsFileBackup.toPath(), StandardCopyOption.REPLACE_EXISTING)
                 Files.copy(libsFileForDiktatSnapshot.toPath(), libsFile.toPath())
             }
 

@@ -3,6 +3,7 @@ package com.saveourtool.diktat.plugin.maven
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -55,6 +56,18 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.baseline")
     var baseline: File? = null
+    private val diktatReporterFactory by lazy {
+        DiktatReporterFactoryImpl()
+    }
+    private val diktatRunnerFactory by lazy {
+        DiktatRunnerFactory(
+            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
+            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
+            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
+            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
+            diktatReporterFactory = diktatReporterFactory,
+        )
+    }
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -107,20 +120,18 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val diktatRunnerFactory = DiktatRunnerFactory(
-            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
-            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
-            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
-            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = DiktatReporterFactoryImpl()
+        val reporterId = getReporterType()
+        val reporterArgs = DiktatReporterCreationArguments(
+            id = reporterId,
+            outputStream = getReporterOutput(),
+            sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
         )
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
             files = inputs.map(::Path),
             baselineFile = baseline?.toPath(),
-            reporterType = getReporterType(),
-            reporterOutput = getReporterOutput(),
+            reporterArgsList = listOf(reporterArgs),
         )
         val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(

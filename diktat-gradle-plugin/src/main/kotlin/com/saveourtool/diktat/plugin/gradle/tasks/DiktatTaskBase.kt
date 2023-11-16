@@ -4,13 +4,13 @@ import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
-import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
@@ -28,6 +28,7 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 import java.nio.file.Path
 
@@ -40,7 +41,7 @@ import java.nio.file.Path
 @Suppress("WRONG_NEWLINES", "Deprecation")
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
-    private val inputs: PatternFilterable
+    private val inputs: PatternFilterable,
 ) : DefaultTask(), VerificationTask, com.saveourtool.diktat.plugin.gradle.DiktatJavaExecTaskBase {
     /**
      * Files that will be analyzed by diktat
@@ -68,32 +69,44 @@ abstract class DiktatTaskBase(
     internal val shouldRun: Boolean by lazy {
         !actualInputs.isEmpty
     }
+    private val diktatReporterFactory by lazy {
+        DiktatReporterFactoryImpl()
+    }
     private val diktatRunnerFactory by lazy {
         DiktatRunnerFactory(
             diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
             diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
             diktatProcessorFactory = DiktatProcessorFactoryImpl(),
             diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = DiktatReporterFactoryImpl()
+            diktatReporterFactory = diktatReporterFactory,
         )
     }
     private val diktatRunnerArguments by lazy {
+        val sourceRootDir by lazy {
+            project.rootProject.projectDir.toPath()
+        }
+        val reporterId = project.getReporterType(extension)
+        val reporterCreationArguments = DiktatReporterCreationArguments(
+            id = reporterId,
+            outputStream = project.getOutputFile(extension)?.outputStream(),
+            sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
+        )
+        val loggingListener = object : DiktatProcessorListener {
+            override fun beforeAll(files: Collection<Path>) {
+                project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
+                project.logger.debug("Analyzing {}", files)
+            }
+            override fun before(file: Path) {
+                project.logger.debug("Checking file {}", file)
+            }
+        }
         DiktatRunnerArguments(
             configFile = extension.diktatConfigFile.toPath(),
-            sourceRootDir = project.getSourceRootDir(extension),
+            sourceRootDir = sourceRootDir,
             files = actualInputs.files.map { it.toPath() },
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
-            reporterType = project.getReporterType(extension),
-            reporterOutput = project.getOutputFile(extension)?.outputStream(),
-            loggingListener = object : DiktatProcessorListener {
-                override fun beforeAll(files: Collection<Path>) {
-                    project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
-                    project.logger.debug("Analyzing {}", files)
-                }
-                override fun before(file: Path) {
-                    project.logger.debug("Checking file {}", file)
-                }
-            }
+            reporterArgsList = listOf(reporterCreationArguments),
+            loggingListener = loggingListener,
         )
     }
 
@@ -107,6 +120,7 @@ abstract class DiktatTaskBase(
 
     init {
         ignoreFailures = extension.ignoreFailures
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
 
     /**

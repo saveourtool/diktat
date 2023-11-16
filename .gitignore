@@ -13,4 +13,4 @@ out/
 *.sarif
 
 # a generated file for github action
-/gradle/libs.versions.toml_snapshot
+/gradle/libs.versions.toml_backup
