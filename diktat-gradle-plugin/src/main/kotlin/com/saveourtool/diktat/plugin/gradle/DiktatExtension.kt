@@ -1,6 +1,5 @@
 package com.saveourtool.diktat.plugin.gradle
 
-import org.gradle.api.Action
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity

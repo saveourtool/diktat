@@ -133,9 +133,7 @@ class DiktatJavaExecTaskTest {
             reporter = "json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(
-            task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter
-        )
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter)
     }
 
     @Test

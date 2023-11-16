@@ -8,6 +8,7 @@ package com.saveourtool.diktat.plugin.gradle
 
 import org.gradle.api.Project
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
 
 /**
@@ -15,6 +16,7 @@ import java.nio.file.Path
  * @return returns sourceRootDir as projectDir for sarif report
  */
 fun Project.getSourceRootDir(diktatExtension: DiktatExtension): Path? = when {
+    diktatExtension.githubActions -> projectDir.toPath()
     diktatExtension.reporter == "sarif" -> projectDir.toPath()
     else -> null
 }
@@ -30,6 +32,12 @@ fun Project.getReporterType(diktatExtension: DiktatExtension): String {
     val name = diktatExtension.reporter.trim()
     val validReporters = listOf("sarif", "plain", "json", "html")
     val reporterType = when {
+        diktatExtension.githubActions -> {
+            if (diktatExtension.reporter.isNotEmpty()) {
+                logger.warn("`diktat.githubActions` is set to true, so custom reporter [$name] will be ignored and SARIF reporter will be used")
+            }
+            "sarif"
+        }
         name.isEmpty() -> {
             logger.info("Reporter name was not set. Using 'plain' reporter")
             "plain"
@@ -52,6 +60,13 @@ fun Project.getReporterType(diktatExtension: DiktatExtension): String {
  * @return destination [File] or null if stdout is used
  */
 internal fun Project.getOutputFile(diktatExtension: DiktatExtension): File? = when {
+    diktatExtension.githubActions -> project.layout.buildDirectory
+        .file("reports/diktat/diktat.sarif")
+        .get()
+        .asFile
+        .also {
+            Files.createDirectories(it.parentFile.toPath())
+        }
     diktatExtension.output.isNotEmpty() -> file(diktatExtension.output)
     else -> null
 }
