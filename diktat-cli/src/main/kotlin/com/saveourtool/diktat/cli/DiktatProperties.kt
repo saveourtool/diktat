@@ -4,6 +4,7 @@ import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
+import com.saveourtool.diktat.api.DiktatReporterFactory.Companion.PLAIN_ID
 import com.saveourtool.diktat.common.config.rules.DIKTAT
 import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
@@ -74,7 +75,7 @@ data class DiktatProperties(
         sourceRootDir: Path,
         loggingListener: DiktatProcessorListener,
     ): DiktatRunnerArguments {
-        val reporterArguments = DiktatReporterCreationArguments(
+        val reporterCreationArguments = DiktatReporterCreationArguments(
             id = reporterProviderId,
             outputStream = getReporterOutput(),
             groupByFileInPlain = groupByFileInPlain,
@@ -86,7 +87,7 @@ data class DiktatProperties(
             sourceRootDir = sourceRootDir,
             files = getFiles(sourceRootDir),
             baselineFile = null,
-            reporterArgsList = listOf(reporterArguments),
+            reporterArgsList = listOf(reporterCreationArguments),
             loggingListener = loggingListener
         )
     }
@@ -212,7 +213,7 @@ data class DiktatProperties(
             shortName = "r",
             description = "The reporter to use"
         )
-            .default("plain")
+            .default(PLAIN_ID)
 
         /**
          * @param diktatReporterFactory

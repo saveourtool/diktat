@@ -9,8 +9,6 @@ import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
-import com.saveourtool.diktat.plugin.gradle.extensions.Reporter
-import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
 import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
@@ -48,8 +46,6 @@ import java.nio.file.Path
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable,
-    private val reporters: List<Reporter>,
-    private val objectFactory: ObjectFactory,
 ) : DefaultTask(), VerificationTask, com.saveourtool.diktat.plugin.gradle.DiktatJavaExecTaskBase {
     /**
      * Files that will be analyzed by diktat
@@ -111,7 +107,7 @@ abstract class DiktatTaskBase(
             null
         }
         val reporterId = project.getReporterType(extension)
-        val reporterArguments = DiktatReporterCreationArguments(
+        val reporterCreationArguments = DiktatReporterCreationArguments(
             id = reporterId,
             outputStream = project.getOutputFile(extension)?.outputStream(),
             sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
@@ -130,7 +126,7 @@ abstract class DiktatTaskBase(
             sourceRootDir = project.getSourceRootDir(extension),
             files = actualInputs.files.map { it.toPath() },
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
-            reporterArgsList = listOf(githubActionsReporterArgs, reporterArguments).mapNotNull { it },
+            reporterArgsList = listOf(githubActionsReporterArgs, reporterCreationArguments).mapNotNull { it },
             loggingListener = loggingListener,
         )
     }
@@ -147,11 +143,6 @@ abstract class DiktatTaskBase(
         ignoreFailures = extension.ignoreFailures
         group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
-
-    @get:Internal
-    val _reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
-
-    fun reporters(action: Action<in Reporters>) = action.execute(_reporters)
 
     /**
      * Function to execute diKTat

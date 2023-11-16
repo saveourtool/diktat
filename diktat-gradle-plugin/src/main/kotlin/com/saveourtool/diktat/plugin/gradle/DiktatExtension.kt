@@ -1,6 +1,5 @@
 package com.saveourtool.diktat.plugin.gradle
 
-import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import org.gradle.api.Action
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
@@ -15,8 +14,7 @@ import java.io.File
  * @param patternSet
  */
 open class DiktatExtension(
-    private val patternSet: PatternSet,
-    private val reporters: Reporters,
+    private val patternSet: PatternSet
 ) {
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
@@ -32,6 +30,16 @@ open class DiktatExtension(
      * Property that will be used if you need to publish the report to GitHub
      */
     var githubActions = false
+
+    /**
+     * Type of the reporter to use
+     */
+    var reporter: String = ""
+
+    /**
+     * Destination for reporter. If empty, will write to stdout.
+     */
+    var output: String = ""
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
@@ -55,11 +63,4 @@ open class DiktatExtension(
     fun inputs(action: PatternFilterable.() -> Unit) {
         action(patternSet)
     }
-
-    /**
-     * Configure reporters
-     *
-     * @param action configuration lambda for [Reporters]
-     */
-    fun reporters(action: Action<Reporters>): Unit = action.execute(reporters)
 }
