@@ -9,7 +9,7 @@ import java.nio.file.Path
  *
  * @property wrappedValue
  */
-abstract class DiktatProcessorListenerWrapper<T : Any>(
+open class DiktatProcessorListenerWrapper<T : Any>(
     val wrappedValue: T,
 ) : DiktatProcessorListener {
     override fun beforeAll(files: Collection<Path>): Unit = doBeforeAll(wrappedValue, files)
