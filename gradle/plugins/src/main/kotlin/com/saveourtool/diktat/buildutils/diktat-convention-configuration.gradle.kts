@@ -1,5 +1,7 @@
 package com.saveourtool.diktat.buildutils
 
+import com.saveourtool.diktat.plugin.gradle.tasks.DiktatTaskBase
+
 plugins {
     id("com.saveourtool.diktat")
 }
@@ -20,6 +22,18 @@ diktat {
                 "src/*Test/**/*.kt",
                 "build/**/*.kts",
             )
+        }
+    }
+}
+
+tasks.withType(DiktatTaskBase::class.java) {
+    reporters {
+        configure {
+            id = "plain"
+            output = project.layout.buildDirectory.file("test.txt")
+        }
+        configure {
+
         }
     }
 }

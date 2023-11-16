@@ -1,5 +1,6 @@
 package com.saveourtool.diktat.plugin.gradle
 
+import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import com.saveourtool.diktat.plugin.gradle.tasks.DiktatCheckTask.Companion.registerDiktatCheckTask
 import com.saveourtool.diktat.plugin.gradle.tasks.DiktatFixTask.Companion.registerDiktatFixTask
 import com.saveourtool.diktat.plugin.gradle.tasks.configureMergeReportsTask
@@ -17,11 +18,13 @@ class DiktatGradlePlugin : Plugin<Project> {
      */
     @Suppress("TOO_LONG_FUNCTION")
     override fun apply(project: Project) {
+
         val patternSet = PatternSet()
         val diktatExtension = project.extensions.create(
             DIKTAT_EXTENSION,
             DiktatExtension::class.java,
-            patternSet
+            patternSet,
+            project.objects.newInstance(Reporters::class.java),
         ).apply {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }

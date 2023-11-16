@@ -1,5 +1,7 @@
 package com.saveourtool.diktat.plugin.gradle
 
+import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
+import org.gradle.api.Action
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -13,7 +15,8 @@ import java.io.File
  * @param patternSet
  */
 open class DiktatExtension(
-    private val patternSet: PatternSet
+    private val patternSet: PatternSet,
+    val reporters: Reporters,
 ) {
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
@@ -62,4 +65,6 @@ open class DiktatExtension(
     fun inputs(action: PatternFilterable.() -> Unit) {
         action(patternSet)
     }
+
+    fun reporters(action: Action<in Reporters>): Unit = action.execute(reporters)
 }

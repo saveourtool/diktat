@@ -212,7 +212,7 @@ data class DiktatProperties(
             shortName = "r",
             description = "The reporter to use"
         )
-            .default(DiktatReporterFactory.NONE_ID)
+            .default("plain")
 
         /**
          * @param diktatReporterFactory
