@@ -22,9 +22,7 @@ class ReporterSelectionTest {
 
     @Test
     fun `should fallback to plain reporter for unknown reporter types`() {
-        val diktatExtension = DiktatExtension(
-            PatternSet(),
-        ).apply {
+        val diktatExtension = DiktatExtension(PatternSet()).apply {
             reporter = "jsonx"
         }
 

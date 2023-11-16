@@ -118,12 +118,8 @@ class DiktatJavaExecTaskTest {
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporters { rs ->
-                rs.configure { r ->
-                    r.id.set("json")
-                    r.output.set(project.file("some.txt"))
-                }
-            }
+            reporter = "json"
+            output = "some.txt"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
         assert(task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter)
@@ -134,11 +130,7 @@ class DiktatJavaExecTaskTest {
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporters { rs ->
-                rs.configure { r ->
-                    r.id.set("json")
-                }
-            }
+            reporter = "json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
         assert(
@@ -167,12 +159,8 @@ class DiktatJavaExecTaskTest {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             githubActions = true
-            reporters { rs ->
-                rs.configure { r ->
-                    r.id.set("json")
-                    r.output.set(project.file("report.json"))
-                }
-            }
+            reporter = "json"
+            output = "report.json"
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
         val (firstReporter, secondReporter) = task.diktatRunner.diktatReporter
@@ -197,11 +185,6 @@ class DiktatJavaExecTaskTest {
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporters { rs ->
-                rs.configure { r ->
-                    r.id.set("sarif")
-                }
-            }
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
         assert(task.diktatRunner.diktatReporter.unwrapFirst() is SarifReporter)

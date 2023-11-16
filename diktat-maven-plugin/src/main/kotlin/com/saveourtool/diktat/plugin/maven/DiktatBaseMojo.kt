@@ -121,10 +121,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
         val reporterArgsList = buildList {
-            if (githubActions) {
-                val outputStream = FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
-                add(DiktatReporterCreationArguments(id = "sarif", outputStream = outputStream, sourceRootDir = sourceRootDir))
-            }
             val reporterId = getReporterType()
             add(
                 DiktatReporterCreationArguments(id = getReporterType(), outputStream = getReporterOutput(), sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" })
@@ -147,7 +143,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun getReporterType(): String = if (reporter in setOf("sarif", "plain", "json", "html")) {
+    private fun getReporterType(): String = if (githubActions) {
+        "sarif"
+    } else if (reporter in setOf("sarif", "plain", "json", "html")) {
         reporter
     } else {
         log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
@@ -156,6 +154,8 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
     private fun getReporterOutput(): OutputStream? = if (output.isNotBlank()) {
         FileOutputStream(this.output, false)
+    } else if (githubActions) {
+        FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
     } else {
         null
     }
