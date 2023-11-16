@@ -11,17 +11,14 @@ import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
-import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.FileCollection
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
@@ -32,7 +29,6 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import java.nio.file.Files
 
 import java.nio.file.Path
 
