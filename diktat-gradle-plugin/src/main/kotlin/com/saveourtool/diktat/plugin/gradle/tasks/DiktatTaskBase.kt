@@ -9,8 +9,8 @@ import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
-import com.saveourtool.diktat.plugin.gradle.getOutputFile
-import com.saveourtool.diktat.plugin.gradle.getReporterType
+import com.saveourtool.diktat.plugin.gradle.extension.Reporter
+import com.saveourtool.diktat.plugin.gradle.extension.ReportersDsl.Companion.getId
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
@@ -19,13 +19,17 @@ import generated.KTLINT_VERSION
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.IgnoreEmptyDirectories
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -35,14 +39,23 @@ import java.nio.file.Path
 /**
  * A base task to run `diktat`
  *
- * @param inputs
  * @property extension
+ * @param inputs
+ * @param reporters
  */
 @Suppress("WRONG_NEWLINES", "Deprecation")
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable,
-) : DefaultTask(), VerificationTask, com.saveourtool.diktat.plugin.gradle.DiktatJavaExecTaskBase {
+    private val reporters: List<Reporter>,
+) : DefaultTask(), VerificationTask {
+    @get:InputFile
+    abstract val configFile: RegularFileProperty
+
+    @get:Optional
+    @get:InputFile
+    abstract val baselineFile: RegularFileProperty
+
     /**
      * Files that will be analyzed by diktat
      */
@@ -85,12 +98,14 @@ abstract class DiktatTaskBase(
         val sourceRootDir by lazy {
             project.rootProject.projectDir.toPath()
         }
-        val reporterId = project.getReporterType(extension)
-        val reporterCreationArguments = DiktatReporterCreationArguments(
-            id = reporterId,
-            outputStream = project.getOutputFile(extension)?.outputStream(),
-            sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
-        )
+        val reporterCreationArgumentsList = reporters.map { reporter ->
+            val reporterId = reporter.getId()
+            DiktatReporterCreationArguments(
+                id = reporterId,
+                outputStream = reporter.output.map { it.asFile.outputStream() }.orNull,
+                sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
+            )
+        }
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
                 project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
@@ -101,11 +116,11 @@ abstract class DiktatTaskBase(
             }
         }
         DiktatRunnerArguments(
-            configFile = extension.diktatConfigFile.toPath(),
+            configInputStream = configFile.get().asFile.inputStream(),
             sourceRootDir = sourceRootDir,
             files = actualInputs.files.map { it.toPath() },
-            baselineFile = extension.baseline?.let { project.file(it).toPath() },
-            reporterArgsList = listOf(reporterCreationArguments),
+            baselineFile = baselineFile.map { it.asFile.toPath() }.orNull,
+            reporterArgsList = reporterCreationArgumentsList,
             loggingListener = loggingListener,
         )
     }
@@ -119,7 +134,6 @@ abstract class DiktatTaskBase(
     }
 
     init {
-        ignoreFailures = extension.ignoreFailures
         group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
 
@@ -166,4 +180,14 @@ abstract class DiktatTaskBase(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
     ): Int
+
+    companion object {
+        fun TaskProvider<out DiktatTaskBase>.configure(extension: DiktatExtension) {
+            configure {
+                it.configFile.set(it.project.file(extension.diktatConfigFile))
+                extension.baseline.let { baseline -> it.baselineFile.set(it.project.file(baseline)) }
+                it.ignoreFailures = extension.ignoreFailures
+            }
+        }
+    }
 }

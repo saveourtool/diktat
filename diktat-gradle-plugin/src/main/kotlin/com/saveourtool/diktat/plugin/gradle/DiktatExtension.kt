@@ -1,20 +1,30 @@
 package com.saveourtool.diktat.plugin.gradle
 
+import com.saveourtool.diktat.plugin.gradle.extension.Reporter
+import com.saveourtool.diktat.plugin.gradle.extension.ReportersDsl
+import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import java.io.File
+import javax.inject.Inject
 
 /**
  * An extension to configure diktat in build.gradle(.kts) file
  *
  * @param patternSet
+ * @param reporters
  */
-open class DiktatExtension(
-    private val patternSet: PatternSet
+open class DiktatExtension @Inject constructor(
+    private val objectFactory: ObjectFactory,
+    private val patternSet: PatternSet,
+    reporters: List<Reporter>,
 ) {
+    private val reportersDsl: ReportersDsl = objectFactory.newInstance(ReportersDsl::class.java, reporters)
+
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
      */
@@ -24,21 +34,6 @@ open class DiktatExtension(
      * Flag that indicates whether to turn debug logging on
      */
     var debug = false
-
-    /**
-     * Property that will be used if you need to publish the report to GitHub
-     */
-    var githubActions = false
-
-    /**
-     * Type of the reporter to use
-     */
-    var reporter: String = ""
-
-    /**
-     * Destination for reporter. If empty, will write to stdout.
-     */
-    var output: String = ""
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
@@ -62,4 +57,11 @@ open class DiktatExtension(
     fun inputs(action: PatternFilterable.() -> Unit) {
         action(patternSet)
     }
+
+    /**
+     * Configure reporters
+     *
+     * @param action configuration lambda for [ReportersDsl]
+     */
+    fun reporters(action: Action<ReportersDsl>): Unit = action.execute(reportersDsl)
 }

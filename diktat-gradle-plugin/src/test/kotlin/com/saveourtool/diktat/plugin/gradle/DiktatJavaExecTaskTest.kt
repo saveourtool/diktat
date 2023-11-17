@@ -155,6 +155,7 @@ class DiktatJavaExecTaskTest {
         assertFiles(emptyList()) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
+
             githubActions = true
             reporter = "json"
             output = "report.json"

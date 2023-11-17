@@ -4,6 +4,8 @@ import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
+import com.saveourtool.diktat.plugin.gradle.extension.Reporter
+import com.saveourtool.diktat.plugin.gradle.extension.ReportersDsl
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.util.PatternFilterable
@@ -15,8 +17,9 @@ import javax.inject.Inject
  */
 abstract class DiktatFixTask @Inject constructor(
     extension: DiktatExtension,
-    inputs: PatternFilterable
-) : DiktatTaskBase(extension, inputs) {
+    inputs: PatternFilterable,
+    reporters: List<Reporter>,
+) : DiktatTaskBase(extension, inputs, reporters) {
     override fun doRun(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
@@ -32,11 +35,12 @@ abstract class DiktatFixTask @Inject constructor(
          */
         fun Project.registerDiktatFixTask(
             diktatExtension: DiktatExtension,
-            patternSet: PatternSet
+            patternSet: PatternSet,
+            reporters: List<Reporter>,
         ): TaskProvider<DiktatFixTask> =
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_FIX_TASK, DiktatFixTask::class.java,
-                diktatExtension, patternSet
+                diktatExtension, patternSet, reporters,
             )
     }
 }

@@ -2,9 +2,8 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
-import com.saveourtool.diktat.plugin.gradle.getOutputFile
-import com.saveourtool.diktat.plugin.gradle.getReporterType
-import com.saveourtool.diktat.plugin.gradle.isSarifReporterActive
+import com.saveourtool.diktat.plugin.gradle.extension.Reporter
+import com.saveourtool.diktat.plugin.gradle.extension.SarifReporter
 
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
@@ -20,7 +19,6 @@ import org.gradle.api.tasks.TaskExecutionException
 import org.gradle.api.tasks.VerificationTask
 
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -82,21 +80,26 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
 /**
  * @param diktatExtension extension of type [DiktatExtension]
  */
-internal fun Project.configureMergeReportsTask(diktatExtension: DiktatExtension) {
+internal fun Project.configureMergeReportsTask(
+    reporters: List<Reporter>,
+) {
     if (path == rootProject.path) {
         tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
+            reporters.filterIsInstance<SarifReporter>()
+                .map { reporter -> reporter.mergeOutput.zip(reporter.output, ::Pair) }
+                .forEach { pair ->
+                    reportMergeTask.inputs.file(pair.map { it.first })
+                    reportMergeTask.inputs.file(pair.map { it.second })
+                }
             val mergedReportFile = project.layout.buildDirectory.file("reports/diktat/diktat-merged.sarif")
             reportMergeTask.outputs.file(mergedReportFile)
             reportMergeTask.output.set(mergedReportFile)
         }
     }
     rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
-        if (isSarifReporterActive(getReporterType(diktatExtension))) {
-            getOutputFile(diktatExtension)?.let { reportMergeTask.input.from(it) }
-            reportMergeTask.shouldRunAfter(tasks.withType(DiktatTaskBase::class.java))
-        }
+        reportMergeTask.dependsOn(tasks.withType(DiktatTaskBase::class.java))
     }
-    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatJavaExecTaskBase ->
-        diktatJavaExecTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
+    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
+        diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
     }
 }
