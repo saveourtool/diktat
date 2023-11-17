@@ -39,6 +39,6 @@ abstract class DiktatCheckTask @Inject constructor(
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_CHECK_TASK, DiktatCheckTask::class.java,
                 diktatExtension, patternSet, reporters,
-            )
+            ).also { it.configure(diktatExtension) }
     }
 }

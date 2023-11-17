@@ -9,6 +9,7 @@ import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
+import com.saveourtool.diktat.plugin.gradle.extension.PlainReporter
 import com.saveourtool.diktat.plugin.gradle.extension.Reporter
 import com.saveourtool.diktat.plugin.gradle.extension.ReportersDsl.Companion.getId
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
@@ -33,6 +34,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import java.nio.file.Files
 
 import java.nio.file.Path
 
@@ -98,14 +100,18 @@ abstract class DiktatTaskBase(
         val sourceRootDir by lazy {
             project.rootProject.projectDir.toPath()
         }
-        val reporterCreationArgumentsList = reporters.map { reporter ->
-            val reporterId = reporter.getId()
-            DiktatReporterCreationArguments(
-                id = reporterId,
-                outputStream = reporter.output.map { it.asFile.outputStream() }.orNull,
-                sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
-            )
+        val defaultPlainReporter by lazy {
+            project.objects.newInstance(PlainReporter::class.java)
         }
+        val reporterCreationArgumentsList = (reporters.takeUnless { it.isEmpty() } ?: listOf(defaultPlainReporter))
+            .map { reporter ->
+                val reporterId = reporter.getId()
+                DiktatReporterCreationArguments(
+                    id = reporterId,
+                    outputStream = reporter.output.map { file -> file.asFile.also { Files.createDirectories(it.parentFile.toPath()) }.outputStream() }.orNull,
+                    sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
+                )
+            }
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
                 project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
@@ -183,10 +189,10 @@ abstract class DiktatTaskBase(
 
     companion object {
         fun TaskProvider<out DiktatTaskBase>.configure(extension: DiktatExtension) {
-            configure {
-                it.configFile.set(it.project.file(extension.diktatConfigFile))
-                extension.baseline.let { baseline -> it.baselineFile.set(it.project.file(baseline)) }
-                it.ignoreFailures = extension.ignoreFailures
+            configure { task ->
+                task.configFile.set(task.project.file(extension.diktatConfigFile))
+                extension.baseline?.let { baseline -> task.baselineFile.set(task.project.file(baseline)) }
+                task.ignoreFailures = extension.ignoreFailures
             }
         }
     }
