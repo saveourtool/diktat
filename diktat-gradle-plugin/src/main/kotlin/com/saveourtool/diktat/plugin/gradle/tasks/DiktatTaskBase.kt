@@ -13,7 +13,6 @@ import com.saveourtool.diktat.plugin.gradle.extensions.Reporter
 import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
-import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
@@ -111,7 +110,7 @@ abstract class DiktatTaskBase(
             null
         }
         val reporterId = project.getReporterType(extension)
-        val reporterArguments = DiktatReporterCreationArguments(
+        val reporterCreationArguments = DiktatReporterCreationArguments(
             id = reporterId,
             outputStream = project.getOutputFile(extension)?.outputStream(),
             sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
@@ -130,7 +129,7 @@ abstract class DiktatTaskBase(
             sourceRootDir = project.getSourceRootDir(extension),
             files = actualInputs.files.map { it.toPath() },
             baselineFile = extension.baseline?.let { project.file(it).toPath() },
-            reporterArgsList = listOf(githubActionsReporterArgs, reporterArguments).mapNotNull { it },
+            reporterArgsList = listOf(githubActionsReporterArgs, reporterCreationArguments).mapNotNull { it },
             loggingListener = loggingListener,
         )
     }
