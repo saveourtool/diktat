@@ -13,6 +13,7 @@ import com.saveourtool.diktat.plugin.gradle.extensions.Reporter
 import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
 import com.saveourtool.diktat.plugin.gradle.getReporterType
+import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
