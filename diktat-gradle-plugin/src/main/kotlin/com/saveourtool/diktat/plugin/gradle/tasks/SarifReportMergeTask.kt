@@ -82,20 +82,26 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
 internal fun Project.configureMergeReportsTask(
     diktatExtension: DiktatExtension,
 ) {
-    diktatExtension.reporters.all.filterIsInstance<GitHubActionsReporter>()
-        .firstOrNull()
-        ?.let { gitHubActionsReporter ->
-            if (path == rootProject.path) {
-                tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
+    if (path == rootProject.path) {
+        tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
+            diktatExtension.reporters.all
+                .filterIsInstance<GitHubActionsReporter>()
+                .firstOrNull()
+                ?.let { gitHubActionsReporter ->
                     reportMergeTask.output.set(gitHubActionsReporter.mergeOutput)
                 }
-            }
-            rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
-                reportMergeTask.input.from(gitHubActionsReporter.output)
-                reportMergeTask.dependsOn(tasks.withType(DiktatTaskBase::class.java))
-            }
-            tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
-                diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
-            }
         }
+    }
+    rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
+        diktatExtension.reporters.all
+            .filterIsInstance<GitHubActionsReporter>()
+            .firstOrNull()
+            ?.let { gitHubActionsReporter ->
+                reportMergeTask.input.from(gitHubActionsReporter.output)
+            }
+        reportMergeTask.dependsOn(tasks.withType(DiktatTaskBase::class.java))
+    }
+    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
+        diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
+    }
 }
