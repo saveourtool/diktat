@@ -45,8 +45,13 @@ abstract class PlainReporter @Inject constructor(
     id = "plain",
     extension = "txt",
     objectFactory,
-    project
-)
+    project,
+) {
+    /**
+     * Remove the default value for plain to print to stdout by default
+     */
+    abstract override val output: RegularFileProperty
+}
 
 /**
  * JSON reporter
@@ -77,7 +82,7 @@ abstract class SarifReporter @Inject constructor(
     id = "sarif",
     extension = "sarif",
     objectFactory,
-    project
+    project,
 )
 
 /**
@@ -95,6 +100,7 @@ abstract class GitHubActionsReporter @Inject constructor(
             fileProperty.convention(project.defaultReportLocation(extension = "sarif"))
                 .finalizeValue()
         }
+
     /**
      * Location for merged output
      */
@@ -118,7 +124,7 @@ abstract class CheckstyleReporter @Inject constructor(
     id = "checkstyle",
     extension = "xml",
     objectFactory,
-    project
+    project,
 )
 
 /**
@@ -134,5 +140,5 @@ abstract class HtmlReporter @Inject constructor(
     id = "html",
     extension = "html",
     objectFactory,
-    project
+    project,
 )
