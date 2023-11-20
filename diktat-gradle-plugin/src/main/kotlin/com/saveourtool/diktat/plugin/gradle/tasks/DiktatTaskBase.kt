@@ -94,7 +94,6 @@ abstract class DiktatTaskBase(
     /**
      * Outputs for all reporters
      */
-    @get:Internal
     @get:OutputFiles
     @get:Optional
     val reporterOutputs: ConfigurableFileCollection = objectFactory.fileCollection()
