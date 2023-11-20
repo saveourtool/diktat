@@ -1,6 +1,5 @@
 package com.saveourtool.diktat.plugin.gradle
 
-import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
 import com.saveourtool.diktat.plugin.gradle.tasks.DiktatCheckTask.Companion.registerDiktatCheckTask
 import com.saveourtool.diktat.plugin.gradle.tasks.DiktatFixTask.Companion.registerDiktatFixTask
 import com.saveourtool.diktat.plugin.gradle.tasks.configureMergeReportsTask
@@ -17,12 +16,10 @@ class DiktatGradlePlugin : Plugin<Project> {
      */
     override fun apply(project: Project) {
         val patternSet = PatternSet()
-        val reporters = mutableListOf<DefaultReporter>()
         val diktatExtension = project.extensions.create(
             DIKTAT_EXTENSION,
             DiktatExtension::class.java,
             patternSet,
-            reporters,
         ).apply {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
