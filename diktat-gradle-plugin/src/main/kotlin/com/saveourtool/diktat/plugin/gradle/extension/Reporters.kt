@@ -20,7 +20,7 @@ open class Reporters @Inject constructor(
      *
      * @param action
      */
-    fun plain(action: Action<DefaultReporter>): Unit = action.execute(newReporter())
+    fun plain(action: Action<PlainReporter>): Unit = action.execute(newReporter())
 
     /**
      * Configure *plain* reporter with default configuration

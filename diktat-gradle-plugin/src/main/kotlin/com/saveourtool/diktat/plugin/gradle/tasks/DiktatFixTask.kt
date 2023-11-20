@@ -4,7 +4,6 @@ import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
-import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.TaskProvider
@@ -19,7 +18,11 @@ abstract class DiktatFixTask @Inject constructor(
     extension: DiktatExtension,
     inputs: PatternFilterable,
     objectFactory: ObjectFactory,
-) : DiktatTaskBase(extension, inputs, objectFactory) {
+) : DiktatTaskBase(
+    extension,
+    inputs,
+    objectFactory
+) {
     override fun doRun(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
