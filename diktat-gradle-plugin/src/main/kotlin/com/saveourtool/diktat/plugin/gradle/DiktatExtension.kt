@@ -35,6 +35,11 @@ open class DiktatExtension @Inject constructor(
     var debug = false
 
     /**
+     * Property that will be used if you need to publish the report to GitHub
+     */
+    var githubActions = false
+
+    /**
      * Baseline file, containing a list of errors that will be ignored.
      * If this file doesn't exist, it will be created on the first invocation.
      */

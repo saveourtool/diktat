@@ -7,7 +7,6 @@ import com.saveourtool.diktat.util.DiktatProcessorListenerWrapper.Companion.unwr
 import com.pinterest.ktlint.cli.reporter.json.JsonReporter
 import com.pinterest.ktlint.cli.reporter.plain.PlainReporter
 import com.pinterest.ktlint.cli.reporter.sarif.SarifReporter
-import org.gradle.api.Action
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -147,7 +146,7 @@ class DiktatJavaExecTaskTest {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporters { reportersDsl ->
-                reportersDsl.githubAction()
+                reportersDsl.githubActions()
             }
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
@@ -164,7 +163,7 @@ class DiktatJavaExecTaskTest {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporters { reportersDsl ->
-                reportersDsl.githubAction()
+                reportersDsl.githubActions()
                 reportersDsl.json { jsonDsl ->
                     jsonDsl.output.set(project.layout.buildDirectory.file("report.json"))
                 }

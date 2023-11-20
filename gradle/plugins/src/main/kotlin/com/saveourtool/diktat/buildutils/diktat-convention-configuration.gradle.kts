@@ -6,22 +6,26 @@ plugins {
 
 diktat {
     diktatConfigFile = rootProject.file("diktat-analysis.yml")
-//    githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
+    // githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
 
+    reporters {
+        json()
+        githubActions()
+    }
 
-//    reporters {
-//        directory = project.rootProject.layout.buildDirectory.file("reports/diktat")
-//        json {
-//            output = "report.json"
-//        }
-//        sarif {
-//            mergeOutput = ""
-//        }
-//        custom {
-//            dependency = "bla.bla:foo.foo:1.2.3"
-//            output = "report.txt"
-//        }
-//    }
+    // reporters {
+    // directory = project.rootProject.layout.buildDirectory.file("reports/diktat")
+    // json {
+    // output = "report.json"
+    // }
+    // sarif {
+    // mergeOutput = ""
+    // }
+    // custom {
+    // dependency = "bla.bla:foo.foo:1.2.3"
+    // output = "report.txt"
+    // }
+    // }
     inputs {
         // using `Project#path` here, because it must be unique in gradle's project hierarchy
         if (path == rootProject.path) {

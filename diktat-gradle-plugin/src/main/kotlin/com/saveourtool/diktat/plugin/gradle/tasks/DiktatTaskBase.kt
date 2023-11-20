@@ -44,8 +44,8 @@ import java.nio.file.Path
 /**
  * A base task to run `diktat`
  *
- * @property extension
  * @param inputs
+ * @property extension
  */
 @Suppress("WRONG_NEWLINES", "Deprecation")
 abstract class DiktatTaskBase(
@@ -90,7 +90,6 @@ abstract class DiktatTaskBase(
             fileCollection.setFrom(reporters.all.mapNotNull { it.output.orNull })
             fileCollection.finalizeValue()
         }
-
 
     /**
      * Whether diktat should be executed
@@ -203,12 +202,18 @@ abstract class DiktatTaskBase(
     ): Int
 
     companion object {
+        /**
+         * @param extension
+         */
         fun TaskProvider<out DiktatTaskBase>.configure(extension: DiktatExtension) {
             configure { task ->
                 task.configFile.set(task.project.file(extension.diktatConfigFile))
                 extension.baseline?.let { baseline -> task.baselineFile.set(task.project.file(baseline)) }
                 task.ignoreFailures = extension.ignoreFailures
                 task.reporters.all.addAll(extension.reporters.all)
+                if (extension.githubActions) {
+                    task.reporters.githubActions()
+                }
             }
         }
     }
