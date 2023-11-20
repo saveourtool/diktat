@@ -88,22 +88,20 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
 }
 
 /**
- * @param providerFactory
+ * Configure [MERGE_SARIF_REPORTS_TASK_NAME]
  */
-internal fun Project.configureMergeReportsTask(
-    providerFactory: ProviderFactory,
-) {
+internal fun Project.configureMergeReportsTask() {
     val diktatCheckTask = tasks.named(DIKTAT_CHECK_TASK, DiktatCheckTask::class.java)
     val rootMergeSarifReportsTask = if (path == rootProject.path) {
         tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
-            reportMergeTask.output.set(diktatCheckTask.getGitHubActionsReporter(providerFactory) { it.mergeOutput })
+            reportMergeTask.output.set(diktatCheckTask.getGitHubActionsReporter { it.mergeOutput })
         }
     } else {
         rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java)
     }
 
     rootMergeSarifReportsTask.configure { reportMergeTask ->
-        reportMergeTask.input.from(diktatCheckTask.getGitHubActionsReporter(providerFactory) { it.output })
+        reportMergeTask.input.from(diktatCheckTask.getGitHubActionsReporter { it.output }.asProvider(providers))
         reportMergeTask.dependsOn(diktatCheckTask)
     }
     diktatCheckTask.configure {
@@ -112,12 +110,13 @@ internal fun Project.configureMergeReportsTask(
 }
 
 private fun TaskProvider<DiktatCheckTask>.getGitHubActionsReporter(
-    providerFactory: ProviderFactory,
     getter: (GitHubActionsReporter) -> RegularFileProperty,
-): Provider<RegularFile> = providerFactory.provider {
-    map { it.reporters.all.filterIsInstance<GitHubActionsReporter>() }
-        .orNull
-        ?.firstOrNull()
-        ?.let(getter)
-        ?.orNull
-}
+): RegularFile? = map { it.reporters.all.filterIsInstance<GitHubActionsReporter>() }
+    .orNull
+    ?.singleOrNull()
+    ?.let(getter)
+    ?.orNull
+
+private fun <T : Any> T?.asProvider(
+    providerFactory: ProviderFactory,
+): Provider<T> = providerFactory.provider { this }
