@@ -4,13 +4,14 @@ import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
 import com.saveourtool.diktat.plugin.gradle.extension.GitHubActionsReporter
-import com.saveourtool.diktat.plugin.gradle.extension.Reporters
 
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
@@ -18,7 +19,9 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
+import java.util.concurrent.Callable
 
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -81,27 +84,22 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
 }
 
 /**
- * @param diktatExtension extension of type [DiktatExtension]
+ * @param providerFactory
  */
 internal fun Project.configureMergeReportsTask(
-    diktatExtension: DiktatExtension,
+    providerFactory: ProviderFactory,
 ) {
-    if (path == rootProject.path) {
+    val diktatCheckTask = tasks.named(DIKTAT_CHECK_TASK, DiktatCheckTask::class.java)
+    val rootMergeSarifReportsTask = if (path == rootProject.path) {
         tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
-            diktatExtension.reporters
-                .getGitHubActionsReporters()
-                .firstOrNull()
-                ?.let { gitHubActionsReporter ->
-                    reportMergeTask.output.set(gitHubActionsReporter.mergeOutput)
-                }
+            reportMergeTask.output.set(diktatCheckTask.getGitHubActionsReporter(providerFactory).flatMap { it.mergeOutput })
         }
+    } else {
+        rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java)
     }
 
-    val rootMergeSarifReportsTask = rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java)
-    val diktatCheckTask = tasks.named(DIKTAT_CHECK_TASK, DiktatCheckTask::class.java)
-
     rootMergeSarifReportsTask.configure { reportMergeTask ->
-        reportMergeTask.input.from(diktatCheckTask.map { task -> task.reporters.getGitHubActionsReporters().map { it.output } })
+        reportMergeTask.input.from(diktatCheckTask.getGitHubActionsReporter(providerFactory).flatMap { it.output })
         reportMergeTask.dependsOn(diktatCheckTask)
     }
     diktatCheckTask.configure {
@@ -109,4 +107,10 @@ internal fun Project.configureMergeReportsTask(
     }
 }
 
-private fun Reporters.getGitHubActionsReporters() = all.filterIsInstance<GitHubActionsReporter>()
+private fun TaskProvider<DiktatCheckTask>.getGitHubActionsReporter(
+    providerFactory: ProviderFactory,
+): Provider<GitHubActionsReporter> = flatMap { task ->
+    providerFactory.provider(Callable {
+        task.reporters.all.filterIsInstance<GitHubActionsReporter>().firstOrNull()
+    })
+}

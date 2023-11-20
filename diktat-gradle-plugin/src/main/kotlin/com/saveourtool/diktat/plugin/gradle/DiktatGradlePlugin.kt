@@ -26,7 +26,7 @@ class DiktatGradlePlugin : Plugin<Project> {
 
         project.registerDiktatCheckTask(diktatExtension, patternSet)
         project.registerDiktatFixTask(diktatExtension, patternSet)
-        project.configureMergeReportsTask(diktatExtension)
+        project.configureMergeReportsTask(project.providers)
     }
 
     companion object {
