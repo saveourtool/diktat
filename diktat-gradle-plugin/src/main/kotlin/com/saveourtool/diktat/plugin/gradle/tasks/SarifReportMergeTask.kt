@@ -2,7 +2,7 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
-import com.saveourtool.diktat.plugin.gradle.extension.Reporter
+import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
 import com.saveourtool.diktat.plugin.gradle.extension.SarifReporter
 
 import io.github.detekt.sarif4k.SarifSchema210
@@ -81,7 +81,7 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
  * @param diktatExtension extension of type [DiktatExtension]
  */
 internal fun Project.configureMergeReportsTask(
-    reporters: List<Reporter>,
+    reporters: List<DefaultReporter>,
 ) {
     if (path == rootProject.path) {
         tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
