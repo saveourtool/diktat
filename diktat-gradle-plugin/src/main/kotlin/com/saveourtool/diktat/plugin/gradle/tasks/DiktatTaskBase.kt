@@ -80,7 +80,7 @@ abstract class DiktatTaskBase(
     }
 
     @get:Internal
-    abstract val reporters: Reporters
+    val reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
 
     @get:Internal
     @get:OutputFiles
