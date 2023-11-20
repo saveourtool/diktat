@@ -50,6 +50,10 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
      */
     @TaskAction
     fun mergeReports() {
+        if (!output.isPresent) {
+            logger.debug("Skipping merging SARIF reports because output is not set")
+            return
+        }
         val sarifReports = input.files
             .filter { it.exists() }
             .also { logger.info("Merging SARIF reports from files $it") }
