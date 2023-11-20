@@ -1,11 +1,14 @@
 package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
+import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
 import com.saveourtool.diktat.plugin.gradle.extension.GitHubActionsReporter
+import com.saveourtool.diktat.plugin.gradle.extension.Reporters
 
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
@@ -86,24 +89,25 @@ internal fun Project.configureMergeReportsTask(
 ) {
     if (path == rootProject.path) {
         tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
-            diktatExtension.reporters.all
-                .filterIsInstance<GitHubActionsReporter>()
+            diktatExtension.reporters
+                .getGitHubActionsReporters()
                 .firstOrNull()
                 ?.let { gitHubActionsReporter ->
                     reportMergeTask.output.set(gitHubActionsReporter.mergeOutput)
                 }
         }
     }
-    rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
-        diktatExtension.reporters.all
-            .filterIsInstance<GitHubActionsReporter>()
-            .firstOrNull()
-            ?.let { gitHubActionsReporter ->
-                reportMergeTask.input.from(gitHubActionsReporter.output)
-            }
-        reportMergeTask.dependsOn(tasks.withType(DiktatTaskBase::class.java))
+
+    val rootMergeSarifReportsTask = rootProject.tasks.named(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java)
+    val diktatCheckTask = tasks.named(DIKTAT_CHECK_TASK, DiktatCheckTask::class.java)
+
+    rootMergeSarifReportsTask.configure { reportMergeTask ->
+        reportMergeTask.input.from(diktatCheckTask.map { task -> task.reporters.getGitHubActionsReporters().map { it.output } })
+        reportMergeTask.dependsOn(diktatCheckTask)
     }
-    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
-        diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
+    diktatCheckTask.configure {
+        it.finalizedBy(rootMergeSarifReportsTask)
     }
 }
+
+private fun Reporters.getGitHubActionsReporters() = all.filterIsInstance<GitHubActionsReporter>()

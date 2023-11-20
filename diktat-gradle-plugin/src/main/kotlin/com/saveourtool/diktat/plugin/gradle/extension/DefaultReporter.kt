@@ -78,12 +78,7 @@ abstract class SarifReporter @Inject constructor(
     extension = "sarif",
     objectFactory,
     project
-) {
-    /**
-     * Location for merged output
-     */
-    abstract val mergeOutput: RegularFileProperty
-}
+)
 
 /**
  * GitHub actions reporter
@@ -100,7 +95,10 @@ abstract class GitHubActionsReporter @Inject constructor(
             fileProperty.convention(project.defaultReportLocation(extension = "sarif"))
                 .finalizeValue()
         }
-    override val mergeOutput: RegularFileProperty = objectFactory.fileProperty()
+    /**
+     * Location for merged output
+     */
+    val mergeOutput: RegularFileProperty = objectFactory.fileProperty()
         .also { fileProperty ->
             fileProperty.convention(project.rootProject.defaultReportLocation(fileName = "diktat-merged", extension = "sarif"))
                 .finalizeValue()
