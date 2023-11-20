@@ -53,9 +53,15 @@ abstract class DiktatTaskBase(
     private val inputs: PatternFilterable,
     objectFactory: ObjectFactory,
 ) : DefaultTask(), VerificationTask {
+    /**
+     * Config file
+     */
     @get:InputFile
     abstract val configFile: RegularFileProperty
 
+    /**
+     * Baseline
+     */
     @get:Optional
     @get:InputFile
     abstract val baselineFile: RegularFileProperty
@@ -79,9 +85,15 @@ abstract class DiktatTaskBase(
         )
     }
 
+    /**
+     * All reporters
+     */
     @get:Internal
     val reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
 
+    /**
+     * Outputs for all reporters
+     */
     @get:Internal
     @get:OutputFiles
     @get:Optional

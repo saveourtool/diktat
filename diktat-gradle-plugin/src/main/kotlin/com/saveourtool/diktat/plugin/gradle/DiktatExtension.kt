@@ -15,12 +15,16 @@ import javax.inject.Inject
 /**
  * An extension to configure diktat in build.gradle(.kts) file
  *
+ * @param objectFactory
  * @param patternSet
  */
 open class DiktatExtension @Inject constructor(
     objectFactory: ObjectFactory,
     private val patternSet: PatternSet,
 ) {
+    /**
+     * All reporters
+     */
     @get:Internal
     val reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
 

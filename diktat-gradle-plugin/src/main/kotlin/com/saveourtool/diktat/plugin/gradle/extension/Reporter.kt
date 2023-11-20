@@ -6,10 +6,10 @@ import org.gradle.api.tasks.OutputFile
 /**
  * A base interface for reporter
  */
-abstract class Reporter {
+interface Reporter {
     /**
      * Location for output
      */
     @get:OutputFile
-    abstract val output: RegularFileProperty
+    val output: RegularFileProperty
 }

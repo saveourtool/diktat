@@ -1,3 +1,9 @@
+/**
+ * All default reporters
+ */
+
+@file:Suppress("UnnecessaryAbstractClass")
+
 package com.saveourtool.diktat.plugin.gradle.extension
 
 import com.saveourtool.diktat.plugin.gradle.defaultReportLocation
@@ -19,13 +25,19 @@ abstract class DefaultReporter @Inject constructor(
     extension: String,
     objectFactory: ObjectFactory,
     project: Project,
-) : Reporter() {
+) : Reporter {
     override val output: RegularFileProperty = objectFactory.fileProperty()
         .also { fileProperty ->
             fileProperty.convention(project.defaultReportLocation(extension = extension))
         }
 }
 
+/**
+ * Plain reporter
+ *
+ * @param objectFactory
+ * @param project
+ */
 abstract class PlainReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
@@ -36,6 +48,12 @@ abstract class PlainReporter @Inject constructor(
     project
 )
 
+/**
+ * JSON reporter
+ *
+ * @param objectFactory
+ * @param project
+ */
 abstract class JsonReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
@@ -46,6 +64,12 @@ abstract class JsonReporter @Inject constructor(
     project
 )
 
+/**
+ * SARIF reporter
+ *
+ * @param objectFactory
+ * @param project
+ */
 abstract class SarifReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
@@ -61,6 +85,12 @@ abstract class SarifReporter @Inject constructor(
     abstract val mergeOutput: RegularFileProperty
 }
 
+/**
+ * GitHub actions reporter
+ *
+ * @param objectFactory
+ * @param project
+ */
 abstract class GithubActionsReporter @Inject constructor(
     project: Project,
     objectFactory: ObjectFactory,
@@ -70,7 +100,6 @@ abstract class GithubActionsReporter @Inject constructor(
             fileProperty.convention(project.defaultReportLocation(extension = "sarif"))
                 .finalizeValue()
         }
-
     override val mergeOutput: RegularFileProperty = objectFactory.fileProperty()
         .also { fileProperty ->
             fileProperty.convention(project.rootProject.defaultReportLocation(fileName = "diktat-merged", extension = "sarif"))
@@ -78,6 +107,12 @@ abstract class GithubActionsReporter @Inject constructor(
         }
 }
 
+/**
+ * Checkstyle reporter
+ *
+ * @param objectFactory
+ * @param project
+ */
 abstract class CheckstyleReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
@@ -88,6 +123,12 @@ abstract class CheckstyleReporter @Inject constructor(
     project
 )
 
+/**
+ * HTML reporter
+ *
+ * @param objectFactory
+ * @param project
+ */
 abstract class HtmlReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
