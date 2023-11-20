@@ -224,7 +224,7 @@ abstract class DiktatTaskBase(
                 task.ignoreFailures = extension.ignoreFailures
                 task.reporters.all.addAll(extension.reporters.all)
                 if (extension.githubActions) {
-                    task.reporters.githubActions()
+                    task.reporters.gitHubActions()
                 }
             }
         }

@@ -60,8 +60,8 @@ open class Reporters @Inject constructor(
     /**
      * Configure *sarif* reporter for GitHub actions
      */
-    fun githubActions() {
-        newReporter<GithubActionsReporter>()
+    fun gitHubActions() {
+        newReporter<GitHubActionsReporter>()
     }
 
     /**

@@ -146,7 +146,7 @@ class DiktatJavaExecTaskTest {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporters { reportersDsl ->
-                reportersDsl.githubActions()
+                reportersDsl.gitHubActions()
             }
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
@@ -163,7 +163,7 @@ class DiktatJavaExecTaskTest {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporters { reportersDsl ->
-                reportersDsl.githubActions()
+                reportersDsl.gitHubActions()
                 reportersDsl.json { jsonDsl ->
                     jsonDsl.output.set(project.layout.buildDirectory.file("report.json"))
                 }

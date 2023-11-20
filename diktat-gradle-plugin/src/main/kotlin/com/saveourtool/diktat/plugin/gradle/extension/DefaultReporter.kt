@@ -91,7 +91,7 @@ abstract class SarifReporter @Inject constructor(
  * @param objectFactory
  * @param project
  */
-abstract class GithubActionsReporter @Inject constructor(
+abstract class GitHubActionsReporter @Inject constructor(
     project: Project,
     objectFactory: ObjectFactory,
 ) : SarifReporter(objectFactory, project) {

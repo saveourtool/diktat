@@ -2,7 +2,7 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MERGE_SARIF_REPORTS_TASK_NAME
-import com.saveourtool.diktat.plugin.gradle.extension.SarifReporter
+import com.saveourtool.diktat.plugin.gradle.extension.GitHubActionsReporter
 
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
@@ -82,24 +82,20 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
 internal fun Project.configureMergeReportsTask(
     diktatExtension: DiktatExtension,
 ) {
-    if (path == rootProject.path) {
-        tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
-            diktatExtension.reporters.all
-                .filterIsInstance<SarifReporter>()
-                .map { reporter -> reporter.mergeOutput.zip(reporter.output, ::Pair) }
-                .forEach { pair ->
-                    reportMergeTask.inputs.file(pair.map { it.first })
-                    reportMergeTask.inputs.file(pair.map { it.second })
+    diktatExtension.reporters.all.filterIsInstance<GitHubActionsReporter>()
+        .firstOrNull()
+        ?.let { gitHubActionsReporter ->
+            if (path == rootProject.path) {
+                tasks.register(MERGE_SARIF_REPORTS_TASK_NAME, SarifReportMergeTask::class.java) { reportMergeTask ->
+                    reportMergeTask.output.set(gitHubActionsReporter.mergeOutput)
                 }
-            val mergedReportFile = project.layout.buildDirectory.file("reports/diktat/diktat-merged.sarif")
-            reportMergeTask.outputs.file(mergedReportFile)
-            reportMergeTask.output.set(mergedReportFile)
+            }
+            rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
+                reportMergeTask.input.from(gitHubActionsReporter.output)
+                reportMergeTask.dependsOn(tasks.withType(DiktatTaskBase::class.java))
+            }
+            tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
+                diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
+            }
         }
-    }
-    rootProject.tasks.withType(SarifReportMergeTask::class.java).configureEach { reportMergeTask ->
-        reportMergeTask.dependsOn(tasks.withType(DiktatTaskBase::class.java))
-    }
-    tasks.withType(DiktatTaskBase::class.java).configureEach { diktatTaskBase ->
-        diktatTaskBase.finalizedBy(rootProject.tasks.withType(SarifReportMergeTask::class.java))
-    }
 }
