@@ -10,6 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -36,6 +37,7 @@ abstract class SarifReportMergeTask : DefaultTask(), VerificationTask {
      * Destination for the merged report
      */
     @get:OutputFile
+    @get:Optional
     abstract val output: RegularFileProperty
 
     /**
