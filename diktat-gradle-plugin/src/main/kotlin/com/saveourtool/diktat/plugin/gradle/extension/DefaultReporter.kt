@@ -8,8 +8,10 @@ package com.saveourtool.diktat.plugin.gradle.extension
 
 import com.saveourtool.diktat.plugin.gradle.defaultReportLocation
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Provider
 import java.io.File
 import javax.inject.Inject
 
@@ -101,7 +103,7 @@ abstract class GitHubActionsReporter @Inject constructor(
 ) : SarifReporter(objectFactory, project) {
     override val output: RegularFileProperty = objectFactory.fileProperty()
         .also { fileProperty ->
-            fileProperty.convention(project.defaultReportLocation(extension = "sarif"))
+            fileProperty.convention(project.getGitHubActionReporterOutput())
                 .finalizeValue()
         }
 
@@ -110,9 +112,22 @@ abstract class GitHubActionsReporter @Inject constructor(
      */
     val mergeOutput: RegularFileProperty = objectFactory.fileProperty()
         .also { fileProperty ->
-            fileProperty.convention(project.rootProject.defaultReportLocation(fileName = "diktat-merged", extension = "sarif"))
+            fileProperty.convention(project.getGitHubActionReporterMergeOutput())
                 .finalizeValue()
         }
+
+    companion object {
+        /**
+         * @return [RegularFile] for output
+         */
+        fun Project.getGitHubActionReporterOutput(): Provider<RegularFile> = defaultReportLocation(extension = "sarif")
+
+        /**
+         * @return [RegularFile] for mergeOutput
+         */
+        fun Project.getGitHubActionReporterMergeOutput(): Provider<RegularFile> =
+            rootProject.defaultReportLocation(fileName = "diktat-merged", extension = "sarif")
+    }
 }
 
 /**
