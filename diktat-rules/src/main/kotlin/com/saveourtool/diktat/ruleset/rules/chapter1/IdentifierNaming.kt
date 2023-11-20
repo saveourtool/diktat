@@ -146,6 +146,34 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
+     * method checks that identifier is correct backing field
+     */
+    private fun ASTNode.isCorrectBackingField(variableName: ASTNode): Boolean {
+        val propertyNodes = this.treeParent.getAllChildrenWithType(KtNodeTypes.PROPERTY)
+        // check that backing field name is correct
+        if (variableName.text.commonPrefixWith("_").length == 1 && variableName.text.drop(1).isLowerCamelCase()) {
+            val matchingNode = propertyNodes.find { propertyNode ->
+                val nodeType = this.getFirstChildWithType(TYPE_REFERENCE)
+                val propertyType = propertyNode.getFirstChildWithType(TYPE_REFERENCE)
+                // check that property and backing field has same type
+                val sameType = propertyType?.text == nodeType?.text
+                // check that property USER_TYPE is same as backing field NULLABLE_TYPE
+                val nodeNullableType = nodeType?.getFirstChildWithType(NULLABLE_TYPE)
+                val sameTypeWithNullable = propertyType?.getFirstChildWithType(USER_TYPE)?.text ==
+                        nodeNullableType?.getFirstChildWithType(USER_TYPE)?.text
+                val matchingNames = propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableName.text.drop(1)
+                val isPrivate = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
+
+                matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
+                        this.getFirstChildWithType(PROPERTY_ACCESSOR) == null &&
+                        propertyNode.getFirstChildWithType(PROPERTY_ACCESSOR) != null
+            }
+            return matchingNode.let { true }
+        }
+        return false
+    }
+
+    /**
      * all checks for case and naming for vals/vars/constants
      */
     @Suppress(
@@ -159,7 +187,6 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
-        val propertyNodes = node.treeParent.getAllChildrenWithType(KtNodeTypes.PROPERTY)
 
         // Only local private properties will be autofix in order not to break code if there are usages in other files.
         // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
@@ -197,56 +224,40 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                             (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.toDeterministic { toUpperSnakeCase() })
                         }
                     }
-                } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
-                    var isCorrectBackingField = false
-                    if (variableName.text.commonPrefixWith("_").length == 1 && variableName.text.drop(1).isLowerCamelCase()) {
-                        val matchingNode = propertyNodes.find { propertyNode ->
-                            val nodeType = node.getFirstChildWithType(TYPE_REFERENCE)
-                            val propertyType = propertyNode.getFirstChildWithType(TYPE_REFERENCE)
-                            propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableName.text.drop(1) &&
-                                    (propertyType?.text == nodeType?.text ||
-                                            propertyType?.getFirstChildWithType(USER_TYPE)?.text ==
-                                                    nodeType?.getFirstChildWithType(NULLABLE_TYPE)?.getFirstChildWithType(USER_TYPE)?.text) &&
-                                    node.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null &&
-                                    node.getFirstChildWithType(PROPERTY_ACCESSOR) == null &&
-                                    propertyNode.getFirstChildWithType(PROPERTY_ACCESSOR) != null
+                } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase() &&
+                        // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
+                        !node.isCorrectBackingField(variableName)) {
+                    VARIABLE_NAME_INCORRECT_FORMAT.warnOnlyOrWarnAndFix(
+                        configRules = configRules,
+                        emit = emitWarn,
+                        freeText = variableName.text,
+                        offset = variableName.startOffset,
+                        node = node,
+                        shouldBeAutoCorrected = shouldBeAutoCorrected,
+                        isFixMode = isFixMode,
+                    ) {
+                        // FixMe: cover fixes with tests
+                        val correctVariableName = variableName.text.toDeterministic { toLowerCamelCase() }
+                        variableName
+                            .parent { it.elementType == KtFileElementType.INSTANCE }
+                            ?.findAllVariablesWithUsages { it.name == variableName.text }
+                            ?.flatMap { it.value.toList() }
+                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }
+                        if (variableName.treeParent.psi.run {
+                            (this is KtProperty && isMember) ||
+                                    (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
+                        }) {
+                            // For class members also check `@property` KDoc tag.
+                            // If we are here, then `variableName` is definitely a node from a class or an object.
+                            (variableName.parent(CLASS) ?: variableName.parent(OBJECT_DECLARATION))?.findChildByType(KDOC)?.kDocTags()
+                                ?.firstOrNull {
+                                    it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
+                                }
+                                ?.run {
+                                    (getSubjectLink()!!.node.findAllDescendantsWithSpecificType(IDENTIFIER).single() as LeafPsiElement).rawReplaceWithText(correctVariableName)
+                                }
                         }
-                        matchingNode.let { isCorrectBackingField = true }
-                    }
-                    // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                    if (!isCorrectBackingField) {
-                        VARIABLE_NAME_INCORRECT_FORMAT.warnOnlyOrWarnAndFix(
-                            configRules = configRules,
-                            emit = emitWarn,
-                            freeText = variableName.text,
-                            offset = variableName.startOffset,
-                            node = node,
-                            shouldBeAutoCorrected = shouldBeAutoCorrected,
-                            isFixMode = isFixMode,
-                        ) {
-                            // FixMe: cover fixes with tests
-                            val correctVariableName = variableName.text.toDeterministic { toLowerCamelCase() }
-                            variableName
-                                .parent { it.elementType == KtFileElementType.INSTANCE }
-                                ?.findAllVariablesWithUsages { it.name == variableName.text }
-                                ?.flatMap { it.value.toList() }
-                                ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }
-                            if (variableName.treeParent.psi.run {
-                                (this is KtProperty && isMember) ||
-                                        (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
-                            }) {
-                                // For class members also check `@property` KDoc tag.
-                                // If we are here, then `variableName` is definitely a node from a class or an object.
-                                (variableName.parent(CLASS) ?: variableName.parent(OBJECT_DECLARATION))?.findChildByType(KDOC)?.kDocTags()
-                                    ?.firstOrNull {
-                                        it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
-                                    }
-                                    ?.run {
-                                        (getSubjectLink()!!.node.findAllDescendantsWithSpecificType(IDENTIFIER).single() as LeafPsiElement).rawReplaceWithText(correctVariableName)
-                                    }
-                            }
-                            (variableName as LeafPsiElement).rawReplaceWithText(correctVariableName)
-                        }
+                        (variableName as LeafPsiElement).rawReplaceWithText(correctVariableName)
                     }
                 }
             }
