@@ -36,11 +36,10 @@ abstract class DiktatFixTask @Inject constructor(
         fun Project.registerDiktatFixTask(
             diktatExtension: DiktatExtension,
             patternSet: PatternSet,
-            reporters: List<DefaultReporter>,
         ): TaskProvider<DiktatFixTask> =
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_FIX_TASK, DiktatFixTask::class.java,
-                diktatExtension, patternSet, reporters,
+                diktatExtension, patternSet,
             ).also { it.configure(diktatExtension) }
     }
 }

@@ -27,9 +27,9 @@ class DiktatGradlePlugin : Plugin<Project> {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
 
-        project.registerDiktatCheckTask(diktatExtension, patternSet, reporters)
-        project.registerDiktatFixTask(diktatExtension, patternSet, reporters)
-        project.configureMergeReportsTask(reporters)
+        project.registerDiktatCheckTask(diktatExtension, patternSet)
+        project.registerDiktatFixTask(diktatExtension, patternSet)
+        project.configureMergeReportsTask(diktatExtension)
     }
 
     companion object {
