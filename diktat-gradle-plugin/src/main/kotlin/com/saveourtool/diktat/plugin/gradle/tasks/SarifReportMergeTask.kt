@@ -8,7 +8,6 @@ import com.saveourtool.diktat.plugin.gradle.extension.Reporters
 
 import io.github.detekt.sarif4k.SarifSchema210
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
