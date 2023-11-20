@@ -10,6 +10,7 @@ import com.saveourtool.diktat.plugin.gradle.defaultReportLocation
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -50,7 +51,10 @@ abstract class PlainReporter @Inject constructor(
     /**
      * Remove the default value for plain to print to stdout by default
      */
-    abstract override val output: RegularFileProperty
+    override val output: RegularFileProperty = objectFactory.fileProperty()
+        .also { fileProperty ->
+            fileProperty.set(null as File?)
+        }
 }
 
 /**
@@ -66,7 +70,7 @@ abstract class JsonReporter @Inject constructor(
     id = "json",
     extension = "json",
     objectFactory,
-    project
+    project,
 )
 
 /**
