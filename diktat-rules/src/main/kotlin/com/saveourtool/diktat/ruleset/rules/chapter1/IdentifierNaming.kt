@@ -150,8 +150,10 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun ASTNode.isCorrectBackingField(variableName: ASTNode): Boolean {
         val propertyNodes = this.treeParent.getAllChildrenWithType(KtNodeTypes.PROPERTY)
+        val variableNameCut = variableName.text.drop(1)
         // check that backing field name is correct
-        if (variableName.text.commonPrefixWith("_").length == 1 && variableName.text.drop(1).isLowerCamelCase()) {
+
+        if (variableName.text.startsWith("_") && variableNameCut.isLowerCamelCase()) {
             val matchingNode = propertyNodes.find { propertyNode ->
                 val nodeType = this.getFirstChildWithType(TYPE_REFERENCE)
                 val propertyType = propertyNode.getFirstChildWithType(TYPE_REFERENCE)
@@ -161,14 +163,14 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 val nodeNullableType = nodeType?.getFirstChildWithType(NULLABLE_TYPE)
                 val sameTypeWithNullable = propertyType?.getFirstChildWithType(USER_TYPE)?.text ==
                         nodeNullableType?.getFirstChildWithType(USER_TYPE)?.text
-                val matchingNames = propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableName.text.drop(1)
+                val matchingNames = propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableNameCut
                 val isPrivate = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
 
                 matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
                         this.getFirstChildWithType(PROPERTY_ACCESSOR) == null &&
                         propertyNode.getFirstChildWithType(PROPERTY_ACCESSOR) != null
             }
-            return matchingNode.let { true }
+            return matchingNode?.let { true } ?: false
         }
         return false
     }
