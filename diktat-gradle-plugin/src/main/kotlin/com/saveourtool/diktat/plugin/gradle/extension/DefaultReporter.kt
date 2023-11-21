@@ -19,7 +19,6 @@ import javax.inject.Inject
 /**
  * A base interface for reporter
  *
- * @param extension extension of generated report
  * @param objectFactory
  * @param project
  * @property type type of reporter
