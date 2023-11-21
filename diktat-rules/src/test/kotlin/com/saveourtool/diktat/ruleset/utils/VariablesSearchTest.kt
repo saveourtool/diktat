@@ -4,7 +4,6 @@ import com.saveourtool.diktat.ruleset.utils.search.VariablesSearch
 import com.saveourtool.diktat.ruleset.utils.search.default
 import com.saveourtool.diktat.util.applyToCode
 
-import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
