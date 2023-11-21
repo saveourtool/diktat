@@ -12,6 +12,11 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import generated.KTLINT_VERSION
 
 /**
+ * Info about engine
+ */
+const val ENGINE_INFO: String = "Ktlint: $KTLINT_VERSION"
+
+/**
  * @return initialized [DiktatRunnerFactory]
  */
 val diktatRunnerFactory: DiktatRunnerFactory = DiktatRunnerFactory(
@@ -21,8 +26,3 @@ val diktatRunnerFactory: DiktatRunnerFactory = DiktatRunnerFactory(
     DiktatBaselineFactoryImpl(),
     DiktatReporterFactoryImpl(),
 )
-
-/**
- * Info about engine
- */
-const val ENGINE_INFO: String = "Ktlint: $KTLINT_VERSION"

@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(projects.diktatKtlintEngine)
     testImplementation(libs.ktlint.cli.reporter.core)
     testImplementation(libs.ktlint.cli.reporter.json)
     testImplementation(libs.ktlint.cli.reporter.plain)

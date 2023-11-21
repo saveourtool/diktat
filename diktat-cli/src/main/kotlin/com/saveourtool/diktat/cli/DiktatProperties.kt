@@ -1,23 +1,26 @@
 package com.saveourtool.diktat.cli
 
 import com.saveourtool.diktat.DiktatRunnerArguments
+import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.common.config.rules.DIKTAT
 import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
-import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
 import com.saveourtool.diktat.util.tryToPathIfExists
 import com.saveourtool.diktat.util.walkByGlob
+
 import generated.DIKTAT_VERSION
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
+
 import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
+
 import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
