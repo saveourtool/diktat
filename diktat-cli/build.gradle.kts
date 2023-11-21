@@ -17,6 +17,7 @@ project.description = "This module builds diktat-cli to run diktat as CLI using 
 dependencies {
     implementation(projects.diktatRunner)
     implementation(libs.kotlinx.cli)
+    implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlin.logging)
     implementation(libs.slf4j.api)
     implementation(libs.log4j2.core)

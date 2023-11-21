@@ -7,11 +7,11 @@ import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.common.config.rules.DIKTAT
 import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
+import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
 import com.saveourtool.diktat.util.tryToPathIfExists
 import com.saveourtool.diktat.util.walkByGlob
 import generated.DIKTAT_VERSION
-import generated.KTLINT_VERSION
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
@@ -169,7 +169,7 @@ data class DiktatProperties(
             ) {
                 """
                     Diktat: $DIKTAT_VERSION
-                    Ktlint: $KTLINT_VERSION
+                    $ENGINE_INFO
                 """.trimIndent()
             }
             parser.addOptionAndShowTextWithExit(

@@ -3,6 +3,7 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
+import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
@@ -160,7 +161,7 @@ abstract class DiktatTaskBase(
     @TaskAction
     fun run() {
         if (extension.debug) {
-            project.logger.lifecycle("Running diktat $DIKTAT_VERSION")
+            project.logger.lifecycle("Running diktat $DIKTAT_VERSION with $ENGINE_INFO")
         }
         if (!shouldRun) {
             /*
