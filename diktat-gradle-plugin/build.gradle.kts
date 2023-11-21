@@ -17,9 +17,7 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-
-    implementation(projects.diktatRules)
-    implementation(projects.diktatKtlintEngine)
+    implementation(projects.diktatRunner)
     // merge sarif reports
     implementation(libs.sarif4k.jvm)
     implementation(libs.kotlinx.serialization.json)

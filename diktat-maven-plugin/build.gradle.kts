@@ -16,8 +16,7 @@ dependencies {
     compileOnly(libs.maven.core)
 
     implementation(libs.kotlin.stdlib.jdk8)
-    implementation(projects.diktatRules)
-    implementation(projects.diktatKtlintEngine)
+    implementation(projects.diktatRunner)
 
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.vintage.engine)
