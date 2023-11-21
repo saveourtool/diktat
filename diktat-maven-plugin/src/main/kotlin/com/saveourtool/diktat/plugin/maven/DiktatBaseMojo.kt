@@ -4,6 +4,7 @@ import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
+import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -120,11 +121,11 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val reporterId = getReporterType()
+        val reporterType = getReporterType()
         val reporterArgs = DiktatReporterCreationArguments(
-            id = reporterId,
+            reporterType = reporterType,
             outputStream = getReporterOutput(),
-            sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
+            sourceRootDir = sourceRootDir.takeIf { reporterType == DiktatReporterType.SARIF },
         )
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
@@ -143,13 +144,13 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun getReporterType(): String = if (githubActions) {
-        "sarif"
-    } else if (reporter in setOf("sarif", "plain", "json", "html")) {
-        reporter
+    private fun getReporterType(): DiktatReporterType = if (githubActions) {
+        DiktatReporterType.SARIF
     } else {
-        log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
-        "plain"
+        DiktatReporterType.entries.firstOrNull { it.id.equals(reporter, ignoreCase = true) } ?: run {
+            log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
+            DiktatReporterType.PLAIN
+        }
     }
 
     private fun getReporterOutput(): OutputStream? = if (output.isNotBlank()) {
