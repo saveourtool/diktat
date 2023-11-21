@@ -3,12 +3,14 @@ package com.saveourtool.diktat.ruleset.utils
 import com.saveourtool.diktat.ruleset.utils.search.VariablesSearch
 import com.saveourtool.diktat.ruleset.utils.search.default
 import com.saveourtool.diktat.util.applyToCode
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtProperty
 
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 
 @Suppress("UnsafeCallOnNullableType")
 class VariablesSearchTest {
@@ -26,16 +28,11 @@ class VariablesSearchTest {
             }
         """.trimIndent(), 0) { node, _ ->
             if (node.elementType != KtFileElementType.INSTANCE) {
+                val variablesSearchAbstract: VariablesSearch = object : VariablesSearch(node, ::default) {
+                    override fun KtElement.getAllSearchResults(property: KtProperty): List<KtNameReferenceExpression> = TODO("Not required for test")
+                }
+
                 val thrown = Assertions.assertThrows(IllegalArgumentException::class.java) {
-                    val variablesSearchAbstract: VariablesSearch = Mockito.mock(VariablesSearch::class.java, Mockito.CALLS_REAL_METHODS)
-                    val nodeField = VariablesSearch::class.java.getDeclaredField("node")
-                    val filter = VariablesSearch::class.java.getDeclaredField("filterForVariables")
-                    nodeField.isAccessible = true
-                    filter.isAccessible = true
-
-                    nodeField.set(variablesSearchAbstract, node)
-                    filter.set(variablesSearchAbstract, ::default)
-
                     variablesSearchAbstract.collectVariables()
                 }
                 assertTrue(thrown.message!!.contains("To collect all variables in a file you need to provide file root node"))
