@@ -12,4 +12,3 @@ dependencies {
     implementation(projects.diktatKtlintEngine)
     implementation(projects.diktatRules)
 }
-
