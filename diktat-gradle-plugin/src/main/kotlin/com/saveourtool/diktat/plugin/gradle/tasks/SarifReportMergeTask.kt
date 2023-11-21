@@ -99,7 +99,7 @@ internal fun Project.configureMergeReportsTask() {
 
     rootMergeSarifReportsTask.configure { reportMergeTask ->
         reportMergeTask.input.from(getGitHubActionReporterOutput())
-        reportMergeTask.dependsOn(diktatCheckTask)
+        reportMergeTask.mustRunAfter(diktatCheckTask)
     }
     diktatCheckTask.configure {
         it.finalizedBy(rootMergeSarifReportsTask)
