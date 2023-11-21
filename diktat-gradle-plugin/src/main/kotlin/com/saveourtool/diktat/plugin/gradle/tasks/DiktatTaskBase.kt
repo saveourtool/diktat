@@ -5,6 +5,7 @@ import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
+import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
@@ -132,9 +133,9 @@ abstract class DiktatTaskBase(
             .filterIsInstance<DefaultReporter>()
             .map { reporter ->
                 DiktatReporterCreationArguments(
-                    id = reporter.id,
+                    reporterType = reporter.type,
                     outputStream = reporter.output.map { file -> file.asFile.also { Files.createDirectories(it.parentFile.toPath()) }.outputStream() }.orNull,
-                    sourceRootDir = sourceRootDir.takeIf { reporter.id == "sarif" },
+                    sourceRootDir = sourceRootDir.takeIf { reporter.type == DiktatReporterType.SARIF },
                 )
             }
         val loggingListener = object : DiktatProcessorListener {

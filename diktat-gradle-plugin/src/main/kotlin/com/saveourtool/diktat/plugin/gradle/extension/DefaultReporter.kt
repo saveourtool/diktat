@@ -6,6 +6,7 @@
 
 package com.saveourtool.diktat.plugin.gradle.extension
 
+import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.plugin.gradle.defaultReportLocation
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
@@ -21,17 +22,16 @@ import javax.inject.Inject
  * @param extension extension of generated report
  * @param objectFactory
  * @param project
- * @property id identifier of reporter
+ * @property type type of reporter
  */
 abstract class DefaultReporter @Inject constructor(
-    val id: String,
-    extension: String,
+    val type: DiktatReporterType,
     objectFactory: ObjectFactory,
     project: Project,
 ) : Reporter {
     override val output: RegularFileProperty = objectFactory.fileProperty()
         .also { fileProperty ->
-            fileProperty.convention(project.defaultReportLocation(extension = extension))
+            fileProperty.convention(project.defaultReportLocation(extension = type.extension))
         }
 }
 
@@ -45,8 +45,7 @@ abstract class PlainReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
 ) : DefaultReporter(
-    id = "plain",
-    extension = "txt",
+    type = DiktatReporterType.PLAIN,
     objectFactory,
     project,
 ) {
@@ -69,8 +68,7 @@ abstract class JsonReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
 ) : DefaultReporter(
-    id = "json",
-    extension = "json",
+    type = DiktatReporterType.JSON,
     objectFactory,
     project,
 )
@@ -85,8 +83,7 @@ abstract class SarifReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
 ) : DefaultReporter(
-    id = "sarif",
-    extension = "sarif",
+    type = DiktatReporterType.SARIF,
     objectFactory,
     project,
 )
@@ -140,8 +137,7 @@ abstract class CheckstyleReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
 ) : DefaultReporter(
-    id = "checkstyle",
-    extension = "xml",
+    type = DiktatReporterType.CHECKSTYLE,
     objectFactory,
     project,
 )
@@ -156,8 +152,7 @@ abstract class HtmlReporter @Inject constructor(
     objectFactory: ObjectFactory,
     project: Project,
 ) : DefaultReporter(
-    id = "html",
-    extension = "html",
+    type = DiktatReporterType.HTML,
     objectFactory,
     project,
 )

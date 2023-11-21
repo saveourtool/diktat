@@ -3,6 +3,7 @@ package com.saveourtool.diktat.ktlint
 import com.saveourtool.diktat.api.DiktatReporter
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
+import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.api.PlainDiktatReporterCreationArguments
 import com.saveourtool.diktat.ktlint.DiktatReporterImpl.Companion.wrap
 import com.pinterest.ktlint.cli.reporter.checkstyle.CheckStyleReporterProvider
@@ -22,16 +23,13 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     /**
      * All reporters which __KtLint__ provides
      */
-    private val reporterProviders = setOf(
-        JsonReporterProvider(),
-        SarifReporterProvider(),
-        CheckStyleReporterProvider(),
-        HtmlReporterProvider(),
+    private val reporterProviders = mapOf(
+        DiktatReporterType.JSON to JsonReporterProvider(),
+        DiktatReporterType.SARIF to SarifReporterProvider(),
+        DiktatReporterType.CHECKSTYLE to CheckStyleReporterProvider(),
+        DiktatReporterType.HTML to HtmlReporterProvider(),
+        DiktatReporterType.PLAIN to plainReporterProvider,
     )
-        .associateBy { it.id } + (DiktatReporterFactory.PLAIN_ID to plainReporterProvider)
-
-    override val ids: Set<String>
-        get() = reporterProviders.keys
 
     override val colorNamesInPlain: Set<String>
         get() = Color.entries.map { it.name }.toSet()
@@ -39,7 +37,7 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     override fun invoke(
         args: DiktatReporterCreationArguments,
     ): DiktatReporter {
-        if (args.id == DiktatReporterFactory.NONE_ID) {
+        if (args.reporterType == DiktatReporterType.NONE) {
             return DiktatReporter.empty
         }
         val opts = if (args is PlainDiktatReporterCreationArguments) {
@@ -53,13 +51,13 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
                 }
                 args.groupByFile?.let { put("group_by_file", it) }
             }.mapValues { it.value.toString() }
-        } else if (args.id == DiktatReporterFactory.PLAIN_ID) {
+        } else if (args.reporterType == DiktatReporterType.PLAIN) {
             mapOf("color_name" to Color.DARK_GRAY.name)
         } else {
             emptyMap()
         }
 
-        val reporterProvider = reporterProviders[args.id] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
+        val reporterProvider = reporterProviders[args.reporterType] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
         if (reporterProvider is SarifReporterProvider) {
             args.sourceRootDir?.let { System.setProperty("user.home", it.pathString) }
         }
