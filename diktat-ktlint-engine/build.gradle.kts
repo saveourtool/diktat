@@ -25,7 +25,6 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)
-    testImplementation(libs.mockito)
 }
 
 val ktlintVersion: String = the<LibrariesForLibs>()
