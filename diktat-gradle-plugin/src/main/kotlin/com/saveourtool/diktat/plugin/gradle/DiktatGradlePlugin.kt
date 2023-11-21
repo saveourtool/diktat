@@ -12,12 +12,10 @@ import org.gradle.api.tasks.util.PatternSet
 /**
  * Plugin that configures diktat and registers tasks to run diktat
  */
-@Suppress("unused", "MagicNumber")
 class DiktatGradlePlugin : Plugin<Project> {
     /**
      * @param project a gradle [Project] that the plugin is applied to
      */
-    @Suppress("TOO_LONG_FUNCTION")
     override fun apply(project: Project) {
 
         val patternSet = PatternSet()
@@ -26,14 +24,13 @@ class DiktatGradlePlugin : Plugin<Project> {
             DIKTAT_EXTENSION,
             DiktatExtension::class.java,
             patternSet,
-            project.objects.newInstance(Reporters::class.java, reporters),
         ).apply {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
         }
 
         project.registerDiktatCheckTask(diktatExtension, patternSet, reporters)
         project.registerDiktatFixTask(diktatExtension, patternSet, reporters)
-        project.configureMergeReportsTask(diktatExtension)
+        project.configureMergeReportsTask()
     }
 
     companion object {
@@ -41,11 +38,6 @@ class DiktatGradlePlugin : Plugin<Project> {
          * Task to check diKTat
          */
         const val DIKTAT_CHECK_TASK = "diktatCheck"
-
-        /**
-         * DiKTat configuration
-         */
-        const val DIKTAT_CONFIGURATION = "diktat"
 
         /**
          * DiKTat extension
@@ -61,10 +53,5 @@ class DiktatGradlePlugin : Plugin<Project> {
          * Name of the task that merges SARIF reports of diktat tasks
          */
         internal const val MERGE_SARIF_REPORTS_TASK_NAME = "mergeDiktatReports"
-
-        /**
-         * Version of JVM with more strict module system, which requires `add-opens` for kotlin compiler
-         */
-        const val MIN_JVM_REQUIRES_ADD_OPENS = 16
     }
 }

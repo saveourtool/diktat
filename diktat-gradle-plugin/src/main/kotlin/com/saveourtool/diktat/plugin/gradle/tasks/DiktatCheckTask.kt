@@ -20,7 +20,8 @@ abstract class DiktatCheckTask @Inject constructor(
     extension: DiktatExtension,
     inputs: PatternFilterable,
     objectFactory: ObjectFactory,
-) : DiktatTaskBase(extension, inputs, objectFactory) {
+) : DiktatTaskBase(extension, inputs, objectFactory
+) {
     override fun doRun(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
@@ -36,11 +37,10 @@ abstract class DiktatCheckTask @Inject constructor(
         fun Project.registerDiktatCheckTask(
             diktatExtension: DiktatExtension,
             patternSet: PatternSet,
-            reporters: List<Reporter>,
         ): TaskProvider<DiktatCheckTask> =
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_CHECK_TASK, DiktatCheckTask::class.java,
-                diktatExtension, patternSet, reporters,
-            )
+                diktatExtension, patternSet,
+            ).also { it.configure(diktatExtension) }
     }
 }

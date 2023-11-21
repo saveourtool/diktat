@@ -22,6 +22,13 @@ abstract class DiktatFixTask @Inject constructor(
     reporters: List<Reporter>,
     objectFactory: ObjectFactory,
 ) : DiktatTaskBase(extension, inputs, objectFactory) {
+    inputs: PatternFilterable,
+    objectFactory: ObjectFactory,
+) : DiktatTaskBase(
+    extension,
+    inputs,
+    objectFactory
+) {
     override fun doRun(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
@@ -40,10 +47,11 @@ abstract class DiktatFixTask @Inject constructor(
             diktatExtension: DiktatExtension,
             patternSet: PatternSet,
             reporters: List<Reporter>,
+            patternSet: PatternSet,
         ): TaskProvider<DiktatFixTask> =
             tasks.register(
                 DiktatGradlePlugin.DIKTAT_FIX_TASK, DiktatFixTask::class.java,
-                diktatExtension, patternSet, reporters,
-            )
+                diktatExtension, patternSet,
+            ).also { it.configure(diktatExtension) }
     }
 }

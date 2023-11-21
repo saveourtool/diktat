@@ -5,10 +5,14 @@ import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
+import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
 import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
+import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
+import com.saveourtool.diktat.plugin.gradle.extension.PlainReporter
+import com.saveourtool.diktat.plugin.gradle.extension.Reporters
 import com.saveourtool.diktat.plugin.gradle.extensions.Reporter
 import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
 import com.saveourtool.diktat.plugin.gradle.getOutputFile
@@ -22,15 +26,21 @@ import generated.KTLINT_VERSION
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.IgnoreEmptyDirectories
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -48,9 +58,21 @@ import java.nio.file.Path
 abstract class DiktatTaskBase(
     @get:Internal internal val extension: DiktatExtension,
     private val inputs: PatternFilterable,
-    private val reporters: List<Reporter>,
-    private val objectFactory: ObjectFactory,
-) : DefaultTask(), VerificationTask, com.saveourtool.diktat.plugin.gradle.DiktatJavaExecTaskBase {
+    objectFactory: ObjectFactory,
+) : DefaultTask(), VerificationTask {
+    /**
+     * Config file
+     */
+    @get:InputFile
+    abstract val configFile: RegularFileProperty
+
+    /**
+     * Baseline
+     */
+    @get:Optional
+    @get:InputFile
+    abstract val baselineFile: RegularFileProperty
+
     /**
      * Files that will be analyzed by diktat
      */
@@ -69,6 +91,23 @@ abstract class DiktatTaskBase(
                 .matching(inputs)
         )
     }
+
+    /**
+     * All reporters
+     */
+    @get:Internal
+    val reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
+
+    /**
+     * Outputs for all reporters
+     */
+    @get:OutputFiles
+    @get:Optional
+    val reporterOutputs: ConfigurableFileCollection = objectFactory.fileCollection()
+        .also { fileCollection ->
+            fileCollection.setFrom(reporters.all.mapNotNull { it.output.orNull })
+            fileCollection.finalizeValue()
+        }
 
     /**
      * Whether diktat should be executed
@@ -110,12 +149,18 @@ abstract class DiktatTaskBase(
         } else {
             null
         }
-        val reporterId = project.getReporterType(extension)
-        val reporterCreationArguments = DiktatReporterCreationArguments(
-            id = reporterId,
-            outputStream = project.getOutputFile(extension)?.outputStream(),
-            sourceRootDir = sourceRootDir.takeIf { reporterId == "sarif" },
-        )
+        val defaultPlainReporter by lazy {
+            project.objects.newInstance(PlainReporter::class.java)
+        }
+        val reporterCreationArgumentsList = (reporters.all.takeUnless { it.isEmpty() } ?: listOf(defaultPlainReporter))
+            .filterIsInstance<DefaultReporter>()
+            .map { reporter ->
+                DiktatReporterCreationArguments(
+                    reporterType = reporter.type,
+                    outputStream = reporter.output.map { file -> file.asFile.also { Files.createDirectories(it.parentFile.toPath()) }.outputStream() }.orNull,
+                    sourceRootDir = sourceRootDir.takeIf { reporter.type == DiktatReporterType.SARIF },
+                )
+            }
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
                 project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
@@ -126,11 +171,11 @@ abstract class DiktatTaskBase(
             }
         }
         DiktatRunnerArguments(
-            configFile = extension.diktatConfigFile.toPath(),
+            configInputStream = configFile.get().asFile.inputStream(),
             sourceRootDir = project.getSourceRootDir(extension),
             files = actualInputs.files.map { it.toPath() },
-            baselineFile = extension.baseline?.let { project.file(it).toPath() },
-            reporterArgsList = listOf(githubActionsReporterArgs, reporterCreationArguments).mapNotNull { it },
+            baselineFile = baselineFile.map { it.asFile.toPath() }.orNull,
+            reporterArgsList = reporterCreationArgumentsList,
             loggingListener = loggingListener,
         )
     }
@@ -144,7 +189,6 @@ abstract class DiktatTaskBase(
     }
 
     init {
-        ignoreFailures = extension.ignoreFailures
         group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
 
@@ -196,4 +240,21 @@ abstract class DiktatTaskBase(
         runner: DiktatRunner,
         args: DiktatRunnerArguments
     ): Int
+
+    companion object {
+        /**
+         * @param extension
+         */
+        fun TaskProvider<out DiktatTaskBase>.configure(extension: DiktatExtension) {
+            configure { task ->
+                task.configFile.set(task.project.file(extension.diktatConfigFile))
+                extension.baseline?.let { baseline -> task.baselineFile.set(task.project.file(baseline)) }
+                task.ignoreFailures = extension.ignoreFailures
+                task.reporters.all.addAll(extension.reporters.all)
+                if (extension.githubActions) {
+                    task.reporters.gitHubActions()
+                }
+            }
+        }
+    }
 }

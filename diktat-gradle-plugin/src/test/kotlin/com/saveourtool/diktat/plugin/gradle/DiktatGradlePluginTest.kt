@@ -37,13 +37,4 @@ class DiktatGradlePluginTest {
         Assertions.assertIterableEquals(project.fileTree("src").files, actualInputs.files)
         Assertions.assertTrue(actualInputs.files.isNotEmpty())
     }
-
-    @Test
-    fun `check default reporter type value`() {
-        val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
-        Assertions.assertEquals("", diktatExtension.reporter)
-
-        val reporterFlag = project.getReporterType(diktatExtension)
-        Assertions.assertEquals("plain", reporterFlag)
-    }
 }

@@ -1,23 +1,33 @@
 package com.saveourtool.diktat.plugin.gradle
 
-import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
+import com.saveourtool.diktat.plugin.gradle.extension.Reporters
 import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import java.io.File
+import javax.inject.Inject
 
 /**
  * An extension to configure diktat in build.gradle(.kts) file
  *
+ * @param objectFactory
  * @param patternSet
  */
-open class DiktatExtension(
+open class DiktatExtension @Inject constructor(
+    objectFactory: ObjectFactory,
     private val patternSet: PatternSet,
-    private val reporters: Reporters,
 ) {
+    /**
+     * All reporters
+     */
+    @get:Internal
+    val reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
+
     /**
      * Boolean flag to support `ignoreFailures` property of [VerificationTask].
      */
