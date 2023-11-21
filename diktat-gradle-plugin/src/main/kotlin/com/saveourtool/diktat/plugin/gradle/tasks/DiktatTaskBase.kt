@@ -13,17 +13,11 @@ import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
 import com.saveourtool.diktat.plugin.gradle.extension.PlainReporter
 import com.saveourtool.diktat.plugin.gradle.extension.Reporters
-import com.saveourtool.diktat.plugin.gradle.extensions.Reporter
-import com.saveourtool.diktat.plugin.gradle.extensions.Reporters
-import com.saveourtool.diktat.plugin.gradle.getOutputFile
-import com.saveourtool.diktat.plugin.gradle.getReporterType
-import com.saveourtool.diktat.plugin.gradle.getSourceRootDir
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
@@ -142,7 +136,7 @@ abstract class DiktatTaskBase(
                 }
                 .outputStream()
             DiktatReporterCreationArguments(
-                id = "sarif",
+                reporterType = DiktatReporterType.SARIF,
                 outputStream = outputStream,
                 sourceRootDir = sourceRootDir,
             )
@@ -172,7 +166,7 @@ abstract class DiktatTaskBase(
         }
         DiktatRunnerArguments(
             configInputStream = configFile.get().asFile.inputStream(),
-            sourceRootDir = project.getSourceRootDir(extension),
+            sourceRootDir = sourceRootDir,
             files = actualInputs.files.map { it.toPath() },
             baselineFile = baselineFile.map { it.asFile.toPath() }.orNull,
             reporterArgsList = reporterCreationArgumentsList,
@@ -191,11 +185,6 @@ abstract class DiktatTaskBase(
     init {
         group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
-
-    @get:Internal
-    val _reporters: Reporters = objectFactory.newInstance(Reporters::class.java)
-
-    fun reporters(action: Action<in Reporters>) = action.execute(_reporters)
 
     /**
      * Function to execute diKTat

@@ -1,7 +1,5 @@
 package com.saveourtool.diktat.buildutils
 
-import com.saveourtool.diktat.plugin.gradle.tasks.DiktatTaskBase
-
 plugins {
     id("com.saveourtool.diktat")
 }
@@ -9,12 +7,6 @@ plugins {
 diktat {
     diktatConfigFile = rootProject.file("diktat-analysis.yml")
     githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
-    reporters {
-        configure {
-            id = "plain"
-            output = file("text.txt")
-        }
-    }
     inputs {
         // using `Project#path` here, because it must be unique in gradle's project hierarchy
         if (path == rootProject.path) {
@@ -28,18 +20,6 @@ diktat {
                 "src/*Test/**/*.kt",
                 "build/**/*.kts",
             )
-        }
-    }
-}
-
-tasks.withType(DiktatTaskBase::class.java) {
-    reporters {
-        configure {
-            id = "plain"
-            output = project.layout.buildDirectory.file("test.txt")
-        }
-        configure {
-
         }
     }
 }

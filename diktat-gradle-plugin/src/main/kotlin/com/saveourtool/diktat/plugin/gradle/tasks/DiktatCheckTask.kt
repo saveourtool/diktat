@@ -31,7 +31,6 @@ abstract class DiktatCheckTask @Inject constructor(
         /**
          * @param diktatExtension [DiktatExtension] with some values for task configuration
          * @param patternSet [PatternSet] to discover files for diktat check
-         * @param reporters [List] of [Reporter] to configure reporters for diktat check
          * @return a [TaskProvider]
          */
         fun Project.registerDiktatCheckTask(

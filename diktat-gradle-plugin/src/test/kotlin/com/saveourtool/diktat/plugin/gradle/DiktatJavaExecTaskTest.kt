@@ -7,7 +7,6 @@ import com.saveourtool.diktat.util.DiktatProcessorListenerWrapper.Companion.unwr
 import com.pinterest.ktlint.cli.reporter.json.JsonReporter
 import com.pinterest.ktlint.cli.reporter.plain.PlainReporter
 import com.pinterest.ktlint.cli.reporter.sarif.SarifReporter
-import org.gradle.api.Action
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -138,9 +137,7 @@ class DiktatJavaExecTaskTest {
             }
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatCheckTask
-        assert(
-            task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter
-        )
+        assert(task.diktatRunner.diktatReporter.unwrapFirst() is JsonReporter)
     }
 
     @Test
