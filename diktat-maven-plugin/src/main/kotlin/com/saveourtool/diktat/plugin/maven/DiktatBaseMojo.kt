@@ -5,6 +5,7 @@ import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.diktatRunnerFactory
+import com.saveourtool.diktat.util.isKotlinCodeOrScript
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -110,10 +111,19 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             outputStream = getReporterOutput(),
             sourceRootDir = sourceRootDir.takeIf { reporterType == DiktatReporterType.SARIF },
         )
+        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
+        val files = inputs
+            .asSequence()
+            .map(::File)
+            .flatMap {
+                it.files(excludedDirs, excludedFiles)
+            }
+            .map { it.toPath() }
+            .toList()
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
-            files = inputs.map(::Path),
+            files = files,
             baselineFile = baseline?.toPath(),
             reporterArgsList = listOf(reporterArgs),
         )
@@ -163,4 +173,15 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 firstOrNull { it.isRegularFile() } ?: file
             }
     }
+
+    @Suppress("TYPE_ALIAS")
+    private fun File.files(
+        excludedDirs: List<File>,
+        excludedFiles: List<File>,
+    ): Sequence<File> = walk()
+        .filter { file ->
+            file.isDirectory || file.toPath().isKotlinCodeOrScript()
+        }
+        .filter { it.isFile }
+        .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
 }
