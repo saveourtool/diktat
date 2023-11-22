@@ -1,21 +1,26 @@
 package com.saveourtool.diktat.cli
 
 import com.saveourtool.diktat.DiktatRunnerArguments
+import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
+import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.common.config.rules.DIKTAT
 import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
 import com.saveourtool.diktat.util.tryToPathIfExists
 import com.saveourtool.diktat.util.walkByGlob
+
 import generated.DIKTAT_VERSION
-import generated.KTLINT_VERSION
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.slf4j.event.Level
+
 import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
+
 import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
@@ -31,14 +36,14 @@ import kotlinx.cli.vararg
  * @param logLevel
  * @property config path to `diktat-analysis.yml`
  * @property mode mode of `diktat`
- * @property reporterProviderId
+ * @property reporterType
  * @property output
  * @property patterns
  */
 data class DiktatProperties(
     val config: String,
     val mode: DiktatMode,
-    val reporterProviderId: String,
+    val reporterType: DiktatReporterType,
     val output: String?,
     private val groupByFileInPlain: Boolean,
     private val colorNameInPlain: String?,
@@ -72,17 +77,23 @@ data class DiktatProperties(
     fun toRunnerArguments(
         sourceRootDir: Path,
         loggingListener: DiktatProcessorListener,
-    ): DiktatRunnerArguments = DiktatRunnerArguments(
-        configInputStream = Paths.get(config).inputStream(),
-        sourceRootDir = sourceRootDir,
-        files = getFiles(sourceRootDir),
-        baselineFile = null,
-        reporterType = reporterProviderId,
-        reporterOutput = getReporterOutput(),
-        groupByFileInPlain = groupByFileInPlain,
-        colorNameInPlain = colorNameInPlain,
-        loggingListener = loggingListener,
-    )
+    ): DiktatRunnerArguments {
+        val reporterCreationArguments = DiktatReporterCreationArguments(
+            reporterType = reporterType,
+            outputStream = getReporterOutput(),
+            groupByFileInPlain = groupByFileInPlain,
+            colorNameInPlain = colorNameInPlain,
+            sourceRootDir = sourceRootDir,
+        )
+        return DiktatRunnerArguments(
+            configInputStream = Paths.get(config).inputStream(),
+            sourceRootDir = sourceRootDir,
+            files = getFiles(sourceRootDir),
+            baselineFile = null,
+            reporterArgsList = listOf(reporterCreationArguments),
+            loggingListener = loggingListener
+        )
+    }
 
     private fun getFiles(sourceRootDir: Path): Collection<Path> = patterns
         .asSequence()
@@ -128,7 +139,7 @@ data class DiktatProperties(
                 shortName = "m",
                 description = "Mode of `diktat` controls that `diktat` fixes or only finds any deviations from the code style."
             ).default(DiktatMode.CHECK)
-            val reporterType: String by parser.reporterType(diktatReporterFactory)
+            val reporterType: DiktatReporterType by parser.reporterType()
             val output: String? by parser.option(
                 type = ArgType.String,
                 fullName = "output",
@@ -161,7 +172,7 @@ data class DiktatProperties(
             ) {
                 """
                     Diktat: $DIKTAT_VERSION
-                    Ktlint: $KTLINT_VERSION
+                    $ENGINE_INFO
                 """.trimIndent()
             }
             parser.addOptionAndShowTextWithExit(
@@ -182,7 +193,7 @@ data class DiktatProperties(
             return DiktatProperties(
                 config = config,
                 mode = mode,
-                reporterProviderId = reporterType,
+                reporterType = reporterType,
                 output = output,
                 groupByFileInPlain = groupByFileInPlain,
                 colorNameInPlain = colorName,
@@ -192,20 +203,15 @@ data class DiktatProperties(
         }
 
         /**
-         * @param diktatReporterFactory
          * @return a single type of [com.saveourtool.diktat.api.DiktatReporter] as parsed cli arg
          */
-        private fun ArgParser.reporterType(diktatReporterFactory: DiktatReporterFactory) = option(
-            type = ArgType.Choice(
-                choices = diktatReporterFactory.ids.toList(),
-                toVariant = { it },
-                variantToString = { it },
-            ),
+        private fun ArgParser.reporterType() = option(
+            type = ArgType.Choice<DiktatReporterType>(),
             fullName = "reporter",
             shortName = "r",
             description = "The reporter to use"
         )
-            .default(diktatReporterFactory.plainId)
+            .default(DiktatReporterType.PLAIN)
 
         /**
          * @param diktatReporterFactory

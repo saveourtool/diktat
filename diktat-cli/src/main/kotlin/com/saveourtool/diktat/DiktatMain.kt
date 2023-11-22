@@ -7,11 +7,6 @@ package com.saveourtool.diktat
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.cli.DiktatMode
 import com.saveourtool.diktat.cli.DiktatProperties
-import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
-import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
-import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -31,13 +26,6 @@ private val loggingListener = object : DiktatProcessorListener {
 }
 
 fun main(args: Array<String>) {
-    val diktatRunnerFactory = DiktatRunnerFactory(
-        DiktatRuleConfigReaderImpl(),
-        DiktatRuleSetFactoryImpl(),
-        DiktatProcessorFactoryImpl(),
-        DiktatBaselineFactoryImpl(),
-        DiktatReporterFactoryImpl(),
-    )
     val properties = DiktatProperties.parse(diktatRunnerFactory.diktatReporterFactory, args)
     properties.configureLogger()
 

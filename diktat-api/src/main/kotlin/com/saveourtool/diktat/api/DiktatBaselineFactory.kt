@@ -13,7 +13,7 @@ interface DiktatBaselineFactory {
      */
     fun tryToLoad(
         baselineFile: Path,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): DiktatBaseline?
 
     /**
@@ -23,6 +23,6 @@ interface DiktatBaselineFactory {
      */
     fun generator(
         baselineFile: Path,
-        sourceRootDir: Path,
+        sourceRootDir: Path?,
     ): DiktatProcessorListener
 }

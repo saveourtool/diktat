@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
@@ -25,6 +26,10 @@ talaiot {
 
 project.description = "diKTat kotlin formatter and fixer"
 
+val libsFileName = "libs.versions.toml"
+val libsFile = rootProject.file("gradle/$libsFileName")
+val libsFileBackup = rootProject.file("gradle/${libsFileName}_backup")
+
 tasks.create("generateLibsForDiktatSnapshot") {
     val dir = rootProject.layout
         .buildDirectory
@@ -32,20 +37,12 @@ tasks.create("generateLibsForDiktatSnapshot") {
         .get()
         .asFile
 
-    val dependencies = setOf(
-        rootProject.project(":diktat-common"),
-        rootProject.project(":diktat-api"),
-        rootProject.project(":diktat-ktlint-engine"),
-        rootProject.project(":diktat-rules"),
-        rootProject.project(":diktat-gradle-plugin"),
-    )
-    dependsOn(dependencies.map { "${it.path}:publishToMavenLocal" })
-
-    val libsFile = rootProject.file("gradle/libs.versions.toml")
+    val dependency = rootProject.project(":diktat-gradle-plugin")
+    dependsOn(dependency.let { "${it.path}:publishToMavenLocal" })
 
     inputs.file(libsFile)
-    inputs.files(dependencies.map { it.pomFile() })
-    inputs.files(dependencies.map { it.artifactFile() })
+    inputs.files(dependency.pomFile())
+    inputs.files(dependency.artifactFile())
     inputs.property("project-version", version.toString())
     outputs.dir(dir)
 
@@ -62,16 +59,26 @@ tasks.create("generateLibsForDiktatSnapshot") {
                 }
             }
             .let {
-                val libsFileForDiktatSnapshot = dir.resolve("libs.versions.toml")
+                val libsFileForDiktatSnapshot = dir.resolve(libsFileName)
                 Files.write(libsFileForDiktatSnapshot.toPath(), it)
+                Files.move(libsFile.toPath(), libsFileBackup.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                Files.copy(libsFileForDiktatSnapshot.toPath(), libsFile.toPath())
             }
 
-        dependencies.forEach { dependency ->
-            val artifactDir = dir.pathToMavenArtifact(dependency)
-                .also { it.createDirectory() }
-            Files.copy(dependency.pomFile().toPath(), artifactDir.resolve(dependency.pomFileName()).toPath())
-            Files.copy(dependency.artifactFile().toPath(), artifactDir.resolve(dependency.artifactFileName()).toPath())
-        }
+        val artifactDir = dir.pathToMavenArtifact(dependency)
+            .also { it.createDirectory() }
+        Files.copy(dependency.pomFile().toPath(), artifactDir.resolve(dependency.pomFileName()).toPath())
+        Files.copy(dependency.artifactFile().toPath(), artifactDir.resolve(dependency.artifactFileName()).toPath())
+    }
+}
+
+tasks.create("rollbackLibsForDiktatSnapshot") {
+    inputs.file(libsFileBackup)
+    outputs.file(libsFile)
+
+    doLast {
+        Files.deleteIfExists(libsFile.toPath())
+        Files.move(libsFileBackup.toPath(), libsFile.toPath())
     }
 }
 

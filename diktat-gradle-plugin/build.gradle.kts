@@ -1,7 +1,10 @@
 import com.saveourtool.diktat.buildutils.configurePom
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+@Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
@@ -9,18 +12,18 @@ plugins {
     id("pl.droidsonroids.jacoco.testkit") version "1.0.12"
     id("org.gradle.test-retry") version "1.5.6"
     id("com.gradle.plugin-publish") version "1.2.1"
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-
-    implementation(projects.diktatRules)
-    implementation(projects.diktatKtlintEngine)
+    implementation(projects.diktatRunner)
     // merge sarif reports
     implementation(libs.sarif4k.jvm)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(projects.diktatKtlintEngine)
     testImplementation(libs.ktlint.cli.reporter.core)
     testImplementation(libs.ktlint.cli.reporter.json)
     testImplementation(libs.ktlint.cli.reporter.plain)
@@ -36,6 +39,13 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs - "-Werror"
     }
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    archiveClassifier.set("")
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    // all kotlin libs
+    relocate("org.jetbrains", "shadow.org.jetbrains")
 }
 
 gradlePlugin {
