@@ -123,8 +123,9 @@ assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 junit-platform-suite = { module = "org.junit.platform:junit-platform-suite-engine", version.ref = "junit-platfrom" }
 
 # maven
+maven-artifact = { module = "org.apache.maven:maven-artifact", version.ref = "maven-api" }
+maven-model = { module = "org.apache.maven:maven-model", version.ref = "maven-api" }
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
-maven-embedder = { module = "org.apache.maven:maven-embedder", version.ref = "maven-api" }
 maven-compat = { module = "org.apache.maven:maven-compat", version.ref = "maven-api" }
 maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "maven-api" }
 maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-plugin-tools" }

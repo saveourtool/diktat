@@ -12,6 +12,8 @@ plugins {
 
 dependencies {
     implementation(libs.maven.plugin.api)
+    implementation(libs.maven.artifact)
+    implementation(libs.maven.model)
     compileOnly(libs.maven.plugin.annotations)
     compileOnly(libs.maven.core)
 
@@ -48,3 +50,21 @@ publishing {
     }
 }
 configurePublications()
+
+publishing {
+    publications {
+        withType<MavenPublication> {
+            pom {
+                withXml {
+                    val dependencies = asElement().getElementsByTagName("dependency")
+                    for (i in 0 until dependencies.length) {
+                        val dependency = dependencies.item(i)
+                        if (dependency.firstChild.firstChild.nodeValue == "org.apache.maven") {
+                            dependency.lastChild.firstChild.nodeValue = "provided"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
