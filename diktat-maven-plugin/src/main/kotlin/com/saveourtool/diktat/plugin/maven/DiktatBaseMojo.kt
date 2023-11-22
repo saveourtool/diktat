@@ -110,19 +110,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             outputStream = getReporterOutput(),
             sourceRootDir = sourceRootDir.takeIf { reporterType == DiktatReporterType.SARIF },
         )
-        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
-        val files = inputs
-            .asSequence()
-            .map(::File)
-            .flatMap {
-                it.files(excludedDirs, excludedFiles)
-            }
-            .map { it.toPath() }
-            .toList()
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
-            files = files,
+            files = files(),
             baselineFile = baseline?.toPath(),
             reporterArgsList = listOf(reporterArgs),
         )
@@ -171,6 +162,18 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .run {
                 firstOrNull { it.isRegularFile() } ?: file
             }
+    }
+
+    private fun files(): List<Path> {
+        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
+        return inputs
+            .asSequence()
+            .map(::File)
+            .flatMap {
+                it.files(excludedDirs, excludedFiles)
+            }
+            .map { it.toPath() }
+            .toList()
     }
 
     @Suppress("TYPE_ALIAS")
