@@ -95,10 +95,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if an exception in __KtLint__ has been thrown
      */
     override fun execute() {
-        val configFile = resolveConfig()
-        if (!configFile.isRegularFile()) {
-            throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
-        }
+        val configFile = resolveConfig() ?: throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
@@ -149,9 +146,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * If [diktatConfigFile] is absolute, it's path is used. If [diktatConfigFile] is relative, this method looks for it in all maven parent projects.
      * This way config file can be placed in parent module directory and used in all child modules too.
      *
-     * @return a configuration file. File by this path might not exist.
+     * @return a configuration file. File by this path exists.
      */
-    private fun resolveConfig(): Path {
+    private fun resolveConfig(): Path? {
         val file = Paths.get(diktatConfigFile)
         if (file.isAbsolute) {
             return file
@@ -159,9 +156,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
         return generateSequence(mavenProject) { it.parent }
             .map { it.basedir.toPath().resolve(diktatConfigFile) }
-            .run {
-                firstOrNull { it.isRegularFile() } ?: file
-            }
+            .firstOrNull { it.isRegularFile() }
     }
 
     private fun files(): List<Path> {
@@ -182,8 +177,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         excludedFiles: List<File>,
     ): Sequence<File> = walk()
         .filter { file ->
-            file.isDirectory || file.toPath().isKotlinCodeOrScript()
+            file.isFile && file.toPath().isKotlinCodeOrScript()
         }
-        .filter { it.isFile }
-        .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
+        .filterNot { file ->
+            file in excludedFiles || excludedDirs.any { file.startsWith(it) }
+        }
 }
