@@ -56,13 +56,17 @@ publishing {
         withType<MavenPublication> {
             pom {
                 withXml {
-                    val dependencies = asElement().getElementsByTagName("dependency")
-                    for (i in 0 until dependencies.length) {
-                        val dependency = dependencies.item(i)
-                        val groupIdNode = dependency.firstChild
-                        val scopeNode = dependency.lastChild
-                        if (groupIdNode.nodeValue == "org.apache.maven") {
-                            scopeNode.nodeValue = "provided"
+                    val dependencyNodes = asElement().getElementsByTagName("dependency")
+                    for (i in 0 until dependencyNodes.length) {
+                        val dependencyNode = dependencyNodes.item(i)
+                        val childNodes = dependencyNode.childNodes
+                            .let { nodes ->
+                                (0 until nodes.length).map { nodes.item(it) }
+                            }
+                        val groupIdNode = childNodes.single { it.nodeName == "groupId" }
+                        val scopeNode = childNodes.single { it.nodeName == "scope" }
+                        if (groupIdNode.textContent == "org.apache.maven") {
+                            scopeNode.textContent = "provided"
                         }
                     }
                 }
