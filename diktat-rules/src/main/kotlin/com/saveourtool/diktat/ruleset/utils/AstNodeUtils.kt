@@ -988,6 +988,38 @@ fun ASTNode.visit(visitor: AstNodeVisitor<Unit>) {
 fun PsiElement.isLongStringTemplateEntry(): Boolean =
     node.elementType == LONG_STRING_TEMPLATE_ENTRY
 
+/**
+ * Checks that identifier is correct backing field
+ *
+ * @return true if the function is correct backing field
+ */
+internal fun ASTNode.isCorrectBackingField(variableName: ASTNode): Boolean {
+    val propertyNodes = this.treeParent.getAllChildrenWithType(KtNodeTypes.PROPERTY)
+    val variableNameCut = variableName.text.drop(1)
+    // check that backing field name is correct
+
+    if (variableName.text.startsWith("_") && variableNameCut.isLowerCamelCase()) {
+        val matchingNode = propertyNodes.find { propertyNode ->
+            val nodeType = this.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+            val propertyType = propertyNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+            // check that property and backing field has same type
+            val sameType = propertyType?.text == nodeType?.text
+            // check that property USER_TYPE is same as backing field NULLABLE_TYPE
+            val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
+            val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
+                    nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
+            val matchingNames = propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableNameCut
+            val isPrivate = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
+
+            matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
+                    this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) == null &&
+                    propertyNode.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
+        }
+        return matchingNode?.let { true } ?: false
+    }
+    return false
+}
+
 private fun ASTNode.isFollowedByNewlineCheck() =
     this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 

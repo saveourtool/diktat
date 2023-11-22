@@ -6,9 +6,11 @@ import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.*
 
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens.GET_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.SET_KEYWORD
@@ -32,6 +34,21 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         val setter = node.getFirstChildWithType(SET_KEYWORD)
         val isPrivateSetter = node.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(PRIVATE_KEYWORD) ?: false
         val isOverrideGetter = node.treeParent.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(OVERRIDE_KEYWORD) ?: false
+
+        // find matching node
+        val propertyList = node.treeParent?.treeParent?.getAllChildrenWithType(PROPERTY)
+        val nodeName = node.treeParent?.getFirstChildWithType(IDENTIFIER)
+        nodeName?.let {
+            propertyList
+                ?.forEach { propertyNode ->
+                    val matchingNode = propertyNode.getFirstChildWithType(IDENTIFIER)
+                    matchingNode?.let {
+                        if (matchingNode.isCorrectBackingField(nodeName)) {
+                            return
+                        }
+                    }
+                }
+        }
 
         setter?.let {
             // only private custom setters are allowed
