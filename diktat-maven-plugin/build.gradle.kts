@@ -50,27 +50,3 @@ publishing {
     }
 }
 configurePublications()
-
-publishing {
-    publications {
-        withType<MavenPublication> {
-            pom {
-                withXml {
-                    val dependencyNodes = asElement().getElementsByTagName("dependency")
-                    for (i in 0 until dependencyNodes.length) {
-                        val dependencyNode = dependencyNodes.item(i)
-                        val childNodes = dependencyNode.childNodes
-                            .let { nodes ->
-                                (0 until nodes.length).map { nodes.item(it) }
-                            }
-                        val groupIdNode = childNodes.single { it.nodeName == "groupId" }
-                        val scopeNode = childNodes.single { it.nodeName == "scope" }
-                        if (groupIdNode.textContent == "org.apache.maven") {
-                            scopeNode.textContent = "provided"
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
