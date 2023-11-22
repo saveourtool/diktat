@@ -3,21 +3,17 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
+import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
-import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
-import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
-import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
+import com.saveourtool.diktat.diktatRunnerFactory
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
 import com.saveourtool.diktat.plugin.gradle.extension.PlainReporter
 import com.saveourtool.diktat.plugin.gradle.extension.Reporters
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 
 import generated.DIKTAT_VERSION
-import generated.KTLINT_VERSION
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
@@ -110,18 +106,6 @@ abstract class DiktatTaskBase(
     internal val shouldRun: Boolean by lazy {
         !actualInputs.isEmpty
     }
-    private val diktatReporterFactory by lazy {
-        DiktatReporterFactoryImpl()
-    }
-    private val diktatRunnerFactory by lazy {
-        DiktatRunnerFactory(
-            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
-            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
-            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
-            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = diktatReporterFactory,
-        )
-    }
     private val diktatRunnerArguments by lazy {
         val sourceRootDir by lazy {
             project.rootProject.projectDir.toPath()
@@ -177,7 +161,7 @@ abstract class DiktatTaskBase(
     @TaskAction
     fun run() {
         if (extension.debug) {
-            project.logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
+            project.logger.lifecycle("Running diktat $DIKTAT_VERSION with $ENGINE_INFO")
         }
         if (!shouldRun) {
             /*

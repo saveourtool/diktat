@@ -2,14 +2,9 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
-import com.saveourtool.diktat.ktlint.DiktatBaselineFactoryImpl
-import com.saveourtool.diktat.ktlint.DiktatProcessorFactoryImpl
-import com.saveourtool.diktat.ktlint.DiktatReporterFactoryImpl
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
+import com.saveourtool.diktat.diktatRunnerFactory
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -57,18 +52,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.baseline")
     var baseline: File? = null
-    private val diktatReporterFactory by lazy {
-        DiktatReporterFactoryImpl()
-    }
-    private val diktatRunnerFactory by lazy {
-        DiktatRunnerFactory(
-            diktatRuleConfigReader = DiktatRuleConfigReaderImpl(),
-            diktatRuleSetFactory = DiktatRuleSetFactoryImpl(),
-            diktatProcessorFactory = DiktatProcessorFactoryImpl(),
-            diktatBaselineFactory = DiktatBaselineFactoryImpl(),
-            diktatReporterFactory = diktatReporterFactory,
-        )
-    }
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
