@@ -59,8 +59,10 @@ publishing {
                     val dependencies = asElement().getElementsByTagName("dependency")
                     for (i in 0 until dependencies.length) {
                         val dependency = dependencies.item(i)
-                        if (dependency.firstChild.firstChild.nodeValue == "org.apache.maven") {
-                            dependency.lastChild.firstChild.nodeValue = "provided"
+                        val groupIdNode = dependency.firstChild
+                        val scopeNode = dependency.lastChild
+                        if (groupIdNode.nodeValue == "org.apache.maven") {
+                            scopeNode.nodeValue = "provided"
                         }
                     }
                 }
