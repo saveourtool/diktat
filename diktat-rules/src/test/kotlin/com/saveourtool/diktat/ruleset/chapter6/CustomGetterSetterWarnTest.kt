@@ -103,3 +103,4 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
         )
     }
 }
+
