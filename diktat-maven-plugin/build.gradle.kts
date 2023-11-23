@@ -11,7 +11,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.maven.plugin.api)
     compileOnly(libs.maven.plugin.annotations)
     compileOnly(libs.maven.core)
 

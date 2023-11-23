@@ -124,9 +124,7 @@ junit-platform-suite = { module = "org.junit.platform:junit-platform-suite-engin
 
 # maven
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
-maven-embedder = { module = "org.apache.maven:maven-embedder", version.ref = "maven-api" }
 maven-compat = { module = "org.apache.maven:maven-compat", version.ref = "maven-api" }
-maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "maven-api" }
 maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-plugin-tools" }
 maven-plugin-testing-harness = { module = "org.apache.maven.plugin-testing:maven-plugin-testing-harness", version.ref = "maven-plugin-testing-harness" }
 plexus-cipher = { module = "org.codehaus.plexus:plexus-cipher", version.ref = "plexus" }
