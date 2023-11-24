@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
@@ -989,36 +990,18 @@ fun PsiElement.isLongStringTemplateEntry(): Boolean =
     node.elementType == LONG_STRING_TEMPLATE_ENTRY
 
 /**
- * Checks that identifier is correct backing field
+ * Checks that node has child PRIVATE_KEYWORD
  *
- * @return true if the function is correct backing field
+ * @return true if node has child PRIVATE_KEYWORD
  */
-internal fun ASTNode.isCorrectBackingField(variableName: ASTNode): Boolean {
-    val propertyNodes = this.treeParent.getAllChildrenWithType(KtNodeTypes.PROPERTY)
-    val variableNameCut = variableName.text.drop(1)
-    // check that backing field name is correct
+fun ASTNode.isPrivate(): Boolean = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
 
-    if (variableName.text.startsWith("_") && variableNameCut.isLowerCamelCase()) {
-        val matchingNode = propertyNodes.find { propertyNode ->
-            val nodeType = this.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
-            val propertyType = propertyNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
-            // check that property and backing field has same type
-            val sameType = propertyType?.text == nodeType?.text
-            // check that property USER_TYPE is same as backing field NULLABLE_TYPE
-            val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
-            val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
-                    nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
-            val matchingNames = propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableNameCut
-            val isPrivate = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
-
-            matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
-                    this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) == null &&
-                    propertyNode.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
-        }
-        return matchingNode?.let { true } ?: false
-    }
-    return false
-}
+/**
+ * Checks that node has getter or setter
+ *
+ * @return true if node has getter or setter
+ */
+fun ASTNode.hasSetterGetter(): Boolean = this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
 
 private fun ASTNode.isFollowedByNewlineCheck() =
     this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
@@ -1133,6 +1116,14 @@ private fun ASTNode.hasExplicitIt(): Boolean {
 }
 
 /**
+ * Gets list of property nodes
+ *
+ * @param node
+ * @return list of property nodes
+ */
+fun getPropertyNodes(node: ASTNode?): List<ASTNode>? = node?.treeParent?.getAllChildrenWithType(PROPERTY)
+
+/**
  * Checks node is located in file src/test/**/*Test.kt
  *
  * @param testAnchors names of test directories, e.g. "test", "jvmTest"
@@ -1180,6 +1171,40 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
         .contains("it")
 
     return hasNoParameters(lambdaNode) && hasIt
+}
+
+/**
+ * Checks that node (property or backing field) has pair node (backing field or property)
+ *
+ * @return true if node has a pair
+ */
+@Suppress("CyclomaticComplexMethod")
+internal fun isPairPropertyBackingField(propertyNode: ASTNode?, backingFieldNode: ASTNode?): Boolean {
+    val node = propertyNode ?: backingFieldNode
+    val propertyListNullable = (node?.treeParent?.getAllChildrenWithType(PROPERTY)) ?: return false
+    val propertyList: List<ASTNode> = propertyListNullable
+    val matchingNode = propertyList.find {pairNode ->
+        val nodeType = node.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+        val propertyType = pairNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+        // check that property and backing field has same type
+        val sameType = nodeType?.text == propertyType?.text
+        // check that property USER_TYPE is same as backing field NULLABLE_TYPE
+        val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
+        val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
+                nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
+        // check matching names
+        val nodeName = node.getFirstChildWithType(IDENTIFIER)?.text
+        val propertyName = pairNode.getFirstChildWithType(IDENTIFIER)?.text
+        val matchingNames = propertyNode?.let { nodeName == propertyName?.drop(1) } ?: run { nodeName?.drop(1) == propertyName }
+
+        val isPrivate = propertyNode?.let { pairNode.isPrivate() } ?: run { node.isPrivate() }
+        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterGetter() } ?: run { !node.hasSetterGetter() }
+        val hasSetterGetterProperty = propertyNode?.let { node.hasSetterGetter() } ?: run { pairNode.hasSetterGetter() }
+
+        matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
+                noSetterGetterBackingField && hasSetterGetterProperty
+    }
+    return matchingNode?.let { true } ?: false
 }
 
 private fun hasAnySuppressorForInspection(
