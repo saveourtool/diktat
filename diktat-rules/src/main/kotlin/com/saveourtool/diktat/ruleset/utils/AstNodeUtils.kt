@@ -1001,7 +1001,7 @@ fun ASTNode.isPrivate(): Boolean = this.getFirstChildWithType(MODIFIER_LIST)?.ge
  *
  * @return true if node has getter or setter
  */
-fun ASTNode.hasSetterGetter(): Boolean = this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
+fun ASTNode.hasSetterOrGetter(): Boolean = this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
 
 private fun ASTNode.isFollowedByNewlineCheck() =
     this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
@@ -1174,8 +1174,15 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
 }
 
 /**
- * Checks that node (property or backing field) has pair node (backing field or property)
+ * Checks that property node has pair backing field node or backing field node has pair property node. Nodes make a pair of property node and backing field node if they have:
+ * 1. matching names (xyz -> _xyz)
+ * 2. same type (but backing field can be nullable),
+ * 3. backing field is private
+ * 4. backing field should have no accessors/modifiers
+ * 5. property should have at least an accessor, or a modifier, or both
  *
+ * @param propertyNode if not null, trying to find matching backing field node
+ * @param backingFieldNode if not null, trying to find matching property node
  * @return true if node has a pair
  */
 @Suppress("CyclomaticComplexMethod")
@@ -1183,26 +1190,27 @@ internal fun isPairPropertyBackingField(propertyNode: ASTNode?, backingFieldNode
     val node = propertyNode ?: backingFieldNode
     val propertyListNullable = (node?.treeParent?.getAllChildrenWithType(PROPERTY)) ?: return false
     val propertyList: List<ASTNode> = propertyListNullable
+    val nodeType = node.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+    val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
+    val nodeName = node.getFirstChildWithType(IDENTIFIER)?.text
+
     val matchingNode = propertyList.find {pairNode ->
-        val nodeType = node.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
         val propertyType = pairNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
         // check that property and backing field has same type
         val sameType = nodeType?.text == propertyType?.text
         // check that property USER_TYPE is same as backing field NULLABLE_TYPE
-        val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
         val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
                 nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
         // check matching names
-        val nodeName = node.getFirstChildWithType(IDENTIFIER)?.text
         val propertyName = pairNode.getFirstChildWithType(IDENTIFIER)?.text
         val matchingNames = propertyNode?.let { nodeName == propertyName?.drop(1) } ?: run { nodeName?.drop(1) == propertyName }
 
         val isPrivate = propertyNode?.let { pairNode.isPrivate() } ?: run { node.isPrivate() }
-        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterGetter() } ?: run { !node.hasSetterGetter() }
-        val hasSetterGetterProperty = propertyNode?.let { node.hasSetterGetter() } ?: run { pairNode.hasSetterGetter() }
+        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterOrGetter() } ?: run { !node.hasSetterOrGetter() }
+        val hasSetterOrGetterProperty = propertyNode?.let { node.hasSetterOrGetter() } ?: run { pairNode.hasSetterOrGetter() }
 
         matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
-                noSetterGetterBackingField && hasSetterGetterProperty
+                noSetterGetterBackingField && hasSetterOrGetterProperty
     }
     return matchingNode?.let { true } ?: false
 }
