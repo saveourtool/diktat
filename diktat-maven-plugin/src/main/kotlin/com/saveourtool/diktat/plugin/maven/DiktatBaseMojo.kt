@@ -2,10 +2,7 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.api.DiktatReporterCreationArguments
-import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.diktatRunnerFactory
-import com.saveourtool.diktat.plugin.maven.reporters.DefaultReporter
 import com.saveourtool.diktat.plugin.maven.reporters.GitHubActionsReporter
 import com.saveourtool.diktat.plugin.maven.reporters.PlainReporter
 import com.saveourtool.diktat.plugin.maven.reporters.Reporter
@@ -20,8 +17,6 @@ import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.inputStream
@@ -99,7 +94,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         )
 
         val sourceRootDir = generateSequence(mavenProject) { it.parent }.last().basedir.toPath()
-        val reporters: List<Reporter> = (reporters?.all ?: listOf(PlainReporter()))
+        val reporters: List<Reporter> = (reporters?.getAll() ?: listOf(PlainReporter()))
             .let { all ->
                 if (githubActions && all.filterIsInstance<GitHubActionsReporter>().isEmpty()) {
                     all + GitHubActionsReporter()

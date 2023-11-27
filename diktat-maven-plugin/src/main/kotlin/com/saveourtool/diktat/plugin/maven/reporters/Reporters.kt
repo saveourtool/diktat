@@ -45,13 +45,12 @@ class Reporters {
     /**
      * @return all configured reporters
      */
-    val all: List<Reporter>
-        get() = listOfNotNull(
-            plain,
-            json,
-            sarif,
-            gitHubActions,
-            checkstyle,
-            html,
-        )
+    fun getAll(): List<Reporter> = listOfNotNull(
+        plain,
+        json,
+        sarif,
+        gitHubActions,
+        checkstyle,
+        html,
+    )
 }

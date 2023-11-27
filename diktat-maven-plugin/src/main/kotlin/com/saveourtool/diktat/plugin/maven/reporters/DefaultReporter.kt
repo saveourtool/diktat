@@ -15,9 +15,9 @@ import java.nio.file.Path
 /**
  * A base interface for a default reporter
  *
- * @property type type of reporter
+ * @param type type of reporter
  */
-abstract class DefaultReporter(
+open class DefaultReporter(
     private val type: DiktatReporterType,
 ) : Reporter {
     /**
