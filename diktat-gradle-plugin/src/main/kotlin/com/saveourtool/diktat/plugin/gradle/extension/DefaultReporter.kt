@@ -6,6 +6,7 @@
 
 package com.saveourtool.diktat.plugin.gradle.extension
 
+import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.plugin.gradle.defaultReportLocation
 import org.gradle.api.Project
@@ -14,6 +15,8 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import javax.inject.Inject
 
 /**
@@ -32,6 +35,12 @@ abstract class DefaultReporter @Inject constructor(
         .also { fileProperty ->
             fileProperty.convention(project.defaultReportLocation(extension = type.extension))
         }
+
+    override fun toCreationArguments(sourceRootDir: Path): DiktatReporterCreationArguments = DiktatReporterCreationArguments(
+        reporterType = type,
+        outputStream = output.map { file -> file.asFile.also { Files.createDirectories(it.parentFile.toPath()) }.outputStream() }.orNull,
+        sourceRootDir = sourceRootDir.takeIf { type == DiktatReporterType.SARIF },
+    )
 }
 
 /**
