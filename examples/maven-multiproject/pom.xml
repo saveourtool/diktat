@@ -26,8 +26,10 @@
                 <configuration>
                     <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                     <inputs>
-                        <input>${project.basedir}/src/main/kotlin</input>
-                        <input>${project.basedir}/src/test/kotlin</input>
+                        <input>${project.basedir}/backend/src/main/kotlin</input>
+                        <input>${project.basedir}/backend/src/test/kotlin</input>
+                        <input>${project.basedir}/frontend/src/main/kotlin</input>
+                        <input>${project.basedir}/frontend/src/test/kotlin</input>
                     </inputs>
                 </configuration>
                 <executions>
