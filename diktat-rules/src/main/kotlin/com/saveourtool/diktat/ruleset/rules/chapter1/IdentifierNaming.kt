@@ -30,15 +30,11 @@ import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.DESTRUCTURING_DECLARATION_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
-import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
-import org.jetbrains.kotlin.KtNodeTypes.NULLABLE_TYPE
 import org.jetbrains.kotlin.KtNodeTypes.OBJECT_DECLARATION
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
-import org.jetbrains.kotlin.KtNodeTypes.PROPERTY_ACCESSOR
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
-import org.jetbrains.kotlin.KtNodeTypes.USER_TYPE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -48,7 +44,6 @@ import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.CATCH_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
-import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
@@ -146,36 +141,6 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * method checks that identifier is correct backing field
-     */
-    private fun ASTNode.isCorrectBackingField(variableName: ASTNode): Boolean {
-        val propertyNodes = this.treeParent.getAllChildrenWithType(KtNodeTypes.PROPERTY)
-        val variableNameCut = variableName.text.drop(1)
-        // check that backing field name is correct
-
-        if (variableName.text.startsWith("_") && variableNameCut.isLowerCamelCase()) {
-            val matchingNode = propertyNodes.find { propertyNode ->
-                val nodeType = this.getFirstChildWithType(TYPE_REFERENCE)
-                val propertyType = propertyNode.getFirstChildWithType(TYPE_REFERENCE)
-                // check that property and backing field has same type
-                val sameType = propertyType?.text == nodeType?.text
-                // check that property USER_TYPE is same as backing field NULLABLE_TYPE
-                val nodeNullableType = nodeType?.getFirstChildWithType(NULLABLE_TYPE)
-                val sameTypeWithNullable = propertyType?.getFirstChildWithType(USER_TYPE)?.text ==
-                        nodeNullableType?.getFirstChildWithType(USER_TYPE)?.text
-                val matchingNames = propertyNode.getFirstChildWithType(IDENTIFIER)?.text == variableNameCut
-                val isPrivate = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
-
-                matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
-                        this.getFirstChildWithType(PROPERTY_ACCESSOR) == null &&
-                        propertyNode.getFirstChildWithType(PROPERTY_ACCESSOR) != null
-            }
-            return matchingNode?.let { true } ?: false
-        }
-        return false
-    }
-
-    /**
      * all checks for case and naming for vals/vars/constants
      */
     @Suppress(
@@ -228,7 +193,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase() &&
                         // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                        !node.isCorrectBackingField(variableName)) {
+                        !isPairPropertyBackingField(null, node)
+                ) {
                     VARIABLE_NAME_INCORRECT_FORMAT.warnOnlyOrWarnAndFix(
                         configRules = configRules,
                         emit = emitWarn,

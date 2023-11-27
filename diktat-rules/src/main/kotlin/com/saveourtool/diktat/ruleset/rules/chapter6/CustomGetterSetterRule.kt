@@ -33,6 +33,11 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         val isPrivateSetter = node.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(PRIVATE_KEYWORD) ?: false
         val isOverrideGetter = node.treeParent.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(OVERRIDE_KEYWORD) ?: false
 
+        // find matching node
+        if (isPairPropertyBackingField(node.treeParent, null)) {
+            return
+        }
+
         setter?.let {
             // only private custom setters are allowed
             if (!isPrivateSetter) {

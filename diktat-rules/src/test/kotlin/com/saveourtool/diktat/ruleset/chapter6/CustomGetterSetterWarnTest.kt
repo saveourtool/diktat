@@ -102,5 +102,64 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
             DiktatError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
+
+    @Test
+    @Tag(CUSTOM_GETTERS_SETTERS)
+    fun `should not trigger on property with backing field`() {
+        lintMethod(
+            """
+                    |package com.example
+                    |
+                    |class MutableTableContainer {
+                    |   private var _table: Map<String, Int>? = null
+                    |
+                    |   val table: Map<String, Int>
+                    |       get() {
+                    |           if (_table == null) {
+                    |               _table = hashMapOf()
+                    |           }
+                    |           return _table ?: throw AssertionError("Set to null by another thread")
+                    |       }
+                    |       set(value) {
+                    |           field = value
+                    |       }
+                    |
+                    |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(CUSTOM_GETTERS_SETTERS)
+    fun `should trigger on backing field with setter`() {
+        val code =
+            """
+                    |package com.example
+                    |
+                    |class MutableTableContainer {
+                    |   var _table: Map<String, Int>? = null
+                    |                set(value) {
+                    |                    field = value
+                    |                }
+                    |
+                    |   val table: Map<String, Int>
+                    |       get() {
+                    |           if (_table == null) {
+                    |               _table = hashMapOf()
+                    |           }
+                    |           return _table ?: throw AssertionError("Set to null by another thread")
+                    |       }
+                    |       set(value) {
+                    |           field = value
+                    |       }
+                    |
+                    |}
+            """.trimMargin()
+        lintMethod(code,
+            DiktatError(5, 17, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set", false),
+            DiktatError(10, 8, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get", false),
+            DiktatError(16, 8, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set", false)
+        )
+    }
 }
 

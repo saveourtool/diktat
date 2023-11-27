@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.KtNodeTypes.LONG_STRING_TEMPLATE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.OPERATION_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
+import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
@@ -988,6 +989,20 @@ fun ASTNode.visit(visitor: AstNodeVisitor<Unit>) {
 fun PsiElement.isLongStringTemplateEntry(): Boolean =
     node.elementType == LONG_STRING_TEMPLATE_ENTRY
 
+/**
+ * Checks that node has child PRIVATE_KEYWORD
+ *
+ * @return true if node has child PRIVATE_KEYWORD
+ */
+fun ASTNode.isPrivate(): Boolean = this.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(PRIVATE_KEYWORD) != null
+
+/**
+ * Checks that node has getter or setter
+ *
+ * @return true if node has getter or setter
+ */
+fun ASTNode.hasSetterOrGetter(): Boolean = this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
+
 private fun ASTNode.isFollowedByNewlineCheck() =
     this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 
@@ -1101,6 +1116,14 @@ private fun ASTNode.hasExplicitIt(): Boolean {
 }
 
 /**
+ * Gets list of property nodes
+ *
+ * @param node
+ * @return list of property nodes
+ */
+fun getPropertyNodes(node: ASTNode?): List<ASTNode>? = node?.treeParent?.getAllChildrenWithType(PROPERTY)
+
+/**
  * Checks node is located in file src/test/**/*Test.kt
  *
  * @param testAnchors names of test directories, e.g. "test", "jvmTest"
@@ -1148,6 +1171,48 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
         .contains("it")
 
     return hasNoParameters(lambdaNode) && hasIt
+}
+
+/**
+ * Checks that property node has pair backing field node or backing field node has pair property node. Nodes make a pair of property node and backing field node if they have:
+ * 1. matching names (xyz -> _xyz)
+ * 2. same type (but backing field can be nullable),
+ * 3. backing field is private
+ * 4. backing field should have no accessors/modifiers
+ * 5. property should have at least an accessor, or a modifier, or both
+ *
+ * @param propertyNode if not null, trying to find matching backing field node
+ * @param backingFieldNode if not null, trying to find matching property node
+ * @return true if node has a pair
+ */
+@Suppress("CyclomaticComplexMethod")
+internal fun isPairPropertyBackingField(propertyNode: ASTNode?, backingFieldNode: ASTNode?): Boolean {
+    val node = propertyNode ?: backingFieldNode
+    val propertyListNullable = (node?.treeParent?.getAllChildrenWithType(PROPERTY)) ?: return false
+    val propertyList: List<ASTNode> = propertyListNullable
+    val nodeType = node.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+    val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
+    val nodeName = node.getFirstChildWithType(IDENTIFIER)?.text
+
+    val matchingNode = propertyList.find {pairNode ->
+        val propertyType = pairNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+        // check that property and backing field has same type
+        val sameType = nodeType?.text == propertyType?.text
+        // check that property USER_TYPE is same as backing field NULLABLE_TYPE
+        val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
+                nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
+        // check matching names
+        val propertyName = pairNode.getFirstChildWithType(IDENTIFIER)?.text
+        val matchingNames = propertyNode?.let { nodeName == propertyName?.drop(1) } ?: run { nodeName?.drop(1) == propertyName }
+
+        val isPrivate = propertyNode?.let { pairNode.isPrivate() } ?: run { node.isPrivate() }
+        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterOrGetter() } ?: run { !node.hasSetterOrGetter() }
+        val hasSetterOrGetterProperty = propertyNode?.let { node.hasSetterOrGetter() } ?: run { pairNode.hasSetterOrGetter() }
+
+        matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
+                noSetterGetterBackingField && hasSetterOrGetterProperty
+    }
+    return matchingNode?.let { true } ?: false
 }
 
 private fun hasAnySuppressorForInspection(
