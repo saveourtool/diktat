@@ -5,6 +5,7 @@ import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.diktatRunnerFactory
+import com.saveourtool.diktat.util.isKotlinCodeOrScript
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -18,7 +19,6 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.Path
 import kotlin.io.path.inputStream
 import kotlin.io.path.isRegularFile
 
@@ -95,10 +95,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if an exception in __KtLint__ has been thrown
      */
     override fun execute() {
-        val configFile = resolveConfig()
-        if (configFile.isRegularFile()) {
-            throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
-        }
+        val configFile = resolveConfig() ?: throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
@@ -113,7 +110,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
-            files = inputs.map(::Path),
+            files = files(),
             baselineFile = baseline?.toPath(),
             reporterArgsList = listOf(reporterArgs),
         )
@@ -149,9 +146,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * If [diktatConfigFile] is absolute, it's path is used. If [diktatConfigFile] is relative, this method looks for it in all maven parent projects.
      * This way config file can be placed in parent module directory and used in all child modules too.
      *
-     * @return a configuration file. File by this path might not exist.
+     * @return a configuration file. File by this path exists.
      */
-    private fun resolveConfig(): Path {
+    private fun resolveConfig(): Path? {
         val file = Paths.get(diktatConfigFile)
         if (file.isAbsolute) {
             return file
@@ -159,8 +156,30 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
         return generateSequence(mavenProject) { it.parent }
             .map { it.basedir.toPath().resolve(diktatConfigFile) }
-            .run {
-                firstOrNull { it.isRegularFile() } ?: first()
-            }
+            .firstOrNull { it.isRegularFile() }
     }
+
+    private fun files(): List<Path> {
+        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
+        return inputs
+            .asSequence()
+            .map(::File)
+            .flatMap {
+                it.files(excludedDirs, excludedFiles)
+            }
+            .map { it.toPath() }
+            .toList()
+    }
+
+    @Suppress("TYPE_ALIAS")
+    private fun File.files(
+        excludedDirs: List<File>,
+        excludedFiles: List<File>,
+    ): Sequence<File> = walk()
+        .filter { file ->
+            file.isFile && file.toPath().isKotlinCodeOrScript()
+        }
+        .filterNot { file ->
+            file in excludedFiles || excludedDirs.any { file.startsWith(it) }
+        }
 }
