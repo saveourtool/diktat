@@ -2,8 +2,6 @@
  * Utilities for diktat gradle plugin
  */
 
-@file:Suppress("FILE_NAME_MATCH_CLASS", "MatchingDeclarationName")
-
 package com.saveourtool.diktat.plugin.gradle
 
 import org.gradle.api.Project

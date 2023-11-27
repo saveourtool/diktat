@@ -2,9 +2,11 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.api.DiktatReporterCreationArguments
-import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.diktatRunnerFactory
+import com.saveourtool.diktat.plugin.maven.reporters.GitHubActionsReporter
+import com.saveourtool.diktat.plugin.maven.reporters.PlainReporter
+import com.saveourtool.diktat.plugin.maven.reporters.Reporter
+import com.saveourtool.diktat.plugin.maven.reporters.Reporters
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
 
 import org.apache.maven.plugin.AbstractMojo
@@ -15,8 +17,6 @@ import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.inputStream
@@ -33,17 +33,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     var githubActions = false
 
     /**
-     * Type of the reporter to use
+     * The reporters to use
      */
-    @Parameter(property = "diktat.reporter")
-    var reporter = "plain"
-
-    /**
-     * Type of output
-     * Default: System.out
-     */
-    @Parameter(property = "diktat.output")
-    var output = ""
+    @Parameter
+    var reporters: Reporters? = null
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
@@ -100,19 +93,23 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
-        val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val reporterType = getReporterType()
-        val reporterArgs = DiktatReporterCreationArguments(
-            reporterType = reporterType,
-            outputStream = getReporterOutput(),
-            sourceRootDir = sourceRootDir.takeIf { reporterType == DiktatReporterType.SARIF },
-        )
+        val sourceRootDir = generateSequence(mavenProject) { it.parent }.last().basedir.toPath()
+        val reporters: List<Reporter> = (reporters?.getAll() ?: listOf(PlainReporter()))
+            .let { all ->
+                if (githubActions && all.filterIsInstance<GitHubActionsReporter>().isEmpty()) {
+                    all + GitHubActionsReporter()
+                } else {
+                    all
+                }
+            }
+
+        val reporterArgsList = reporters.map { it.toCreationArguments(mavenProject, sourceRootDir) }
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
             files = files(),
             baselineFile = baseline?.toPath(),
-            reporterArgsList = listOf(reporterArgs),
+            reporterArgsList = reporterArgsList,
         )
         val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(
@@ -122,23 +119,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         if (errorCounter > 0) {
             throw MojoFailureException("There are $errorCounter lint errors")
         }
-    }
-
-    private fun getReporterType(): DiktatReporterType = if (githubActions) {
-        DiktatReporterType.SARIF
-    } else {
-        DiktatReporterType.entries.firstOrNull { it.id.equals(reporter, ignoreCase = true) } ?: run {
-            log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
-            DiktatReporterType.PLAIN
-        }
-    }
-
-    private fun getReporterOutput(): OutputStream? = if (output.isNotBlank()) {
-        FileOutputStream(this.output, false)
-    } else if (githubActions) {
-        FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
-    } else {
-        null
     }
 
     /**
