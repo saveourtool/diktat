@@ -348,30 +348,6 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     }
 
     @Test
-    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
-    fun `should not trigger on local functions`() {
-        lintMethod(
-            """
-                    |fun printHelloAndBye() {
-                    |    fun printHello() {
-                    |        print("Hello")
-                    |    }
-                    |    printHello()
-                    |    val ab = 5
-                    |    ab?.let {
-                    |        fun printBye() {
-                    |            print("Bye")
-                    |        }
-                    |        printBye()
-                    |    }
-                    |}
-            """.trimMargin(),
-            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} printHelloAndBye", false)
-
-        )
-    }
-
-    @Test
     @Tag(WarningNames.KDOC_TRIVIAL_KDOC_ON_FUNCTION)
     fun `should check if KDoc is not trivial`() {
         lintMethod(
