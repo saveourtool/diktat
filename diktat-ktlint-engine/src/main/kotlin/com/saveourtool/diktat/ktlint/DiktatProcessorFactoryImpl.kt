@@ -48,6 +48,7 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
     companion object {
         private fun DiktatRuleSet.toKtLintEngine(): KtLintRuleEngine = KtLintRuleEngine(
             ruleProviders = toKtLint(),
+            // use platform dependent endlines in process of editing
             editorConfigDefaults = EditorConfigDefaults(
                 EditorConfig.builder()
                     .openSection()
