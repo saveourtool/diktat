@@ -6,8 +6,13 @@ import com.saveourtool.diktat.api.DiktatCallback
 import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
 import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.EditorConfigDefaults
 import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
 import com.pinterest.ktlint.rule.engine.api.LintError
+import org.ec4j.core.model.EditorConfig
+import org.ec4j.core.model.Glob
+import org.ec4j.core.model.Property
+import org.ec4j.core.model.PropertyType
 import java.nio.file.Path
 
 private typealias LintCallback = (LintError) -> Unit
@@ -41,7 +46,22 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
     }
 
     companion object {
-        private fun DiktatRuleSet.toKtLintEngine(): KtLintRuleEngine = KtLintRuleEngine(ruleProviders = toKtLint())
+        private fun DiktatRuleSet.toKtLintEngine(): KtLintRuleEngine = KtLintRuleEngine(
+            ruleProviders = toKtLint(),
+            editorConfigDefaults = EditorConfigDefaults(
+                EditorConfig.builder()
+                    .openSection()
+                            .glob(Glob("**"))
+                            .property(
+                                Property.builder()
+                                    .name(PropertyType.end_of_line.name)
+                                    .type(PropertyType.end_of_line)
+                                    .value(PropertyType.EndOfLineValue.ofEndOfLineString(System.lineSeparator())?.name)
+                            )
+                            .closeSection()
+                    .build()
+            )
+        )
 
         private fun Path.toKtLint(): Code = Code.fromFile(this.toFile())
 
