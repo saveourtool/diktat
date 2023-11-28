@@ -51,14 +51,14 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
             editorConfigDefaults = EditorConfigDefaults(
                 EditorConfig.builder()
                     .openSection()
-                            .glob(Glob("**"))
-                            .property(
-                                Property.builder()
-                                    .name(PropertyType.end_of_line.name)
-                                    .type(PropertyType.end_of_line)
-                                    .value(PropertyType.EndOfLineValue.ofEndOfLineString(System.lineSeparator())?.name)
-                            )
-                            .closeSection()
+                    .glob(Glob("**"))
+                    .property(
+                        Property.builder()
+                            .name(PropertyType.end_of_line.name)
+                            .type(PropertyType.end_of_line)
+                            .value(PropertyType.EndOfLineValue.ofEndOfLineString(System.lineSeparator())?.name)
+                    )
+                    .closeSection()
                     .build()
             )
         )
