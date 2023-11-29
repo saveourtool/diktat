@@ -4,6 +4,7 @@
 
 package com.saveourtool.diktat.ruleset.utils
 
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -76,3 +77,25 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
  * @return name of a function which is called in a [KtCallExpression] or null if it can't be found
  */
 fun KtCallExpression.getFunctionName() = (calleeExpression as? KtNameReferenceExpression)?.getReferencedName()
+
+/**
+ * Check weather node is private
+ *
+ * @return true if node is private
+ */
+fun PsiElement?.isPrivate(): Boolean {
+    val privateNode = this?.children?.filter { child -> child.text == "private" }
+    return privateNode != null
+}
+
+/**
+ * Check weather node has getter or setter
+ *
+ * @return true if node has getter or setter
+ */
+fun PsiElement?.hasSetterOrGetter(): Boolean {
+    val getterOrSetterNode = this?.children?.filter { child ->
+        child.text.startsWith("get(") || child.text.startsWith("set(")
+    }
+    return getterOrSetterNode?.let { getterOrSetterNode.isNotEmpty() } ?: false
+}

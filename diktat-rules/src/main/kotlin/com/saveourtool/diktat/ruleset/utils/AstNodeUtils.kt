@@ -17,7 +17,6 @@ import com.saveourtool.diktat.common.config.rules.Rule
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import com.saveourtool.diktat.ruleset.rules.chapter1.PackageNaming
-
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATED_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.ANNOTATION_ENTRY
@@ -40,6 +39,8 @@ import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.openapi.util.Key
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiIdentifier
+import org.jetbrains.kotlin.com.intellij.psi.PsiTypeElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -70,11 +71,12 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
-
 import java.util.Locale
 
 /**
@@ -490,9 +492,10 @@ fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSe
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
-fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
-                                      excludeChildrenCondition: AstNodePredicate = { false },
-                                      condition: AstNodePredicate,
+fun ASTNode.findAllNodesWithCondition(
+    withSelf: Boolean = true,
+    excludeChildrenCondition: AstNodePredicate = { false },
+    condition: AstNodePredicate,
 ): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null)
@@ -1187,29 +1190,31 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
  */
 @Suppress("CyclomaticComplexMethod")
 internal fun isPairPropertyBackingField(propertyNode: ASTNode?, backingFieldNode: ASTNode?): Boolean {
-    val node = propertyNode ?: backingFieldNode
-    val propertyListNullable = (node?.treeParent?.getAllChildrenWithType(PROPERTY)) ?: return false
-    val propertyList: List<ASTNode> = propertyListNullable
-    val nodeType = node.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
-    val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
-    val nodeName = node.getFirstChildWithType(IDENTIFIER)?.text
+    val node = (propertyNode ?: backingFieldNode)
+    val propertyList = node?.treeParent
+        ?.getAllChildrenWithType(PROPERTY)
+        ?.map { it.psi as KtProperty }
 
-    val matchingNode = propertyList.find {pairNode ->
-        val propertyType = pairNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+    val psiNode = node?.psi
+    val psiNodeType = psiNode?.getChildOfType<PsiTypeElement>()
+    val psiNodeName = psiNode?.getChildOfType<PsiIdentifier>()?.text
+
+    val matchingNode = propertyList?.find {pairNode ->
+        val propertyType: PsiElement? = pairNode.getChildOfType<PsiTypeElement>()
         // check that property and backing field has same type
-        val sameType = nodeType?.text == propertyType?.text
-        // check that property USER_TYPE is same as backing field NULLABLE_TYPE
-        val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
-                nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
+        val sameType = (psiNodeType?.text == propertyType?.text ||
+                (psiNodeType?.text?.last() == '?' &&
+                        psiNodeType.text?.dropLast(1) == propertyType?.text))
+
         // check matching names
-        val propertyName = pairNode.getFirstChildWithType(IDENTIFIER)?.text
-        val matchingNames = propertyNode?.let { nodeName == propertyName?.drop(1) } ?: run { nodeName?.drop(1) == propertyName }
+        val propertyName = pairNode.getChildOfType<PsiIdentifier>()?.text
+        val matchingNames = propertyNode?.let { psiNodeName == propertyName?.drop(1) } ?: run { psiNodeName?.drop(1) == propertyName }
 
-        val isPrivate = propertyNode?.let { pairNode.isPrivate() } ?: run { node.isPrivate() }
-        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterOrGetter() } ?: run { !node.hasSetterOrGetter() }
-        val hasSetterOrGetterProperty = propertyNode?.let { node.hasSetterOrGetter() } ?: run { pairNode.hasSetterOrGetter() }
+        val isPrivate = propertyNode?.let { pairNode.isPrivate() } ?: run { psiNode.isPrivate() }
+        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterOrGetter() } ?: run { !psiNode.hasSetterOrGetter() }
+        val hasSetterOrGetterProperty = propertyNode?.let { psiNode.hasSetterOrGetter() } ?: run { pairNode.hasSetterOrGetter() }
 
-        matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
+        matchingNames && sameType && isPrivate &&
                 noSetterGetterBackingField && hasSetterOrGetterProperty
     }
     return matchingNode?.let { true } ?: false
