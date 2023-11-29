@@ -118,13 +118,17 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
 
-        val parametersInTypeParameterList = typeParameterListNode
-            ?.findChildrenMatching { it.elementType == TYPE_PARAMETER }
-            ?.mapNotNull { it.findChildByType(IDENTIFIER)?.text } ?: emptyList()
+        val getParametersFromListNode = { parameterListNode: ASTNode? ->
+            parameterListNode?.let { node ->
+                val parameterType = if (parameterListNode.elementType == TYPE_PARAMETER_LIST) TYPE_PARAMETER else VALUE_PARAMETER
 
-        val parametersInValueParameterList = valueParameterListNode
-            ?.findChildrenMatching { it.elementType == VALUE_PARAMETER }
-            ?.mapNotNull { it.findChildByType(IDENTIFIER)?.text } ?: emptyList()
+                node.findChildrenMatching { it.elementType == parameterType }
+                    .mapNotNull { it.findChildByType(IDENTIFIER)?.text }
+            } ?: emptyList()
+        }
+
+        val parametersInTypeParameterList = getParametersFromListNode(typeParameterListNode)
+        val parametersInValueParameterList = getParametersFromListNode(valueParameterListNode)
 
         parametersInKdoc
             .filter { it.getSubjectName() != null && it.getSubjectName() !in (parametersInTypeParameterList + parametersInValueParameterList) }
