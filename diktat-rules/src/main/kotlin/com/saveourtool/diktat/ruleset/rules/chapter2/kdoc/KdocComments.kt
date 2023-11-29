@@ -23,6 +23,8 @@ import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.PRIMARY_CONSTRUCTOR
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
@@ -76,8 +78,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             when (node.elementType) {
                 KtFileElementType.INSTANCE -> checkTopLevelDoc(node)
                 CLASS -> checkClassElements(node)
-                VALUE_PARAMETER -> checkValueParameter(node)
-                PRIMARY_CONSTRUCTOR -> checkParameterList(node.findChildByType(VALUE_PARAMETER_LIST))
                 BLOCK -> checkKdocPresent(node)
                 else -> {
                     // this is a generated else block
@@ -102,28 +102,34 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun checkParameterList(node: ASTNode?) {
-        val kdocBeforeClass = node
-            ?.parent { it.elementType == CLASS }
-            ?.findChildByType(KDOC) ?: return
+    private fun checkParameterList(classNode: ASTNode, typeParameterListNode: ASTNode?, valueParameterListNode: ASTNode?) {
+        if (typeParameterListNode == null && valueParameterListNode == null) {
+            return
+        }
+
+        val kdocBeforeClass = classNode.findChildByType(KDOC)
+            ?: return
 
         val parametersInKdoc = kdocBeforeClass
             .kDocTags()
             .filter { it.knownTag == KDocKnownTag.PROPERTY || it.knownTag == KDocKnownTag.PARAM }
 
-        val parametersInConstructor = node
-            .findChildrenMatching { it.elementType == VALUE_PARAMETER }
-            .mapNotNull { it.findChildByType(IDENTIFIER)?.text }
+        val parametersInTypeParameterList = typeParameterListNode
+            ?.findChildrenMatching { it.elementType == TYPE_PARAMETER }
+            ?.mapNotNull { it.findChildByType(IDENTIFIER)?.text } ?: emptyList()
+
+        val parametersInValueParameterList = valueParameterListNode
+            ?.findChildrenMatching { it.elementType == VALUE_PARAMETER }
+            ?.mapNotNull { it.findChildByType(IDENTIFIER)?.text } ?: emptyList()
 
         parametersInKdoc
-            .filterNot { it.getSubjectName() == null || it.getSubjectName() in parametersInConstructor }
-            .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, it.text, it.node.startOffset, node) }
+            .filter { it.getSubjectName() != null && it.getSubjectName() !in  (parametersInTypeParameterList + parametersInValueParameterList) }
+            .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, it.text, it.node.startOffset, classNode) }
     }
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
-    private fun checkValueParameter(valueParameterNode: ASTNode) {
-        if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                valueParameterNode.parents().any { it.elementType == TYPE_REFERENCE }) {
+    private fun checkValueParameter(classNode: ASTNode, valueParameterNode: ASTNode) {
+        if (valueParameterNode.parents().any { it.elementType == TYPE_REFERENCE }) {
             return
         }
 
@@ -139,7 +145,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             null
         }
 
-        val kdocBeforeClass = valueParameterNode.parent { it.elementType == CLASS }!!.findChildByType(KDOC)
+        val kdocBeforeClass = classNode.findChildByType(KDOC)
         val isParamTagNeeded = (!valueParameterNode.hasChildOfType(VAL_KEYWORD) && !valueParameterNode.hasChildOfType(VAR_KEYWORD)) ||
                 !valueParameterNode.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
 
@@ -153,6 +159,15 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 checkBasicKdocBeforeClass(valueParameterNode, kdocBeforeClass, isParamTagNeeded)
             }
             ?: createKdocBasicKdoc(valueParameterNode, isParamTagNeeded)
+    }
+
+    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
+    private fun checkTypeParameter(classNode: ASTNode, typeParameterNode: ASTNode) {
+        val kdocBeforeClass = classNode.findChildByType(KDOC)
+
+        kdocBeforeClass?.let {
+            checkBasicKdocBeforeClass(typeParameterNode, kdocBeforeClass, true)
+        } ?: createKdocBasicKdoc(typeParameterNode, true)
     }
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
@@ -182,10 +197,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         } ?: run {
-            val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
-            val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
-
-            if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+            if (isNeedToWarn(node, isParamTagNeeded)) {
                 val warningText = if (isParamTagNeeded) "add param <$parameterName> to KDoc" else "add property <$parameterName> to KDoc"
 
                 KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
@@ -194,6 +206,17 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
+    }
+
+    private fun isNeedToWarn(node:ASTNode, isParamTagNeeded: Boolean): Boolean {
+        val isParameter = node.elementType == VALUE_PARAMETER && !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
+        val isPrivateProperty = node.elementType == VALUE_PARAMETER && !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
+        val isTypeParameterNode = node.elementType == TYPE_PARAMETER
+
+        return !isParamTagNeeded ||
+                (isParameter && configuration.isParamTagsForParameters) ||
+                (isPrivateProperty && configuration.isParamTagsForPrivateProperties) ||
+                (isTypeParameterNode && configuration.isParamTagsForGenericTypes)
     }
 
     private fun replaceWrongTagInClassKdoc(
@@ -271,10 +294,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocBasicKdoc(node: ASTNode, isParamTagNeeded: Boolean) {
-        val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
-        val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
-
-        if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+        if (isNeedToWarn(node, isParamTagNeeded)) {
             val parameterName = node.findChildByType(IDENTIFIER)!!.text
             val warningText = if (isParamTagNeeded) "add param <$parameterName> to KDoc" else "add property <$parameterName> to KDoc"
 
@@ -295,10 +315,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         prevComment: ASTNode,
         isParamTagNeeded: Boolean
     ) {
-        val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
-        val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
-
-        if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+        if (isNeedToWarn(node, isParamTagNeeded)) {
             val parameterName = node.findChildByType(IDENTIFIER)!!.text
             val classNode = node.parent { it.elementType == CLASS }!!
 
@@ -409,10 +426,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
             ?: run {
-                val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
-                val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
-
-                if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+                if (isNeedToWarn(node, isParamTagNeeded)) {
                     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
                         val newKdocText = if (isParamTagNeeded) "* @param $parameterName$commentText\n " else "* @property $parameterName$commentText\n "
                         insertTextInKdoc(kdocBeforeClass, checkOneNewLineAfterKdocClassDescription(kdocBeforeClass, newKdocText, isFirstTagInKdoc))
@@ -462,10 +476,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
             ?: run {
-                val isParameter = !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
-                val isPrivateProperty = !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
-
-                if (!isParamTagNeeded || (isParameter && configuration.isParamTagsForParameters) || (isPrivateProperty && configuration.isParamTagsForPrivateProperties)) {
+                if (isNeedToWarn(node, isParamTagNeeded)) {
                     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
                         val newKdocText = if (isParamTagNeeded) {
                             "* @param $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
@@ -540,12 +551,25 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             } ?: kdocTagNode.addChild(LeafPsiElement(KDocTokens.TEXT, content), null)
     }
 
-    private fun checkClassElements(node: ASTNode) {
-        val modifier = node.getFirstChildWithType(MODIFIER_LIST)
-        val classBody = node.getFirstChildWithType(CLASS_BODY)
+    private fun checkClassElements(classNode: ASTNode) {
+        val modifierList = classNode.getFirstChildWithType(MODIFIER_LIST)
+        val typeParameterList = classNode.getFirstChildWithType(TYPE_PARAMETER_LIST)
+        val valueParameterList = classNode.getFirstChildWithType(PRIMARY_CONSTRUCTOR)?.getFirstChildWithType(VALUE_PARAMETER_LIST)
+        val classBody = classNode.getFirstChildWithType(CLASS_BODY)
+        val classKdoc = classNode.getFirstChildWithType(KDOC)
+
+        checkParameterList(classNode, typeParameterList, valueParameterList)
+
+        typeParameterList
+            ?.findChildrenMatching { it.elementType == TYPE_PARAMETER }
+            ?.forEach { checkTypeParameter(classNode, it) }
+
+        valueParameterList
+            ?.findChildrenMatching { it.elementType == VALUE_PARAMETER }
+            ?.forEach { checkValueParameter(classNode, it) }
 
         // if parent class is public or internal than we can check it's internal code elements
-        if (classBody != null && modifier.isAccessibleOutside()) {
+        if (classBody != null && modifierList.isAccessibleOutside()) {
             classBody
                 .getChildren(statementsToDocument)
                 .filterNot {
@@ -555,7 +579,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                     if (classElement.elementType == PROPERTY) {
                         // we check if property declared in class body is also documented in class header via
                         // `@property` tag
-                        val classKdoc = node.getFirstChildWithType(KDOC)
                         val propertyInClassKdoc = classKdoc?.kDocTags()?.find {
                             it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == classElement.getIdentifierName()?.text
                         }
@@ -614,6 +637,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
          * Create param tags for private properties
          */
         val isParamTagsForPrivateProperties = config["isParamTagsForPrivateProperties"]?.toBoolean() ?: true
+
+        /**
+         * Create param tags for generic types
+         */
+        val isParamTagsForGenericTypes = config["isParamTagsForGenericTypes"]?.toBoolean() ?: true
     }
 
     companion object {

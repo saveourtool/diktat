@@ -179,7 +179,7 @@ class A constructor(
  * class
  * comment
  */
-open class B constructor(
+open class B<K : Any> constructor(
     //single-line comment
     open val openName: String,
     /*
@@ -204,7 +204,7 @@ open class B constructor(
  * class
  * comment
  */
-class A constructor(
+class A<K : Any, P: Any, G: Any> constructor(
     //single-line comment
     private val privateName: String,
     //single-line comment
@@ -307,4 +307,4 @@ class A constructor(
      * comment
      */
     paramAddr: String,
-) : B() {}
+) : B<K>(), C<P>, D<G> {}
