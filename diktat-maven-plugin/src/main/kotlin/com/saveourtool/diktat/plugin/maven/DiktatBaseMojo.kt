@@ -2,9 +2,12 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.api.DiktatReporterCreationArguments
-import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.diktatRunnerFactory
+import com.saveourtool.diktat.plugin.maven.reporters.GitHubActionsReporter
+import com.saveourtool.diktat.plugin.maven.reporters.PlainReporter
+import com.saveourtool.diktat.plugin.maven.reporters.Reporter
+import com.saveourtool.diktat.plugin.maven.reporters.Reporters
+import com.saveourtool.diktat.util.isKotlinCodeOrScript
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.Mojo
@@ -14,11 +17,8 @@ import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.Path
 import kotlin.io.path.inputStream
 import kotlin.io.path.isRegularFile
 
@@ -33,17 +33,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     var githubActions = false
 
     /**
-     * Type of the reporter to use
+     * The reporters to use
      */
-    @Parameter(property = "diktat.reporter")
-    var reporter = "plain"
-
-    /**
-     * Type of output
-     * Default: System.out
-     */
-    @Parameter(property = "diktat.output")
-    var output = ""
+    @Parameter
+    var reporters: Reporters? = null
 
     /**
      * Baseline file, containing a list of errors that will be ignored.
@@ -95,27 +88,28 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if an exception in __KtLint__ has been thrown
      */
     override fun execute() {
-        val configFile = resolveConfig()
-        if (configFile.isRegularFile()) {
-            throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
-        }
+        val configFile = resolveConfig() ?: throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
-        val sourceRootDir = mavenProject.basedir.parentFile.toPath()
-        val reporterType = getReporterType()
-        val reporterArgs = DiktatReporterCreationArguments(
-            reporterType = reporterType,
-            outputStream = getReporterOutput(),
-            sourceRootDir = sourceRootDir.takeIf { reporterType == DiktatReporterType.SARIF },
-        )
+        val sourceRootDir = generateSequence(mavenProject) { it.parent }.last().basedir.toPath()
+        val reporters: List<Reporter> = (reporters?.getAll() ?: listOf(PlainReporter()))
+            .let { all ->
+                if (githubActions && all.filterIsInstance<GitHubActionsReporter>().isEmpty()) {
+                    all + GitHubActionsReporter()
+                } else {
+                    all
+                }
+            }
+
+        val reporterArgsList = reporters.map { it.toCreationArguments(mavenProject, sourceRootDir) }
         val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
-            files = inputs.map(::Path),
+            files = files(),
             baselineFile = baseline?.toPath(),
-            reporterArgsList = listOf(reporterArgs),
+            reporterArgsList = reporterArgsList,
         )
         val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(
@@ -127,31 +121,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun getReporterType(): DiktatReporterType = if (githubActions) {
-        DiktatReporterType.SARIF
-    } else {
-        DiktatReporterType.entries.firstOrNull { it.id.equals(reporter, ignoreCase = true) } ?: run {
-            log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
-            DiktatReporterType.PLAIN
-        }
-    }
-
-    private fun getReporterOutput(): OutputStream? = if (output.isNotBlank()) {
-        FileOutputStream(this.output, false)
-    } else if (githubActions) {
-        FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false)
-    } else {
-        null
-    }
-
     /**
      * Function that searches diktat config file in maven project hierarchy.
      * If [diktatConfigFile] is absolute, it's path is used. If [diktatConfigFile] is relative, this method looks for it in all maven parent projects.
      * This way config file can be placed in parent module directory and used in all child modules too.
      *
-     * @return a configuration file. File by this path might not exist.
+     * @return a configuration file. File by this path exists.
      */
-    private fun resolveConfig(): Path {
+    private fun resolveConfig(): Path? {
         val file = Paths.get(diktatConfigFile)
         if (file.isAbsolute) {
             return file
@@ -159,8 +136,30 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
         return generateSequence(mavenProject) { it.parent }
             .map { it.basedir.toPath().resolve(diktatConfigFile) }
-            .run {
-                firstOrNull { it.isRegularFile() } ?: first()
-            }
+            .firstOrNull { it.isRegularFile() }
     }
+
+    private fun files(): List<Path> {
+        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
+        return inputs
+            .asSequence()
+            .map(::File)
+            .flatMap {
+                it.files(excludedDirs, excludedFiles)
+            }
+            .map { it.toPath() }
+            .toList()
+    }
+
+    @Suppress("TYPE_ALIAS")
+    private fun File.files(
+        excludedDirs: List<File>,
+        excludedFiles: List<File>,
+    ): Sequence<File> = walk()
+        .filter { file ->
+            file.isFile && file.toPath().isKotlinCodeOrScript()
+        }
+        .filterNot { file ->
+            file in excludedFiles || excludedDirs.any { file.startsWith(it) }
+        }
 }
