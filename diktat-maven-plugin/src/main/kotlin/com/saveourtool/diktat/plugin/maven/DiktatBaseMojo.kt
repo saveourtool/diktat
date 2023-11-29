@@ -2,6 +2,7 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
+import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.diktatRunnerFactory
 import com.saveourtool.diktat.plugin.maven.reporters.GitHubActionsReporter
 import com.saveourtool.diktat.plugin.maven.reporters.PlainReporter
@@ -104,14 +105,17 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
 
         val reporterArgsList = reporters.map { it.toCreationArguments(mavenProject, sourceRootDir) }
-        val args = DiktatRunnerArguments(
+        val factoryArgs = DiktatRunnerFactoryArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
-            files = files(),
             baselineFile = baseline?.toPath(),
             reporterArgsList = reporterArgsList,
         )
-        val diktatRunner = diktatRunnerFactory(args)
+        val diktatRunner = diktatRunnerFactory(factoryArgs)
+        val args = DiktatRunnerArguments(
+
+            files = files(),
+        )
         val errorCounter = runAction(
             runner = diktatRunner,
             args = args,

@@ -2,6 +2,7 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
+import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
@@ -106,7 +107,7 @@ abstract class DiktatTaskBase(
     internal val shouldRun: Boolean by lazy {
         !actualInputs.isEmpty
     }
-    private val diktatRunnerArguments by lazy {
+    private val diktatRunnerFactoryArguments by lazy {
         val sourceRootDir by lazy {
             project.rootProject.projectDir.toPath()
         }
@@ -122,6 +123,14 @@ abstract class DiktatTaskBase(
                     sourceRootDir = sourceRootDir.takeIf { reporter.type == DiktatReporterType.SARIF },
                 )
             }
+        DiktatRunnerFactoryArguments(
+            configInputStream = configFile.get().asFile.inputStream(),
+            sourceRootDir = sourceRootDir,
+            baselineFile = baselineFile.map { it.asFile.toPath() }.orNull,
+            reporterArgsList = reporterCreationArgumentsList,
+        )
+    }
+    private val diktatRunnerArguments by lazy {
         val loggingListener = object : DiktatProcessorListener {
             override fun beforeAll(files: Collection<Path>) {
                 project.logger.info("Analyzing {} files with diktat in project {}", files.size, project.name)
@@ -132,11 +141,7 @@ abstract class DiktatTaskBase(
             }
         }
         DiktatRunnerArguments(
-            configInputStream = configFile.get().asFile.inputStream(),
-            sourceRootDir = sourceRootDir,
             files = actualInputs.files.map { it.toPath() },
-            baselineFile = baselineFile.map { it.asFile.toPath() }.orNull,
-            reporterArgsList = reporterCreationArgumentsList,
             loggingListener = loggingListener,
         )
     }
@@ -146,7 +151,7 @@ abstract class DiktatTaskBase(
      */
     @get:Internal
     val diktatRunner by lazy {
-        diktatRunnerFactory(diktatRunnerArguments)
+        diktatRunnerFactory(diktatRunnerFactoryArguments)
     }
 
     init {

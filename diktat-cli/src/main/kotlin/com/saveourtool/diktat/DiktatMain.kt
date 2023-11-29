@@ -33,12 +33,12 @@ fun main(args: Array<String>) {
         "Loading diktatRuleSet using config ${properties.config}"
     }
     val currentFolder = Paths.get(".").toAbsolutePath().normalize()
-    val diktatRunnerArguments = properties.toRunnerArguments(
+    val (diktatRunnerCreationArguments, diktatRunnerArguments) = properties.toRunnerArguments(
         sourceRootDir = currentFolder,
         loggingListener = loggingListener,
     )
 
-    val diktatRunner = diktatRunnerFactory(diktatRunnerArguments)
+    val diktatRunner = diktatRunnerFactory(diktatRunnerCreationArguments)
     when (properties.mode) {
         DiktatMode.CHECK -> diktatRunner.checkAll(diktatRunnerArguments)
         DiktatMode.FIX -> diktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->

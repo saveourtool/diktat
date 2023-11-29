@@ -1,15 +1,7 @@
 package com.saveourtool.diktat
 
-import com.saveourtool.diktat.api.DiktatBaseline
+import com.saveourtool.diktat.api.*
 import com.saveourtool.diktat.api.DiktatBaseline.Companion.skipKnownErrors
-import com.saveourtool.diktat.api.DiktatBaselineFactory
-import com.saveourtool.diktat.api.DiktatProcessorListener
-import com.saveourtool.diktat.api.DiktatReporter
-import com.saveourtool.diktat.api.DiktatReporterFactory
-import com.saveourtool.diktat.api.DiktatRuleConfig
-import com.saveourtool.diktat.api.DiktatRuleConfigReader
-import com.saveourtool.diktat.api.DiktatRuleSet
-import com.saveourtool.diktat.api.DiktatRuleSetFactory
 import java.nio.file.Path
 
 /**
@@ -27,12 +19,12 @@ class DiktatRunnerFactory(
     private val diktatProcessorFactory: DiktatProcessorFactory,
     private val diktatBaselineFactory: DiktatBaselineFactory,
     val diktatReporterFactory: DiktatReporterFactory,
-) : Function1<DiktatRunnerArguments, DiktatRunner> {
+) : Function1<DiktatRunnerFactoryArguments, DiktatRunner> {
     /**
      * @param args
      * @return an instance of [DiktatRunner] created using [args]
      */
-    override fun invoke(args: DiktatRunnerArguments): DiktatRunner {
+    override fun invoke(args: DiktatRunnerFactoryArguments): DiktatRunner {
         val diktatRuleConfigs = diktatRuleConfigReader(args.configInputStream)
         val diktatRuleSet = diktatRuleSetFactory(diktatRuleConfigs)
         val processor = diktatProcessorFactory(diktatRuleSet)
@@ -40,7 +32,7 @@ class DiktatRunnerFactory(
 
         val reporter = args.reporterArgsList
             .map { diktatReporterFactory(it) }
-            .let { DiktatReporter.union(it) }
+            .let { DiktatProcessorListener.union(it) }
 
         return DiktatRunner(
             diktatProcessor = processor,
