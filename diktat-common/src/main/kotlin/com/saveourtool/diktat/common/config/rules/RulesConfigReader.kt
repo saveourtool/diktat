@@ -4,9 +4,7 @@
 
 package com.saveourtool.diktat.common.config.rules
 
-import com.saveourtool.diktat.api.DiktatRuleConfig
 import com.saveourtool.diktat.common.config.reader.AbstractConfigReader
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -34,9 +32,7 @@ const val DIKTAT = "diktat"
  */
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
-const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
 
-typealias RulesConfig = DiktatRuleConfig
 
 /**
  * This interface represents individual inspection in rule set.
@@ -67,10 +63,6 @@ open class RulesConfigReader : AbstractConfigReader<List<RulesConfig>>() {
      * @return list of [RulesConfig]
      */
     override fun parse(inputStream: InputStream): List<RulesConfig> = yamlSerializer.decodeFromStream(inputStream)
-
-    companion object {
-        internal val log: KLogger = KotlinLogging.logger {}
-    }
 }
 
 /**
@@ -124,6 +116,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     companion object {
+        internal val log: KLogger = KotlinLogging.logger {}
         /**
          * Counter that helps not to raise multiple warnings about kotlin version
          */

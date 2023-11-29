@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.log4j2.core)
     implementation(libs.log4j2.slf4j2)
 
+    testImplementation(projects.diktatConfiguration)
     testImplementation(projects.diktatKtlintEngine)
     testImplementation(projects.diktatRules)
     testImplementation(projects.diktatCommonTest)

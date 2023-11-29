@@ -1,5 +1,7 @@
-package com.saveourtool.diktat.common.config.reader
+package com.saveourtool.diktat.config
 
+import com.saveourtool.diktat.api.DiktatRuleConfig
+import com.saveourtool.diktat.api.DiktatRuleConfigReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.IOException
 import java.io.InputStream
@@ -11,15 +13,15 @@ import kotlin.jvm.Throws
  * 1) implement this class with implementing the method:
  *    a. parse - implement parser for your file format (for example parse it to a proper json)
  * 2) Use your new class MyReader().read(someInputStream)
- *
- * @param T - class name parameter that will be used in calculation of classpath
  */
-abstract class AbstractConfigReader<T : Any> {
+abstract class AbstractDiktatRuleConfigReader : DiktatRuleConfigReader {
     /**
      * @param inputStream - input stream
-     * @return object of type [T] if resource has been parsed successfully
+     * @return list of [DiktatRuleConfig] if resource has been parsed successfully
      */
-    fun read(inputStream: InputStream): T? = try {
+    override fun invoke(inputStream: InputStream): List<DiktatRuleConfig> = read(inputStream).orEmpty()
+
+    private fun read(inputStream: InputStream): List<DiktatRuleConfig>? = try {
         parse(inputStream)
     } catch (e: IOException) {
         log.error(e) {
@@ -32,11 +34,11 @@ abstract class AbstractConfigReader<T : Any> {
      * you can specify your own parser, in example for parsing stream as a json
      *
      * @param inputStream a [InputStream] representing loaded content
-     * @return resource parsed as type [T]
+     * @return resource parsed as list of [DiktatRuleConfig]
      * @throws IOException
      */
     @Throws(IOException::class)
-    protected abstract fun parse(inputStream: InputStream): T
+    protected abstract fun parse(inputStream: InputStream): List<DiktatRuleConfig>
 
     companion object {
         private val log = KotlinLogging.logger {}

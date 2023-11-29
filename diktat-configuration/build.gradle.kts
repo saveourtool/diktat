@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.apache.commons.cli)
     implementation(libs.kotlin.logging)
     implementation(projects.diktatApi)
-    implementation(projects.diktatConfiguration)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
     testImplementation(libs.slf4j.api)

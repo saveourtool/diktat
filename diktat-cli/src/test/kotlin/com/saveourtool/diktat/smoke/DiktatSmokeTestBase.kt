@@ -10,13 +10,12 @@ import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader
+import com.saveourtool.diktat.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import com.saveourtool.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import com.saveourtool.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
-import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
@@ -77,7 +76,7 @@ abstract class DiktatSmokeTestBase {
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun prepareOverriddenRulesConfig(rulesToDisable: List<Warnings> = emptyList(), rulesToOverride: RuleToConfig = emptyMap()): Path {
-        val rulesConfig = RulesConfigReader().read(Paths.get(DEFAULT_CONFIG_PATH).inputStream())!!
+        val rulesConfig = DiktatRuleConfigYamlReader().invoke(Paths.get(DEFAULT_CONFIG_PATH).inputStream())
             .toMutableList()
             .also { rulesConfig ->
                 rulesToDisable.forEach { warning ->
