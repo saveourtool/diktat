@@ -1,7 +1,6 @@
 package com.saveourtool.diktat.cli
 
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
@@ -73,12 +72,12 @@ data class DiktatProperties(
     /**
      * @param sourceRootDir
      * @param loggingListener
-     * @return [DiktatRunnerFactoryArguments] created from [DiktatProperties]
+     * @return [DiktatRunnerArguments] created from [DiktatProperties]
      */
     fun toRunnerArguments(
         sourceRootDir: Path,
         loggingListener: DiktatProcessorListener,
-    ): Pair<DiktatRunnerFactoryArguments, DiktatRunnerArguments> {
+    ): DiktatRunnerArguments {
         val reporterCreationArguments = DiktatReporterCreationArguments(
             reporterType = reporterType,
             outputStream = getReporterOutput(),
@@ -86,13 +85,12 @@ data class DiktatProperties(
             colorNameInPlain = colorNameInPlain,
             sourceRootDir = sourceRootDir,
         )
-        return DiktatRunnerFactoryArguments(
+        return DiktatRunnerArguments(
             configInputStream = Paths.get(config).inputStream(),
             sourceRootDir = sourceRootDir,
+            files = getFiles(sourceRootDir),
             baselineFile = null,
             reporterArgsList = listOf(reporterCreationArguments),
-        ) to DiktatRunnerArguments(
-            files = getFiles(sourceRootDir),
             loggingListener = loggingListener,
         )
     }

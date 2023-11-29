@@ -26,22 +26,21 @@ private val loggingListener = object : DiktatProcessorListener {
 }
 
 fun main(args: Array<String>) {
-    val properties = DiktatProperties.parse(diktatRunnerFactory.diktatReporterFactory, args)
+    val properties = DiktatProperties.parse(diktatReporterFactory, args)
     properties.configureLogger()
 
     log.debug {
         "Loading diktatRuleSet using config ${properties.config}"
     }
     val currentFolder = Paths.get(".").toAbsolutePath().normalize()
-    val (diktatRunnerCreationArguments, diktatRunnerArguments) = properties.toRunnerArguments(
+    val diktatRunnerArguments = properties.toRunnerArguments(
         sourceRootDir = currentFolder,
         loggingListener = loggingListener,
     )
 
-    val diktatRunner = diktatRunnerFactory(diktatRunnerCreationArguments)
     when (properties.mode) {
-        DiktatMode.CHECK -> diktatRunner.checkAll(diktatRunnerArguments)
-        DiktatMode.FIX -> diktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->
+        DiktatMode.CHECK -> DiktatRunner.checkAll(diktatRunnerArguments)
+        DiktatMode.FIX -> DiktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->
             log.warn {
                 "Original and formatted content differ, writing to ${updatedFile.absolutePathString()}..."
             }
