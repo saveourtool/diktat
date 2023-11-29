@@ -90,7 +90,6 @@ fun String.toUpperSnakeCase(): String {
 fun String.toLowerCamelCase(): String {
     // PascalCase -> PASCAL_CASE
     if (this.isPascalCase()) {
-
         return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, this)
     }
     // lower -> LOWER

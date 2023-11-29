@@ -72,13 +72,11 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     lateinit var excludes: List<String>
 
     /**
-     * @param runner instance of [DiktatRunner] used in analysis
      * @param args arguments for [DiktatRunner]
      * @return count of errors
      */
     @Suppress("TOO_MANY_PARAMETERS")
     abstract fun runAction(
-        runner: DiktatRunner,
         args: DiktatRunnerArguments,
     ): Int
 
@@ -105,19 +103,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
 
         val reporterArgsList = reporters.map { it.toCreationArguments(mavenProject, sourceRootDir) }
-        val factoryArgs = DiktatRunnerFactoryArguments(
+        val args = DiktatRunnerArguments(
             configInputStream = configFile.inputStream(),
             sourceRootDir = sourceRootDir,
+            files = files(),
             baselineFile = baseline?.toPath(),
             reporterArgsList = reporterArgsList,
         )
-        val diktatRunner = diktatRunnerFactory(factoryArgs)
-        val args = DiktatRunnerArguments(
-
-            files = files(),
-        )
         val errorCounter = runAction(
-            runner = diktatRunner,
             args = args,
         )
         if (errorCounter > 0) {
