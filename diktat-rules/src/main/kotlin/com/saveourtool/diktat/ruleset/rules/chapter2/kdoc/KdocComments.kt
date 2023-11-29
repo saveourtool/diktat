@@ -102,7 +102,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun checkParameterList(classNode: ASTNode, typeParameterListNode: ASTNode?, valueParameterListNode: ASTNode?) {
+    private fun checkParameterList(
+        classNode: ASTNode,
+        typeParameterListNode: ASTNode?,
+        valueParameterListNode: ASTNode?
+    ) {
         if (typeParameterListNode == null && valueParameterListNode == null) {
             return
         }
@@ -123,7 +127,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             ?.mapNotNull { it.findChildByType(IDENTIFIER)?.text } ?: emptyList()
 
         parametersInKdoc
-            .filter { it.getSubjectName() != null && it.getSubjectName() !in  (parametersInTypeParameterList + parametersInValueParameterList) }
+            .filter { it.getSubjectName() != null && it.getSubjectName() !in (parametersInTypeParameterList + parametersInValueParameterList) }
             .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, it.text, it.node.startOffset, classNode) }
     }
 
@@ -208,7 +212,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isNeedToWarn(node:ASTNode, isParamTagNeeded: Boolean): Boolean {
+    private fun isNeedToWarn(node: ASTNode, isParamTagNeeded: Boolean): Boolean {
         val isParameter = node.elementType == VALUE_PARAMETER && !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)
         val isPrivateProperty = node.elementType == VALUE_PARAMETER && !node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()
         val isTypeParameterNode = node.elementType == TYPE_PARAMETER
