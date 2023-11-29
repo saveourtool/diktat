@@ -439,6 +439,7 @@
   configuration:
     isParamTagsForParameters: true # create param tags for parameters without val or var
     isParamTagsForPrivateProperties: true # create param tags for private properties
+    isParamTagsForGenericTypes: true # create param tags for generic types
 # Checks that the long lambda has parameters
 - name: TOO_MANY_LINES_IN_LAMBDA
   enabled: true
