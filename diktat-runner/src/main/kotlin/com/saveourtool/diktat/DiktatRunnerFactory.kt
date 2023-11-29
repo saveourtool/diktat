@@ -1,7 +1,14 @@
 package com.saveourtool.diktat
 
-import com.saveourtool.diktat.api.*
+import com.saveourtool.diktat.api.DiktatBaseline
 import com.saveourtool.diktat.api.DiktatBaseline.Companion.skipKnownErrors
+import com.saveourtool.diktat.api.DiktatBaselineFactory
+import com.saveourtool.diktat.api.DiktatProcessorListener
+import com.saveourtool.diktat.api.DiktatReporter
+import com.saveourtool.diktat.api.DiktatReporterFactory
+import com.saveourtool.diktat.api.DiktatRuleConfigReader
+import com.saveourtool.diktat.api.DiktatRuleSetFactory
+
 import java.nio.file.Path
 
 /**

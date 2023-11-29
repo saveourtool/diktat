@@ -2,8 +2,8 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.DiktatRunnerFactory
+import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
@@ -35,8 +35,8 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import java.nio.file.Files
 
+import java.nio.file.Files
 import java.nio.file.Path
 
 /**
