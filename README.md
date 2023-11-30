@@ -53,14 +53,14 @@ Main features of diktat are the following:
    ```shell
    # another option is "brew install ktlint"
 
-   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint && chmod a+x ktlint
+   curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.0.1/ktlint && chmod a+x ktlint
    ```
 
-1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar)
+2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar)
 
    **OR** use `curl`:
    ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar && chmod a+x diktat-1.2.5.jar
+   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v2.0.0/diktat-2.0.0.jar && chmod a+x diktat-2.0.0.jar
    ```
 
 ### Run diKTat
@@ -74,14 +74,8 @@ $ ./ktlint -R diktat.jar --disabled_rules=standard,experimental,test,custom "dir
 To **autofix** all code style violations, use `-F` option.
 
 ## Run with Maven using diktat-maven-plugin
-:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
-This can be done by setting `MAVEN_OPTS` variable:
 
-```
-export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
-```
-
-This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>
@@ -162,6 +156,9 @@ Requesting a specific _Maven_ `executionId` on the command line (the trailing
     ```
     </details>
 
+    * You can omit the `diktatConfigFile` or it points to non-existed file
+      then DiKTat runs with default configuration.
+
 If you omit the `executionId`:
 
 ```console
@@ -173,16 +170,16 @@ $ mvn diktat:check
 rule sets by editing the YAML file).
 
 ## Run with Gradle using diktat-gradle-plugin
-Requires a gradle version no lower than 5.3.
+Requires a gradle version no lower than 7.0
 
-This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
+You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 
 <details>
 <summary>Add this plugin to your `build.gradle.kts`:</summary>
 
 ```kotlin
 plugins {
-    id("com.saveourtool.diktat.diktat-gradle-plugin") version "1.2.5"
+    id("com.saveourtool.diktat.diktat-gradle-plugin") version "2.0.0"
 }
 ```
 
@@ -193,7 +190,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.saveourtool.diktat:diktat-gradle-plugin:1.2.5")
+        classpath("com.saveourtool.diktat:diktat-gradle-plugin:2.0.0")
     }
 }
 
@@ -213,14 +210,20 @@ diktat {
 
 Also in `diktat` extension you can configure different reporters and their output. You can specify `json`, `html`, `sarif`, `plain` (default).
 If `output` is set, it should be a file path. If not set, results will be printed to stdout.
+You can specify multiple reporters.
+If no reporter is specified, `plain` will be used with `stdout` as output.
 ```kotlin
 diktat {
-    // since 1.2.5 to keep in line with maven properties
-    reporter = "json" // "html", "json", "plain" (default), "sarif"
-    // before 1.2.5
-    // reporterType = "json" // "html", "json", "plain" (default), "sarif"
-
-    output = "someFile.json"
+    reporters {
+        plain()
+        json()
+        html {
+            output = file("someFile.html")
+        }
+        // checkstyle()
+        // sarif()
+        // gitHubActions()
+    }
 }
 ```
 
@@ -259,7 +262,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.2.5").configFile("full/path/to/diktat-analysis.yml")
+      diktat("2.0.0").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -290,7 +293,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.2.5</version> <!-- optional -->
+  <version>2.0.0</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
@@ -337,7 +340,7 @@ the limit will be exceeded and the step will fail. To solve this issue one can m
 
 `diktat-gradle-plugin` provides this capability with `mergeDiktatReports` task. This task aggregates reports of all diktat tasks
 of all Gradle project, which produce SARIF reports, and outputs the merged report into root project's build directory. Then this single
-file can be used as an input for Github action:
+file can be used as an input for GitHub action:
 ```yaml
 with:
     sarif_file: build/reports/diktat/diktat-merged.sarif
