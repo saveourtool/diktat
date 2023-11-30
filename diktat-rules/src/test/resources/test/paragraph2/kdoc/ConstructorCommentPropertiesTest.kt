@@ -153,7 +153,7 @@ class A constructor(
  *   property
  *   info
  */
-open class B constructor(
+open class B<K : Any> constructor(
     //single-line comment
     open val openName: String,
     /*
@@ -174,6 +174,8 @@ open class B constructor(
 ) {}
 
 /**
+ * @property P generic type
+ * @param K generic type
  * @property internalName internal
  *   property info
  * @param openName override
@@ -183,7 +185,7 @@ open class B constructor(
  * @property openAddr override
  *   property info
  */
-class A constructor(
+class A<K : Any, P: Any, G: Any> constructor(
     //single-line comment
     private val privateName: String,
     //single-line comment
@@ -286,4 +288,4 @@ class A constructor(
      * comment
      */
     paramAddr: String,
-) : B() {}
+) : B<K>(), C<P>, D<G> {}

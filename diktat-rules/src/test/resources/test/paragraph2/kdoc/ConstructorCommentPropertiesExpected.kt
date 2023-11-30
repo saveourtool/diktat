@@ -143,11 +143,12 @@ class A constructor(
  * @property openAddr
  *   property
  *   info
+ * @param K
  * @property openBirthDate
  *   kdoc property
  *   comment
  */
-open class B constructor(
+open class B<K : Any> constructor(
     open val openName: String,
     open val openLastName: String,
     open val openBirthDate: String,
@@ -159,6 +160,8 @@ open class B constructor(
 ) {}
 
 /**
+ * @param P generic type
+ * @param K generic type
  * @property internalName internal
  *   property info
  *   single-line comment
@@ -171,6 +174,7 @@ open class B constructor(
  *   comment
  * @property openAddr override
  *   property info
+ * @param G
  * @param privateName single-line comment
  * @property protectedName single-line comment
  * @property name single-line comment
@@ -209,7 +213,7 @@ open class B constructor(
  *   kdoc property
  *   comment
  */
-class A constructor(
+class A<K : Any, P: Any, G: Any> constructor(
     private val privateName: String,
     protected val protectedName: String,
     internal val internalName: String,
@@ -258,4 +262,4 @@ class A constructor(
      * comment
      */
     paramAddr: String,
-) : B() {}
+) : B<K>(), C<P>, D<G> {}
