@@ -75,7 +75,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @param args arguments for [DiktatRunner]
      * @return count of errors
      */
-    @Suppress("TOO_MANY_PARAMETERS")
     abstract fun runAction(
         runner: DiktatRunner,
         args: DiktatRunnerArguments,
