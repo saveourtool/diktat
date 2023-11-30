@@ -1,7 +1,7 @@
 package com.saveourtool.diktat.ruleset.constants
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
+import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.utils.isDigits
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 

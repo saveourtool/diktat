@@ -1,15 +1,9 @@
 package com.saveourtool.diktat.ruleset.config
 
-import com.saveourtool.diktat.api.DiktatRuleConfig
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
-
-/**
- * Name of common configuration
- */
-const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
 /**
  * class returns the list of common configurations that we have read from a configuration map
@@ -72,11 +66,6 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 }
 
 /**
- * @return common configuration from list of all rules configuration
- */
-fun List<DiktatRuleConfig>.getCommonConfiguration() = CommonConfiguration(getCommonConfig()?.configuration)
-
-/**
  * Parse string into KotlinVersion
  *
  * @return KotlinVersion from configuration
@@ -92,8 +81,3 @@ internal fun String.kotlinVersion(): KotlinVersion {
         KotlinVersion(versions[0], versions[1], versions[2])
     }
 }
-
-/**
- * Get [DiktatRuleConfig] representing common configuration part that can be used in any rule
- */
-private fun List<DiktatRuleConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }

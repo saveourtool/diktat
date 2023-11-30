@@ -2,8 +2,8 @@ package com.saveourtool.diktat.ruleset.rules.chapter2.kdoc
 
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
+import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
-import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.constants.Warnings.COMMENTED_BY_KDOC
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_DUPLICATE_PROPERTY

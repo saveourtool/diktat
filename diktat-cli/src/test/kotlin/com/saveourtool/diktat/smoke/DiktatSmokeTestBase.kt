@@ -9,7 +9,7 @@ package com.saveourtool.diktat.smoke
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.config.DIKTAT_COMMON
+import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR

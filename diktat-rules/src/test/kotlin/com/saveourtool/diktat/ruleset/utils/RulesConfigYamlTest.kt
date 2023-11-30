@@ -1,6 +1,6 @@
 package com.saveourtool.diktat.ruleset.utils
 
-import com.saveourtool.diktat.ruleset.config.DIKTAT_COMMON
+import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.config.kotlinVersion
 import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
