@@ -1,5 +1,5 @@
 /**
- * Contains only initialized [com.saveourtool.diktat.DiktatRunnerFactory]
+ * Contains only initialized factories
  */
 
 package com.saveourtool.diktat

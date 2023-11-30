@@ -16,8 +16,9 @@ import org.apache.maven.plugins.annotations.Mojo
 @Suppress("unused")
 class DiktatCheckMojo : DiktatBaseMojo() {
     override fun runAction(
+        runner: DiktatRunner,
         args: DiktatRunnerArguments,
-    ): Int = DiktatRunner.checkAll(args)
+    ): Int = runner.checkAll(args)
 }
 
 /**
@@ -28,8 +29,9 @@ class DiktatCheckMojo : DiktatBaseMojo() {
 @Suppress("unused")
 class DiktatFixMojo : DiktatBaseMojo() {
     override fun runAction(
+        runner: DiktatRunner,
         args: DiktatRunnerArguments,
-    ): Int = DiktatRunner.fixAll(args) { updatedFile ->
+    ): Int = runner.fixAll(args) { updatedFile ->
         log.info("Original and formatted content differ, writing to ${updatedFile.fileName}...")
     }
 }

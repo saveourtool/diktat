@@ -1,7 +1,5 @@
 package com.saveourtool.diktat
 
-import com.saveourtool.diktat.api.DiktatBaseline
-import com.saveourtool.diktat.api.DiktatBaseline.Companion.skipKnownErrors
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatProcessorListener.Companion.countErrorsAsProcessorListener
 import com.saveourtool.diktat.api.DiktatReporter
@@ -9,13 +7,34 @@ import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
-
 private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
 
 /**
  * A runner for diktat on bunch of files using baseline and reporter
+ *
+ * @param diktatProcessor
+ * @property diktatReporter
  */
-object DiktatRunner {
+data class DiktatRunner(
+    private val diktatProcessor: DiktatProcessor,
+    val diktatReporter: DiktatReporter,
+) {
+    private fun doRun(
+        args: DiktatRunnerArguments,
+        runAction: RunAction,
+    ): Int {
+        val errorCounter = AtomicInteger()
+        runAction(
+            diktatProcessor,
+            DiktatProcessorListener(
+                args.loggingListener,
+                diktatReporter,
+                errorCounter.countErrorsAsProcessorListener()
+            ),
+        )
+        return errorCounter.get()
+    }
+
     /**
      * Run `diktat fix` for all [DiktatRunnerArguments.files].
      *
@@ -42,7 +61,6 @@ object DiktatRunner {
         }
         listener.afterAll()
     }
-
     /**
      * Run `diktat check` for all [DiktatRunnerArguments.files].
      *
@@ -62,41 +80,4 @@ object DiktatRunner {
         }
         listener.afterAll()
     }
-    private fun doRun(
-        args: DiktatRunnerArguments,
-        runAction: RunAction,
-    ): Int {
-        val diktatRuleConfigs = diktatRuleConfigReader(args.configInputStream)
-        val diktatRuleSet = diktatRuleSetFactory(diktatRuleConfigs)
-        val processor = diktatProcessorFactory(diktatRuleSet)
-        val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
-
-        val reporter = args.reporterArgsList
-            .map { diktatReporterFactory(it) }
-            .let { DiktatReporter.union(it) }
-
-        val errorCounter = AtomicInteger()
-        runAction(
-            processor,
-            DiktatProcessorListener(
-                args.loggingListener,
-                DiktatReporter(reporter.skipKnownErrors(baseline), baselineGenerator),
-                errorCounter.countErrorsAsProcessorListener()
-            ),
-        )
-        return errorCounter.get()
-    }
-
-    private fun resolveBaseline(
-        baselineFile: Path?,
-        sourceRootDir: Path?,
-    ): Pair<DiktatBaseline, DiktatProcessorListener> = baselineFile
-        ?.let { diktatBaselineFactory.tryToLoad(it, sourceRootDir) }
-        ?.let { it to DiktatProcessorListener.empty }
-        ?: run {
-            val baselineGenerator = baselineFile?.let {
-                diktatBaselineFactory.generator(it, sourceRootDir)
-            } ?: DiktatProcessorListener.empty
-            DiktatBaseline.empty to baselineGenerator
-        }
 }

@@ -72,11 +72,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     lateinit var excludes: List<String>
 
     /**
+     * @param runner instance of [DiktatRunner] used in analysis
      * @param args arguments for [DiktatRunner]
      * @return count of errors
      */
-    @Suppress("TOO_MANY_PARAMETERS")
     abstract fun runAction(
+        runner: DiktatRunner,
         args: DiktatRunnerArguments,
     ): Int
 
@@ -110,7 +111,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             baselineFile = baseline?.toPath(),
             reporterArgsList = reporterArgsList,
         )
+        val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(
+            runner = diktatRunner,
             args = args,
         )
         if (errorCounter > 0) {
