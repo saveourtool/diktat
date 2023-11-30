@@ -2,6 +2,7 @@ package com.saveourtool.diktat.ruleset.config
 
 import com.saveourtool.diktat.api.DiktatRuleConfig
 import com.saveourtool.diktat.api.DiktatRuleConfigReader
+import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.ruleset.constants.Warnings
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
