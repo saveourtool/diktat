@@ -22,7 +22,7 @@ abstract class AbstractDiktatRuleConfigReader : DiktatRuleConfigReader {
      * @return list of [DiktatRuleConfig] if resource has been parsed successfully
      */
     override fun invoke(inputStream: InputStream): List<DiktatRuleConfig> =
-            read(inputStream)?.onEach(::validate).orEmpty()
+        read(inputStream)?.onEach(::validate).orEmpty()
 
     private fun read(inputStream: InputStream): List<DiktatRuleConfig>? = try {
         parse(inputStream)

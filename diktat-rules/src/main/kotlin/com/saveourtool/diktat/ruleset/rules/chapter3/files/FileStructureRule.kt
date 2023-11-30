@@ -2,8 +2,8 @@ package com.saveourtool.diktat.ruleset.rules.chapter3.files
 
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
+import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import com.saveourtool.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import com.saveourtool.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS

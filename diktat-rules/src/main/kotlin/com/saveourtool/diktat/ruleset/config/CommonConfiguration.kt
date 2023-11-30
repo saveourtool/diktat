@@ -7,6 +7,11 @@ import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
+ * Name of common configuration
+ */
+const val DIKTAT_COMMON = "DIKTAT_COMMON"
+
+/**
  * class returns the list of common configurations that we have read from a configuration map
  *
  * @param configuration map of common configuration
@@ -58,6 +63,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 
     companion object {
         internal val log: KLogger = KotlinLogging.logger {}
+
         /**
          * Counter that helps not to raise multiple warnings about kotlin version
          */
@@ -69,6 +75,23 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
  * @return common configuration from list of all rules configuration
  */
 fun List<DiktatRuleConfig>.getCommonConfiguration() = CommonConfiguration(getCommonConfig()?.configuration)
+
+/**
+ * Parse string into KotlinVersion
+ *
+ * @return KotlinVersion from configuration
+ */
+internal fun String.kotlinVersion(): KotlinVersion {
+    require(this.contains("^(\\d+\\.)(\\d+)\\.?(\\d+)?$".toRegex())) {
+        "Kotlin version format is incorrect"
+    }
+    val versions = this.split(".").map { it.toInt() }
+    return if (versions.size == 2) {
+        KotlinVersion(versions[0], versions[1])
+    } else {
+        KotlinVersion(versions[0], versions[1], versions[2])
+    }
+}
 
 /**
  * Get [DiktatRuleConfig] representing common configuration part that can be used in any rule

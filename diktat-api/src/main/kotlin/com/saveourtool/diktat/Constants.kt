@@ -1,8 +1,8 @@
 /**
  * This file contains common constants for Diktat
  */
-package com.saveourtool.diktat
 
+package com.saveourtool.diktat
 
 /**
  * Common application name, that is used in plugins and can be used to Suppress all diktat inspections on the

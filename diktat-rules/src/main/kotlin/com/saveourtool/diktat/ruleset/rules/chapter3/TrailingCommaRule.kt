@@ -2,8 +2,8 @@ package com.saveourtool.diktat.ruleset.rules.chapter3
 
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
+import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings.TRAILING_COMMA
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.isPartOfComment

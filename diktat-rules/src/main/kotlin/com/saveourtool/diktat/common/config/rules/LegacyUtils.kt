@@ -9,15 +9,13 @@ import com.saveourtool.diktat.api.DiktatRuleNameAware
 
 typealias RuleConfiguration = com.saveourtool.diktat.ruleset.config.RuleConfiguration
 
-
-
 /**
  * Get [DiktatRuleConfig] for particular [DiktatRuleNameAware] object.
  *
  * @param rule a [DiktatRuleNameAware] which configuration will be returned
  * @return [DiktatRuleConfig] for a particular rule if it is found, else null
  */
-fun List<DiktatRuleConfig>.getRuleConfig(rule: DiktatRuleNameAware): RulesConfig? = this.find { it.name == rule.ruleName() }
+fun List<DiktatRuleConfig>.getRuleConfig(rule: DiktatRuleNameAware): DiktatRuleConfig? = this.find { it.name == rule.ruleName() }
 
 /**
  * checking if in yml config particular rule is enabled or disabled
