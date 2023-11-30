@@ -34,8 +34,8 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import java.nio.file.Files
 
+import java.nio.file.Files
 import java.nio.file.Path
 
 /**

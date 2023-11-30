@@ -26,7 +26,7 @@ private val loggingListener = object : DiktatProcessorListener {
 }
 
 fun main(args: Array<String>) {
-    val properties = DiktatProperties.parse(diktatRunnerFactory.diktatReporterFactory, args)
+    val properties = DiktatProperties.parse(diktatReporterFactory, args)
     properties.configureLogger()
 
     log.debug {
