@@ -1,4 +1,5 @@
 package com.saveourtool.diktat
+
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import java.io.InputStream

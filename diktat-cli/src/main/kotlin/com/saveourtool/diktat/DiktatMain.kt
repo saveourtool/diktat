@@ -38,9 +38,10 @@ fun main(args: Array<String>) {
         loggingListener = loggingListener,
     )
 
+    val diktatRunner = diktatRunnerFactory(diktatRunnerArguments)
     when (properties.mode) {
-        DiktatMode.CHECK -> DiktatRunner.checkAll(diktatRunnerArguments)
-        DiktatMode.FIX -> DiktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->
+        DiktatMode.CHECK -> diktatRunner.checkAll(diktatRunnerArguments)
+        DiktatMode.FIX -> diktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->
             log.warn {
                 "Original and formatted content differ, writing to ${updatedFile.absolutePathString()}..."
             }

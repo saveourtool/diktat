@@ -2,7 +2,6 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.diktatRunnerFactory
 import com.saveourtool.diktat.plugin.maven.reporters.GitHubActionsReporter
 import com.saveourtool.diktat.plugin.maven.reporters.PlainReporter

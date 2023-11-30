@@ -24,8 +24,9 @@ abstract class DiktatCheckTask @Inject constructor(
     objectFactory
 ) {
     override fun doRun(
+        runner: DiktatRunner,
         args: DiktatRunnerArguments
-    ): Int = DiktatRunner.checkAll(args)
+    ): Int = runner.checkAll(args)
 
     companion object {
         /**

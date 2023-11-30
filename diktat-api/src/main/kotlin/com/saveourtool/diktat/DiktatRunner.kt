@@ -7,6 +7,7 @@ import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
+
 private typealias RunAction = (DiktatProcessor, DiktatProcessorListener) -> Unit
 
 /**
@@ -61,6 +62,7 @@ data class DiktatRunner(
         }
         listener.afterAll()
     }
+
     /**
      * Run `diktat check` for all [DiktatRunnerArguments.files].
      *

@@ -44,3 +44,14 @@ val diktatBaselineFactory: DiktatBaselineFactory = DiktatBaselineFactoryImpl()
  * @return initialized [DiktatReporterFactory]
  */
 val diktatReporterFactory: DiktatReporterFactory = DiktatReporterFactoryImpl()
+
+/**
+ * @return initialized [DiktatRunnerFactory]
+ */
+val diktatRunnerFactory: DiktatRunnerFactory = DiktatRunnerFactory(
+    diktatRuleConfigReader,
+    diktatRuleSetFactory,
+    diktatProcessorFactory,
+    diktatBaselineFactory,
+    diktatReporterFactory,
+)
