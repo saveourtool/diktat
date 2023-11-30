@@ -1,14 +1,14 @@
 package com.saveourtool.diktat.ruleset.rules
 
 import com.saveourtool.diktat.api.DiktatErrorEmitter
+import com.saveourtool.diktat.api.DiktatRuleNameAware
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.isRuleEnabled
+import com.saveourtool.diktat.ruleset.config.isRuleEnabled
 import com.saveourtool.diktat.ruleset.utils.getFilePathSafely
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-private typealias DiktatConfigRule = com.saveourtool.diktat.common.config.rules.Rule
 private typealias DiktatRuleApi = com.saveourtool.diktat.api.DiktatRule
 
 /**
@@ -22,7 +22,7 @@ private typealias DiktatRuleApi = com.saveourtool.diktat.api.DiktatRule
 abstract class DiktatRule(
     override val id: String,
     val configRules: List<RulesConfig>,
-    private val inspections: List<DiktatConfigRule>,
+    private val inspections: List<DiktatRuleNameAware>,
 ) : DiktatRuleApi {
     /**
      * Default value is false

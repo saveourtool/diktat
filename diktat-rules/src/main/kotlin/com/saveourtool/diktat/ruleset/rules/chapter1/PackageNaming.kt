@@ -1,8 +1,8 @@
 package com.saveourtool.diktat.ruleset.rules.chapter1
 
-import com.saveourtool.diktat.common.config.rules.CommonConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
+import com.saveourtool.diktat.ruleset.config.CommonConfiguration
+import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import com.saveourtool.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import com.saveourtool.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH

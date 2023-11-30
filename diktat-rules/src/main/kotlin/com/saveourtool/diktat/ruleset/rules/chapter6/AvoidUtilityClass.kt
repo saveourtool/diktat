@@ -1,7 +1,7 @@
 package com.saveourtool.diktat.ruleset.rules.chapter6
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
+import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.*

@@ -9,7 +9,6 @@ project.description = "This module contains runner for diktat"
 
 dependencies {
     api(projects.diktatApi)
-    api(projects.diktatCommon)
     implementation(projects.diktatKtlintEngine)
     implementation(projects.diktatRules)
 }

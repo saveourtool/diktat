@@ -1,7 +1,7 @@
 package com.saveourtool.diktat.ruleset.rules.chapter2.kdoc
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
+import com.saveourtool.diktat.ruleset.config.getCommonConfiguration
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG

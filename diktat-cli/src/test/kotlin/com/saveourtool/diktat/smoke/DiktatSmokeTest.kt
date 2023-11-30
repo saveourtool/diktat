@@ -2,7 +2,7 @@ package com.saveourtool.diktat.smoke
 
 import com.saveourtool.diktat.api.DiktatError
 import com.saveourtool.diktat.ktlint.format
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
+import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
@@ -42,7 +42,7 @@ class DiktatSmokeTest : DiktatSmokeTestBase() {
         function = { testFile ->
             format(
                 ruleSetSupplier = {
-                    val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
+                    val diktatRuleConfigReader = DiktatRuleConfigYamlReader()
                     val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
                     diktatRuleSetFactory(diktatRuleConfigReader(config.inputStream()))
                 },

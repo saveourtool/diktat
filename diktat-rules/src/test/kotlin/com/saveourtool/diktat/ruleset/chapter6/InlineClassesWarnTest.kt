@@ -1,6 +1,6 @@
 package com.saveourtool.diktat.ruleset.chapter6
 
-import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
+import com.saveourtool.diktat.ruleset.config.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED

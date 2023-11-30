@@ -1,9 +1,10 @@
 package com.saveourtool.diktat.ruleset.rules
 
-import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
+import com.saveourtool.diktat.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.common.config.rules.DIKTAT_CONF_PROPERTY
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.saveourtool.diktat.ktlint.KtLintRuleWrapper.Companion.toKtLint
+import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3
 import com.pinterest.ktlint.logger.api.initKtLintKLogger
 import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
@@ -26,7 +27,7 @@ import java.io.InputStream
 class DiktatRuleSetProviderV3Spi : RuleSetProviderV3(
     id = RuleSetId(DIKTAT_RULE_SET_ID),
 ) {
-    private val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
+    private val diktatRuleConfigReader = DiktatRuleConfigYamlReader()
     private val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
 
     init {

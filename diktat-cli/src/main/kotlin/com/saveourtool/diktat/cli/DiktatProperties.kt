@@ -1,5 +1,7 @@
 package com.saveourtool.diktat.cli
 
+import com.saveourtool.diktat.DIKTAT
+import com.saveourtool.diktat.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener

@@ -10,10 +10,11 @@ plugins {
 project.description = "The main diktat ruleset"
 
 dependencies {
-    api(projects.diktatCommon)
     api(projects.diktatApi)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlin.compiler.embeddable)
+    // kaml is used to read configs from YAML file
+    implementation(libs.kaml)
     // guava is used for string case utils
     implementation(libs.guava)
     implementation(libs.kotlin.logging)

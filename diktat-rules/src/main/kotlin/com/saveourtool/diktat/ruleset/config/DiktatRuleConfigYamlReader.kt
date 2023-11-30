@@ -1,4 +1,4 @@
-package com.saveourtool.diktat.config
+package com.saveourtool.diktat.ruleset.config
 
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.charleskorn.kaml.Yaml
@@ -18,5 +18,5 @@ class DiktatRuleConfigYamlReader : AbstractDiktatRuleConfigReader() {
      * @param inputStream a [InputStream] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    override fun parse(inputStream: InputStream): List<RulesConfig> = yamlSerializer.decodeFromStream(inputStream)
+    override fun parse(inputStream: InputStream): List<RulesConfig> = yamlSerializer.decodeFromStream<List<RulesConfig>>(inputStream)
 }

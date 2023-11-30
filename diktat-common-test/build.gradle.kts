@@ -7,7 +7,6 @@ plugins {
 project.description = "Diktat common for tests"
 
 dependencies {
-    api(projects.diktatCommon)
     implementation(libs.kotlin.logging)
     implementation(libs.junit.jupiter.api)
     implementation(libs.assertj.core)

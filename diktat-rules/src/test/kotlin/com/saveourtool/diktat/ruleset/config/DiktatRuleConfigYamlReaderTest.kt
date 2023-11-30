@@ -1,11 +1,6 @@
-package com.saveourtool.diktat.config
+package com.saveourtool.diktat.ruleset.config
 
-import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader
-import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
-import com.saveourtool.diktat.common.config.rules.kotlinVersion
-import com.saveourtool.diktat.config.DiktatRuleConfigYamlReader
 import org.junit.jupiter.api.Test
 import java.nio.file.Paths
 import kotlin.io.path.inputStream
