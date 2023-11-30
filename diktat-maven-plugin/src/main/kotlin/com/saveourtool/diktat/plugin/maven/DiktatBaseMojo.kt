@@ -2,6 +2,7 @@ package com.saveourtool.diktat.plugin.maven
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
+import com.saveourtool.diktat.DiktatRunnerFactoryArguments
 import com.saveourtool.diktat.diktatRunnerFactory
 import com.saveourtool.diktat.plugin.maven.reporters.GitHubActionsReporter
 import com.saveourtool.diktat.plugin.maven.reporters.PlainReporter
@@ -71,13 +72,11 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     lateinit var excludes: List<String>
 
     /**
-     * @param runner instance of [DiktatRunner] used in analysis
      * @param args arguments for [DiktatRunner]
      * @return count of errors
      */
     @Suppress("TOO_MANY_PARAMETERS")
     abstract fun runAction(
-        runner: DiktatRunner,
         args: DiktatRunnerArguments,
     ): Int
 
@@ -111,9 +110,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             baselineFile = baseline?.toPath(),
             reporterArgsList = reporterArgsList,
         )
-        val diktatRunner = diktatRunnerFactory(args)
         val errorCounter = runAction(
-            runner = diktatRunner,
             args = args,
         )
         if (errorCounter > 0) {

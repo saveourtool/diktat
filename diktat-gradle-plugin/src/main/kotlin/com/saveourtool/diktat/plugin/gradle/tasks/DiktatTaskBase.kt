@@ -2,12 +2,10 @@ package com.saveourtool.diktat.plugin.gradle.tasks
 
 import com.saveourtool.diktat.DiktatRunner
 import com.saveourtool.diktat.DiktatRunnerArguments
-import com.saveourtool.diktat.DiktatRunnerFactory
 import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterType
-import com.saveourtool.diktat.diktatRunnerFactory
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
 import com.saveourtool.diktat.plugin.gradle.extension.DefaultReporter
 import com.saveourtool.diktat.plugin.gradle.extension.PlainReporter
@@ -34,8 +32,8 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import java.nio.file.Files
 
+import java.nio.file.Files
 import java.nio.file.Path
 
 /**
@@ -141,14 +139,6 @@ abstract class DiktatTaskBase(
         )
     }
 
-    /**
-     * [DiktatRunner] created based on a default [DiktatRunnerFactory]
-     */
-    @get:Internal
-    val diktatRunner by lazy {
-        diktatRunnerFactory(diktatRunnerArguments)
-    }
-
     init {
         group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
@@ -177,7 +167,6 @@ abstract class DiktatTaskBase(
 
     private fun doRun() {
         val errorCounter = doRun(
-            runner = diktatRunner,
             args = diktatRunnerArguments
         )
         if (errorCounter > 0 && !ignoreFailures) {
@@ -193,7 +182,6 @@ abstract class DiktatTaskBase(
      * @return count of errors
      */
     abstract fun doRun(
-        runner: DiktatRunner,
         args: DiktatRunnerArguments
     ): Int
 

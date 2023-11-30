@@ -24,9 +24,8 @@ abstract class DiktatFixTask @Inject constructor(
     objectFactory
 ) {
     override fun doRun(
-        runner: DiktatRunner,
         args: DiktatRunnerArguments
-    ): Int = runner.fixAll(args) { updatedFile ->
+    ): Int = DiktatRunner.fixAll(args) { updatedFile ->
         project.logger.info("Original and formatted content differ, writing to ${updatedFile.fileName}...")
     }
 

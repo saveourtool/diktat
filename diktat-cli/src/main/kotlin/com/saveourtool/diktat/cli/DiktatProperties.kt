@@ -91,7 +91,7 @@ data class DiktatProperties(
             files = getFiles(sourceRootDir),
             baselineFile = null,
             reporterArgsList = listOf(reporterCreationArguments),
-            loggingListener = loggingListener
+            loggingListener = loggingListener,
         )
     }
 
