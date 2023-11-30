@@ -2,9 +2,9 @@ package com.saveourtool.diktat.ruleset.utils
 
 import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader
+import com.saveourtool.diktat.ruleset.config.kotlinVersion
+import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
-import com.saveourtool.diktat.common.config.rules.kotlinVersion
 import com.saveourtool.diktat.ruleset.constants.Warnings
 
 import com.charleskorn.kaml.Yaml
@@ -114,7 +114,7 @@ class RulesConfigYamlTest {
         Paths.get(nameConfig).takeIf { it.exists() }?.inputStream()
             ?: javaClass.classLoader.getResourceAsStream(nameConfig)
     }
-        ?.let { RulesConfigReader().read(it) }
+        ?.let { DiktatRuleConfigYamlReader().invoke(it) }
         ?: emptyList()
 
     private fun readAllRulesFromCode() =

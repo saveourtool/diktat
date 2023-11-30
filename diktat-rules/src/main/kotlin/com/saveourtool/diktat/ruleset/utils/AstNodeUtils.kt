@@ -12,10 +12,10 @@
 
 package com.saveourtool.diktat.ruleset.utils
 
-import com.saveourtool.diktat.common.config.rules.DIKTAT
+import com.saveourtool.diktat.DIKTAT
+import com.saveourtool.diktat.api.isAnnotatedWithIgnoredAnnotation
 import com.saveourtool.diktat.common.config.rules.Rule
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.isAnnotatedWithIgnoredAnnotation
 import com.saveourtool.diktat.ruleset.rules.chapter1.PackageNaming
 
 import org.jetbrains.kotlin.KtNodeTypes

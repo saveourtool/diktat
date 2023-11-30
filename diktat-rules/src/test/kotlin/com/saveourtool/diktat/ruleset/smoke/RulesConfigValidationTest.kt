@@ -1,6 +1,6 @@
 package com.saveourtool.diktat.ruleset.smoke
 
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
+import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.util.deleteIfExistsSilently
 
@@ -76,6 +76,6 @@ class RulesConfigValidationTest {
 
     companion object {
         private val diktatRuleSetFactory = DiktatRuleSetFactoryImpl()
-        private val diktatRuleConfigReader = DiktatRuleConfigReaderImpl()
+        private val diktatRuleConfigReader = DiktatRuleConfigYamlReader()
     }
 }

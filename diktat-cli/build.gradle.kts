@@ -26,6 +26,7 @@ dependencies {
     testImplementation(projects.diktatKtlintEngine)
     testImplementation(projects.diktatRules)
     testImplementation(projects.diktatCommonTest)
+    testImplementation(libs.kaml)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)

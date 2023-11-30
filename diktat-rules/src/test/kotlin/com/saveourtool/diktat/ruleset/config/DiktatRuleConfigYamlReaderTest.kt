@@ -1,20 +1,17 @@
-package com.saveourtool.diktat.test
+package com.saveourtool.diktat.ruleset.config
 
 import com.saveourtool.diktat.common.config.rules.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader
 import com.saveourtool.diktat.common.config.rules.getCommonConfiguration
-import com.saveourtool.diktat.common.config.rules.kotlinVersion
 import org.junit.jupiter.api.Test
 import java.nio.file.Paths
 import kotlin.io.path.inputStream
 
-class ConfigReaderTest {
+class DiktatRuleConfigYamlReaderTest {
     @Test
     fun `testing json reading`() {
-        val rulesConfigList: List<RulesConfig>? = RulesConfigReader()
-            .read(Paths.get("src/test/resources/test-rules-config.yml").inputStream())
-        requireNotNull(rulesConfigList)
+        val rulesConfigList: List<RulesConfig> = DiktatRuleConfigYamlReader()
+            .invoke(Paths.get("src/test/resources/test-rules-config.yml").inputStream())
         assert(rulesConfigList.any { it.name == "CLASS_NAME_INCORRECT" && it.enabled })
         assert(rulesConfigList.find { it.name == "CLASS_NAME_INCORRECT" }?.configuration == emptyMap<String, String>())
         assert(rulesConfigList.find { it.name == "DIKTAT_COMMON" }
@@ -23,9 +20,8 @@ class ConfigReaderTest {
 
     @Test
     fun `testing kotlin version`() {
-        val rulesConfigList: List<RulesConfig>? = RulesConfigReader()
-            .read(Paths.get("src/test/resources/test-rules-config.yml").inputStream())
-        requireNotNull(rulesConfigList)
+        val rulesConfigList: List<RulesConfig> = DiktatRuleConfigYamlReader()
+            .invoke(Paths.get("src/test/resources/test-rules-config.yml").inputStream())
         assert(rulesConfigList.getCommonConfiguration().kotlinVersion == kotlinVersion)
         assert(rulesConfigList.getCommonConfiguration().testAnchors.contains("androidUnitTest"))
         assert(rulesConfigList.find { it.name == DIKTAT_COMMON }
