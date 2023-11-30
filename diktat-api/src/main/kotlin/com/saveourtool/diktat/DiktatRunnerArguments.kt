@@ -4,7 +4,6 @@ import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import java.io.InputStream
 import java.nio.file.Path
-import kotlin.io.path.inputStream
 
 /**
  * Arguments for [DiktatRunner]
