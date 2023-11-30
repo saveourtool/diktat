@@ -4,8 +4,6 @@ import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.common.config.rules.Rule
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.isRuleEnabled
-import com.saveourtool.diktat.ruleset.config.Rule
-import com.saveourtool.diktat.ruleset.config.isRuleEnabled
 import com.saveourtool.diktat.ruleset.generation.EnumNames
 import com.saveourtool.diktat.ruleset.utils.isSuppressed
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

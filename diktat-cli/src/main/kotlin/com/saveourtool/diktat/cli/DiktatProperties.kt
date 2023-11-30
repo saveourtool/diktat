@@ -8,8 +8,6 @@ import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.api.DiktatReporterType
-import com.saveourtool.diktat.common.config.rules.DIKTAT
-import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
 import com.saveourtool.diktat.util.tryToPathIfExists
 import com.saveourtool.diktat.util.walkByGlob

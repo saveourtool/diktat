@@ -3,7 +3,7 @@ package com.saveourtool.diktat.ruleset.rules
 import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.api.DiktatRuleNameAware
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ruleset.config.isRuleEnabled
+import com.saveourtool.diktat.common.config.rules.isRuleEnabled
 import com.saveourtool.diktat.ruleset.utils.getFilePathSafely
 
 import io.github.oshai.kotlinlogging.KotlinLogging
