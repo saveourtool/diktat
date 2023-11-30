@@ -88,8 +88,8 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if an exception in __KtLint__ has been thrown
      */
     override fun execute() {
-        val configFile = resolveConfig() ?: throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
-        log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
+        val configFile = resolveConfig()
+        log.info("Running diKTat plugin with ${configFile?.let { "configuration file $it" } ?: "default configuration" } and inputs $inputs" +
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
@@ -105,7 +105,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
         val reporterArgsList = reporters.map { it.toCreationArguments(mavenProject, sourceRootDir) }
         val args = DiktatRunnerArguments(
-            configInputStream = configFile.inputStream(),
+            configInputStream = configFile?.inputStream(),
             sourceRootDir = sourceRootDir,
             files = files(),
             baselineFile = baseline?.toPath(),

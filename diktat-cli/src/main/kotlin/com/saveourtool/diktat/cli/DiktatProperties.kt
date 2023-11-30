@@ -22,6 +22,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 import kotlin.system.exitProcess
@@ -86,7 +87,7 @@ data class DiktatProperties(
             sourceRootDir = sourceRootDir,
         )
         return DiktatRunnerArguments(
-            configInputStream = Paths.get(config).inputStream(),
+            configInputStream = Paths.get(config).takeIf { it.exists() }?.inputStream(),
             sourceRootDir = sourceRootDir,
             files = getFiles(sourceRootDir),
             baselineFile = null,

@@ -5,6 +5,7 @@ import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.util.PatternFilterable
@@ -51,11 +52,12 @@ open class DiktatExtension @Inject constructor(
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
-     * Default value: `diktat-analysis.yml` in rootDir.
+     * Default value: `diktat-analysis.yml` in rootDir if it exists or default (empty) configuration
      */
     @get:InputFile
+    @get:Optional
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    lateinit var diktatConfigFile: File
+    var diktatConfigFile: File? = null
 
     /**
      * Configure input files for diktat task

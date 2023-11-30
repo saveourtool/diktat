@@ -33,7 +33,7 @@ class DiktatRunnerFactory(
      * @return an instance of [DiktatRunner] created using [args]
      */
     override fun invoke(args: DiktatRunnerArguments): DiktatRunner {
-        val diktatRuleConfigs = diktatRuleConfigReader(args.configInputStream)
+        val diktatRuleConfigs = args.configInputStream?.let { diktatRuleConfigReader(it) }.orEmpty()
         val diktatRuleSet = diktatRuleSetFactory(diktatRuleConfigs)
         val processor = diktatProcessorFactory(diktatRuleSet)
         val (baseline, baselineGenerator) = resolveBaseline(args.baselineFile, args.sourceRootDir)
