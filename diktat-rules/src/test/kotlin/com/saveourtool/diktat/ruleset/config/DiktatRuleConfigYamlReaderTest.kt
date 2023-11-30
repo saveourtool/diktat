@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import java.nio.file.Paths
 import kotlin.io.path.inputStream
 
-
 class DiktatRuleConfigYamlReaderTest {
     @Test
     fun `testing json reading`() {

@@ -4,7 +4,7 @@ import com.saveourtool.diktat.ruleset.config.DIKTAT_COMMON
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.config.kotlinVersion
 import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
-import com.saveourtool.diktat.ruleset.config.getRuleConfig
+import com.saveourtool.diktat.common.config.rules.getRuleConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings
 
 import com.charleskorn.kaml.Yaml

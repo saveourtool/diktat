@@ -6,10 +6,8 @@ package com.saveourtool.diktat.util
 
 import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader
 import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
-import com.saveourtool.diktat.ruleset.rules.DiktatRuleConfigReaderImpl
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.util.filterContentMatches
 
