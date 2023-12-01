@@ -64,6 +64,7 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     manifest {
         attributes["Main-Class"] = "com.saveourtool.diktat.DiktatMainKt"
+        attributes["Multi-Release"] = true
     }
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
