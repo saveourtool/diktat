@@ -60,13 +60,42 @@ sourceSets.getByName("main") {
     )
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+val shadowJarTaskProvider = tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     manifest {
         attributes["Main-Class"] = "com.saveourtool.diktat.DiktatMainKt"
         attributes["Multi-Release"] = true
     }
     duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+tasks.register<DefaultTask>("shadowExecutableJar") {
+    group = "Distribution"
+    dependsOn(shadowJarTaskProvider)
+
+    val shadowJarFile = shadowJarTaskProvider.get().outputs.files.singleFile
+    val outputFile = project.layout.buildDirectory.file(shadowJarFile.name.removeSuffix(".jar"))
+
+    inputs.file(shadowJarFile)
+    outputs.file(outputFile)
+
+    doLast {
+        outputFile.get()
+            .asFile
+            .apply {
+                //language=shell script
+                writeText(
+                    """
+                    #!/bin/sh
+
+                    exec java -jar "$0" "$@"
+
+                    """.trimIndent()
+                )
+                appendBytes(shadowJarFile.readBytes())
+                setExecutable(true, false)
+            }
+    }
 }
 
 // disable default jar
