@@ -1,6 +1,5 @@
 import com.saveourtool.diktat.buildutils.configurePublications
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.incremental.createDirectory
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
@@ -60,7 +59,7 @@ sourceSets.getByName("main") {
     )
 }
 
-val shadowJarTaskProvider = tasks.named<ShadowJar>("shadowJar") {
+tasks.shadowJar {
     archiveClassifier.set("")
     manifest {
         attributes["Main-Class"] = "com.saveourtool.diktat.DiktatMainKt"
@@ -71,10 +70,16 @@ val shadowJarTaskProvider = tasks.named<ShadowJar>("shadowJar") {
 
 tasks.register<DefaultTask>("shadowExecutableJar") {
     group = "Distribution"
-    dependsOn(shadowJarTaskProvider)
+    dependsOn(tasks.shadowJar)
 
-    val shadowJarFile = shadowJarTaskProvider.get().outputs.files.singleFile
-    val outputFile = project.layout.buildDirectory.file(shadowJarFile.name.removeSuffix(".jar"))
+    val shadowJarFile = tasks.shadowJar
+        .get()
+        .outputs
+        .files
+        .singleFile
+    val outputFile = project.layout
+        .buildDirectory
+        .file(shadowJarFile.name.removeSuffix(".jar"))
 
     inputs.file(shadowJarFile)
     outputs.file(outputFile)
@@ -83,7 +88,7 @@ tasks.register<DefaultTask>("shadowExecutableJar") {
         outputFile.get()
             .asFile
             .apply {
-                //language=shell script
+                // language=shell script
                 writeText(
                     """
                     #!/bin/sh
