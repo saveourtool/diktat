@@ -156,7 +156,7 @@ Requesting a specific _Maven_ `executionId` on the command line (the trailing
     ```
     </details>
 
-    * You can omit the `diktatConfigFile` or it points to non-existed file
+    * You can omit the `diktatConfigFile` or if it points to non-existed file
       then DiKTat runs with default configuration.
 
 If you omit the `executionId`:
@@ -300,7 +300,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 </details>
 
 ## GitHub Integration
-We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporter` (`reporterType`)  in CI/CD.
+We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporter` in CI/CD.
 GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
 with SARIF format and provides you a native reporting of diktat issues in Pull Requests.
 
