@@ -98,6 +98,17 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun hasFunParent(node: ASTNode): Boolean {
+        var parent = node.treeParent
+        while (parent != null) {
+            if (parent.elementType == FUN) {
+                return true
+            }
+            parent = parent.treeParent
+        }
+        return false
+    }
+
     @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
     private fun checkSignatureDescription(node: ASTNode) {
         val kdoc = node.getFirstChildWithType(KDOC)
@@ -123,6 +134,8 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kdoc == null && !isReferenceExpressionWithSameName(node)) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, name, node.startOffset, node)
+        } else if (kdoc != null && hasFunParent(kdoc)) {
+            return
         } else {
             if (paramCheckFailed) {
                 handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
