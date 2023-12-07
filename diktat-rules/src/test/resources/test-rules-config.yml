@@ -51,8 +51,6 @@
   enabled: true
 - name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: true
-- name: BLANK_LINE_AFTER_KDOC
-  enabled: true
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
 - name: KDOC_WITHOUT_RETURN_TAG
@@ -90,7 +88,7 @@
     copyrightText: Copyright (c) This is an example. 2012-2020. All rights reserved.
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
-- name: HEADER_CONTAINS_DATE_OR_AUTHOR
+- name: KDOC_CONTAINS_DATE_OR_AUTHOR
   enabled: true
 - name: FILE_IS_TOO_LONG
   enabled: true

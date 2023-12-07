@@ -38,13 +38,13 @@ jobs:
           use-gradlew: true
           gradle-build-module: |-
             :diktat-api
-            :diktat-common
             :diktat-common-test
             :diktat-ktlint-engine
             :diktat-gradle-plugin
             :diktat-maven-plugin
             :diktat-rules
             :diktat-ruleset
+            :diktat-runner
             :diktat-dev-ksp
             :diktat-cli
           gradle-build-configuration: |-

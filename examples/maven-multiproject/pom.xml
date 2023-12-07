@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.saveourtool.diktat</groupId>
+    <artifactId>diktat-examples-maven</artifactId>
+    <packaging>pom</packaging>
+    <version>1.2.6-SNAPSHOT</version>
+
+    <properties>
+        <diktat.version>1.2.5</diktat.version>
+    </properties>
+
+    <!-- This is an example of how DiKTat performs static code analysis.
+
+         If you also wish to compile your code, typically via "mvn compile"
+         be sure to follow the instructions at https://kotlinlang.org/docs/maven.html
+         and include the kotlin-maven-plugin. -->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.saveourtool.diktat</groupId>
+                <artifactId>diktat-maven-plugin</artifactId>
+                <version>${diktat.version}</version>
+                <configuration>
+                    <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                    <inputs>
+                        <input>${project.basedir}/backend/src/main/kotlin</input>
+                        <input>${project.basedir}/backend/src/test/kotlin</input>
+                        <input>${project.basedir}/frontend/src/main/kotlin</input>
+                        <input>${project.basedir}/frontend/src/test/kotlin</input>
+                    </inputs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>diktat</id>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>fix</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

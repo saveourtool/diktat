@@ -6,7 +6,7 @@ package com.saveourtool.diktat.util
 
 import com.saveourtool.diktat.api.DiktatRuleSet
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.common.config.rules.RulesConfigReader
+import com.saveourtool.diktat.ruleset.config.DiktatRuleConfigYamlReader
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.rules.DiktatRuleSetFactoryImpl
 import com.saveourtool.diktat.test.framework.util.filterContentMatches
@@ -64,7 +64,7 @@ class DiktatRuleSetFactoryImplTest {
             rulesConfigList: List<RulesConfig>?,
         ): DiktatRuleSet = run {
             rulesConfigList ?: Companion::class.java.classLoader.getResourceAsStream("diktat-analysis.yml")
-                ?.let { RulesConfigReader().read(it) }
+                ?.let { DiktatRuleConfigYamlReader().invoke(it) }
                 .orEmpty()
         }
             .let(ruleSupplier)

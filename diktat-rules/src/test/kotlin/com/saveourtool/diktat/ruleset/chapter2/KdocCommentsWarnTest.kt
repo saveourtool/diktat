@@ -817,4 +817,67 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             DiktatError(5, 4, ruleId, "${KDOC_DUPLICATE_PROPERTY.warnText()} @param field2"),
         )
     }
+
+    @Test
+    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
+    fun `shouldn't warn extra property on generic type`() {
+        lintMethod(
+            """
+                |/**
+                | * S3 implementation of Storage
+                | *
+                | * @param s3Operations [S3Operations] to operate with S3
+                | * @param K type of key
+                | */
+                |abstract class AbstractReactiveStorage<K : Any> constructor(
+                |    s3Operations: S3Operations,
+                |) : ReactiveStorage<K> {
+                |  // abcd
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `should trigger on generic type`() {
+        lintMethod(
+            """
+                |/**
+                | * S3 implementation of Storage
+                | *
+                | * @param s3Operations [S3Operations] to operate with S3
+                | */
+                |abstract class AbstractReactiveStorage<K : Any, P: Any>(
+                |    s3Operations: S3Operations,
+                |) : ReactiveStorage<K>, AnotherStorage<P> {
+                |  // abcd
+                |}
+            """.trimMargin(),
+            DiktatError(6, 40, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add param <K> to KDoc", true),
+            DiktatError(6, 49, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add param <P> to KDoc", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `change property to param in kdoc for generic type`() {
+        lintMethod(
+            """
+                |/**
+                | * S3 implementation of Storage
+                | *
+                | * @param s3Operations [S3Operations] to operate with S3
+                | * @property K type of key
+                | */
+                |abstract class AbstractReactiveStorage<K : Any, P: Any>(
+                |    s3Operations: S3Operations,
+                |) : ReactiveStorage<K>, AnotherStorage<P> {
+                |  // abcd
+                |}
+            """.trimMargin(),
+            DiktatError(7, 40, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} change `@property` tag to `@param` tag for <K> to KDoc", true),
+            DiktatError(7, 49, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add param <P> to KDoc", true),
+        )
+    }
 }

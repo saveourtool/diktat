@@ -27,13 +27,15 @@
                     <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                     <inputs>
                         <input>${project.basedir}/src/main/kotlin</input>
+                        <input>${project.basedir}/src/test/kotlin</input>
                     </inputs>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>diktat-check</id>
+                        <id>diktat</id>
                         <goals>
                             <goal>check</goal>
+                            <goal>fix</goal>
                         </goals>
                     </execution>
                 </executions>

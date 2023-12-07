@@ -34,8 +34,8 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import java.nio.file.Files
 
+import java.nio.file.Files
 import java.nio.file.Path
 
 /**
@@ -53,6 +53,7 @@ abstract class DiktatTaskBase(
     /**
      * Config file
      */
+    @get:Optional
     @get:InputFile
     abstract val configFile: RegularFileProperty
 
@@ -132,7 +133,7 @@ abstract class DiktatTaskBase(
             }
         }
         DiktatRunnerArguments(
-            configInputStream = configFile.get().asFile.inputStream(),
+            configInputStream = configFile.map { it.asFile.inputStream() }.orNull,
             sourceRootDir = sourceRootDir,
             files = actualInputs.files.map { it.toPath() },
             baselineFile = baselineFile.map { it.asFile.toPath() }.orNull,
@@ -203,7 +204,7 @@ abstract class DiktatTaskBase(
          */
         fun TaskProvider<out DiktatTaskBase>.configure(extension: DiktatExtension) {
             configure { task ->
-                task.configFile.set(task.project.file(extension.diktatConfigFile))
+                extension.diktatConfigFile?.let { diktatConfigFile -> task.configFile.set(task.project.file(diktatConfigFile)) }
                 extension.baseline?.let { baseline -> task.baselineFile.set(task.project.file(baseline)) }
                 task.ignoreFailures = extension.ignoreFailures
                 task.reporters.all.addAll(extension.reporters.all)

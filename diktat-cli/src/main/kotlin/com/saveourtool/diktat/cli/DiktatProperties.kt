@@ -1,13 +1,13 @@
 package com.saveourtool.diktat.cli
 
+import com.saveourtool.diktat.DIKTAT
+import com.saveourtool.diktat.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.DiktatRunnerArguments
 import com.saveourtool.diktat.ENGINE_INFO
 import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.api.DiktatReporterType
-import com.saveourtool.diktat.common.config.rules.DIKTAT
-import com.saveourtool.diktat.common.config.rules.DIKTAT_ANALYSIS_CONF
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
 import com.saveourtool.diktat.util.tryToPathIfExists
 import com.saveourtool.diktat.util.walkByGlob
@@ -22,6 +22,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 import kotlin.system.exitProcess
@@ -45,7 +46,7 @@ data class DiktatProperties(
     val mode: DiktatMode,
     val reporterType: DiktatReporterType,
     val output: String?,
-    private val groupByFileInPlain: Boolean,
+    private val groupByFileInPlain: Boolean?,
     private val colorNameInPlain: String?,
     private val logLevel: Level,
     val patterns: List<String>,
@@ -86,12 +87,12 @@ data class DiktatProperties(
             sourceRootDir = sourceRootDir,
         )
         return DiktatRunnerArguments(
-            configInputStream = Paths.get(config).inputStream(),
+            configInputStream = Paths.get(config).takeIf { it.exists() }?.inputStream(),
             sourceRootDir = sourceRootDir,
             files = getFiles(sourceRootDir),
             baselineFile = null,
             reporterArgsList = listOf(reporterCreationArguments),
-            loggingListener = loggingListener
+            loggingListener = loggingListener,
         )
     }
 
@@ -146,12 +147,12 @@ data class DiktatProperties(
                 shortName = "o",
                 description = "Redirect the reporter output to a file.",
             )
-            val groupByFileInPlain: Boolean by parser.option(
+            val groupByFileInPlain: Boolean? by parser.option(
                 type = ArgType.Boolean,
                 fullName = "plain-group-by-file",
                 shortName = null,
                 description = "A flag for plain reporter"
-            ).default(false)
+            )
             val colorName: String? by parser.colorName(diktatReporterFactory)
             val logLevel: Level by parser.option(
                 type = ArgType.Choice<Level>(),

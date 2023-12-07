@@ -26,6 +26,7 @@ dependencies {
     testImplementation(projects.diktatKtlintEngine)
     testImplementation(projects.diktatRules)
     testImplementation(projects.diktatCommonTest)
+    testImplementation(libs.kaml)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.assertj.core)
@@ -63,6 +64,7 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     manifest {
         attributes["Main-Class"] = "com.saveourtool.diktat.DiktatMainKt"
+        attributes["Multi-Release"] = true
     }
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
