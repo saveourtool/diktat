@@ -445,6 +445,8 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                 |    }
                 |}
             """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} printHelloAndBye", false),
         )
     }
+
 }

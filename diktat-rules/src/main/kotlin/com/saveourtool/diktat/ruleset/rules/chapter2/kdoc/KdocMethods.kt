@@ -109,7 +109,11 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         return false
     }
 
-    @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "AVOID_NULL_CHECKS",
+        "CyclomaticComplexMethod"
+    )
     private fun checkSignatureDescription(node: ASTNode) {
         val kdoc = node.getFirstChildWithType(KDOC)
         val kdocTags = kdoc?.kDocTags()
@@ -130,12 +134,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
-        if (kdoc == null && anyTagFailed) {
+        if (kdoc == null && hasFunParent(node)) {
+            return
+        } else if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kdoc == null && !isReferenceExpressionWithSameName(node)) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, name, node.startOffset, node)
-        } else if (kdoc != null && hasFunParent(kdoc)) {
-            return
         } else {
             if (paramCheckFailed) {
                 handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
