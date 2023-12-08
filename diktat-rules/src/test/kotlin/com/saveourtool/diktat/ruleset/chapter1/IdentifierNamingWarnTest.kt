@@ -41,6 +41,11 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
         RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
             mapOf("allowedPrefixes" to "equals, equivalent, foo"))
     )
+    private val rulesConfigConstantUpperCase = listOf(
+        RulesConfig(CONSTANT_UPPERCASE.name, true, mapOf(
+            "exceptionConstNames" to "serialVersionUID"
+        ))
+    )
 
     // ======== checks for generics ========
     @Test
@@ -205,7 +210,8 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                         private const val serialVersionUID: Long = -1
                     }
                 }
-            """.trimIndent()
+            """.trimIndent(),
+            rulesConfigList = rulesConfigConstantUpperCase
         )
     }
 
