@@ -18,8 +18,6 @@
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
-  configuration:
-    exceptionConstNames: "serialVersionUID"
 # Checks that enum value is in upper SNAKE_CASE or in PascalCase depending on the config. UPPER_SNAKE_CASE is the default, but can be changed by 'enumStyle' config
 - name: ENUM_VALUE
   enabled: true
@@ -302,6 +300,9 @@
 # Checks that annotation is on a single line
 - name: ANNOTATION_NEW_LINE
   enabled: true
+# Checks that method annotated with `Preview` annotation is private and has Preview suffix
+- name: PREVIEW_ANNOTATION
+  enabled: true
 # Checks that enum structure is correct: enum entries should be separated by comma and line break and last entry should have semicolon in the end.
 - name: ENUMS_SEPARATED
   enabled: true
@@ -452,7 +453,6 @@
   configuration:
     isParamTagsForParameters: false # create param tags for parameters without val or var
     isParamTagsForPrivateProperties: false # create param tags for private properties
-    isParamTagsForGenericTypes: false # create param tags for generic types
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true
