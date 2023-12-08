@@ -215,4 +215,109 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `don't trigger inside 'init' block when more than one statement in 'else' block`() {
+        lintMethod(
+            """
+                |class Demo {
+                |    val one: Int
+                |    val two: String
+                |
+                |    init {
+                |        val number = get()
+                |        if (number != null) {
+                |            one = number.toInt()
+                |            two = number
+                |        } else {
+                |            one = 0
+                |            two = "0"
+                |        }
+                |    }
+                |
+                |    private fun get(): String? = if (Math.random() > 0.5) { "1" } else { null }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `trigger inside 'init' block when only one statement in 'else' block`() {
+        lintMethod(
+            """
+                |class Demo {
+                |    val one: Int = 0
+                |    val two: String = ""
+                |
+                |    init {
+                |        val number = get()
+                |        if (number != null) {
+                |            print(number + 1)
+                |        } else {
+                |            print(null)
+                |        }
+                |    }
+                |
+                |    private fun get(): String? = if (Math.random() > 0.5) { "1" } else { null }
+                |}
+            """.trimMargin(),
+            DiktatError(7, 13, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
+                    " use '.let/.also/?:/e.t.c' instead of number != null", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `trigger inside 'init' block when no 'else' block`() {
+        lintMethod(
+            """
+                |class Demo {
+                |    val one: Int = 0
+                |    val two: String = ""
+                |
+                |    init {
+                |        val number = get()
+                |        if (number != null) {
+                |            print(number)
+                |        }
+                |    }
+                |
+                |    private fun get(): String? = if (Math.random() > 0.5) { "1" } else { null }
+                |}
+            """.trimMargin(),
+            DiktatError(7, 13, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
+                    " use '.let/.also/?:/e.t.c' instead of number != null", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `don't trigger inside 'run', 'with', 'apply' scope functions when more than one statement in 'else' block`() {
+        lintMethod(
+            """
+                |class Demo {
+                |
+                |    private fun set() {
+                |        val one: Int
+                |        val two: String
+                |
+                |        run {
+                |            val number: String? = get()
+                |            if (number != null) {
+                |                one = number.toInt()
+                |                two = number
+                |            } else {
+                |                one = 0
+                |                two = "0"
+                |            }
+                |        }
+                |    }
+                |
+                |    private fun get(): String? = if (Math.random() > 0.5) { "1" } else { null }
+                |}
+            """.trimMargin()
+        )
+    }
 }
