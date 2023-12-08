@@ -196,6 +196,36 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
+    @Tag(WarningNames.CONSTANT_UPPERCASE)
+    fun `serialVersionUID should be ignored`() {
+        lintMethod(
+            """
+                class TestSerializableClass() : Serializable {
+                    companion object {
+                        private const val serialVersionUID: Long = -1
+                    }
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.CONSTANT_UPPERCASE)
+    fun `should trigger when the name is not exception`() {
+        val code =
+            """
+                class TestSerializableClass() : Serializable {
+                    companion object {
+                        private const val serialVersion: Long = -1
+                    }
+                }
+            """.trimIndent()
+        lintMethod(code,
+            DiktatError(3, 27, ruleId, "${CONSTANT_UPPERCASE.warnText()} serialVersion", true)
+        )
+    }
+
+    @Test
     @Tags(Tag(WarningNames.IDENTIFIER_LENGTH), Tag(WarningNames.VARIABLE_NAME_INCORRECT))
     fun `check variable length (check - negative)`() {
         val code =
