@@ -89,7 +89,6 @@ tasks.register<DefaultTask>("shadowExecutableJar") {
         outputFile.get()
             .asFile
             .apply {
-                // language=shell script
                 writeBytes(scriptFile.readBytes())
                 appendBytes(shadowJarFile.readBytes())
                 setExecutable(true, false)
