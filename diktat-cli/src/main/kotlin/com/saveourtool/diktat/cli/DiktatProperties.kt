@@ -20,11 +20,14 @@ import org.slf4j.event.Level
 import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.PathWalkOption
 
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
+import kotlin.io.path.walk
 import kotlin.system.exitProcess
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
@@ -96,17 +99,28 @@ data class DiktatProperties(
         )
     }
 
-    private fun getFiles(sourceRootDir: Path): Collection<Path> = patterns
+    private fun getFiles(sourceRootDir: Path): Collection<Path> {
+        val (includePatterns, excludePatterns) = patterns.partition { !it.startsWith("!") }
+        val exclude by lazy {
+            getFiles(sourceRootDir, excludePatterns.map { it.removePrefix("!") })
+                .toSet()
+        }
+        return getFiles(sourceRootDir, includePatterns).filterNot { exclude.contains(it) }.toList()
+    }
+
+    @OptIn(ExperimentalPathApi::class)
+    private fun getFiles(sourceRootDir: Path, patterns: List<String>): Sequence<Path> = patterns
         .asSequence()
         .flatMap { pattern ->
-            pattern.tryToPathIfExists()?.let { sequenceOf(it) }
+            pattern.tryToPathIfExists()?.walk(PathWalkOption.INCLUDE_DIRECTORIES)
                 ?: sourceRootDir.walkByGlob(pattern)
         }
         .filter { file -> file.isKotlinCodeOrScript() }
         .map { it.normalize() }
         .map { it.toAbsolutePath() }
         .distinct()
-        .toList()
+
+
 
     private fun getReporterOutput(): OutputStream? = output
         ?.let { Paths.get(it) }

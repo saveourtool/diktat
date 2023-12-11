@@ -24,6 +24,10 @@ private val roots: Set<String> = FileSystems.getDefault()
     .map { it.absolutePathString() }
     .toSet()
 
+private const val parentDirectoryPrefix = 3
+private const val parentDirectoryUnix = "../"
+private const val parentDirectoryWindows = "..\\"
+
 /**
  * Create a matcher and return a filter that uses it.
  *
@@ -31,11 +35,22 @@ private val roots: Set<String> = FileSystems.getDefault()
  * @return a sequence of files which matches to [glob]
  */
 @OptIn(ExperimentalPathApi::class)
-fun Path.walkByGlob(glob: String): Sequence<Path> = fileSystem.globMatcher(glob)
-    .let { matcher ->
-        this.walk(PathWalkOption.INCLUDE_DIRECTORIES)
-            .filter { matcher.matches(it) }
-    }
+fun Path.walkByGlob(glob: String): Sequence<Path> = if (glob.startsWith(parentDirectoryUnix) || glob.startsWith(parentDirectoryWindows)) {
+    parent?.walkByGlob(glob.substring(parentDirectoryPrefix)) ?: emptySequence()
+} else {
+    fileSystem.globMatcher(glob)
+        .let { matcher ->
+            walk(PathWalkOption.INCLUDE_DIRECTORIES).filter { matcher.matches(it) }
+        }
+}
+
+private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGlob(glob)) {
+    getPathMatcher("glob:$glob")
+} else {
+    getPathMatcher("glob:**${File.separatorChar}$glob")
+}
+
+private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }
 
 /**
  * @return path or null if path is invalid or doesn't exist
@@ -45,13 +60,3 @@ fun String.tryToPathIfExists(): Path? = try {
 } catch (e: InvalidPathException) {
     null
 }
-
-private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGlob(glob)) {
-    getPathMatcher("glob:${glob.toUnixSeparator()}")
-} else {
-    getPathMatcher("glob:**/${glob.toUnixSeparator()}")
-}
-
-private fun String.toUnixSeparator(): String = replace(File.separatorChar, '/')
-
-private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }
