@@ -1160,6 +1160,20 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `shouldn't fall with NPE`() {
+        lintMethod(
+            """
+                |val TEST_FUNC = { _: Int, _: Set<Int>, _: Int, ->
+                |}
+            """.trimMargin(),
+            DiktatError(1, 19, ruleId, "${WRONG_NEWLINES.warnText()} " +
+                    "first parameter should be placed on a separate line or all other parameters should be aligned with it in declaration of <null>", true),
+            DiktatError(1, 19, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines", true),
+            )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `not complaining on fun without return type`() {
         lintMethod(
             """
