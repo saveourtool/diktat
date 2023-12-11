@@ -72,6 +72,7 @@ tasks.register<DefaultTask>("shadowExecutableJar") {
     group = "Distribution"
     dependsOn(tasks.shadowJar)
 
+    val scriptFile = project.file("src/main/script/diktat.sh")
     val shadowJarFile = tasks.shadowJar
         .get()
         .outputs
@@ -81,7 +82,7 @@ tasks.register<DefaultTask>("shadowExecutableJar") {
         .buildDirectory
         .file(shadowJarFile.name.removeSuffix(".jar"))
 
-    inputs.file(shadowJarFile)
+    inputs.files(scriptFile, shadowJarFile)
     outputs.file(outputFile)
 
     doLast {
@@ -89,14 +90,7 @@ tasks.register<DefaultTask>("shadowExecutableJar") {
             .asFile
             .apply {
                 // language=shell script
-                writeText(
-                    """
-                    #!/bin/sh
-
-                    exec java -jar "$0" "$@"
-
-                    """.trimIndent()
-                )
+                writeBytes(scriptFile.readBytes())
                 appendBytes(shadowJarFile.readBytes())
                 setExecutable(true, false)
             }
