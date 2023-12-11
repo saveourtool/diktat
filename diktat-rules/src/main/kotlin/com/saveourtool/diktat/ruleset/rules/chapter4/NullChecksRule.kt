@@ -82,7 +82,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 val isEqualToNull = when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
                     KtTokens.EQEQ, KtTokens.EQEQEQ -> true
-                    // `!==` and `!==` comparison can be fixed with `.let/also` operators
+                    // `!=` and `!==` comparison can be fixed with `.let/also` operators
                     KtTokens.EXCLEQ, KtTokens.EXCLEQEQEQ -> false
                     else -> return
                 }
@@ -93,10 +93,10 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 // if `if-else` block inside `init` or 'run', 'with', 'apply' blocks and there is more than one statement inside 'else' block, then
                 // we don't have to make any fixes, because this leads to kotlin compilation error after adding 'run' block instead of 'else' block
                 // read https://youtrack.jetbrains.com/issue/KT-64174 for more information
-                if (isShouldBeFixed(node, elseCodeLines, numberOfStatementsInElseBlock, isAssignmentInNewElseBlock)) {
+                if (shouldBeWarned(node, elseCodeLines, numberOfStatementsInElseBlock, isAssignmentInNewElseBlock)) {
                     warnAndFixOnNullCheck(
                         condition,
-                        isFixable(node, isEqualToNull),
+                        canBeAutoFixed(node, isEqualToNull),
                         "use '.let/.also/?:/e.t.c' instead of ${condition.text}"
                     ) {
                         fixNullInIfCondition(node, condition, isEqualToNull)
@@ -106,7 +106,10 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isShouldBeFixed(
+    /**
+     * Checks whether it is necessary to warn about null-check
+     */
+    private fun shouldBeWarned(
         condition: ASTNode,
         elseCodeLines: List<String>?,
         numberOfStatementsInElseBlock: Int,
@@ -130,9 +133,12 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                         it.findChildByType(REFERENCE_EXPRESSION)?.text in listOf("run", "with", "apply"))
     }
 
+    /**
+     * Checks whether null-check can be auto fixed
+     */
     @Suppress("UnsafeCallOnNullableType")
-    private fun isFixable(condition: ASTNode,
-                          isEqualToNull: Boolean): Boolean {
+    private fun canBeAutoFixed(condition: ASTNode,
+                               isEqualToNull: Boolean): Boolean {
         // Handle cases with `break` word in blocks
         val typePair = if (isEqualToNull) {
             (ELSE to THEN)
@@ -164,10 +170,10 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines, numberOfStatementsInElseBlock, isAssignmentInNewElseBlock)
         val thenEditedCodeLines = getEditedThenCodeLines(variableName, thenCodeLines, elseEditedCodeLines)
 
-        val text = "$thenEditedCodeLines $elseEditedCodeLines"
-        val tree = KotlinParser().createNode(text)
+        val newTextForReplacement = "$thenEditedCodeLines $elseEditedCodeLines"
+        val newNodeForReplacement = KotlinParser().createNode(newTextForReplacement)
         val ifNode = condition.treeParent
-        ifNode.treeParent.replaceChild(ifNode, tree)
+        ifNode.treeParent.replaceChild(ifNode, newNodeForReplacement)
     }
 
     private fun getThenAndElseLines(condition: ASTNode, isEqualToNull: Boolean): ThenAndElseLines {
