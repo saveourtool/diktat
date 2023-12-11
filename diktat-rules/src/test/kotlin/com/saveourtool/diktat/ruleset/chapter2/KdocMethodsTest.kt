@@ -425,4 +425,103 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             DiktatError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} writeToConsoleEx", true),
         )
     }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't trigger on local functions`() {
+        lintMethod(
+            """
+                |fun printHelloAndBye() {
+                |    fun printHello() {
+                |        print("Hello")
+                |    }
+                |    printHello()
+                |    val ab = 5
+                |    ab?.let {
+                |        fun printBye() {
+                |            print("Bye")
+                |        }
+                |        printBye()
+                |    }
+                |}
+            """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} printHelloAndBye", false),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't trigger on functions with KDoc`() {
+        lintMethod(
+            """
+                |/**
+                | * prints "Hello" and "Bye"
+                | */
+                |fun printHelloAndBye() {
+                |    fun printHello() {
+                |        print("Hello")
+                |    }
+                |    printHello()
+                |    val ab = 5
+                |    ab?.let {
+                |        fun printBye() {
+                |            print("Bye")
+                |        }
+                |        printBye()
+                |    }
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't trigger on nested local functions`() {
+        lintMethod(
+            """
+                |fun printHelloAndBye() {
+                |    fun printHello() {
+                |        print("Hello")
+                |        fun printBye() {
+                |            print("Bye")
+                |        }
+                |        fun printDots() {
+                |            print("...")
+                |        }
+                |        printBye()
+                |        printDots()
+                |    }
+                |    printHello()
+                |}
+            """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} printHelloAndBye", false),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't trigger on local functions with KDoc`() {
+        lintMethod(
+            """
+                |fun printHelloAndBye() {
+                |    fun printHello() {
+                |        print("Hello")
+                |    }
+                |    printHello()
+                |    val ab = 5
+                |    ab?.let {
+                |        /**
+                |         * prints "Bye"
+                |         */
+                |        fun printBye() {
+                |            print("Bye")
+                |        }
+                |        printBye()
+                |    }
+                |}
+            """.trimMargin(),
+            DiktatError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} printHelloAndBye", false),
+        )
+    }
+
 }
