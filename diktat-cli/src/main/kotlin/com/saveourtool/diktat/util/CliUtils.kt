@@ -53,10 +53,14 @@ fun String.tryToPathIfExists(): Path? = try {
     null
 }
 
-private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGlob(glob)) {
-    getPathMatcher("glob:$glob")
+private fun FileSystem.globMatcher(glob: String): PathMatcher = (if (isAbsoluteGlob(glob)) {
+    glob
 } else {
-    getPathMatcher("glob:**${File.separatorChar}$glob")
-}
+    "**${File.separatorChar}$glob"
+})
+    .replace("([^\\\\])(\\\\)([^\\\\])".toRegex(), "$1\\\\\\\\$3")
+    .let {
+        getPathMatcher("glob:$it")
+    }
 
 private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }

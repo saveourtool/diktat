@@ -60,11 +60,14 @@ class CliUtilsKtTest {
     fun walkByGlobWithRelativePath(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
+        val expectedResult = arrayOf(
+            tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
+            tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
+        )
         Assertions.assertThat(tmpDir.walkByGlob("folder1/subFolder11/*.kt").toList())
-            .containsExactlyInAnyOrder(
-                tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
-                tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
-            )
+            .containsExactlyInAnyOrder(*expectedResult)
+        Assertions.assertThat(tmpDir.walkByGlob("folder1\\subFolder11\\*.kt").toList())
+            .containsExactlyInAnyOrder(*expectedResult)
     }
 
     @Test
