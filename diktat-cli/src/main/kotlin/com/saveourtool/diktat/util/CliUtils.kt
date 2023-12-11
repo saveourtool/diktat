@@ -17,16 +17,16 @@ import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 import kotlin.io.path.walk
 
+private const val PARENT_DIRECTORY_PREFIX = 3
+private const val PARENT_DIRECTORY_UNIX = "../"
+private const val PARENT_DIRECTORY_WINDOWS = "..\\"
+
 // all roots
 private val roots: Set<String> = FileSystems.getDefault()
     .rootDirectories
     .asSequence()
     .map { it.absolutePathString() }
     .toSet()
-
-private const val parentDirectoryPrefix = 3
-private const val parentDirectoryUnix = "../"
-private const val parentDirectoryWindows = "..\\"
 
 /**
  * Create a matcher and return a filter that uses it.
@@ -35,22 +35,14 @@ private const val parentDirectoryWindows = "..\\"
  * @return a sequence of files which matches to [glob]
  */
 @OptIn(ExperimentalPathApi::class)
-fun Path.walkByGlob(glob: String): Sequence<Path> = if (glob.startsWith(parentDirectoryUnix) || glob.startsWith(parentDirectoryWindows)) {
-    parent?.walkByGlob(glob.substring(parentDirectoryPrefix)) ?: emptySequence()
+fun Path.walkByGlob(glob: String): Sequence<Path> = if (glob.startsWith(PARENT_DIRECTORY_UNIX) || glob.startsWith(PARENT_DIRECTORY_WINDOWS)) {
+    parent?.walkByGlob(glob.substring(PARENT_DIRECTORY_PREFIX)) ?: emptySequence()
 } else {
     fileSystem.globMatcher(glob)
         .let { matcher ->
             walk(PathWalkOption.INCLUDE_DIRECTORIES).filter { matcher.matches(it) }
         }
 }
-
-private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGlob(glob)) {
-    getPathMatcher("glob:$glob")
-} else {
-    getPathMatcher("glob:**${File.separatorChar}$glob")
-}
-
-private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }
 
 /**
  * @return path or null if path is invalid or doesn't exist
@@ -60,3 +52,11 @@ fun String.tryToPathIfExists(): Path? = try {
 } catch (e: InvalidPathException) {
     null
 }
+
+private fun FileSystem.globMatcher(glob: String): PathMatcher = if (isAbsoluteGlob(glob)) {
+    getPathMatcher("glob:$glob")
+} else {
+    getPathMatcher("glob:**${File.separatorChar}$glob")
+}
+
+private fun isAbsoluteGlob(glob: String): Boolean = glob.startsWith("**") || roots.any { glob.startsWith(it, true) }

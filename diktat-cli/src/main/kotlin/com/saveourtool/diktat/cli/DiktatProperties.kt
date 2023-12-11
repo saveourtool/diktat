@@ -120,8 +120,6 @@ data class DiktatProperties(
         .map { it.toAbsolutePath() }
         .distinct()
 
-
-
     private fun getReporterOutput(): OutputStream? = output
         ?.let { Paths.get(it) }
         ?.also { it.parent.createDirectories() }
