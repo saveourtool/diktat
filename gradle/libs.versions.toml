@@ -13,7 +13,7 @@ dokka = "1.9.10"
 gradle-nexus-publish-plugin = "1.3.0"
 jacoco = "0.8.8"
 # maven
-maven-api = "3.9.5"
+maven-api = "3.9.6"
 maven-plugin-tools = "3.8.1"
 maven-plugin-testing-harness = "3.3.0"
 plexus = "2.1.0"
@@ -21,7 +21,7 @@ plexus = "2.1.0"
 jbool = "1.24"
 kotlin-logging = "5.1.1"
 log4j2 = "2.22.0"
-kaml = "0.55.0"
+kaml = "0.56.0"
 sarif4k = "0.5.0"
 jupiter-itf-extension = "0.12.0"
 
@@ -33,9 +33,9 @@ gradle-shadow = "8.1.1"
 jetbrains-annotations = "24.1.0"
 kotlinx-coroutines = "1.7.3"
 assertj = "3.24.2"
-diktat = "2.0.0-rc.6"
+diktat = "2.0.0-rc.8"
 reckon = "0.18.1"
-spotless = "6.23.2"
+spotless = "6.23.3"
 download = "5.5.0"
 
 [plugins]
@@ -46,7 +46,7 @@ kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization"
 kotlin-plugin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
 kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
-talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "2.0.2" }
+talaiot-base = { id = "io.github.cdsap.talaiot.plugin.base", version = "2.0.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.gradle.spotless", version.ref = "spotless" }
 download = { id = "de.undercouch.download", version.ref = "download" }
