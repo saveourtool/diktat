@@ -10,6 +10,7 @@
 # Bash strict mode,
 # see http://redsymbol.net/articles/unofficial-bash-strict-mode/.
 set -euo pipefail
+IFS=$'\n'
 
 function error() {
     local message
@@ -32,7 +33,7 @@ function error() {
 # Exit codes.
 # The code of 1 is returned by ktlint in the event of failure.
 declare -ir ERROR_JAVA_NOT_FOUND=2
-declare -ir ERROR_INCOMPATIBLE_BASH_VERSION=8
+declare -ir ERROR_INCOMPATIBLE_BASH_VERSION=3
 
 if (( BASH_VERSINFO[0] < 4 ))
 then
