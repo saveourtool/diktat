@@ -18,8 +18,6 @@
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
-  configuration:
-    exceptionConstNames: "serialVersionUID"
 # Checks that enum value is in upper SNAKE_CASE or in PascalCase depending on the config. UPPER_SNAKE_CASE is the default, but can be changed by 'enumStyle' config
 - name: ENUM_VALUE
   enabled: true
