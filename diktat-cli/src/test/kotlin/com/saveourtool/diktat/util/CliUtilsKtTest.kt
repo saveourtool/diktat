@@ -36,7 +36,7 @@ class CliUtilsKtTest {
     fun walkByGlobWithLeadingAsterisks(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
-        Assertions.assertThat(tmpDir.walkByGlob("**/Test1.kt").toList())
+        Assertions.assertThat(tmpDir.listFiles("**/Test1.kt").toList())
             .containsExactlyInAnyOrder(
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
                 tmpDir.resolve("folder1").resolve("subFolder12").resolve("Test1.kt"),
@@ -49,7 +49,7 @@ class CliUtilsKtTest {
     fun walkByGlobWithGlobalPath(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
-        Assertions.assertThat(tmpDir.walkByGlob("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList())
+        Assertions.assertThat(tmpDir.listFiles("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList())
             .containsExactlyInAnyOrder(
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
                 tmpDir.resolve("folder2").resolve("Test2.kt"),
@@ -64,9 +64,9 @@ class CliUtilsKtTest {
             tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
             tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
         )
-        Assertions.assertThat(tmpDir.walkByGlob("folder1/subFolder11/*.kt").toList())
+        Assertions.assertThat(tmpDir.listFiles("folder1/subFolder11/*.kt").toList())
             .containsExactlyInAnyOrder(*expectedResult)
-        Assertions.assertThat(tmpDir.walkByGlob("folder1\\subFolder11\\*.kt").toList())
+        Assertions.assertThat(tmpDir.listFiles("folder1\\subFolder11\\*.kt").toList())
             .containsExactlyInAnyOrder(*expectedResult)
     }
 
@@ -74,8 +74,40 @@ class CliUtilsKtTest {
     fun walkByGlobWithEmptyResult(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
-        Assertions.assertThat(tmpDir.walkByGlob("**/*.kts").toList())
+        Assertions.assertThat(tmpDir.listFiles("**/*.kts").toList())
             .isEmpty()
+    }
+
+    @Test
+    fun walkByGlobWithParentFolder(@TempDir tmpDir: Path) {
+        setupHierarchy(tmpDir)
+
+        Assertions.assertThat(tmpDir.resolve("folder1").listFiles("../*/*.kt").toList())
+            .containsExactlyInAnyOrder(
+                tmpDir.resolve("folder2").resolve("Test1.kt"),
+                tmpDir.resolve("folder2").resolve("Test2.kt"),
+                tmpDir.resolve("folder2").resolve("Test3.kt"),
+            )
+    }
+
+    @Test
+    fun walkByGlobWithFolder(@TempDir tmpDir: Path) {
+        setupHierarchy(tmpDir)
+
+        Assertions.assertThat(tmpDir.listFiles("folder2").toList())
+            .containsExactlyInAnyOrder(
+                tmpDir.resolve("folder2").resolve("Test1.kt"),
+                tmpDir.resolve("folder2").resolve("Test2.kt"),
+                tmpDir.resolve("folder2").resolve("Test3.kt"),
+            )
+
+
+        Assertions.assertThat(tmpDir.listFiles("folder1").toList())
+            .containsExactlyInAnyOrder(
+                tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
+                tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
+                tmpDir.resolve("folder1").resolve("subFolder12").resolve("Test1.kt"),
+            )
     }
 
     companion object {
