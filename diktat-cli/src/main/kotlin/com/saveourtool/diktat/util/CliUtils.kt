@@ -8,9 +8,9 @@ import java.io.File
 import java.nio.file.FileSystems
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
-import java.nio.file.PathMatcher
 import java.nio.file.Paths
 import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 import kotlin.io.path.walk
@@ -48,7 +48,7 @@ fun Path.listFiles(
 private fun Path.doListFiles(patterns: List<String>): Sequence<Path> = patterns
     .asSequence()
     .flatMap { pattern ->
-        tryToResolveIfExists(pattern)?.walk() ?: walkByGlob(pattern)
+        tryToResolveIfExists(pattern, this)?.walk() ?: walkByGlob(pattern)
     }
     .map { it.normalize() }
     .map { it.toAbsolutePath() }
@@ -64,28 +64,37 @@ private fun Path.doListFiles(patterns: List<String>): Sequence<Path> = patterns
 private fun Path.walkByGlob(glob: String): Sequence<Path> = if (glob.startsWith(PARENT_DIRECTORY_UNIX) || glob.startsWith(PARENT_DIRECTORY_WINDOWS)) {
     parent?.walkByGlob(glob.substring(PARENT_DIRECTORY_PREFIX)) ?: emptySequence()
 } else {
-    globMatcher(glob)
-        .let { matcher ->
-            walk().filter { matcher.matches(it) }
+    getAbsoluteGlobAndRoot(glob, this)
+        .let { (absoluteGlob, root) ->
+            absoluteGlob
+                .replace("([^\\\\])(\\\\)([^\\\\])".toRegex(), "$1\\\\\\\\$3")  // encode Windows separators
+                .let { root.fileSystem.getPathMatcher("glob:$it") }
+                .let { matcher ->
+                    root.walk().filter { matcher.matches(it) }
+                }
         }
 }
 
 /**
+ * @param candidate
+ * @param currentDirectory
  * @return path or null if path is invalid or doesn't exist
  */
-private fun Path.tryToResolveIfExists(pattern: String): Path? = try {
-    Paths.get(pattern).takeIf { it.exists() }
-        ?: resolve(pattern).takeIf { it.exists() }
+private fun tryToResolveIfExists(candidate: String, currentDirectory: Path): Path? = try {
+    Paths.get(candidate).takeIf { it.exists() }
+        ?: currentDirectory.resolve(candidate).takeIf { it.exists() }
 } catch (e: InvalidPathException) {
     null
 }
 
-private fun Path.globMatcher(glob: String): PathMatcher = glob.toAbsoluteGlob(this)
-    .replace("([^\\\\])(\\\\)([^\\\\])".toRegex(), "$1\\\\\\\\$3")  // encode Windows separators
-    .let { fileSystem.getPathMatcher("glob:$it") }
-
-private fun String.toAbsoluteGlob(from: Path): String = when {
-    startsWith("**") -> this
-    roots.any { startsWith(it, true) } -> this
-    else -> "${from.absolutePathString()}${File.separatorChar}$this"
+private fun getAbsoluteGlobAndRoot(glob: String, currentFolder: Path): Pair<String, Path> = when {
+    glob.startsWith("**") -> glob to currentFolder
+    roots.any { glob.startsWith(it, true) } -> glob to glob.findRoot()
+    else -> "${currentFolder.absolutePathString()}${File.separatorChar}$glob" to currentFolder
 }
+
+private fun String.findRoot(): Path = substring(0, indexOf('*'))
+    .let { withoutAsterisks ->
+        withoutAsterisks.substring(0, withoutAsterisks.lastIndexOfAny(charArrayOf('\\', '/')))
+    }
+    .let { Path(it) }

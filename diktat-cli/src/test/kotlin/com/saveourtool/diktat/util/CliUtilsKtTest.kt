@@ -25,10 +25,18 @@ class CliUtilsKtTest {
             )
     }
 
-
     @Test
     fun listByFilesWithGlobalPath() {
         Assertions.assertThat(tmpDir.listFiles("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList())
+            .containsExactlyInAnyOrder(
+                tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
+                tmpDir.resolve("folder2").resolve("Test2.kt"),
+            )
+    }
+
+    @Test
+    fun listByFilesWithGlobalPattern() {
+        Assertions.assertThat(tmpDir.resolve("folder2").listFiles("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList())
             .containsExactlyInAnyOrder(
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
                 tmpDir.resolve("folder2").resolve("Test2.kt"),
