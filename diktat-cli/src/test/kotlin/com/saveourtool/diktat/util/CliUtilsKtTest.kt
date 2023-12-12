@@ -33,7 +33,7 @@ class CliUtilsKtTest {
     }
 
     @Test
-    fun walkByGlobWithLeadingAsterisks(@TempDir tmpDir: Path) {
+    fun listByFilesWithLeadingAsterisks(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
         Assertions.assertThat(tmpDir.listFiles("**/Test1.kt").toList())
@@ -46,7 +46,7 @@ class CliUtilsKtTest {
 
 
     @Test
-    fun walkByGlobWithGlobalPath(@TempDir tmpDir: Path) {
+    fun listByFilesWithGlobalPath(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
         Assertions.assertThat(tmpDir.listFiles("${tmpDir.absolutePathString()}${File.separator}**${File.separator}Test2.kt").toList())
@@ -57,7 +57,7 @@ class CliUtilsKtTest {
     }
 
     @Test
-    fun walkByGlobWithRelativePath(@TempDir tmpDir: Path) {
+    fun listByFilesWithRelativePath(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
         val expectedResult = arrayOf(
@@ -71,7 +71,7 @@ class CliUtilsKtTest {
     }
 
     @Test
-    fun walkByGlobWithEmptyResult(@TempDir tmpDir: Path) {
+    fun listByFilesWithEmptyResult(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
         Assertions.assertThat(tmpDir.listFiles("**/*.kts").toList())
@@ -79,7 +79,7 @@ class CliUtilsKtTest {
     }
 
     @Test
-    fun walkByGlobWithParentFolder(@TempDir tmpDir: Path) {
+    fun listByFilesWithParentFolder(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
         Assertions.assertThat(tmpDir.resolve("folder1").listFiles("../*/*.kt").toList())
@@ -91,7 +91,7 @@ class CliUtilsKtTest {
     }
 
     @Test
-    fun walkByGlobWithFolder(@TempDir tmpDir: Path) {
+    fun listByFilesWithFolder(@TempDir tmpDir: Path) {
         setupHierarchy(tmpDir)
 
         Assertions.assertThat(tmpDir.listFiles("folder2").toList())
@@ -107,6 +107,18 @@ class CliUtilsKtTest {
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test1.kt"),
                 tmpDir.resolve("folder1").resolve("subFolder11").resolve("Test2.kt"),
                 tmpDir.resolve("folder1").resolve("subFolder12").resolve("Test1.kt"),
+            )
+    }
+
+    @Test
+    fun listByFilesWithNegative(@TempDir tmpDir: Path) {
+        setupHierarchy(tmpDir)
+
+        Assertions.assertThat(tmpDir.listFiles("**/*.kt", "!**/subFolder11/*.kt", "!**/Test3.kt").toList())
+            .containsExactlyInAnyOrder(
+                tmpDir.resolve("folder1").resolve("subFolder12").resolve("Test1.kt"),
+                tmpDir.resolve("folder2").resolve("Test1.kt"),
+                tmpDir.resolve("folder2").resolve("Test2.kt"),
             )
     }
 
