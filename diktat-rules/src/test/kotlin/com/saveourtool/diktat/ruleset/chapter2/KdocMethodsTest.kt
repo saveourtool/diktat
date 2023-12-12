@@ -276,17 +276,19 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `shouldn't add @throw if exception is in catch-block`() {
         lintMethod(
-        """
-            |class Example {
-            |   override fun toString() = "example"
-            |
-            |   override fun equals(other: Any?) = false
-            |
-            |   override fun hashCode() = 42
-            |}
-            |
-            |fun main() {}
-        """.trimIndent()
+            """
+                    |fun parseInputNumber(onSuccess: (number: Int) -> Unit, onFailure: () -> Unit) {
+                    |    try {
+                    |        val input: Int = binding.inputEditText.text.toString().toInt()
+                    |        if (input < 0)
+                    |            throw NumberFormatException()
+                    |
+                    |        onSuccess(input)
+                    |    } catch (e: NumberFormatException) {
+                    |        onFailure()
+                    | }
+                    |}
+            """.trimMargin()
         )
     }
 
