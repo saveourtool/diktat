@@ -273,6 +273,24 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
+    fun `shouldn't add @throw if exception is in catch-block`() {
+        lintMethod(
+        """
+            |class Example {
+            |   override fun toString() = "example"
+            |
+            |   override fun equals(other: Any?) = false
+            |
+            |   override fun hashCode() = 42
+            |}
+            |
+            |fun main() {}
+        """.trimIndent()
+        )
+    }
+
+    @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `do not force documentation on standard methods`() {
         lintMethod(
