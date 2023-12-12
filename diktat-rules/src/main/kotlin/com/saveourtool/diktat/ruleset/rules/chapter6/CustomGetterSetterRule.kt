@@ -35,7 +35,7 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         val isOverrideGetter = node.treeParent.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(OVERRIDE_KEYWORD) ?: false
 
         // find matching node
-        if (isPairPropertyBackingField(node.treeParent.psi as KtProperty, null)) {
+        if (isPairPropertyBackingField(node.treeParent?.psi as? KtProperty, null)) {
             return
         }
 

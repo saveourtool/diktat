@@ -1220,7 +1220,9 @@ internal fun isPairPropertyBackingField(propertyNode: KtProperty?, backingFieldN
         val noSetterGetterBackingField = propertyNode?.let { !(pairNode.hasCustomSetter() || pairNode.hasCustomGetter()) } ?: run {
             !(node.hasCustomSetter() || node.hasCustomGetter())
         }
-        val hasSetterOrGetterProperty = propertyNode?.let { node.hasCustomSetter() || node.hasCustomGetter() } ?: run { pairNode.hasCustomSetter() || pairNode.hasCustomGetter() }
+        val hasSetterOrGetterProperty = propertyNode?.let { node.hasCustomSetter() || node.hasCustomGetter() } ?: run {
+            pairNode.hasCustomSetter() || pairNode.hasCustomGetter()
+        }
 
         matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
                 noSetterGetterBackingField && hasSetterOrGetterProperty
