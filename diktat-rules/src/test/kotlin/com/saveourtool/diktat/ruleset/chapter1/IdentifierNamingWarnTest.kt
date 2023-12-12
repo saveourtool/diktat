@@ -41,6 +41,11 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
         RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
             mapOf("allowedPrefixes" to "equals, equivalent, foo"))
     )
+    private val rulesConfigConstantUpperCase = listOf(
+        RulesConfig(CONSTANT_UPPERCASE.name, true, mapOf(
+            "exceptionConstNames" to "serialVersionUID"
+        ))
+    )
 
     // ======== checks for generics ========
     @Test
@@ -192,6 +197,37 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
             DiktatError(9, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} INCORRECT", false),
             DiktatError(12, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} check_me", false),
             DiktatError(13, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} CHECK_ME", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.CONSTANT_UPPERCASE)
+    fun `serialVersionUID should be ignored`() {
+        lintMethod(
+            """
+                class TestSerializableClass() : Serializable {
+                    companion object {
+                        private const val serialVersionUID: Long = -1
+                    }
+                }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigConstantUpperCase
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.CONSTANT_UPPERCASE)
+    fun `should trigger when the name is not exception`() {
+        val code =
+            """
+                class TestSerializableClass() : Serializable {
+                    companion object {
+                        private const val serialVersion: Long = -1
+                    }
+                }
+            """.trimIndent()
+        lintMethod(code,
+            DiktatError(3, 27, ruleId, "${CONSTANT_UPPERCASE.warnText()} serialVersion", true)
         )
     }
 

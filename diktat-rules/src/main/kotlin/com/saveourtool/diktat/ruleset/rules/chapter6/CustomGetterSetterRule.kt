@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.lexer.KtTokens.GET_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.OVERRIDE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.PRIVATE_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.SET_KEYWORD
+import org.jetbrains.kotlin.psi.KtProperty
 
 /**
  * Inspection that checks that no custom getters and setters are used for properties.
@@ -34,7 +35,7 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         val isOverrideGetter = node.treeParent.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(OVERRIDE_KEYWORD) ?: false
 
         // find matching node
-        if (isPairPropertyBackingField(node.treeParent, null)) {
+        if (isPairPropertyBackingField(node.treeParent?.psi as? KtProperty, null)) {
             return
         }
 

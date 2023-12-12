@@ -46,7 +46,7 @@ data class DiktatProperties(
     val mode: DiktatMode,
     val reporterType: DiktatReporterType,
     val output: String?,
-    private val groupByFileInPlain: Boolean,
+    private val groupByFileInPlain: Boolean?,
     private val colorNameInPlain: String?,
     private val logLevel: Level,
     val patterns: List<String>,
@@ -147,12 +147,12 @@ data class DiktatProperties(
                 shortName = "o",
                 description = "Redirect the reporter output to a file.",
             )
-            val groupByFileInPlain: Boolean by parser.option(
+            val groupByFileInPlain: Boolean? by parser.option(
                 type = ArgType.Boolean,
                 fullName = "plain-group-by-file",
                 shortName = null,
                 description = "A flag for plain reporter"
-            ).default(false)
+            )
             val colorName: String? by parser.colorName(diktatReporterFactory)
             val logLevel: Level by parser.option(
                 type = ArgType.Choice<Level>(),
