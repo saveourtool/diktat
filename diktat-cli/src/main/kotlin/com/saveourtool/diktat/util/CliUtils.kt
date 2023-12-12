@@ -75,6 +75,12 @@ private fun Path.walkByGlob(glob: String): Sequence<Path> = if (glob.startsWith(
         }
 }
 
+private fun String.findRoot(): Path = substring(0, indexOf('*'))
+    .let { withoutAsterisks ->
+        withoutAsterisks.substring(0, withoutAsterisks.lastIndexOfAny(charArrayOf('\\', '/')))
+    }
+    .let { Path(it) }
+
 /**
  * @param candidate
  * @param currentDirectory
@@ -92,9 +98,3 @@ private fun getAbsoluteGlobAndRoot(glob: String, currentFolder: Path): Pair<Stri
     roots.any { glob.startsWith(it, true) } -> glob to glob.findRoot()
     else -> "${currentFolder.absolutePathString()}${File.separatorChar}$glob" to currentFolder
 }
-
-private fun String.findRoot(): Path = substring(0, indexOf('*'))
-    .let { withoutAsterisks ->
-        withoutAsterisks.substring(0, withoutAsterisks.lastIndexOfAny(charArrayOf('\\', '/')))
-    }
-    .let { Path(it) }
