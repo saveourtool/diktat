@@ -27,6 +27,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         RulesConfig(WRONG_NEWLINES.name, true,
             mapOf("maxCallsInOneLine" to "1"))
     )
+    private val rulesConfigListLong: List<RulesConfig> = listOf(
+        RulesConfig(WRONG_NEWLINES.name, true,
+            mapOf("maxCallsInOneLine" to "10"))
+    )
     private val ruleId = "$DIKTAT_RULE_SET_ID:${NewlinesRule.NAME_ID}"
     private val dotQuaOrSafeAccessOrPostfixExpression = "${WRONG_NEWLINES.warnText()} wrong split long `dot qualified expression` or `safe access expression`"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
@@ -682,7 +686,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |         }
                     |}
             """.trimMargin(),
-            DiktatError(19, 20, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+            DiktatError(16, 9, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
+            DiktatError(19, 20, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
@@ -829,9 +834,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |}
             """.trimMargin(),
             DiktatError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            DiktatError(3, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+            DiktatError(3, 22, ruleId, "$functionalStyleWarn .", true),
             DiktatError(13, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
-            DiktatError(13, 23, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+            DiktatError(13, 23, ruleId, "$functionalStyleWarn .", true)
         )
     }
 
@@ -893,7 +898,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   .few()
                 |}
             """.trimMargin(),
+            DiktatError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(4, 10, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(8, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(9, 11, ruleId, "$functionalStyleWarn .", true),
             DiktatError(9, 17, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
@@ -930,7 +937,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |}
             """.trimMargin(),
             DiktatError(2, 7, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(15, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(16, 10, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(21, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(21, 7, ruleId, "$functionalStyleWarn .", true),
             DiktatError(22, 10, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
@@ -1051,6 +1060,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin(),
             DiktatError(2, 14, ruleId, "$functionalStyleWarn ?:", true),
             DiktatError(4, 8, ruleId, "$functionalStyleWarn ?:", true),
+            DiktatError(4, 11, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(4, 22, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
@@ -1066,7 +1076,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   a().b.c()!!
                 |}
             """.trimMargin(),
+            DiktatError(2, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(2, 11, ruleId, "$functionalStyleWarn .", true),
+            DiktatError(3, 4, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(3, 9, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
@@ -1092,6 +1104,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |                       .qwe()
                 |}
             """.trimMargin(),
+            DiktatError(7, 11, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(7, 22, ruleId, "$functionalStyleWarn .", true),
             DiktatError(9, 15, ruleId, "$functionalStyleWarn ?:", true),
             DiktatError(10, 16, ruleId, "$functionalStyleWarn ?:", true),
@@ -1152,6 +1165,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   if(a().b().c()) {}
                 |}
             """.trimMargin(),
+            DiktatError(2, 7, ruleId, dotQuaOrSafeAccessOrPostfixExpression, true),
             DiktatError(2, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
             DiktatError(2, 14, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
@@ -1193,6 +1207,19 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin(),
             tempDir = tempDir,
             fileName = "build.gradle.kts"
+        )
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.WRONG_NEWLINES), Tag(WarningNames.COMPLEX_EXPRESSION))
+    fun `shouldn't trigger on allowed many calls in one line`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   if(a().b().c().d().e()) {}
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigListLong
         )
     }
 }
