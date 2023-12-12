@@ -11,10 +11,8 @@ import java.nio.file.Path
 import java.nio.file.PathMatcher
 import java.nio.file.Paths
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.PathWalkOption
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
-import kotlin.io.path.isRegularFile
 import kotlin.io.path.walk
 
 private const val NEGATIVE_PREFIX_PATTERN = "!"
@@ -52,7 +50,6 @@ private fun Path.doListFiles(patterns: List<String>): Sequence<Path> = patterns
     .flatMap { pattern ->
         tryToResolveIfExists(pattern)?.walk() ?: walkByGlob(pattern)
     }
-//    .filter { it.isRegularFile() }
     .map { it.normalize() }
     .map { it.toAbsolutePath() }
     .distinct()
@@ -84,7 +81,7 @@ private fun Path.tryToResolveIfExists(pattern: String): Path? = try {
 }
 
 private fun Path.globMatcher(glob: String): PathMatcher = glob.toAbsoluteGlob(this)
-    .replace("([^\\\\])(\\\\)([^\\\\])".toRegex(), "$1\\\\\\\\$3") // encode Windows separators
+    .replace("([^\\\\])(\\\\)([^\\\\])".toRegex(), "$1\\\\\\\\$3")  // encode Windows separators
     .let { fileSystem.getPathMatcher("glob:$it") }
 
 private fun String.toAbsoluteGlob(from: Path): String = when {
@@ -92,4 +89,3 @@ private fun String.toAbsoluteGlob(from: Path): String = when {
     roots.any { startsWith(it, true) } -> this
     else -> "${from.absolutePathString()}${File.separatorChar}$this"
 }
-
