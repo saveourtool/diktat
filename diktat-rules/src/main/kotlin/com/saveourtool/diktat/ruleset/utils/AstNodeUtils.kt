@@ -35,6 +35,7 @@ import org.jetbrains.kotlin.KtNodeTypes.PARENTHESIZED
 import org.jetbrains.kotlin.KtNodeTypes.PROPERTY
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_PARAMETER_LIST
+import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_PARAMETER_LIST
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -45,6 +46,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.js.translate.declaration.hasCustomGetter
+import org.jetbrains.kotlin.js.translate.declaration.hasCustomSetter
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.ANDAND
@@ -69,8 +72,15 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtNullableType
 import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
+import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.stubs.elements.KtFileElementType
@@ -1186,28 +1196,33 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
  * @return true if node has a pair
  */
 @Suppress("CyclomaticComplexMethod")
-internal fun isPairPropertyBackingField(propertyNode: ASTNode?, backingFieldNode: ASTNode?): Boolean {
-    val node = propertyNode ?: backingFieldNode
-    val propertyListNullable = (node?.treeParent?.getAllChildrenWithType(PROPERTY)) ?: return false
-    val propertyList: List<ASTNode> = propertyListNullable
-    val nodeType = node.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
-    val nodeNullableType = nodeType?.getFirstChildWithType(KtNodeTypes.NULLABLE_TYPE)
-    val nodeName = node.getFirstChildWithType(IDENTIFIER)?.text
+internal fun isPairPropertyBackingField(propertyNode: KtProperty?, backingFieldNode: KtProperty?): Boolean {
+    val node = (propertyNode ?: backingFieldNode)
+    val propertyList = (node?.parent?.getChildrenOfType<KtProperty>()) ?: return false
+    val nodeType: KtTypeReference? = node.getChildOfType<KtTypeReference>()
+    val nodeNullableType = nodeType?.getChildOfType<KtNullableType>()
+    val nodeName = node.name
 
     val matchingNode = propertyList.find {pairNode ->
-        val propertyType = pairNode.getFirstChildWithType(KtNodeTypes.TYPE_REFERENCE)
+        val propertyType: KtTypeReference? = pairNode.getChildOfType<KtTypeReference>()
         // check that property and backing field has same type
         val sameType = nodeType?.text == propertyType?.text
+
         // check that property USER_TYPE is same as backing field NULLABLE_TYPE
-        val sameTypeWithNullable = propertyType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text ==
-                nodeNullableType?.getFirstChildWithType(KtNodeTypes.USER_TYPE)?.text
+        val sameTypeWithNullable = propertyType?.getChildOfType<KtUserType>()?.text ==
+                nodeNullableType?.getChildOfType<KtUserType>()?.text
+
         // check matching names
-        val propertyName = pairNode.getFirstChildWithType(IDENTIFIER)?.text
+        val propertyName = pairNode.name
         val matchingNames = propertyNode?.let { nodeName == propertyName?.drop(1) } ?: run { nodeName?.drop(1) == propertyName }
 
         val isPrivate = propertyNode?.let { pairNode.isPrivate() } ?: run { node.isPrivate() }
-        val noSetterGetterBackingField = propertyNode?.let { !pairNode.hasSetterOrGetter() } ?: run { !node.hasSetterOrGetter() }
-        val hasSetterOrGetterProperty = propertyNode?.let { node.hasSetterOrGetter() } ?: run { pairNode.hasSetterOrGetter() }
+        val noSetterGetterBackingField = propertyNode?.let { !(pairNode.hasCustomSetter() || pairNode.hasCustomGetter()) } ?: run {
+            !(node.hasCustomSetter() || node.hasCustomGetter())
+        }
+        val hasSetterOrGetterProperty = propertyNode?.let { node.hasCustomSetter() || node.hasCustomGetter() } ?: run {
+            pairNode.hasCustomSetter() || pairNode.hasCustomGetter()
+        }
 
         matchingNames && (sameType || sameTypeWithNullable) && isPrivate &&
                 noSetterGetterBackingField && hasSetterOrGetterProperty

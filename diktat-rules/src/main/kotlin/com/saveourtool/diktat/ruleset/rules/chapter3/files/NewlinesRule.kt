@@ -158,7 +158,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             ) {
                 isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
             }.reversed()
-            if (listDot.size > 3) {
+            if (listDot.size > configuration.maxCallsInOneLine) {
                 val without = listDot.filterIndexed { index, it ->
                     val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     val firstElem = it.firstChildNode
