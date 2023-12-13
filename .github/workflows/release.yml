@@ -75,8 +75,18 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./diktat-cli/build/diktat-cli-${{ github.ref }}
-          asset_name: diktat-cli-${{ github.ref }}
+          asset_name: diktat
           asset_content_type: application/zip
+      - name: Upload Diktat CLI for Windows to GitHub release
+        id: upload-release-asset-cli-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./diktat-cli/src/main/script/diktat.cmd
+          asset_name: diktat.cmd
+          asset_content_type: application/octet-stream
       - name: Upload Diktat ruleset for KtLint to GitHub release
         id: upload-release-asset-ruleset
         uses: actions/upload-release-asset@v1
