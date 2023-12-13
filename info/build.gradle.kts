@@ -3,11 +3,15 @@ import com.saveourtool.diktat.generation.docs.generateCodeStyle
 import com.saveourtool.diktat.generation.docs.generateFullDoc
 import com.saveourtool.diktat.generation.docs.generateRulesMapping
 
+plugins {
+    id("com.saveourtool.diktat.generation.docs.docs-configuration")
+}
+
 tasks.register("generateRulesMapping") {
     group = "documentation"
     description = "Generates a table (rules-mapping.md), which maps warning names to chapters in code style"
     doFirst {
-        generateRulesMapping()
+        generateRulesMapping(mutableListOf())
     }
 }
 
