@@ -42,13 +42,8 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         }
         val opts = if (args is PlainDiktatReporterCreationArguments) {
             buildMap<String, Any> {
-                args.colorName?.let {
-                    put("color", true)
-                    put("color_name", it)
-                } ?: run {
-                    put("color", false)
-                    put("color_name", Color.DARK_GRAY)
-                }
+                put("color", args.colorName?.let { true } ?: false)
+                put("color_name", args.colorName ?: Color.DARK_GRAY)
                 args.groupByFile?.let { put("group_by_file", it) }
             }.mapValues { it.value.toString() }
         } else if (args.reporterType == DiktatReporterType.PLAIN) {
