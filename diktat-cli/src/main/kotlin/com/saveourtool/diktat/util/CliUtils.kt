@@ -67,7 +67,7 @@ private fun Path.walkByGlob(glob: String): Sequence<Path> = if (glob.startsWith(
     getAbsoluteGlobAndRoot(glob, this)
         .let { (absoluteGlob, root) ->
             absoluteGlob
-                .replace("([^\\\\])(\\\\)([^\\\\])".toRegex(), "$1\\\\\\\\$3")  // encode Windows separators
+                .replace("([^\\\\])\\\\([^\\\\])".toRegex(), "$1\\\\\\\\$2")  // encode Windows separators
                 .let { root.fileSystem.getPathMatcher("glob:$it") }
                 .let { matcher ->
                     root.walk().filter { matcher.matches(it) }
