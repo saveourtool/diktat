@@ -9,8 +9,7 @@ import com.saveourtool.diktat.api.DiktatReporterCreationArguments
 import com.saveourtool.diktat.api.DiktatReporterFactory
 import com.saveourtool.diktat.api.DiktatReporterType
 import com.saveourtool.diktat.util.isKotlinCodeOrScript
-import com.saveourtool.diktat.util.tryToPathIfExists
-import com.saveourtool.diktat.util.walkByGlob
+import com.saveourtool.diktat.util.listFiles
 
 import generated.DIKTAT_VERSION
 import org.apache.logging.log4j.LogManager
@@ -96,16 +95,8 @@ data class DiktatProperties(
         )
     }
 
-    private fun getFiles(sourceRootDir: Path): Collection<Path> = patterns
-        .asSequence()
-        .flatMap { pattern ->
-            pattern.tryToPathIfExists()?.let { sequenceOf(it) }
-                ?: sourceRootDir.walkByGlob(pattern)
-        }
+    private fun getFiles(sourceRootDir: Path): Collection<Path> = sourceRootDir.listFiles(patterns = patterns.toTypedArray())
         .filter { file -> file.isKotlinCodeOrScript() }
-        .map { it.normalize() }
-        .map { it.toAbsolutePath() }
-        .distinct()
         .toList()
 
     private fun getReporterOutput(): OutputStream? = output
