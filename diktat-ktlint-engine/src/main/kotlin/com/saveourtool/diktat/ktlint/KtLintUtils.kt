@@ -22,7 +22,7 @@ import java.io.PrintStream
 import java.nio.file.Path
 
 import kotlin.io.path.invariantSeparatorsPathString
-import kotlin.io.path.relativeTo
+import kotlin.io.path.relativeToOrSelf
 
 private const val CANNOT_BE_AUTOCORRECTED_SUFFIX = " (cannot be auto-corrected)"
 
@@ -92,7 +92,7 @@ fun String.correctErrorDetail(canBeAutoCorrected: Boolean): String = if (canBeAu
  * @param sourceRootDir
  * @return relative path to [sourceRootDir] as [String]
  */
-fun Path.relativePathStringTo(sourceRootDir: Path?): String = (sourceRootDir?.let { relativeTo(it) } ?: this).invariantSeparatorsPathString
+fun Path.relativePathStringTo(sourceRootDir: Path?): String = (sourceRootDir?.let { relativeToOrSelf(it) } ?: this).invariantSeparatorsPathString
 
 /**
  * @param out [OutputStream] for [ReporterV2]
