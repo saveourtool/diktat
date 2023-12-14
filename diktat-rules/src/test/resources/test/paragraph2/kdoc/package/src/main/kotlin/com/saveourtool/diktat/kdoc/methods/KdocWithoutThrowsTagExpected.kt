@@ -3,15 +3,20 @@ package test.paragraph2.kdoc.`package`.src.main.kotlin.com.saveourtool.diktat.kd
 /**
  * @param onSuccess
  * @param onFailure
+ * @throws ArrayIndexOutOfBounds
  */
 fun parseInputNumber(onSuccess: (number: Int) -> Unit, onFailure: () -> Unit) {
     try {
         val input: Int = binding.inputEditText.text.toString().toInt()
         if (input < 0)
             throw NumberFormatException()
+        throw ArrayIndexOutOfBounds()
+        throw NullPointerException()
 
         onSuccess(input)
-    } catch (e: NumberFormatException) {
+    } catch (e: IllegalArgumentException) {
+        onFailure()
+    } catch (e: NullPointerException) {
         onFailure()
     }
 }

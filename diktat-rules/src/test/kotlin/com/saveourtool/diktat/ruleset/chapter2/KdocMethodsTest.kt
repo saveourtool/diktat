@@ -285,12 +285,12 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     fun foo(a: Int): Int {
                         try {
                             if (a < 0)
-                                throw ex1()
-                        } catch (e: ex1) {
+                                throw NumberFormatExecption()
+                        } catch (e: ArrayIndexOutOfBounds) {
                             print(1)
-                        } catch (e: ex2) {
+                        } catch (e: NullPointerException) {
                             print(2)
-                        } catch (e: ex3) {
+                        } catch (e: NumberFormatExecption) {
                             print(3)
                         }
                         return 2 * a
@@ -311,18 +311,18 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     fun foo(a: Int): Int {
                         try {
                             if (a < 0)
-                                throw ex1()
-                        throw ex2()
-                        throw ex3()
-                        } catch (e: ex1) {
+                                throw NumberFormatException()
+                        throw NullPointerException()
+                        throw NoSuchElementException()
+                        } catch (e: NoSuchElementException) {
                             print(1)
-                        } catch (e: ex2) {
+                        } catch (e: IllegalArgumentException) {
                             print(2)
                         }
                         return 2 * a
                     }
             """.trimIndent(),
-        DiktatError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} foo (ex3)", true))
+        DiktatError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} foo (NullPointerException)", true))
     }
 
     @Test

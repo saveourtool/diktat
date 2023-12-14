@@ -211,8 +211,8 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
         if (parent?.elementType == TRY) {
             val catchNodes = parent.getAllChildrenWithType(CATCH)
-            val findName = catchNodes.firstOrNull { catchNode ->
-                val matchingName = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
+            val findNodeWithMatchingName = catchNodes.firstOrNull { catchNode ->
+                val matchingNameForCatchNode = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
                     .firstOrNull { catchNodeName ->
                         nodeName.text == catchNodeName.text || try {
                             val nodeClass = forName("java.lang.${nodeName.text}")
@@ -223,9 +223,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                             false
                         }
                     }
-                matchingName != null
+                matchingNameForCatchNode != null
             }
-            return findName != null
+            return findNodeWithMatchingName != null
         }
         return false
     }
