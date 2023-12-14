@@ -199,7 +199,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase() &&
                         // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                        !isPairPropertyBackingField(null, node)
+                        !isPairPropertyBackingField(null, node.psi as? KtProperty)
                 ) {
                     VARIABLE_NAME_INCORRECT_FORMAT.warnOnlyOrWarnAndFix(
                         configRules = configRules,
