@@ -273,6 +273,81 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
+    fun `No warning when catch without matching throw`() {
+        lintMethod(
+            """
+                    /**
+                      * Test method
+                      * @param a: Int - dummy integer
+                      * @return doubled value
+                      */
+                    fun foo(a: Int): Int {
+                        try {
+                            if (a < 0)
+                                throw ex1()
+                        } catch (e: ex1) {
+                            print(1)
+                        } catch (e: ex2) {
+                            print(2)
+                        } catch (e: ex3) {
+                            print(3)
+                        }
+                        return 2 * a
+                    }
+            """.trimIndent())
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
+    fun `Warning when throw doesn't have matching catch`() {
+        lintMethod(
+            """
+                    /**
+                      * Test method
+                      * @param a: Int - dummy integer
+                      * @return doubled value
+                      */
+                    fun foo(a: Int): Int {
+                        try {
+                            if (a < 0)
+                                throw ex1()
+                        throw ex2()
+                        throw ex3()
+                        } catch (e: ex1) {
+                            print(1)
+                        } catch (e: ex2) {
+                            print(2)
+                        }
+                        return 2 * a
+                    }
+            """.trimIndent(),
+        DiktatError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} foo (ex3)", true))
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
+    fun `No warning when throw has matching catch, which is parent exception to throw`() {
+        lintMethod(
+            """
+                    /**
+                      * Test method
+                      * @param a: Int - dummy integer
+                      * @return doubled value
+                      */
+                    fun foo(a: Int): Int {
+                        try {
+                            if (a < 0)
+                                throw NumberFormatException()
+                        } catch (e: IllegalArgumentException) {
+                            print(1)
+                        }
+                        return 2 * a
+                    }
+            """.trimIndent())
+    }
+
+    @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `do not force documentation on standard methods`() {
         lintMethod(

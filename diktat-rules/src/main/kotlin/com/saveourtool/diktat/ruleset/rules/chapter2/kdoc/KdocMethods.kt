@@ -65,6 +65,7 @@ import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
+import java.lang.Class.forName
 
 /**
  * This rule checks that whenever the method has arguments, return value, can throw exceptions,
@@ -206,18 +207,22 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         while (parent != null && parent.elementType != TRY) {
             parent = parent.treeParent
         }
-        val nodeNameList = node.findAllDescendantsWithSpecificType(IDENTIFIER)
-        val nodeName = if (nodeNameList.isNotEmpty()) {
-            nodeNameList[0]
-        } else {
-            null
-        }
+        val nodeName = node.findAllDescendantsWithSpecificType(IDENTIFIER).firstOrNull() ?: return false
 
         if (parent?.elementType == TRY) {
             val catchNodes = parent.getAllChildrenWithType(CATCH)
-            val findName = catchNodes.find { catchNode ->
-                val catchNodeNames = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
-                val matchingName = catchNodeNames.find { catchNodeName -> catchNodeName.text == nodeName?.text }
+            val findName = catchNodes.firstOrNull { catchNode ->
+                val matchingName = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
+                    .firstOrNull { catchNodeName ->
+                        nodeName.text == catchNodeName.text || try {
+                            val nodeClass = forName("java.lang.${nodeName.text}")
+                            val nodeInstance = nodeClass.getDeclaredConstructor().newInstance()
+                            val catchNodeClass = forName("java.lang.${catchNodeName.text}")
+                            catchNodeClass.isInstance(nodeInstance)
+                        } catch (e: ClassNotFoundException) {
+                            false
+                        }
+                    }
                 matchingName != null
             }
             return findName != null
