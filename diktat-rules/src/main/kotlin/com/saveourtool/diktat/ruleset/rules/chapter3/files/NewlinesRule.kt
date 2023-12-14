@@ -4,12 +4,10 @@ import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
-import com.saveourtool.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.emptyBlockList
-import com.saveourtool.diktat.ruleset.utils.extractLineOfText
 import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.findAllNodesWithCondition
 import com.saveourtool.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -19,7 +17,6 @@ import com.saveourtool.diktat.ruleset.utils.getIdentifierName
 import com.saveourtool.diktat.ruleset.utils.getRootNode
 import com.saveourtool.diktat.ruleset.utils.hasParent
 import com.saveourtool.diktat.ruleset.utils.isBeginByNewline
-import com.saveourtool.diktat.ruleset.utils.isEol
 import com.saveourtool.diktat.ruleset.utils.isFollowedByNewline
 import com.saveourtool.diktat.ruleset.utils.isGradleScript
 import com.saveourtool.diktat.ruleset.utils.isSingleLineIfElse
@@ -37,7 +34,6 @@ import org.jetbrains.kotlin.KtNodeTypes.CALL_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.CLASS
 import org.jetbrains.kotlin.KtNodeTypes.CONDITION
 import org.jetbrains.kotlin.KtNodeTypes.DOT_QUALIFIED_EXPRESSION
-import org.jetbrains.kotlin.KtNodeTypes.ENUM_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.FUN
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_LITERAL
 import org.jetbrains.kotlin.KtNodeTypes.FUNCTION_TYPE
@@ -90,7 +86,6 @@ import org.jetbrains.kotlin.lexer.KtTokens.PLUSEQ
 import org.jetbrains.kotlin.lexer.KtTokens.RETURN_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.RPAR
 import org.jetbrains.kotlin.lexer.KtTokens.SAFE_ACCESS
-import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -106,23 +101,22 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 private typealias ListOfList = MutableList<MutableList<ASTNode>>
 
 /**
- * Rule that checks line break styles.
- * 1. Prohibits usage of semicolons at the end of line
- * 2. Checks that some operators are followed by newline, while others are prepended by it
- * 3. Statements that follow `!!` behave in the same way
- * 4. Forces functional style of chained dot call expressions with exception
- * 5. Checks that newline is placed after assignment operator, not before
- * 6. Ensures that function or constructor name isn't separated from `(` by space or newline
- * 7. Ensures that in multiline lambda newline follows arrow or, in case of lambda without explicit parameters, opening brace
- * 8. Checks that functions with single `return` are simplified to functions with expression body
- * 9. parameter or argument lists and supertype lists that have more than 2 elements should be separated by newlines
- * 10. Complex expression inside condition replaced with new variable
+ * Rule that checks line break styles:
+ * 1. Checks that some operators are followed by newline, while others are prepended by it
+ * 2. Statements that follow `!!` behave in the same way
+ * 3. Forces functional style of chained dot call expressions with exception
+ * 4. Checks that newline is placed after assignment operator, not before
+ * 5. Ensures that function or constructor name isn't separated from `(` by space or newline
+ * 6. Ensures that in multiline lambda newline follows arrow or, in case of lambda without explicit parameters, opening brace
+ * 7. Checks that functions with single `return` are simplified to functions with expression body
+ * 8. Parameter or argument lists and supertype lists that have more than 2 elements should be separated by newlines
+ * 9. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
-    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)
+    listOf(COMPLEX_EXPRESSION, WRONG_NEWLINES)
 ) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
@@ -130,7 +124,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     override fun logic(node: ASTNode) {
         when (node.elementType) {
-            SEMICOLON -> handleSemicolon(node)
             OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)
             // this logic regulates indentation with elements - so that the symbol and the subsequent expression are on the same line
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
@@ -205,18 +198,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isDotQuaOrSafeAccessOrPostfixExpression(node: ASTNode) =
         node.elementType == DOT_QUALIFIED_EXPRESSION || node.elementType == SAFE_ACCESS_EXPRESSION || node.elementType == POSTFIX_EXPRESSION
-
-    /**
-     * Check that EOL semicolon is used only in enums
-     */
-    private fun handleSemicolon(node: ASTNode) {
-        if (node.isEol() && node.treeParent.elementType != ENUM_ENTRY) {
-            // semicolon at the end of line which is not part of enum members declarations
-            REDUNDANT_SEMICOLON.warnAndFix(configRules, emitWarn, isFixMode, node.extractLineOfText(), node.startOffset, node) {
-                node.treeParent.removeChild(node)
-            }
-        }
-    }
 
     private fun handleOperatorWithLineBreakAfter(node: ASTNode) {
         // [node] should be either EQ or OPERATION_REFERENCE which has single child
