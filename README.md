@@ -43,9 +43,7 @@ Main features of diktat are the following:
 
 4) **Strict detailed [Codestyle](info/guide/diktat-coding-convention.md)** that you can adopt and use in your project.
 
-## Run as CLI-application
-
-[Info](diktat-cli/diktat-cli.adoc)
+## Run as [CLI-application](diktat-cli/README.md)
 
 ### Download binary
 
