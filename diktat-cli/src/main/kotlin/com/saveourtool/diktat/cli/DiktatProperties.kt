@@ -120,6 +120,7 @@ data class DiktatProperties(
          * @return parsed [DiktatProperties]
          */
         @Suppress(
+            "LongMethod",
             "TOO_LONG_FUNCTION"
         )
         fun parse(
