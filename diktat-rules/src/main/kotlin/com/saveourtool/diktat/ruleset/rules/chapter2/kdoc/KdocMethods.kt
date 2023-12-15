@@ -12,6 +12,8 @@ import com.saveourtool.diktat.ruleset.utils.KotlinParser
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.findChildAfter
+import com.saveourtool.diktat.ruleset.utils.findParentNodeWithSpecificType
+import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.getBodyLines
 import com.saveourtool.diktat.ruleset.utils.getFilePath
 import com.saveourtool.diktat.ruleset.utils.getFirstChildWithType
@@ -40,6 +42,7 @@ import org.jetbrains.kotlin.KtNodeTypes.MODIFIER_LIST
 import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THIS_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.THROW
+import org.jetbrains.kotlin.KtNodeTypes.TRY
 import org.jetbrains.kotlin.KtNodeTypes.TYPE_REFERENCE
 import org.jetbrains.kotlin.com.intellij.lang.ASTFactory
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -54,6 +57,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.COLON
 import org.jetbrains.kotlin.lexer.KtTokens.EQ
+import org.jetbrains.kotlin.lexer.KtTokens.IDENTIFIER
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
@@ -62,6 +66,7 @@ import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
+import java.lang.Class.forName
 
 /**
  * This rule checks that whenever the method has arguments, return value, can throw exceptions,
@@ -197,11 +202,39 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                 && !hasReturnKdoc && !isReferenceExpressionWithSameName
     }
 
+    private fun isThrowInTryCatchBlock(node: ASTNode?): Boolean {
+        node ?: return false
+        val parent = node.findParentNodeWithSpecificType(TRY)
+        val nodeName = node.findAllDescendantsWithSpecificType(IDENTIFIER).firstOrNull() ?: return false
+
+        if (parent?.elementType == TRY) {
+            val catchNodes = parent?.getAllChildrenWithType(CATCH)
+            val findNodeWithMatchingCatch = catchNodes?.firstOrNull { catchNode ->
+                val matchingNodeForCatchNode = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
+                    .firstOrNull { catchNodeName ->
+                        nodeName.text == catchNodeName.text || try {
+                            val nodeClass = forName("java.lang.${nodeName.text}")
+                            val nodeInstance = nodeClass.getDeclaredConstructor().newInstance()
+                            val catchNodeClass = forName("java.lang.${catchNodeName.text}")
+                            catchNodeClass.isInstance(nodeInstance)
+                        } catch (e: ClassNotFoundException) {
+                            false
+                        }
+                    }
+                matchingNodeForCatchNode != null
+            }
+            return findNodeWithMatchingCatch != null
+        }
+        return false
+    }
+
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
         val codeBlock = node.getFirstChildWithType(BLOCK)
         val throwKeywords = codeBlock?.findAllDescendantsWithSpecificType(THROW)
+
         return throwKeywords
             ?.asSequence()
+            ?.filter { !isThrowInTryCatchBlock(it) }
             ?.map { it.psi as KtThrowExpression }
             ?.filter {
                 // we only take freshly created exceptions here: `throw IAE("stuff")` vs `throw e`

@@ -37,19 +37,21 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
     override fun invoke(
         args: DiktatReporterCreationArguments,
     ): DiktatReporter {
-        if (args.reporterType == DiktatReporterType.NONE) {
-            return DiktatReporter.empty
-        }
-        val opts = if (args is PlainDiktatReporterCreationArguments) {
-            buildMap<String, Any> {
+        val opts = when {
+            args is PlainDiktatReporterCreationArguments -> buildMap<String, Any> {
                 put("color", args.colorName?.let { true } ?: false)
                 put("color_name", args.colorName ?: Color.DARK_GRAY)
                 args.groupByFile?.let { put("group_by_file", it) }
             }.mapValues { it.value.toString() }
-        } else if (args.reporterType == DiktatReporterType.PLAIN) {
-            mapOf("color_name" to Color.DARK_GRAY.name)
-        } else {
-            emptyMap()
+            args.reporterType == DiktatReporterType.PLAIN -> mapOf(
+                "color_name" to Color.DARK_GRAY.name,
+                "group_by_file" to false.toString(),
+            )
+            args.reporterType == DiktatReporterType.PLAIN_GROUP_BY_FILE -> mapOf(
+                "color_name" to Color.DARK_GRAY.name,
+                "group_by_file" to true.toString(),
+            )
+            else -> emptyMap()
         }
 
         val reporterProvider = reporterProviders[args.reporterType] ?: throw IllegalArgumentException("Not supported reporter id by ${DiktatBaselineFactoryImpl::class.simpleName}")
