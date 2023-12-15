@@ -72,7 +72,7 @@ tasks.register<DefaultTask>("shadowExecutableJar") {
     group = "Distribution"
     dependsOn(tasks.shadowJar)
 
-    val scriptFile = project.file("src/main/script/diktat.sh")
+    val scriptFile = project.file("src/main/script/header-diktat.sh")
     val shadowJarFile = tasks.shadowJar
         .get()
         .outputs

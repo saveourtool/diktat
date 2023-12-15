@@ -33,6 +33,10 @@ jobs:
           java-version: 11
           distribution: temurin
 
+      - name: 'Calculate the release version'
+        run: |
+          echo "RELEASE_VERSION=${GITHUB_REF#'refs/tags/v'}" >> $GITHUB_ENV
+
       - name: 'Publish a release to Maven Central'
         id: publish-sonatype
         uses: gradle/gradle-build-action@v2
@@ -58,13 +62,14 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: |
+            shadowExecutableJar
             publishAllPublicationsToGitHubRepository
       - name: 'GitHub Release'
         id: create_release
         uses: actions/create-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ env.RELEASE_VERSION }}
           draft: false
           prerelease: false
       - name: Upload Diktat CLI to GitHub release
@@ -74,9 +79,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-cli/build/diktat-cli-${{ github.ref }}
-          asset_name: diktat-cli-${{ github.ref }}
+          asset_path: ./diktat-cli/build/diktat-cli-${{ env.RELEASE_VERSION }}
+          asset_name: diktat
           asset_content_type: application/zip
+      - name: Upload Diktat CLI for Windows to GitHub release
+        id: upload-release-asset-cli-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./diktat-cli/src/main/script/diktat.cmd
+          asset_name: diktat.cmd
+          asset_content_type: application/octet-stream
       - name: Upload Diktat ruleset for KtLint to GitHub release
         id: upload-release-asset-ruleset
         uses: actions/upload-release-asset@v1
@@ -84,6 +99,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-ruleset/build/libs/diktat-${{ github.ref }}.jar
-          asset_name: diktat-${{ github.ref }}.jar
+          asset_path: ./diktat-ruleset/build/libs/diktat-${{ env.RELEASE_VERSION }}.jar
+          asset_name: diktat-${{ env.RELEASE_VERSION }}.jar
           asset_content_type: application/zip

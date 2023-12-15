@@ -686,4 +686,17 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `shouldn't fail on semicolon`() {
+        lintMethod(
+            """
+                |fun bar() {
+                |    var a = 0;
+                |    a++
+                |}
+            """.trimMargin()
+        )
+    }
 }

@@ -3,7 +3,6 @@ package com.saveourtool.diktat.ruleset.chapter3.files
 import com.saveourtool.diktat.common.config.rules.DIKTAT_RULE_SET_ID
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
-import com.saveourtool.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.NewlinesRule
 import com.saveourtool.diktat.util.LintTestBase
@@ -42,27 +41,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
-
-    @Test
-    @Tag(WarningNames.REDUNDANT_SEMICOLON)
-    fun `should forbid EOL semicolons`() {
-        lintMethod(
-            """
-                    |enum class Example {
-                    |    A,
-                    |    B
-                    |    ;
-                    |
-                    |    fun foo() {};
-                    |    val a = 0;
-                    |    val b = if (condition) { bar(); baz()} else qux
-                    |};
-            """.trimMargin(),
-            DiktatError(6, 17, ruleId, "${REDUNDANT_SEMICOLON.warnText()} fun foo() {};", true),
-            DiktatError(7, 14, ruleId, "${REDUNDANT_SEMICOLON.warnText()} val a = 0;", true),
-            DiktatError(9, 2, ruleId, "${REDUNDANT_SEMICOLON.warnText()} };", true)
-        )
-    }
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)

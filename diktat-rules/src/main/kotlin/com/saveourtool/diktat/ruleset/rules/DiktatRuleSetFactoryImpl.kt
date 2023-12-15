@@ -40,6 +40,7 @@ import com.saveourtool.diktat.ruleset.rules.chapter3.files.FileSize
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.FileStructureRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.IndentationRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.NewlinesRule
+import com.saveourtool.diktat.ruleset.rules.chapter3.files.SemicolonsRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.TopLevelOrderRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import com.saveourtool.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
@@ -114,7 +115,8 @@ class DiktatRuleSetFactoryImpl : DiktatRuleSetFactory {
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
         val rules = sequenceOf(
-            // comments & documentation
+            // semicolons, comments, documentation
+            ::SemicolonsRule,
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
             ::KdocComments,

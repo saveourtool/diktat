@@ -43,24 +43,15 @@ Main features of diktat are the following:
 
 4) **Strict detailed [Codestyle](info/guide/diktat-coding-convention.md)** that you can adopt and use in your project.
 
-## Run as CLI-application
+## Run as [CLI-application](diktat-cli/README.md)
 
-### Download and install binaries
+### Download binary
 
-1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
+1. Download diKTat manually: [here](https://github.com/saveourtool/diktat/releases)
 
    **OR** use `curl`:
    ```shell
-   # another option is "brew install ktlint"
-
-   curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.0.1/ktlint && chmod a+x ktlint
-   ```
-
-2. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar)
-
-   **OR** use `curl`:
-   ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v2.0.0/diktat-2.0.0.jar && chmod a+x diktat-2.0.0.jar
+   curl -sSLO https://github.com/saveourtool/diktat/releases/download/v2.0.0/diktat && chmod a+x diktat
    ```
 
 ### Run diKTat
@@ -68,14 +59,14 @@ Main features of diktat are the following:
 Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
 
 ```console
-$ ./ktlint -R diktat.jar --disabled_rules=standard,experimental,test,custom "dir/your/dir/**/*.kt"
+$ ./diktat "dir/your/dir/**/*.kt"
 ```
 
-To **autofix** all code style violations, use `-F` option.
+To **autofix** all code style violations, use `--mode fix` option.
 
 ## Run with Maven using diktat-maven-plugin
 
-You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+You can see how it is configured in our examples for self-checks: [examples](examples/maven/pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>
