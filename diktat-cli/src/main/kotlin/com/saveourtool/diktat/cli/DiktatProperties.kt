@@ -215,7 +215,7 @@ data class DiktatProperties(
             type = ArgType.String,
             fullName = "output",
             shortName = "o",
-            description = "A file for the reporter output. Must be provided when the reporter is provided.",
+            description = "Redirect the reporter output to a file. Must be provided when the reporter is provided.",
         )
 
         /**
@@ -250,7 +250,7 @@ data class DiktatProperties(
             type = ArgType.Choice<Level>(),
             fullName = "log-level",
             shortName = "l",
-            description = "Enable the processing with specific level.",
+            description = "Control the log level.",
         ).default(Level.INFO)
 
         private fun ArgParser.addOptionAndShowTextWithExit(

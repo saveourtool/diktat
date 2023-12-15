@@ -45,22 +45,15 @@ Main features of diktat are the following:
 
 ## Run as CLI-application
 
-### Download and install binaries
+[Info](diktat-cli/diktat-cli.adoc)
 
-1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
+### Download binary
+
+1. Download diKTat manually: [here](https://github.com/saveourtool/diktat/releases)
 
    **OR** use `curl`:
    ```shell
-   # another option is "brew install ktlint"
-
-   curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.46.1/ktlint && chmod a+x ktlint
-   ```
-
-1. Load diKTat manually: [here](https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar)
-
-   **OR** use `curl`:
-   ```console
-   $ curl -sSLO https://github.com/saveourtool/diKTat/releases/download/v1.2.5/diktat-1.2.5.jar && chmod a+x diktat-1.2.5.jar
+   curl -sSLO https://github.com/saveourtool/diktat/releases/download/v2.0.0/diktat && chmod a+x diktat
    ```
 
 ### Run diKTat
@@ -68,10 +61,10 @@ Main features of diktat are the following:
 Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
 
 ```console
-$ ./ktlint -R diktat.jar --disabled_rules=standard,experimental,test,custom "dir/your/dir/**/*.kt"
+$ ./diktat "dir/your/dir/**/*.kt"
 ```
 
-To **autofix** all code style violations, use `-F` option.
+To **autofix** all code style violations, use `--mode fix` option.
 
 ## Run with Maven using diktat-maven-plugin
 :heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
@@ -81,7 +74,7 @@ This can be done by setting `MAVEN_OPTS` variable:
 export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
 ```
 
-This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+This plugin is available since version 0.1.3. You can see how it is configured in our examples for self-checks: [examples](examples/maven/pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>

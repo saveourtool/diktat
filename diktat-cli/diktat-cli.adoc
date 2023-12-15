@@ -29,23 +29,29 @@ diktat [OPTION]... [FILE]...
 | Specify the location of the YAML configuration file. By default,
 `diktat-analysis.yml` in the current directory is used.
 
+| `-m MODE`, `--mode MODE`
+| Mode of `diktat` controls that `diktat` fixes or
+only finds any deviations from the code style.
+
 | `-r REPORTER`, `--reporter=REPORTER`
-| The reporter to use, one of: `plain` (the default), `plain?group_by_file`,
+| The reporter to use to errors to `output`, one of: `plain`, `plain_group_by_file`,
 `json`, `sarif`, `checkstyle`, `html`.
 
 | `-o OUTPUT`, `--output=OUTPUT`
-| Redirect the reporter output to a file. Use `-o -` to force using the standard
-output.
+| Redirect the reporter output to a file.
+Must be provided when the reporter is provided.
 
-| `--color-name COLOR`
-| Colorize the output.
+| `--group-by-file`
+| A flag to group found errors by files.
 
-| `--relative`
-| Relativize file paths with respect to the working directory. By default,
-absolute file paths get reported.
+| `--color COLOR`
+| Colorize the output, one of: `BLACK`, `RED`,
+`GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`, `LIGHT_GRAY`,
+`DARK_GRAY`, `LIGHT_RED`, `LIGHT_GREEN`, `LIGHT_YELLOW`,
+`LIGHT_BLUE`, `LIGHT_MAGENTA`, `LIGHT_CYAN`, `WHITE`
 
-| `-d`, `--debug`
-| Enable the debug output.
+| `-l`, `--log-level`
+| Control the log level.
 
 | `-h`, `--help`
 | Display the help text and exit.
@@ -64,44 +70,20 @@ absolute file paths get reported.
 == Exit codes
 
 .Exit codes
-[cols="1,3,1"]
+[cols="1,3"]
 |===
-| Exit code | Meaning | Treated as a failure
+| Exit code | Meaning
 
 | 0
 | _diKTat_ found no errors in your code
-| **No**
 
 | 1
 | _diKTat_ reported some errors in your code
-| Depends on the `fail-on-error` input parameter, the default is **Yes**
 
 | 2
 | The JVM was not found (probably, you need to set up the JVM explicitly, using
-the `java-distribution` and `java-version` input parameters)
-| **Yes**
+the `JAVA_HOME` environment variable)
 
 | 3
-| Failure while downloading dependencies
-| **Yes**
-
-| 4
-| Unsupported command-line switch
-| **Yes**
-
-| 5
-| _diKTat_ JAR was not found
-| **Yes**
-
-| 6
-| A command-line switch requires an argument
-| **Yes**
-
-| 7
-| No source files to check were found
-| **Yes**
-
-| 8
 | Incompatible _Bash_ version
-| **Yes**
 |===
