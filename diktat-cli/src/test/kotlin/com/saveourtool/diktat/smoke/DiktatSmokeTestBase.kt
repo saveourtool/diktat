@@ -27,6 +27,7 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import com.saveourtool.diktat.ruleset.rules.chapter3.EmptyBlock
+import com.saveourtool.diktat.ruleset.rules.chapter3.files.SemicolonsRule
 import com.saveourtool.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
@@ -367,6 +368,13 @@ abstract class DiktatSmokeTestBase {
                 DiktatError(37, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             )
         }
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    fun `regression - should not fail if file has unnecessary semicolons`() {
+        fixAndCompare(prepareOverriddenRulesConfig(), "SemicolonsExpected.kt", "SemicolonsTest.kt")
     }
 
     abstract fun fixAndCompare(

@@ -16,12 +16,6 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
     )
 
     @Test
-    @Tag(WarningNames.REDUNDANT_SEMICOLON)
-    fun `should remove redundant semicolons`() {
-        fixAndCompare("SemicolonsExpected.kt", "SemicolonsTest.kt")
-    }
-
-    @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should fix newlines near operators`() {
         fixAndCompare("OperatorsExpected.kt", "OperatorsTest.kt")
@@ -54,7 +48,7 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `One line parameters list sheet must contain no more than 2 parameters`() {
-        fixAndCompare("sizeParameterListExpected.kt", "sizeParameterListTest.kt")
+        fixAndCompare("SizeParameterListExpected.kt", "SizeParameterListTest.kt")
     }
 
     @Test
@@ -77,7 +71,7 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `should fix one line function with and without semicolon`() {
+    fun `should fix one line function`() {
         fixAndCompare("OneLineFunctionExpected.kt", "OneLineFunctionTest.kt")
     }
 

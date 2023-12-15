@@ -14,6 +14,7 @@ import com.saveourtool.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.lexer.KtTokens.SEMICOLON
 import org.jetbrains.kotlin.lexer.KtTokens.WHITE_SPACE
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -160,7 +161,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val numLinesToSkip = property
             .siblings(forward = true, withItself = false)
-            .takeWhile { it is PsiWhiteSpace || it.node.isPartOfComment() }
+            .takeWhile { it is PsiWhiteSpace || it.node.elementType == SEMICOLON || it.node.isPartOfComment() }
             .let { siblings ->
                 siblings
                     .last()
