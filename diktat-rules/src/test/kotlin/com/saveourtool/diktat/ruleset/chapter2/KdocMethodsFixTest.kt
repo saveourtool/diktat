@@ -61,4 +61,10 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
     fun `KdocMethods rule should reformat code (full example)`() {
         fixAndCompare("KdocMethodsFullExpected.kt", "KdocMethodsFullTested.kt")
     }
+
+    @Test
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
+    fun `Should add throws tag only for throw without catch`() {
+        fixAndCompare("KdocWithoutThrowsTagExpected.kt", "KdocWithoutThrowsTagTested.kt")
+    }
 }
