@@ -12,6 +12,7 @@ import com.saveourtool.diktat.ruleset.utils.KotlinParser
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.findChildAfter
+import com.saveourtool.diktat.ruleset.utils.findParentNodeWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.getBodyLines
 import com.saveourtool.diktat.ruleset.utils.getFilePath
@@ -203,16 +204,13 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isThrowInTryCatchBlock(node: ASTNode?): Boolean {
         node ?: return false
-        var parent = node.treeParent
-        while (parent != null && parent.elementType != TRY) {
-            parent = parent.treeParent
-        }
+        val parent = node.findParentNodeWithSpecificType(TRY)
         val nodeName = node.findAllDescendantsWithSpecificType(IDENTIFIER).firstOrNull() ?: return false
 
         if (parent?.elementType == TRY) {
-            val catchNodes = parent.getAllChildrenWithType(CATCH)
-            val findNodeWithMatchingName = catchNodes.firstOrNull { catchNode ->
-                val matchingNameForCatchNode = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
+            val catchNodes = parent?.getAllChildrenWithType(CATCH)
+            val findNodeWithMatchingCatch = catchNodes?.firstOrNull { catchNode ->
+                val matchingNodeForCatchNode = catchNode.findAllDescendantsWithSpecificType(IDENTIFIER)
                     .firstOrNull { catchNodeName ->
                         nodeName.text == catchNodeName.text || try {
                             val nodeClass = forName("java.lang.${nodeName.text}")
@@ -223,9 +221,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                             false
                         }
                     }
-                matchingNameForCatchNode != null
+                matchingNodeForCatchNode != null
             }
-            return findNodeWithMatchingName != null
+            return findNodeWithMatchingCatch != null
         }
         return false
     }

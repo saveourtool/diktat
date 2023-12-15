@@ -274,7 +274,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
-    fun `No warning when catch without matching throw`() {
+    fun `No warning when throw has matching catch`() {
         lintMethod(
             """
                     /**

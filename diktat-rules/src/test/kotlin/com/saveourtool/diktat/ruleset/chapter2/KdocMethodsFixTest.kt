@@ -64,7 +64,7 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
-    fun `@throws tag shouldn't be added inside try-catch`() {
+    fun `Should add throws tag only for throw without catch`() {
         fixAndCompare("KdocWithoutThrowsTagExpected.kt", "KdocWithoutThrowsTagTested.kt")
     }
 }
