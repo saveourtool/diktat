@@ -13,6 +13,7 @@ enum class DiktatReporterType(
     JSON("json", "json"),
     NONE("none", ""),
     PLAIN("plain", "txt"),
+    PLAIN_GROUP_BY_FILE("plain-group-by-file", "txt"),
     SARIF("sarif", "sarif"),
     ;
 }
