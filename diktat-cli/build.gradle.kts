@@ -1,6 +1,5 @@
 import com.saveourtool.diktat.buildutils.configurePublications
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.incremental.createDirectory
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
@@ -60,13 +59,41 @@ sourceSets.getByName("main") {
     )
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.shadowJar {
     archiveClassifier.set("")
     manifest {
         attributes["Main-Class"] = "com.saveourtool.diktat.DiktatMainKt"
         attributes["Multi-Release"] = true
     }
     duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+tasks.register<DefaultTask>("shadowExecutableJar") {
+    group = "Distribution"
+    dependsOn(tasks.shadowJar)
+
+    val scriptFile = project.file("src/main/script/header-diktat.sh")
+    val shadowJarFile = tasks.shadowJar
+        .get()
+        .outputs
+        .files
+        .singleFile
+    val outputFile = project.layout
+        .buildDirectory
+        .file(shadowJarFile.name.removeSuffix(".jar"))
+
+    inputs.files(scriptFile, shadowJarFile)
+    outputs.file(outputFile)
+
+    doLast {
+        outputFile.get()
+            .asFile
+            .apply {
+                writeBytes(scriptFile.readBytes())
+                appendBytes(shadowJarFile.readBytes())
+                setExecutable(true, false)
+            }
+    }
 }
 
 // disable default jar

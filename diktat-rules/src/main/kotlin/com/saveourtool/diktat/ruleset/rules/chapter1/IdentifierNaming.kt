@@ -152,6 +152,12 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     )
 
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
+        val configuration = ConstantUpperCaseConfiguration(
+            configRules.getRuleConfig(CONSTANT_UPPERCASE)?.configuration
+                ?: emptyMap())
+
+        val exceptionNames = configuration.exceptionConstNames
+
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
 
@@ -178,7 +184,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // check for constant variables - check for val from companion object or on global file level
                 // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                 if (node.isConstant()) {
-                    if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
+                    if (!exceptionNames.contains(variableName.text) && !variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
                         CONSTANT_UPPERCASE.warnOnlyOrWarnAndFix(
                             configRules = configRules,
                             emit = emitWarn,
@@ -193,7 +199,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase() &&
                         // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                        !isPairPropertyBackingField(null, node)
+                        !isPairPropertyBackingField(null, node.psi as? KtProperty)
                 ) {
                     VARIABLE_NAME_INCORRECT_FORMAT.warnOnlyOrWarnAndFix(
                         configRules = configRules,
@@ -491,6 +497,10 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             }
             style
         } ?: Style.SNAKE_CASE
+    }
+
+    class ConstantUpperCaseConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        val exceptionConstNames = config["exceptionConstNames"]?.split(',') ?: emptyList()
     }
 
     class BooleanFunctionsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {

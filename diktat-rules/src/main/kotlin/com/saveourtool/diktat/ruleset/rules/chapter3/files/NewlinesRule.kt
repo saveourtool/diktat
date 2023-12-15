@@ -158,7 +158,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             ) {
                 isDotQuaOrSafeAccessOrPostfixExpression(it) && it.elementType != POSTFIX_EXPRESSION
             }.reversed()
-            if (listDot.size > 3) {
+            if (listDot.size > configuration.maxCallsInOneLine) {
                 val without = listDot.filterIndexed { index, it ->
                     val nodeBeforeDotOrSafeAccess = it.findChildByType(DOT)?.treePrev ?: it.findChildByType(SAFE_ACCESS)?.treePrev
                     val firstElem = it.firstChildNode
@@ -510,22 +510,21 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-    @Suppress("AVOID_NULL_CHECKS")
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
-            (it.elementType == COMMA && !it.treeNext.isNewLineNode()) ||
+            val isNewLineNext = it.treeNext?.isNewLineNode() ?: false
+            val isNewLinePrev = it.treePrev?.isNewLineNode() ?: false
+            (it.elementType == COMMA && !isNewLineNext) ||
                     // Move RPAR to the new line
-                    (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.isNewLineNode())
+                    (it.elementType == RPAR && it.treePrev?.elementType != COMMA && !isNewLinePrev)
         }
         .toList()
         .takeIf { it.isNotEmpty() }
         ?.let { invalidCommas ->
-            val warnText = if (node.getParentIdentifier() != null) {
+            val warnText = node.getParentIdentifier()?.let {
                 "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>"
-            } else {
-                "$entryType should be placed on different lines"
-            }
+            } ?: "$entryType should be placed on different lines"
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                 warnText, node.startOffset, node) {
                 invalidCommas.forEach { commaOrRpar ->
@@ -535,7 +534,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                             commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
                         } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
                     } else {
-                        commaOrRpar.treeParent.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
+                        commaOrRpar.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
                     }
                 }
             }
