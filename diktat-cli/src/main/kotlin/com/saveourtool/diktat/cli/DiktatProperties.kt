@@ -119,6 +119,9 @@ data class DiktatProperties(
          * @param args cli arguments
          * @return parsed [DiktatProperties]
          */
+        @Suppress(
+            "TOO_LONG_FUNCTION"
+        )
         fun parse(
             diktatReporterFactory: DiktatReporterFactory,
             args: Array<String>,

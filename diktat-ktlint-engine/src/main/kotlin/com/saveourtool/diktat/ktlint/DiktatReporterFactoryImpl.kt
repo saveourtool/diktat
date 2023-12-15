@@ -38,25 +38,19 @@ class DiktatReporterFactoryImpl : DiktatReporterFactory {
         args: DiktatReporterCreationArguments,
     ): DiktatReporter {
         val opts = when {
-            args is PlainDiktatReporterCreationArguments -> {
-                buildMap<String, Any> {
-                    put("color", args.colorName?.let { true } ?: false)
-                    put("color_name", args.colorName ?: Color.DARK_GRAY)
-                    args.groupByFile?.let { put("group_by_file", it) }
-                }.mapValues { it.value.toString() }
-            }
-            args.reporterType == DiktatReporterType.PLAIN -> {
-                mapOf(
-                    "color_name" to Color.DARK_GRAY.name,
-                    "group_by_file" to false.toString(),
-                )
-            }
-            args.reporterType == DiktatReporterType.PLAIN_GROUP_BY_FILE -> {
-                mapOf(
-                    "color_name" to Color.DARK_GRAY.name,
-                    "group_by_file" to true.toString(),
-                )
-            }
+            args is PlainDiktatReporterCreationArguments -> buildMap<String, Any> {
+                put("color", args.colorName?.let { true } ?: false)
+                put("color_name", args.colorName ?: Color.DARK_GRAY)
+                args.groupByFile?.let { put("group_by_file", it) }
+            }.mapValues { it.value.toString() }
+            args.reporterType == DiktatReporterType.PLAIN -> mapOf(
+                "color_name" to Color.DARK_GRAY.name,
+                "group_by_file" to false.toString(),
+            )
+            args.reporterType == DiktatReporterType.PLAIN_GROUP_BY_FILE -> mapOf(
+                "color_name" to Color.DARK_GRAY.name,
+                "group_by_file" to true.toString(),
+            )
             else -> emptyMap()
         }
 
