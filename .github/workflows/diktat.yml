@@ -35,12 +35,12 @@ jobs:
             -PgprUser=${{ github.actor }}
             -PgprKey=${{ secrets.GITHUB_TOKEN }}
       - name: Upload SARIF report to Github
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: ${{ always() }}
         with:
           sarif_file: build/reports/diktat/diktat-merged.sarif
       - name: Upload SARIF artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: sarif-reports
