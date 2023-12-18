@@ -1,5 +1,8 @@
 package com.saveourtool.diktat.generation.docs
 
+import com.saveourtool.diktat.ruleset.constants.Warnings
+import com.saveourtool.diktat.ruleset.constants.getChapterByWarning
+
 import java.io.File
 
 /**
@@ -11,7 +14,9 @@ const val DIKTAT_GUIDE: String = "guide/diktat-coding-convention.md#"
  * Generates a table, which maps warning names to chapters in code style
  */
 @Suppress("MagicNumber")
-fun generateRulesMapping(allWarnings: MutableList<WarningInfo>) {
+fun generateRulesMapping() {
+    // excluding dummy warning
+    val allWarnings = Warnings.values().filterNot { it == Warnings.DUMMY_TEST_WARNING } as MutableList<Warnings>
     allWarnings.sortBy { warn ->
         val numbers = warn.ruleId.split(".")
         val chapter = numbers[0].toInt()
@@ -23,12 +28,12 @@ fun generateRulesMapping(allWarnings: MutableList<WarningInfo>) {
     }
 
     val maxRuleIdLength = allWarnings
-        .maxByOrNull { it.ruleId.length }
+        .maxBy { it.ruleId.length }
         ?.ruleId
         ?.length
         ?: 0
     val maxRuleNameLength = allWarnings
-        .maxByOrNull { it.name.length }
+        .maxBy { it.name.length }
         ?.name
         ?.length
         ?: 0
@@ -37,7 +42,7 @@ fun generateRulesMapping(allWarnings: MutableList<WarningInfo>) {
         "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} | ${warn.getChapterByWarning().title} |"
     }
 
-    val chaptersLength = allWarnings.map { it.getChapterByWarning().title }.maxByOrNull { it.length }?.length ?: 0
+    val chaptersLength = allWarnings.map { it.getChapterByWarning().title }.maxBy { it.length }?.length ?: 0
 
     val header = "| Diktat Rule | Code Style | Auto-fixed? | Chapter |\n"
     val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- | ${"-".repeat(chaptersLength)} |\n"

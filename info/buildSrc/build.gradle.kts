@@ -18,5 +18,5 @@ repositories {
 }
 
 dependencies {
-//    implementation("com.saveourtool.diktat:diktat-rules:$version")
+    implementation("com.saveourtool.diktat:diktat-rules:$version")
 }
