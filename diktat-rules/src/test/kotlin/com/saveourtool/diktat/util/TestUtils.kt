@@ -7,7 +7,7 @@ package com.saveourtool.diktat.util
 import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.api.DiktatRule
 import com.saveourtool.diktat.api.DiktatRuleSet
-import com.saveourtool.diktat.ktlint.lint
+import com.saveourtool.diktat.ktlint.check
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -111,7 +111,7 @@ internal fun applyToCode(@Language("kotlin") code: String,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
 ) {
     val counter = AtomicInteger(0)
-    lint(
+    check(
         ruleSetSupplier = {
             DiktatRuleSet(listOf(object : DiktatRule {
                 override val id: String
