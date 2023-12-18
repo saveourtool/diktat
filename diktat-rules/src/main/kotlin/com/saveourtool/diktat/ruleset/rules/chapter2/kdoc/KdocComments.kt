@@ -483,6 +483,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getParameterName(node: ASTNode) = node.findChildByType(IDENTIFIER)!!.text.replace("`", "")
 
     private fun findParameterTagInClassKdoc(kdocBeforeClass: ASTNode, parameterName: String) =
