@@ -309,3 +309,16 @@ class A<K : Any, P: Any, G: Any> constructor(
      */
     paramAddr: String,
 ) : B<K>(), C<P>, D<G> {}
+
+/**
+ * kdoc
+ * class
+ * comment
+ *
+ * @property as
+ * @property keyAs
+ */
+actual annotation class JsonSerialize(
+    actual val `as`: KClass<*>,
+    actual val keyAs: KClass<*>,
+)
