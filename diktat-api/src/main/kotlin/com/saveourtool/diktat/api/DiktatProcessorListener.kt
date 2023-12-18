@@ -88,7 +88,9 @@ interface DiktatProcessorListener {
                 error: DiktatError,
                 isCorrected: Boolean
             ) {
-                incrementAndGet()
+                if (!isCorrected) {
+                    incrementAndGet()
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import kotlin.io.path.absolutePathString
+import kotlin.system.exitProcess
 
 private val log = KotlinLogging.logger { }
 
@@ -39,12 +40,15 @@ fun main(args: Array<String>) {
     )
 
     val diktatRunner = diktatRunnerFactory(diktatRunnerArguments)
-    when (properties.mode) {
+    val unfixedErrors = when (properties.mode) {
         DiktatMode.CHECK -> diktatRunner.checkAll(diktatRunnerArguments)
         DiktatMode.FIX -> diktatRunner.fixAll(diktatRunnerArguments) { updatedFile ->
             log.warn {
                 "Original and formatted content differ, writing to ${updatedFile.absolutePathString()}..."
             }
         }
+    }
+    if (unfixedErrors > 0) {
+        exitProcess(1)
     }
 }

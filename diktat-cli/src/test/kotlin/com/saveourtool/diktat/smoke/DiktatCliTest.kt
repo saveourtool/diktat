@@ -78,7 +78,7 @@ class DiktatCliTest {
 
             val diktatCliProcess = processBuilder.start()
             val exitCode = diktatCliProcess.waitFor()
-            softly.assertThat(exitCode).describedAs("The exit code of Diktat CLI").isZero
+            softly.assertThat(exitCode).describedAs("The exit code of Diktat CLI").isOne
 
             softly.assertThat(diktatCliLog).isRegularFile
 
