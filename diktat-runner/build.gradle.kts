@@ -19,22 +19,30 @@ dependencies {
     implementation(projects.diktatRules)
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.shadowJar {
     archiveClassifier.set("shadow")
     duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+// https://github.com/gradle/gradle/issues/10384#issuecomment-1279708395
+val shadowElement: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.SHADOWED))
+    }
+    outgoing.artifact(tasks.shadowJar)
+}
+components.named<AdhocComponentWithVariants>("java").configure {
+    addVariantsFromConfiguration(shadowElement) {}
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
-        }
-        // it creates a publication for shadowJar
-        create<MavenPublication>("shadow") {
-            // https://github.com/johnrengelman/shadow/issues/417#issuecomment-830668442
-            project.extensions.configure<ShadowExtension> {
-                component(this@create)
-            }
         }
     }
 }
