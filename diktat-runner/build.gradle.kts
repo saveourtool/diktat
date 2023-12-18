@@ -1,7 +1,5 @@
 import com.saveourtool.diktat.buildutils.configurePublications
 import com.saveourtool.diktat.buildutils.configurePublishing
-import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
 plugins {
