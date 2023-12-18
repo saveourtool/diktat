@@ -158,10 +158,10 @@ fun format(
  * @param ruleSetSupplier
  * @param file
  * @param cb callback to be called on unhandled [LintError]s
- * @return formatted code
+ * @return [Unit]
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun lint(
+fun check(
     ruleSetSupplier: () -> DiktatRuleSet,
     file: Path,
     cb: DiktatCallback = DiktatCallback.empty
@@ -175,16 +175,16 @@ fun lint(
  * @param ruleSetSupplier
  * @param text
  * @param cb callback to be called on unhandled [LintError]s
- * @return formatted code
+ * @return [Unit]
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun lint(
+fun check(
     ruleSetSupplier: () -> DiktatRuleSet,
     @Language("kotlin") text: String,
     cb: DiktatCallback = DiktatCallback.empty
 ) = DiktatProcessorFactoryImpl().invoke(ruleSetSupplier())
     .check(
         code = text,
-        isScript = false,
+        virtualPath = null,
         callback = cb.ignoreCorrectedErrors(),
     )

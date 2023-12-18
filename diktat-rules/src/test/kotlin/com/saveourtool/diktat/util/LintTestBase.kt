@@ -2,7 +2,7 @@ package com.saveourtool.diktat.util
 
 import com.saveourtool.diktat.api.DiktatCallback
 import com.saveourtool.diktat.common.config.rules.RulesConfig
-import com.saveourtool.diktat.ktlint.lint
+import com.saveourtool.diktat.ktlint.check
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.util.DiktatRuleSetFactoryImplTest.Companion.diktatRuleSetForTest
 import com.saveourtool.diktat.api.DiktatError
@@ -127,7 +127,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     ): List<DiktatError> {
         val lintErrors: MutableList<DiktatError> = mutableListOf()
 
-        lint(
+        check(
             ruleSetSupplier = { rulesConfigList.toDiktatRuleSet() },
             file = file,
             cb = lintErrors.collector(),
@@ -151,7 +151,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     ): List<DiktatError> {
         val lintErrors: MutableList<DiktatError> = mutableListOf()
 
-        lint(
+        check(
             ruleSetSupplier = { rulesConfigList.toDiktatRuleSet() },
             text = code,
             cb = lintErrors.collector(),
