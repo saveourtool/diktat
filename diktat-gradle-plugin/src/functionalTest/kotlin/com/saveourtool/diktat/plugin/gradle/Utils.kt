@@ -21,7 +21,7 @@ internal fun createExampleProject(testProjectDir: TemporaryFolder,
     testProjectDir.newFile(buildFileName).writeText(
         """
             plugins {
-                id("com.saveourtool.diktat.diktat-gradle-plugin")
+                id("com.saveourtool.diktat")
             }
 
             repositories {

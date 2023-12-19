@@ -2,12 +2,12 @@ package incorrect
 
 class incorrectname: Exception() {
     fun INCORRECT_FUNCTION() {
-	    throw Exception()
-	}
-	
-	// fun myCommentedFunction() {
-	// }
+        throw Exception()
+    }
 
-val Incorrect_Val = 5
+    // fun myCommentedFunction() {
+    // }
+
+    val Incorrect_Val = 5
 
 }
