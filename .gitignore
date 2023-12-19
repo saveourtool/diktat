@@ -2,8 +2,11 @@ target/
 .gradle/
 build/
 !ktlint/src/main/resources/config/.idea
-/.idea/
+.idea/
 *.iml
+/examples/*/gradlew
+/examples/*/gradlew.bat
+/examples/*/gradle/wrapper/
 out/
 .DS_Store
 
