@@ -9,7 +9,7 @@ package com.saveourtool.diktat.ruleset.utils
 import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.api.DiktatRule
 import com.saveourtool.diktat.api.DiktatRuleSet
-import com.saveourtool.diktat.ktlint.lint
+import com.saveourtool.diktat.ktlint.check
 import com.saveourtool.diktat.util.applyToCode
 
 import org.jetbrains.kotlin.KtNodeTypes
@@ -809,7 +809,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             maxLevel: Int = -1,
             expected: String
         ) {
-            lint(
+            check(
                 ruleSetSupplier = { DiktatRuleSet(listOf(PrettyPrintingVisitor(elementType, level, maxLevel, expected))) },
                 text = code,
             )

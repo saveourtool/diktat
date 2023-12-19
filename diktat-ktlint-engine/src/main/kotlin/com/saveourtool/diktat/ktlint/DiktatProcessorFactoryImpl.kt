@@ -14,6 +14,7 @@ import org.ec4j.core.model.Glob
 import org.ec4j.core.model.Property
 import org.ec4j.core.model.PropertyType
 import java.nio.file.Path
+import kotlin.io.path.name
 
 private typealias LintCallback = (LintError) -> Unit
 
@@ -30,18 +31,18 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
             ): String = ktLintRuleEngine.formatSilentlyThenLint(file.toKtLint(), callback.toKtLintForLint())
             override fun fix(
                 code: String,
-                isScript: Boolean,
+                virtualPath: Path?,
                 callback: DiktatCallback
-            ): String = ktLintRuleEngine.formatSilentlyThenLint(code.toKtLint(isScript), callback.toKtLintForLint())
+            ): String = ktLintRuleEngine.formatSilentlyThenLint(code.toKtLint(virtualPath), callback.toKtLintForLint())
             override fun check(
                 file: Path,
                 callback: DiktatCallback,
             ) = ktLintRuleEngine.lint(file.toKtLint(), callback.toKtLintForLint())
             override fun check(
                 code: String,
-                isScript: Boolean,
+                virtualPath: Path?,
                 callback: DiktatCallback
-            ) = ktLintRuleEngine.lint(code.toKtLint(isScript), callback.toKtLintForLint())
+            ) = ktLintRuleEngine.lint(code.toKtLint(virtualPath), callback.toKtLintForLint())
         }
     }
 
@@ -66,7 +67,13 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
 
         private fun Path.toKtLint(): Code = Code.fromFile(this.toFile())
 
-        private fun String.toKtLint(isScript: Boolean): Code = Code.fromSnippet(this, isScript)
+        private fun String.toKtLint(virtualPath: Path?): Code = Code(
+            content = this,
+            fileName = virtualPath?.name,
+            filePath = virtualPath,
+            script = virtualPath?.name?.endsWith(".kts", ignoreCase = true) ?: false,
+            isStdIn = virtualPath == null,
+        )
 
         private fun DiktatCallback.toKtLintForLint(): LintCallback = { error ->
             this(error.wrap(), false)

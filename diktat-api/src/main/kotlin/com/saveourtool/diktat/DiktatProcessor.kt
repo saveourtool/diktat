@@ -20,13 +20,13 @@ interface DiktatProcessor {
      * Run `diktat fix` on provided [code] using [callback] for detected errors and returned formatted code.
      *
      * @param code
-     * @param isScript
+     * @param virtualPath a path which should be taken into account in processing of [code]
      * @param callback
      * @return result of `diktat fix`
      */
     fun fix(
         code: String,
-        isScript: Boolean,
+        virtualPath: Path?,
         callback: DiktatCallback,
     ): String
 
@@ -42,12 +42,12 @@ interface DiktatProcessor {
      * Run `diktat check` on provided [code] using [callback] for detected errors.
      *
      * @param code
-     * @param isScript
+     * @param virtualPath a path which should be taken into account in processing of [code]
      * @param callback
      */
     fun check(
         code: String,
-        isScript: Boolean,
+        virtualPath: Path?,
         callback: DiktatCallback,
     )
 }

@@ -2,7 +2,7 @@ import com.saveourtool.diktat.generation.docs.generateAvailableRules
 
 plugins {
     kotlin("jvm") version "1.4.21"
-    id("com.saveourtool.diktat.diktat-gradle-plugin") version "0.1.7"
+    id("com.saveourtool.diktat") version "2.0.0"
 }
 
 repositories {
