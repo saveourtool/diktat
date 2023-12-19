@@ -36,6 +36,7 @@ import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Compan
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
+import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
@@ -375,6 +376,13 @@ abstract class DiktatSmokeTestBase {
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should not fail if file has unnecessary semicolons`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "SemicolonsExpected.kt", "SemicolonsTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
+    fun `companion object with comment`() {
+        fixAndCompare(prepareOverriddenRulesConfig(),"CompanionObjectWithCommentExpected.kt",
+            "CompanionObjectWithCommentTest.kt")
     }
 
     abstract fun fixAndCompare(

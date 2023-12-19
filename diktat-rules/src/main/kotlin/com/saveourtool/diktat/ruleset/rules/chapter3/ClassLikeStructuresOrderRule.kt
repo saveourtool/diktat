@@ -80,7 +80,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         node.checkAndReorderBlocks(blocks)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "CyclomaticComplexMethod")
     private fun checkNewLinesBeforeProperty(node: ASTNode) {
         // checking only top-level and class-level properties
         if (node.treeParent.elementType != CLASS_BODY) {
@@ -88,6 +88,11 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         val previousProperty = node.prevSibling { it.elementType == PROPERTY } ?: return
+        val nearComment = node.findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
+        val prevComment = nearComment?.prevSibling()
+        val nextComment = nearComment?.nextSibling()
+        val isCorrectEolComment = (prevComment == null || !prevComment.textContains('\n')) &&
+                nextComment == null
 
         val hasCommentBefore = node
             .findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
@@ -100,7 +105,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                 (previousProperty.psi as KtProperty).accessors.isNotEmpty()
 
         val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
-        val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
+        val isBlankLineRequired = !isCorrectEolComment && (hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors)
         val numRequiredNewLines = 1 + (if (isBlankLineRequired) 1 else 0)
         val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
         // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
