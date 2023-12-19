@@ -66,7 +66,10 @@ To **autofix** all code style violations, use `--mode fix` option.
 
 ## Run with Maven using diktat-maven-plugin
 
-You can see how it is configured in our examples for self-checks: [examples](examples/maven/pom.xml).
+You can see how it is configured in our examples for self-checks:
+- [Single project](examples/maven/pom.xml)
+- [Multi-module project](examples/maven-multiproject/pom.xml)
+
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>
@@ -163,15 +166,22 @@ rule sets by editing the YAML file).
 ## Run with Gradle using diktat-gradle-plugin
 Requires a gradle version no lower than 7.0
 
-You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
+You can see how the plugin is configured in our examples:
+- [Kotlin DSL](examples/gradle-kotlin-dsl/build.gradle.kts)
+- [Kotlin DSL for multi-module project](examples/gradle-kotlin-dsl/build.gradle.kts)
+- [Groovy DSL](examples/gradle-kotlin-dsl/build.gradle.kts)
 
 <details>
 <summary>Add this plugin to your `build.gradle.kts`:</summary>
 
 ```kotlin
+import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
+
 plugins {
     id("com.saveourtool.diktat") version "2.0.0"
 }
+
+apply<DiktatGradlePlugin>()
 ```
 
 Or use buildscript syntax:
