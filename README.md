@@ -54,6 +54,8 @@ Main features of diktat are the following:
    curl -sSLO https://github.com/saveourtool/diktat/releases/download/v2.0.0/diktat && chmod a+x diktat
    ```
 
+2. _**For Windows only**_. Download diKTat.bat manually: [here](https://github.com/saveourtool/diktat/releases)
+
 ### Run diKTat
 
 Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
@@ -61,6 +63,11 @@ Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/yo
 ```console
 $ ./diktat "dir/your/dir/**/*.kt"
 ```
+
+> _**On Windows**_
+> ```console
+> ./diktat.bat "dir/your/dir/**/*.kt"
+> ```
 
 To **autofix** all code style violations, use `--mode fix` option.
 
@@ -180,7 +187,7 @@ plugins {
 }
 ```
 
-> __**Note**__ If you want to apply the plugin to multi-module projects"
+> _**Note**_ If you want to apply the plugin to multi-module projects"
 > ```kotlin
 > import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
 >
