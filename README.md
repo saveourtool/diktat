@@ -170,7 +170,7 @@ You can see how the plugin is configured in our examples: [build.gradle.kts](exa
 
 ```kotlin
 plugins {
-    id("com.saveourtool.diktat.diktat-gradle-plugin") version "2.0.0"
+    id("com.saveourtool.diktat") version "2.0.0"
 }
 ```
 
@@ -185,7 +185,7 @@ buildscript {
     }
 }
 
-apply(plugin = "com.saveourtool.diktat.diktat-gradle-plugin")
+apply(plugin = "com.saveourtool.diktat")
 ```
 
 You can then configure diktat using `diktat` extension:
