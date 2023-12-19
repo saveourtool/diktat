@@ -1,5 +1,6 @@
 package com.saveourtool.diktat.ruleset.chapter2
 
+import com.saveourtool.diktat.ruleset.constants.Warnings
 import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import com.saveourtool.diktat.util.FixTestBase
 
@@ -7,6 +8,8 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/kotlin/com/saveourtool/diktat/kdoc/methods",
     ::KdocMethods) {
@@ -66,5 +69,49 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `Should add throws tag only for throw without catch`() {
         fixAndCompare("KdocWithoutThrowsTagExpected.kt", "KdocWithoutThrowsTagTested.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
+    fun `should not throw an exception when @return and @property exists`(@TempDir tempDir: Path) {
+        fixAndCompareContent(
+            actualContent = """
+                /**
+                 * @property value
+                 * @return Unit
+                 */
+                fun foo(value: String) = Unit
+            """.trimIndent(),
+            expectedContent = """
+                /**
+                 * @param value
+                 * @return Unit
+                 */
+                fun foo(value: String) = Unit
+            """.trimIndent(),
+            tempDir = tempDir,
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
+    fun `should not throw an exception when @throws and @property exists`(@TempDir tempDir: Path) {
+        fixAndCompareContent(
+            actualContent = """
+                /**
+                 * @property value
+                 * @throws IOException
+                 */
+                fun foo(value: String) = Unit
+            """.trimIndent(),
+            expectedContent = """
+                /**
+                 * @param value
+                 * @throws IOException
+                 */
+                fun foo(value: String) = Unit
+            """.trimIndent(),
+            tempDir = tempDir,
+        )
     }
 }
