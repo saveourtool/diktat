@@ -5,7 +5,7 @@
     <groupId>com.saveourtool.diktat</groupId>
     <artifactId>diktat-examples-maven-multiproject</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>0.0-SNAPSHOT</version>
 
     <properties>
         <diktat.version>2.0.0</diktat.version>
@@ -26,7 +26,8 @@
                 <configuration>
                     <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                     <inputs>
-                        <input>${project.basedir}/backend/src/main/kotlin</input>
+                        <input>${project.basedir}/src/main/kotlin</input>
+                        <input>${project.basedir}/src/test/kotlin</input>
                     </inputs>
                 </configuration>
                 <executions>
@@ -41,4 +42,9 @@
             </plugin>
         </plugins>
     </build>
+
+    <modules>
+        <module>backend</module>
+        <module>frontend</module>
+    </modules>
 </project>

@@ -1,8 +1,9 @@
 import com.saveourtool.diktat.plugin.gradle.DiktatExtension
+import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
 
 plugins {
     kotlin("jvm") version "1.9.21"
-    id("com.saveourtool.diktat") version "2.0.0"
+    id("com.saveourtool.diktat") version "2.0.0" apply false
 }
 
 allprojects {
@@ -10,7 +11,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
     }
-    apply(plugin = "com.saveourtool.diktat")
+    apply<DiktatGradlePlugin>()
     configure<DiktatExtension> {
         diktatConfigFile = rootProject.file("diktat-analysis.yml")
         inputs { include("src/**/*.kt") }
