@@ -196,6 +196,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
 
     @Test
     @Tag(WarningNames.MAGIC_NUMBER)
+    @Suppress("LongMethod")
     fun `check all`() {
         lintMethod(
             """
