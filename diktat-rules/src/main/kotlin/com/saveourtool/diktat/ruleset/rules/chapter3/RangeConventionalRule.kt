@@ -52,7 +52,7 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA", "PARAMETER_NAME_IN_OUTER_LAMBDA")
     private fun handleQualifiedExpression(node: ASTNode) {
         (node.psi as KtDotQualifiedExpression).selectorExpression?.node?.let {
             if (it.findChildByType(REFERENCE_EXPRESSION)?.getIdentifierName()?.text == "rangeTo") {

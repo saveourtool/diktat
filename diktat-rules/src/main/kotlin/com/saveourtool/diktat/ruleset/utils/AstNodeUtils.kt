@@ -226,6 +226,7 @@ fun ASTNode.isEol() = parent(false) { it.treeNext != null }?.isFollowedByNewline
  * Same is true also for semicolons in some cases.
  * Therefore, to check if they are followed by newline we need to check their parents.
  */
+@Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
 fun ASTNode.isFollowedByNewline() =
     parent(false) { it.treeNext != null }?.let {
         val probablyWhitespace = it.treeNext
@@ -312,11 +313,11 @@ fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IEl
         .find { it.elementType == beforeThisNodeType }
     getChildren(null)
         .toList()
-        .let {
+        .let { children ->
             anchorNode?.run {
-                it.subList(0, it.indexOf(anchorNode))
+                children.subList(0, children.indexOf(anchorNode))
             }
-                ?: it
+                ?: children
         }
         .reversed()
         .find { it.elementType == childNodeType }
@@ -1026,9 +1027,9 @@ private fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T
 }
 
 private fun Collection<KtAnnotationEntry>.containSuppressWithName(name: String) =
-    this.any {
-        it.shortName.toString() == (Suppress::class.simpleName) &&
-                (it.valueArgumentList
+    this.any { annotationEntry ->
+        annotationEntry.shortName.toString() == (Suppress::class.simpleName) &&
+                (annotationEntry.valueArgumentList
                     ?.arguments
                     ?.any { annotation -> annotation.text.trim('"') == name }
                     ?: false)
@@ -1109,9 +1110,9 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
     .indexOfFirst {
         it > startOffset
     }
-    .let {
-        require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
-        it + 1
+    .let { index ->
+        require(index >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+        index + 1
     }
 
 private fun ASTNode.hasExplicitIt(): Boolean {

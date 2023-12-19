@@ -220,6 +220,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
+            @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
             val isFirstArgument = node
                 .parent { it.elementType == VALUE_ARGUMENT }
                 .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }

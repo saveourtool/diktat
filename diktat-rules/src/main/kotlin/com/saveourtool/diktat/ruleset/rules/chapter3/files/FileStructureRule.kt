@@ -202,6 +202,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
+        @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
         imports
             .filter {
                 (it.psi as KtImportDirective).importPath!!.run {
