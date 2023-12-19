@@ -31,7 +31,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
         RulesConfig(
             MAGIC_NUMBER.name, true,
             mapOf(
-                "ignoreNumbers" to "50,-240, 128L, -3.5f, 4",
+                "ignoreNumbers" to "50,-240, 128L, -3.5f, 4, 11UL",
                 "ignoreHashCodeFunction" to "false",
                 "ignorePropertyDeclaration" to "false",
                 "ignoreLocalVariableDeclaration" to "false",
