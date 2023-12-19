@@ -327,6 +327,8 @@
     ignorePropertyDeclaration: "false"
     # Is ignore local variable
     ignoreLocalVariableDeclaration: "false"
+    # Is ignore value parameter
+    ignoreValueParameter: "true"
     # Is ignore constant
     ignoreConstantDeclaration: "true"
     # Is ignore property in companion object
@@ -337,6 +339,8 @@
     ignoreRanges: "false"
     # Is ignore number in extension function
     ignoreExtensionFunctions: "false"
+    # Is ignore number in pairs created using to
+    ignorePairsCreatedUsingTo: "false"
 # Checks that order of enum values or constant property inside companion is correct
 - name: WRONG_DECLARATIONS_ORDER
   enabled: true
