@@ -105,7 +105,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                 (previousProperty.psi as KtProperty).accessors.isNotEmpty()
 
         val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
-        val isBlankLineRequired = !isCorrectEolComment && (hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors)
+        val isBlankLineRequired = (!isCorrectEolComment && hasCommentBefore) || hasAnnotationsBefore || hasCustomAccessors
         val numRequiredNewLines = 1 + (if (isBlankLineRequired) 1 else 0)
         val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
         // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
