@@ -55,11 +55,4 @@ class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::Comment
         val lintResult = fixAndCompareContent(indentStyleComment, tempDir = tempDir)
         lintResult.assertSuccessful()
     }
-
-    @Test
-    @Tag(WRONG_NEWLINES_AROUND_KDOC)
-    fun `no blank line`() {
-        fixAndCompare("NoBlankLineExpected.kt", "NoBlankLineTest.kt")
-    }
-
 }

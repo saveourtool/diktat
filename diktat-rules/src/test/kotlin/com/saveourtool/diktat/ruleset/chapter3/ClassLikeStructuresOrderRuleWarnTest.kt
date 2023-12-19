@@ -244,7 +244,8 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
             |object C {
             |    private const val A = "value"
             |
-            |    private const val LOG = "value" // Not a logger
+            |    // Not a logger
+            |    private const val LOG = "value"
             |}
         """.trimMargin()
 
@@ -265,7 +266,6 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
         val code = """
             |object C {
             |    private lateinit val A
-            |
             |    private lateinit val LOG // Not a logger
             |}
         """.trimMargin()
