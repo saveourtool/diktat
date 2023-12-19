@@ -175,14 +175,23 @@ You can see how the plugin is configured in our examples:
 <summary>Add this plugin to your `build.gradle.kts`:</summary>
 
 ```kotlin
-import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
-
 plugins {
     id("com.saveourtool.diktat") version "2.0.0"
 }
-
-apply<DiktatGradlePlugin>()
 ```
+
+> __**Note**__ If you want to apply the plugin to multi-module projects"
+> ```kotlin
+> import com.saveourtool.diktat.plugin.gradle.DiktatGradlePlugin
+>
+> plugins {
+>     id("com.saveourtool.diktat") version "2.0.0" apply false
+> }
+>
+> allprojects {
+>     apply<DiktatGradlePlugin>()
+> }
+> ```
 
 Or use buildscript syntax:
 ```kotlin
