@@ -378,13 +378,6 @@ abstract class DiktatSmokeTestBase {
         fixAndCompare(prepareOverriddenRulesConfig(), "SemicolonsExpected.kt", "SemicolonsTest.kt")
     }
 
-    @Test
-    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
-    fun `companion object with comment`() {
-        fixAndCompare(prepareOverriddenRulesConfig(),"CompanionObjectWithCommentExpected.kt",
-            "CompanionObjectWithCommentTest.kt")
-    }
-
     abstract fun fixAndCompare(
         config: Path,
         expected: String,

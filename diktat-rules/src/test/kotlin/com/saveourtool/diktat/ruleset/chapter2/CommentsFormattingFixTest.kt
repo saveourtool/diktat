@@ -15,7 +15,6 @@ import org.junit.jupiter.api.io.TempDir
 
 import java.nio.file.Path
 
-// "test/paragraph2/kdoc/"
 class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::CommentsFormatting) {
     @Test
     @Tag(WRONG_NEWLINES_AROUND_KDOC)
