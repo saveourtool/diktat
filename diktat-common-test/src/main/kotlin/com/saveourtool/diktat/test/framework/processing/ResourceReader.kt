@@ -30,8 +30,8 @@ fun interface ResourceReader : Function1<String, Path?> {
                 .getResource(resourceName)
                 ?.toURI()
                 ?.toPath()
-                .also {
-                    if (it == null || !it.isRegularFile()) {
+                .also { path ->
+                    if (path == null || !path.isRegularFile()) {
                         log.error { "Not able to find file for running test: $resourceName" }
                     }
                 }

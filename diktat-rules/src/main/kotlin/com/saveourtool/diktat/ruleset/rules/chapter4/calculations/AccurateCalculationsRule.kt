@@ -43,6 +43,8 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
                 ?: false
         }
         ?: false
+
+    @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
     private fun KtDotQualifiedExpression.isComparisonWithAbs() =
         takeIf {
             it.selectorExpression.run {

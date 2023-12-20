@@ -146,9 +146,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                     return true
                 }
             }
-            .forEach {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf(TAB), it) {
-                    (it as LeafPsiElement).rawReplaceWithText(it.text.replace(TAB.toString(), configuration.indentationSize.spaces))
+            .forEach { whiteSpaceNode ->
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation",
+                    whiteSpaceNode.startOffset + whiteSpaceNode.text.indexOf(TAB), whiteSpaceNode) {
+                    (whiteSpaceNode as LeafPsiElement).rawReplaceWithText(whiteSpaceNode.text.replace(TAB.toString(), configuration.indentationSize.spaces))
                 }
             }
         return isFixMode  // true if we changed all tabs to spaces

@@ -92,6 +92,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
             .elementType
             .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
                 whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
                 // no need to trigger when there are no more parameters in the list
                 whiteSpace.siblings(forward = true, withItself = false).any {
                     it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }

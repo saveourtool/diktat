@@ -122,15 +122,15 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         val groupedExprs: MutableMap<KtNameReferenceExpression, List<KtNameReferenceExpression>> = mutableMapOf()
-        isExpr.forEach {
+        isExpr.forEach { ref ->
             val list: MutableList<KtNameReferenceExpression> = mutableListOf()
             asExpr.forEach { asCall ->
                 if (asCall.node.findParentNodeWithSpecificType(IF)
-                        == it.node.findParentNodeWithSpecificType(IF)) {
+                        == ref.node.findParentNodeWithSpecificType(IF)) {
                     list.add(asCall)
                 }
             }
-            groupedExprs[it] = list
+            groupedExprs[ref] = list
         }
         return groupedExprs
     }
@@ -187,25 +187,26 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkAsExpressions(asList: List<ASTNode>, blocks: List<IsExpressions>) {
         val asExpr: MutableList<AsExpressions> = mutableListOf()
 
+        @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
         asList.forEach {
             val split = it.text.split("as").map { part -> part.trim() }
             asExpr.add(AsExpressions(split[0], split[1], it))
         }
 
-        val exprToChange = asExpr.filter {
+        val exprToChange = asExpr.filter { asCall ->
             blocks.any { isExpr ->
-                isExpr.identifier == it.identifier &&
-                        isExpr.type == it.type
+                isExpr.identifier == asCall.identifier &&
+                        isExpr.type == asCall.type
             }
         }
 
         if (exprToChange.isNotEmpty()) {
-            exprToChange.forEach {
-                SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, "${it.identifier} as ${it.type}", it.node.startOffset,
-                    it.node) {
-                    val dotExpr = it.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+            exprToChange.forEach { asCall ->
+                SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, "${asCall.identifier} as ${asCall.type}", asCall.node.startOffset,
+                    asCall.node) {
+                    val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
                     val afterDotPart = dotExpr.text.split(".")[1]
-                    val text = "${it.identifier}.$afterDotPart"
+                    val text = "${asCall.identifier}.$afterDotPart"
                     dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
                     dotExpr.treeParent.removeChild(dotExpr)
                 }

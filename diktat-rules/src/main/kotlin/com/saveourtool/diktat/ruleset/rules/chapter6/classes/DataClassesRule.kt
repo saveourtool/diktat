@@ -136,7 +136,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         isValue() || isAnnotation() || isInterface() || isData() ||
                 isSealed() || isInline() || isAbstract() || isEnum()
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "PARAMETER_NAME_IN_OUTER_LAMBDA")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
         accessors.forEach {
             if (it.hasChildOfType(BLOCK)) {
@@ -144,8 +144,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
                 return block
                     .getChildren(null)
-                    .filter { expr -> expr.psi is KtExpression }
-                    .count() <= 1
+                    .count { expr -> expr.psi is KtExpression } <= 1
             }
         }
 

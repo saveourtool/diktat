@@ -223,10 +223,10 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
                 block.statements.size == 1 &&
                         block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
             }
-            .forEach {
+            .forEach { block ->
                 NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode,
-                    "WHEN", it.node.startOffset, it.node) {
-                    it.astReplace(it.firstStatement!!.node.psi)
+                    "WHEN", block.node.startOffset, block.node) {
+                    block.astReplace(block.firstStatement!!.node.psi)
                 }
             }
     }

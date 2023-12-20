@@ -59,7 +59,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
      * Check property's initializer: if it is a method call, we find all consecutive statements that are this property's
      * fields accessors and wrap them in an `apply` function.
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "PARAMETER_NAME_IN_OUTER_LAMBDA")
     private fun handleProperty(property: KtProperty) {
         property.run {
             val propertyName = name

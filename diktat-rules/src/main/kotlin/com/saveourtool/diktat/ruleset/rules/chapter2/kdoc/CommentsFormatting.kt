@@ -79,6 +79,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
     private fun checkBlankLineAfterKdoc(node: ASTNode) {
         commentType.forEach {
             val kdoc = node.getFirstChildWithType(it)
@@ -138,8 +139,8 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 else -> null
             }
             comment?.let {
-                IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, it.text, node.startOffset, node) {
-                    moveCommentToElse(node, elseBlock, elseKeyWord, it)
+                IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, comment.text, node.startOffset, node) {
+                    moveCommentToElse(node, elseBlock, elseKeyWord, comment)
                 }
             }
         }
