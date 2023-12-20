@@ -36,6 +36,7 @@ import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Compan
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
+import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag

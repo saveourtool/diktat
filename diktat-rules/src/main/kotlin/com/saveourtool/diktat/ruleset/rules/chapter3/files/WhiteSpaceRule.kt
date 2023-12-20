@@ -462,7 +462,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         private val log = KotlinLogging.logger {}
         const val NAME_ID = "horizontal-whitespace"
 
-        private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
+        // this is the number of parent nodes needed to check if this node is lambda from argument list
+        private const val NUM_PARENTS_FOR_LAMBDA = 3
         private val keywordsWithSpaceAfter = TokenSet.create(
             // these keywords are followed by {
             ELSE_KEYWORD, TRY_KEYWORD, DO_KEYWORD, FINALLY_KEYWORD, INIT_KEYWORD,

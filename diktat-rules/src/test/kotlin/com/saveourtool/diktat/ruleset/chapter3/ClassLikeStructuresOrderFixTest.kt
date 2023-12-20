@@ -32,4 +32,10 @@ class ClassLikeStructuresOrderFixTest : FixTestBase("test/paragraph3/file_struct
     fun `regression - should not move loggers that depend on other variables from scope`() {
         fixAndCompare("LoggerOrderExpected.kt", "LoggerOrderTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `should add new line before the comment`() {
+        fixAndCompare("CompanionObjectWithCommentExpected.kt", "CompanionObjectWithCommentTest.kt")
+    }
 }
