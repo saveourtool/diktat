@@ -47,11 +47,11 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
         if (enumEntries.isEmpty() || (isEnumSimple(enumEntries) && isEnumOneLine(enumEntries))) {
             return
         }
-        enumEntries.forEach {
-            if (!it.treeNext.isWhiteSpaceWithNewline()) {
+        enumEntries.forEach { enumEntry ->
+            if (!enumEntry.treeNext.isWhiteSpaceWithNewline()) {
                 ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum entries must end with a line break",
-                    it.startOffset, it) {
-                    it.appendNewline()
+                    enumEntry.startOffset, enumEntry) {
+                    enumEntry.appendNewline()
                 }
             }
         }

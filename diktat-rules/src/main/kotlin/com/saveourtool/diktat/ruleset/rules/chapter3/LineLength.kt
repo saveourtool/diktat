@@ -262,6 +262,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return null
     }
 
+    @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
     private fun checkArgumentsList(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         node.findParentNodeWithSpecificType(WHEN_ENTRY)?.let {
             it.findChildByType(BLOCK)?.run {
@@ -476,7 +477,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Finds the first dot or safe access closer to the separator
      */
-    @Suppress("MAGIC_NUMBER", "MagicNumber")
+    @Suppress(
+        "MAGIC_NUMBER",
+        "MagicNumber",
+        "PARAMETER_NAME_IN_OUTER_LAMBDA"
+    )
     private fun searchRightSplitBeforeDotOrSafeAccess(
         parent: ASTNode,
         configuration: LineLengthConfiguration,
@@ -819,8 +824,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     node.appendNewlineMergingWhiteSpace(commaSplit.treeNext, commaSplit.treeNext)
                 }
             }
-            node.getFirstChildWithType(RPAR)?.let {
-                if (positionByOffset(it.treePrev.startOffset).second + it.treePrev.text.length - offset > lineLength * lineNumber && listComma.isNotEmpty()) {
+            node.getFirstChildWithType(RPAR)?.let { child ->
+                if (positionByOffset(child.treePrev.startOffset).second + child.treePrev.text.length - offset > lineLength * lineNumber && listComma.isNotEmpty()) {
                     listComma.last().first.let {
                         node.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
                     }

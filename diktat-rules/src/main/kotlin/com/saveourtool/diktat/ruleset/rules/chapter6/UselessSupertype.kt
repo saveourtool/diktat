@@ -134,6 +134,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
                     (if (classBody.treeParent.hasChildOfType(CLASS_KEYWORD)) it.findChildByType(MODIFIER_LIST)!!.hasChildOfType(OPEN_KEYWORD) else true) &&
                             it.getIdentifierName()!!.text in methodsName
                 }
+            @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
             overrideFunctions.forEach {
                 functionNameMap.compute(it.getIdentifierName()!!.text) { _, oldValue -> (oldValue ?: 0) + 1 }
             }

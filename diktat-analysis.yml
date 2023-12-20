@@ -450,7 +450,7 @@
   enabled: true
 # Checks that outer lambda has explicit parameter name
 - name: PARAMETER_NAME_IN_OUTER_LAMBDA
-  enabled: false
+  enabled: true
 # Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
