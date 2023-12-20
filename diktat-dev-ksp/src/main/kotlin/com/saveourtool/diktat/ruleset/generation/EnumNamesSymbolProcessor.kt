@@ -81,15 +81,15 @@ class EnumNamesSymbolProcessor(
 
         private fun KSAnnotation.getArgumentValue(argumentName: String): String = arguments
             .singleOrNull { it.name?.asString() == argumentName }
-            .let {
-                requireNotNull(it) {
+            .let { argument ->
+                requireNotNull(argument) {
                     "Not found $argumentName in $this"
                 }
             }
             .value
             ?.let { it as? String }
-            .let {
-                requireNotNull(it) {
+            .let { argumentValue ->
+                requireNotNull(argumentValue) {
                     "Not found a value for $argumentName in $this"
                 }
             }

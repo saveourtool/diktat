@@ -151,9 +151,9 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
             .filter { word -> word.text.hasUppercaseLetter() }
-            .forEach {
-                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) {
-                    it.toLower()
+            .forEach { word ->
+                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset, word) {
+                    word.toLower()
                 }
             }
 

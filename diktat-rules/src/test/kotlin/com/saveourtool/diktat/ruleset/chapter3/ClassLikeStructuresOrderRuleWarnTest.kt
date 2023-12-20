@@ -197,6 +197,21 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     }
 
     @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `should not trigger on EOL comment on the same line with property`() {
+        lintMethod(
+            """
+                    |class ActiveBinsMetric(meterRegistry: MeterRegistry, private val binRepository: BinRepository) {
+                    |    companion object {
+                    |        private const val EGG_7_9_BUCKET_LABEL = "7-9"
+                    |        private const val DELAY = 15000L  // 15s
+                    |    }
+                    |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
     @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
     fun `should warn if order is incorrect and property with comment`() {
         lintMethod(
@@ -244,7 +259,8 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
             |object C {
             |    private const val A = "value"
             |
-            |    private const val LOG = "value" // Not a logger
+            |    // Not a logger
+            |    private const val LOG = "value"
             |}
         """.trimMargin()
 
@@ -265,7 +281,6 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
         val code = """
             |object C {
             |    private lateinit val A
-            |
             |    private lateinit val LOG // Not a logger
             |}
         """.trimMargin()

@@ -220,6 +220,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
+            @Suppress("PARAMETER_NAME_IN_OUTER_LAMBDA")
             val isFirstArgument = node
                 .parent { it.elementType == VALUE_ARGUMENT }
                 .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
@@ -461,7 +462,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         private val log = KotlinLogging.logger {}
         const val NAME_ID = "horizontal-whitespace"
 
-        private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
+        // this is the number of parent nodes needed to check if this node is lambda from argument list
+        private const val NUM_PARENTS_FOR_LAMBDA = 3
         private val keywordsWithSpaceAfter = TokenSet.create(
             // these keywords are followed by {
             ELSE_KEYWORD, TRY_KEYWORD, DO_KEYWORD, FINALLY_KEYWORD, INIT_KEYWORD,
