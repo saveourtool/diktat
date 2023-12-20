@@ -8,7 +8,7 @@
 [![Releases](https://img.shields.io/github/v/release/saveourtool/diKTat)](https://github.com/saveourtool/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/com.saveourtool.diktat/diktat-rules)](https://mvnrepository.com/artifact/com.saveourtool.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaveourtool%2Fdiktat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaveourtool%2Fdiktat?ref=badge_shield)
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_support)
 
 [![Hits-of-Code](https://hitsofcode.com/github/saveourtool/diktat)](https://hitsofcode.com/view/github/saveourtool/diktat)
 ![Lines of code](https://img.shields.io/tokei/lines/github/saveourtool/diktat)
@@ -16,11 +16,9 @@
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 
-DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) for Kotlin and a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
-as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process.
-The full list of available supported rules and inspections can be found [here](info/available-rules.md).
+**DiKTat** is a strict [coding standard](info/guide/diktat-coding-convention.md) for Kotlin, consisting of a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented as Abstract Syntax Tree (AST) visitors built on top of [KTlint](https://ktlint.github.io/). It serves the purpose of detecting and automatically fixing code smells in the Continuous Integration/Continuous Deployment (CI/CD) process. You can find the comprehensive list of supported rules and inspections [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.5). Thanks to the community for this support!
+DiKTat has gained recognition and has been added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin), and [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.2.5). We extend our gratitude to the community for this support!
 
 ## See first
 
@@ -28,20 +26,17 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 | --- | --- | --- | --- | --- | --- |
 |[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://saveourtool.com/#/demo/diktat) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
-## Why should I use diktat in my CI/CD?
+## Why Choose DiKTat for CI/CD?
 
-There are several tools like `detekt` and `ktlint` that are doing static analysis. Why do I need diktat?
+While there are other tools like `detekt` and `ktlint` performing static analysis, you might wonder why DiKTat is necessary. Here are the key reasons:
 
-First of all - actually you can combine diktat with any other static analyzers. And diKTat is even using ktlint framework for parsing the code into the AST.
-Main features of diktat are the following:
+1. **More Inspections:** DiKTat boasts over 100 inspections tightly coupled with its [Codestyle](info/guide/diktat-coding-convention.md).
 
-1) **More inspections.** It has 100+ inspections that are tightly coupled with it's [Codestyle](info/guide/diktat-coding-convention.md).
+2. **Unique Inspections:** DiKTat introduces unique inspections not found in other linters.
 
-2) **Unique [Inspections](info/available-rules.md)** that are missing in other linters.
+3. **Highly Configurable:** Every inspection is highly configurable, allowing customization and suppression. Check [configuration options](#config) and [suppression](#suppress).
 
-3) **Highly configurable**. Each and every inspection can be [configured](#config) or [suppressed](#suppress).
-
-4) **Strict detailed [Codestyle](info/guide/diktat-coding-convention.md)** that you can adopt and use in your project.
+4. **Strict Codestyle:** DiKTat enforces a detailed [Codestyle](info/guide/diktat-coding-convention.md) that can be adopted and applied in your project.
 
 ## Run as [CLI-application](diktat-cli/README.md)
 
@@ -54,7 +49,7 @@ Main features of diktat are the following:
    curl -sSLO https://github.com/saveourtool/diktat/releases/download/v2.0.0/diktat && chmod a+x diktat
    ```
 
-2. _**For Windows only**_. Download diKTat.bat manually: [here](https://github.com/saveourtool/diktat/releases)
+_**For Windows only**_. Download diKTat.cmd manually: [here](https://github.com/saveourtool/diktat/releases)
 
 ### Run diKTat
 
@@ -66,18 +61,16 @@ $ ./diktat "dir/your/dir/**/*.kt"
 
 > _**On Windows**_
 > ```console
-> ./diktat.bat "dir/your/dir/**/*.kt"
+> diktat.bat "dir/your/dir/**/*.kt"
 > ```
 
 To **autofix** all code style violations, use `--mode fix` option.
 
 ## Run with Maven using diktat-maven-plugin
 
-You can see how it is configured in our examples for self-checks:
+You can see how it is configured in our examples:
 - [Single project](examples/maven/pom.xml)
 - [Multi-module project](examples/maven-multiproject/pom.xml)
-
-If you use it and encounter any problems, feel free to open issues on [github](https://github.com/saveourtool/diktat/issues).
 
 <details>
 <summary>Add this plugin to your pom.xml:</summary>
@@ -200,20 +193,6 @@ plugins {
 > }
 > ```
 
-Or use buildscript syntax:
-```kotlin
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.saveourtool.diktat:diktat-gradle-plugin:2.0.0")
-    }
-}
-
-apply(plugin = "com.saveourtool.diktat")
-```
-
 You can then configure diktat using `diktat` extension:
 ```kotlin
 diktat {
@@ -243,10 +222,9 @@ diktat {
     }
 }
 ```
-
 </details>
 
-You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
+You can run diktat checks using task `./gradlew diktatCheck` and automatically fix errors with task `./gradlew diktatFix`.
 
 ## Run with Spotless
 [Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
@@ -367,10 +345,7 @@ with:
 
 ## <a name="config"></a> Customizations via `diktat-analysis.yml`
 
-In KTlint, rules can be configured via `.editorconfig`, but
-this does not give a chance to customize or enable/disable
-each and every rule independently.
-That is why we have supported `diktat-analysis.yml` that can be easily
+In Diktat we have supported `diktat-analysis.yml` that can be easily
 changed and help in customization of your own rule set.
 It has simple fields:
 `name` — name of the rule,
@@ -458,7 +433,7 @@ To allow gradual adoption, diktat and ktlint support baseline mode. When running
 the baseline file will be generated. It is a xml file with a complete list of findings by the tool. On later invocations,
 only the findings that are not in the baseline file will be reported. Baseline can be activated with CLI flag:
 ```bash
-java -jar ktlint -R diktat.jar --baseline=diktat-baseline.xml **/*.kt
+./diktat --baseline=diktat-baseline.xml **/*.kt
 ```
 or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
 but it can be removed and re-generated later, if needed.
