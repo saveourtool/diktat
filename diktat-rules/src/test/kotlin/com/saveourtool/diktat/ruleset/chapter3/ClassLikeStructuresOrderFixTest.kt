@@ -34,7 +34,7 @@ class ClassLikeStructuresOrderFixTest : FixTestBase("test/paragraph3/file_struct
     }
 
     @Test
-    @Tags(Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES))
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should add new line before the comment`() {
         fixAndCompare("CompanionObjectWithCommentExpected.kt", "CompanionObjectWithCommentTest.kt")
     }
