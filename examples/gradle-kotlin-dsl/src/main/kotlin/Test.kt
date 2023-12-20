@@ -1,15 +1,13 @@
 package incorrect
 
-class IncorrectnameException : Exception() {
+class incorrectname: Exception() {
+    fun INCORRECT_FUNCTION() {
+        throw Exception()
+    }
+
     // fun myCommentedFunction() {
     // }
 
     val Incorrect_Val = 5
 
-    /**
-     * @throws Exception
-     */
-    fun incorrectFunction() {
-        throw Exception()
-    }
 }

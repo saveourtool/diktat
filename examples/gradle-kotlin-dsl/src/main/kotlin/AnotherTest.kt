@@ -5,12 +5,11 @@ fun String.createPluginConfig() {
         serializer(),
         fakeFileNode,
         DecoderConf()
-    ).apply {
-        prop1 = property1
-        // comment2
-        prop2 = property2
-    }
+    )
     pluginConfig.configLocation = this.toPath()
+    pluginConfig.prop1 = property1
     // comment1
     pluginConfig.configLocation2 = this.toPath()
+    // comment2
+    pluginConfig.prop2 = property2
 }
