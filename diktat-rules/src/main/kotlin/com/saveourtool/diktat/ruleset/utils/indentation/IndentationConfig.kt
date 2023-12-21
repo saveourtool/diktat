@@ -88,12 +88,16 @@ class IndentationConfig(config: Map<String, String>) : RuleConfiguration(config)
     override fun toString(): String =
         "${javaClass.simpleName}$configWithExplicitDefaults"
 
-
+    /**
+     * @param errorEmitter
+     * @return overridden [errorEmitter] which warns message with configured [indentationSize]
+     */
     fun overrideIfRequiredWarnMessage(errorEmitter: DiktatErrorEmitter): DiktatErrorEmitter = if (indentationSize == DEFAULT_INDENTATION_SIZE) {
         errorEmitter
     } else {
         DiktatErrorEmitter { offset, errorMessage, canBeAutoCorrected ->
-            errorEmitter(offset, errorMessage.replace("should equal to 4 spaces (tabs are not allowed)", "should equal to $indentationSize spaces (tabs are not allowed)"), canBeAutoCorrected)
+            errorEmitter(offset, errorMessage.replace("should equal to 4 spaces (tabs are not allowed)", "should equal to $indentationSize spaces (tabs are not allowed)"),
+                canBeAutoCorrected)
         }
     }
 
