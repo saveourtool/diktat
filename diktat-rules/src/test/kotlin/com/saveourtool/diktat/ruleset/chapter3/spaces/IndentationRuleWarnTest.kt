@@ -743,10 +743,16 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """
                 |fun foo(some: String) {
                 |    print("test")
+                |if (test){
+                |print("2")
                 |}
+                |}
+                |
             """.trimMargin(),
             DiktatError(2, 1, ruleId, "$warnMessage expected 2 but was 4", true),
-            DiktatError(3, 1, ruleId, "$warnMessage no newline at the end of file /File.kt", true),
+            DiktatError(3, 1, ruleId, "$warnMessage expected 2 but was 0", true),
+            DiktatError(4, 1, ruleId, "$warnMessage expected 4 but was 0", true),
+            DiktatError(5, 1, ruleId, "$warnMessage expected 2 but was 0", true),
             rulesConfigList = rulesConfigListWithIndentation2
         )
     }
