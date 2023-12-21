@@ -1,5 +1,6 @@
 package com.saveourtool.diktat.ruleset.utils.indentation
 
+import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 
 /**
@@ -86,6 +87,15 @@ class IndentationConfig(config: Map<String, String>) : RuleConfiguration(config)
 
     override fun toString(): String =
         "${javaClass.simpleName}$configWithExplicitDefaults"
+
+
+    fun overrideIfRequiredWarnMessage(errorEmitter: DiktatErrorEmitter): DiktatErrorEmitter = if (indentationSize == DEFAULT_INDENTATION_SIZE) {
+        errorEmitter
+    } else {
+        DiktatErrorEmitter { offset, errorMessage, canBeAutoCorrected ->
+            errorEmitter(offset, errorMessage.replace("should equal to 4 spaces (tabs are not allowed)", "should equal to $indentationSize spaces (tabs are not allowed)"), canBeAutoCorrected)
+        }
+    }
 
     companion object {
         internal const val ALIGNED_PARAMETERS = "alignedParameters"
