@@ -1,14 +1,32 @@
 package test.paragraph2.kdoc
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     // single-line comment
     name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     /*
      * block
@@ -17,6 +35,12 @@ class A constructor(
     name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     /**
      * kdoc property
@@ -25,6 +49,12 @@ class A constructor(
     name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     /**
      * @property name property
@@ -33,15 +63,33 @@ class A constructor(
     name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     // single-line comment
     val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property name property info
+ */
 class A constructor(
     /*
      * block
@@ -50,6 +98,12 @@ class A constructor(
     val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property name property info
+ */
 class A constructor(
     /**
      * kdoc property
@@ -58,6 +112,12 @@ class A constructor(
     val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property name property info
+ */
 class A constructor(
     /**
      * @property name property
@@ -66,15 +126,33 @@ class A constructor(
     val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     private val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param name property info
+ */
 class A constructor(
     // single-line comment
     private val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property name property info
+ */
 class A constructor(
     /*
      * block
@@ -83,6 +161,12 @@ class A constructor(
     private val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property name property info
+ */
 class A constructor(
     /**
      * kdoc property
@@ -91,6 +175,12 @@ class A constructor(
     private val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property name property info
+ */
 class A constructor(
     /**
      * @property name property
@@ -99,6 +189,18 @@ class A constructor(
     private val name: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @param openName open property info
+ * @param openLastName
+ *   open last property
+ *   info
+ * @property openAddr
+ *   property
+ *   info
+ */
 open class B<K : Any> constructor(
     // single-line comment
     open val openName: String,
@@ -119,6 +221,21 @@ open class B<K : Any> constructor(
     open val openAddr: String
 ) {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property P generic type
+ * @param K generic type
+ * @property internalName internal
+ *   property info
+ * @param openName override
+ *   property info
+ * @property privateLastName private
+ *   property info
+ * @property openAddr override
+ *   property info
+ */
 class A<K : Any, P : Any, G : Any> constructor(
     // single-line comment
     private val privateName: String,
@@ -224,6 +341,12 @@ class A<K : Any, P : Any, G : Any> constructor(
     paramAddr: String,
 ) : B<K>(), C<P>, D<G> {}
 
+/**
+ * kdoc
+ * class
+ * comment
+ * @property keyAs
+ */
 actual annotation class JsonSerialize(
     actual val `as`: KClass<*>,
     actual val keyAs: KClass<*>,

@@ -15,7 +15,7 @@ class A constructor(
  * comment
  */
 class A constructor(
-    //single-line comment
+    // single-line comment
     name: String
 ) {}
 
@@ -73,7 +73,7 @@ class A constructor(
  * comment
  */
 class A constructor(
-    //single-line comment
+    // single-line comment
     val name: String
 ) {}
 
@@ -131,7 +131,7 @@ class A constructor(
  * comment
  */
 class A constructor(
-    //single-line comment
+    // single-line comment
     private val name: String
 ) {}
 
@@ -180,7 +180,7 @@ class A constructor(
  * comment
  */
 open class B<K : Any> constructor(
-    //single-line comment
+    // single-line comment
     open val openName: String,
     /*
      * block
@@ -205,17 +205,17 @@ open class B<K : Any> constructor(
  * comment
  */
 class A<K : Any, P : Any, G : Any> constructor(
-    //single-line comment
+    // single-line comment
     private val privateName: String,
-    //single-line comment
+    // single-line comment
     protected val protectedName: String,
-    //single-line comment
+    // single-line comment
     internal val internalName: String,
-    //single-line comment
+    // single-line comment
     override val openName: String,
-    //single-line comment
+    // single-line comment
     val name: String,
-    //single-line comment
+    // single-line comment
     paramName: String,
     /*
      * block

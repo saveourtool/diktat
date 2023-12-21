@@ -24,13 +24,19 @@ class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments)
     @Test
     @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT))
     fun `check fix with class kdoc`() {
-        fixAndCompare("ConstructorCommentExpected.kt", "ConstructorCommentTest.kt")
+        fixAndCompare("ConstructorCommentKDocExpected.kt", "ConstructorCommentKDocTest.kt")
     }
 
     @Test
     @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT))
     fun `check fix with properties in class kdoc`() {
         fixAndCompare("ConstructorCommentPropertiesExpected.kt", "ConstructorCommentPropertiesTest.kt")
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT))
+    fun `check fix with class kdoc and properties`() {
+        fixAndCompare("ConstructorCommentAllExpected.kt", "ConstructorCommentAllTest.kt")
     }
 
     @Test
