@@ -204,7 +204,7 @@ open class B<K : Any> constructor(
  * class
  * comment
  */
-class A<K : Any, P: Any, G: Any> constructor(
+class A<K : Any, P : Any, G : Any> constructor(
     //single-line comment
     private val privateName: String,
     //single-line comment

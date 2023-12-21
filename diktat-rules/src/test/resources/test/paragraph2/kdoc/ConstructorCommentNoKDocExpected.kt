@@ -188,7 +188,7 @@ open class B<K : Any> constructor(
  *   kdoc property
  *   comment
  */
-class A<K : Any, P: Any, G: Any> constructor(
+class A<K : Any, P : Any, G : Any> constructor(
     private val privateName: String,
     protected val protectedName: String,
     internal val internalName: String,

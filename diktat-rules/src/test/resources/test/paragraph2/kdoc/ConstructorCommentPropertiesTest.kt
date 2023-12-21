@@ -49,14 +49,14 @@ class A constructor(
 ) {}
 
 /**
- * @property name property info
+ * @param name property info
  */
 class A constructor(
     val name: String
 ) {}
 
 /**
- * @property name property info
+ * @param name property info
  */
 class A constructor(
     //single-line comment
@@ -97,14 +97,14 @@ class A constructor(
 ) {}
 
 /**
- * @property name property info
+ * @param name property info
  */
 class A constructor(
     private val name: String
 ) {}
 
 /**
- * @property name property info
+ * @param name property info
  */
 class A constructor(
     //single-line comment
@@ -145,7 +145,7 @@ class A constructor(
 ) {}
 
 /**
- * @property openName open property info
+ * @param openName open property info
  * @param openLastName
  *   open last property
  *   info
@@ -185,7 +185,7 @@ open class B<K : Any> constructor(
  * @property openAddr override
  *   property info
  */
-class A<K : Any, P: Any, G: Any> constructor(
+class A<K : Any, P : Any, G : Any> constructor(
     //single-line comment
     private val privateName: String,
     //single-line comment
