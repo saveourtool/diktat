@@ -124,6 +124,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
 
     /**
      * Class that represents a function's signature
+     *
      * @property name function name
      * @property parameters function parameters as strings
      * @property returnType return type of a function if it is explicitly set
@@ -138,6 +139,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
 
     /**
      * Class that represents an extension function
+     *
      * @property className name of receiver class
      * @property signature a [FunctionSignature] of a function
      * @property node a [ASTNode] that represents this function
