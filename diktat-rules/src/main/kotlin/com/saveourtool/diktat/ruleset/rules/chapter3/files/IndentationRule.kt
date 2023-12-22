@@ -6,6 +6,7 @@
 
 package com.saveourtool.diktat.ruleset.rules.chapter3.files
 
+import com.saveourtool.diktat.api.DiktatErrorEmitter
 import com.saveourtool.diktat.common.config.rules.RulesConfig
 import com.saveourtool.diktat.common.config.rules.getRuleConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
@@ -104,8 +105,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     private lateinit var filePath: String
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
+    private lateinit var overriddenEmitWarn: DiktatErrorEmitter
 
     override fun logic(node: ASTNode) {
+        overriddenEmitWarn = configuration.overrideIfRequiredWarnMessage(emitWarn)
         if (node.elementType == KtFileElementType.INSTANCE) {
             filePath = node.getFilePath()
 
@@ -147,7 +150,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
             .forEach { whiteSpaceNode ->
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation",
+                WRONG_INDENTATION.warnAndFix(configRules, overriddenEmitWarn, isFixMode, "tabs are not allowed for indentation",
                     whiteSpaceNode.startOffset + whiteSpaceNode.text.indexOf(TAB), whiteSpaceNode) {
                     (whiteSpaceNode as LeafPsiElement).rawReplaceWithText(whiteSpaceNode.text.replace(TAB.toString(), configuration.indentationSize.spaces))
                 }
@@ -170,7 +173,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 // But ktlint synthetically increase length in aim to have ability to point to this line, so in this case
                 // offset will be `node.textLength`, otherwise we will point to the last symbol, i.e `node.textLength - 1`
                 val offset = if (lastChild.isMultilineWhitespace()) node.textLength else node.textLength - 1
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", offset, node) {
+                WRONG_INDENTATION.warnAndFix(configRules, overriddenEmitWarn, isFixMode, "$warnText at the end of file $fileName", offset, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(NEWLINE.toString()), null)
                     } else {
@@ -238,7 +241,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             } else {
                 "expected $expectedIndent but was ${indentError.actual}"
             }
-            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, warnText,
+            WRONG_INDENTATION.warnAndFix(configRules, overriddenEmitWarn, isFixMode, warnText,
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf(NEWLINE) + 1, whiteSpace.node) {
                 checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
                 whiteSpace.node.indentBy(expectedIndent)
