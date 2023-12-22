@@ -1,11 +1,11 @@
-package test.paragraph2.kdoc
+package com.saveourtool.diktat
 
 /**
  * kdoc
  * class
  * comment
  *
- * @param name
+ * @param name property info
  */
 class A constructor(
     name: String
@@ -16,7 +16,8 @@ class A constructor(
  * class
  * comment
  *
- * @param name single-line comment
+ * @param name property info
+ *   single-line comment
  */
 class A constructor(
     name: String
@@ -27,7 +28,7 @@ class A constructor(
  * class
  * comment
  *
- * @param name
+ * @param name property info
  *   block
  *   comment
  */
@@ -40,7 +41,7 @@ class A constructor(
  * class
  * comment
  *
- * @param name
+ * @param name property info
  *   kdoc property
  *   comment
  */
@@ -52,6 +53,8 @@ class A constructor(
  * kdoc
  * class
  * comment
+ *
+ * @param name property info
  */
 class A constructor(
     /**
@@ -66,7 +69,7 @@ class A constructor(
  * class
  * comment
  *
- * @property name
+ * @property name property info
  */
 class A constructor(
     val name: String
@@ -77,7 +80,8 @@ class A constructor(
  * class
  * comment
  *
- * @property name single-line comment
+ * @property name property info
+ *   single-line comment
  */
 class A constructor(
     val name: String
@@ -88,7 +92,7 @@ class A constructor(
  * class
  * comment
  *
- * @property name
+ * @property name property info
  *   block
  *   comment
  */
@@ -101,7 +105,7 @@ class A constructor(
  * class
  * comment
  *
- * @property name
+ * @property name property info
  *   kdoc property
  *   comment
  */
@@ -113,6 +117,8 @@ class A constructor(
  * kdoc
  * class
  * comment
+ *
+ * @property name property info
  */
 class A constructor(
     /**
@@ -127,7 +133,7 @@ class A constructor(
  * class
  * comment
  *
- * @param name
+ * @param name property info
  */
 class A constructor(
     private val name: String
@@ -138,7 +144,8 @@ class A constructor(
  * class
  * comment
  *
- * @param name single-line comment
+ * @param name property info
+ *   single-line comment
  */
 class A constructor(
     private val name: String
@@ -149,7 +156,7 @@ class A constructor(
  * class
  * comment
  *
- * @param name
+ * @param name property info
  *   block
  *   comment
  */
@@ -162,7 +169,7 @@ class A constructor(
  * class
  * comment
  *
- * @param name
+ * @param name property info
  *   kdoc property
  *   comment
  */
@@ -174,6 +181,8 @@ class A constructor(
  * kdoc
  * class
  * comment
+ *
+ * @property name property info
  */
 class A constructor(
     /**
@@ -189,12 +198,15 @@ class A constructor(
  * comment
  *
  * @param K
- * @property openName single-line comment
- * @property openLastName
+ * @property openName open property info
+ *   single-line comment
+ * @property openLastName open last property
+ *   info
  *   block
  *   comment
- * @property openBirthDate
- *   kdoc property
+ * @property openAddr property
+ *   info
+ * @property openBirthDate kdoc property
  *   comment
  */
 open class B<K : Any> constructor(
@@ -213,50 +225,46 @@ open class B<K : Any> constructor(
  * class
  * comment
  *
- * @param K
- * @param P
+ * @param P generic type
+ * @param K generic type
+ * @param privateLastName private
+ *   property info
+ *   block
+ *   comment
  * @param G
  * @param privateName single-line comment
- * @property protectedName single-line comment
- * @property internalName single-line comment
- * @property openName single-line comment
- * @property name single-line comment
  * @param paramName single-line comment
- * @param privateLastName
- *   block
+ * @param paramLastName block
  *   comment
- * @property protectedLastName
- *   block
+ * @param privateBirthDate kdoc property
  *   comment
- * @property internalLastName
- *   block
+ * @param paramBirthDate kdoc property
  *   comment
- * @property openLastName
- *   block
+ * @property internalName internal
+ *   property info
+ *   single-line comment
+ * @property openName override
+ *   property info
+ *   single-line comment
+ * @property openAddr override
+ *   property info
+ * @property protectedName single-line comment
+ * @property name single-line comment
+ * @property protectedLastName block
  *   comment
- * @property lastName
- *   block
+ * @property internalLastName block
  *   comment
- * @param paramLastName
- *   block
+ * @property openLastName block
  *   comment
- * @param privateBirthDate
- *   kdoc property
+ * @property lastName block
  *   comment
- * @property protectedBirthDate
- *   kdoc property
+ * @property protectedBirthDate kdoc property
  *   comment
- * @property internalBirthDate
- *   kdoc property
+ * @property internalBirthDate kdoc property
  *   comment
- * @property openBirthDate
- *   kdoc property
+ * @property openBirthDate kdoc property
  *   comment
- * @property birthDate
- *   kdoc property
- *   comment
- * @param paramBirthDate
- *   kdoc property
+ * @property birthDate kdoc property
  *   comment
  */
 class A<K : Any, P : Any, G : Any> constructor(
@@ -308,15 +316,15 @@ class A<K : Any, P : Any, G : Any> constructor(
      * comment
      */
     paramAddr: String,
-) : B<K>(), C<P>, D<G> {}
+) : B<K>() {}
 
 /**
  * kdoc
  * class
  * comment
  *
- * @property as
  * @property keyAs
+ * @property as
  */
 actual annotation class JsonSerialize(
     actual val `as`: KClass<*>,

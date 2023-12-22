@@ -484,9 +484,14 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      * Append [content] to [kdocTagNode], e.g.
      * (`@property foo bar`, "baz") -> `@property foo bar baz`
      */
-    private fun appendKdocTagContent(kdocTagNode: ASTNode, parameterName: String, content: String) {
-        kdocTagNode.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT ||
-                (it.elementType == KDocTokens.MARKDOWN_LINK && it.text != parameterName) }
+    private fun appendKdocTagContent(
+        kdocTagNode: ASTNode,
+        parameterName: String,
+        content: String
+    ) {
+        kdocTagNode.findChildrenMatching {
+            it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT || (it.elementType == KDocTokens.MARKDOWN_LINK && it.text != parameterName)
+        }
             .lastOrNull()
             ?.let {
                 kdocTagNode.replaceChild(
