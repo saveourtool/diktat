@@ -16,6 +16,12 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.name, true)
     )
+    private val rulesConfigParameterNameInOuterLambda = listOf(
+        RulesConfig(
+            Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.name, true, mapOf(
+            "strictMode" to "false"
+        ))
+    )
 
     @Test
     @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
@@ -195,6 +201,101 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
                 |}
             """.trimMargin(),
             rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `lambdas at the same level`() {
+        lintMethod(
+            """
+                |fun testA() {
+                |   val overrideFunctions: List <Int> = emptyList()
+                |   overrideFunctions.forEach { functionNameMap.compute(it.getIdentifierName()!!.text) { _, oldValue -> (oldValue ?: 0) + 1 } }
+                |}
+                """.trimMargin(),
+            rulesConfigList = this.rulesConfigParameterNameInOuterLambda
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `lambdas at the same level 2`() {
+        lintMethod(
+            """
+                |private fun isCheckNeeded(whiteSpace: PsiWhiteSpace) =
+                |    whiteSpace.parent
+                |        .node
+                |        .elementType
+                |        .let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+                |            whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                |            whiteSpace.siblings(forward = true, withItself = false).any {
+                |                it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                |            }
+                """.trimMargin(),
+            rulesConfigList = this.rulesConfigParameterNameInOuterLambda
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `lambdas at the same level 21`() {
+        lintMethod(
+            """
+                |private fun isCheckNeeded(w: PsiWhiteSpace, h: PsiWhiteSpace) =
+                |    w.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+                |            h.none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                |            h.any {
+                |                it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                |            }
+                """.trimMargin(),
+            rulesConfigList = this.rulesConfigParameterNameInOuterLambda
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `lambdas at the same level 3`() {
+        lintMethod(
+            """
+                |private fun checkBlankLineAfterKdoc(node: ASTNode) {
+                |    commentType.forEach {
+                |        val kdoc = node.getFirstChildWithType(it)
+                |        kdoc?.treeNext?.let { nodeAfterKdoc ->
+                |            if (nodeAfterKdoc.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
+                |                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${'$'}{kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+                |                    nodeAfterKdoc.leaveOnlyOneNewLine()
+                |                }
+                |            }
+                |        }
+                |    }
+                |}
+                """.trimMargin(),
+            rulesConfigList = this.rulesConfigParameterNameInOuterLambda
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `lambdas at the same level 4`() {
+        lintMethod(
+            """
+                |private fun KSAnnotation.getArgumentValue(argumentName: String): String = arguments
+                |    .singleOrNull { it.name?.asString() == argumentName }
+                |    .let {
+                |        requireNotNull(it) {
+                |            "Not found ${'$'}argumentName in ${'$'}this"
+                |        }
+                |    }
+                |    .value
+                |    ?.let { it as? String }
+                |    .let {
+                |        requireNotNull(it) {
+                |            "Not found a value for ${'$'}argumentName in ${'$'}this"
+                |        }
+                |    }
+                """.trimMargin(),
+            rulesConfigList = this.rulesConfigParameterNameInOuterLambda
         )
     }
 }
