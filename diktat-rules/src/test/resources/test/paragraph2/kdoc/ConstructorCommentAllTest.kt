@@ -194,11 +194,9 @@ class A constructor(
  * class
  * comment
  * @param openName open property info
- * @param openLastName
- *   open last property
+ * @param openLastName open last property
  *   info
- * @property openAddr
- *   property
+ * @property openAddr property
  *   info
  */
 open class B<K : Any> constructor(

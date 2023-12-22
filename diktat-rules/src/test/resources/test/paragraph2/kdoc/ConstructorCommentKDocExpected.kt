@@ -24,8 +24,7 @@ class A constructor(
  * kdoc
  * class
  * comment
- * @param name
- *   block
+ * @param name block
  *   comment
  */
 class A constructor(
@@ -36,8 +35,7 @@ class A constructor(
  * kdoc
  * class
  * comment
- * @param name
- *   kdoc property
+ * @param name kdoc property
  *   comment
  */
 class A constructor(
@@ -81,8 +79,7 @@ class A constructor(
  * kdoc
  * class
  * comment
- * @property name
- *   block
+ * @property name block
  *   comment
  */
 class A constructor(
@@ -93,8 +90,7 @@ class A constructor(
  * kdoc
  * class
  * comment
- * @property name
- *   kdoc property
+ * @property name kdoc property
  *   comment
  */
 class A constructor(
@@ -138,8 +134,7 @@ class A constructor(
  * kdoc
  * class
  * comment
- * @param name
- *   block
+ * @param name block
  *   comment
  */
 class A constructor(
@@ -150,8 +145,7 @@ class A constructor(
  * kdoc
  * class
  * comment
- * @param name
- *   kdoc property
+ * @param name kdoc property
  *   comment
  */
 class A constructor(
@@ -177,11 +171,9 @@ class A constructor(
  * comment
  * @param K
  * @property openName single-line comment
- * @property openLastName
- *   block
+ * @property openLastName block
  *   comment
- * @property openBirthDate
- *   kdoc property
+ * @property openBirthDate kdoc property
  *   comment
  */
 open class B<K : Any> constructor(
@@ -208,41 +200,29 @@ open class B<K : Any> constructor(
  * @property openName single-line comment
  * @property name single-line comment
  * @param paramName single-line comment
- * @param privateLastName
- *   block
+ * @param privateLastName block
  *   comment
- * @property protectedLastName
- *   block
+ * @property protectedLastName block
  *   comment
- * @property internalLastName
- *   block
+ * @property internalLastName block
  *   comment
- * @property openLastName
- *   block
+ * @property openLastName block
  *   comment
- * @property lastName
- *   block
+ * @property lastName block
  *   comment
- * @param paramLastName
- *   block
+ * @param paramLastName block
  *   comment
- * @param privateBirthDate
- *   kdoc property
+ * @param privateBirthDate kdoc property
  *   comment
- * @property protectedBirthDate
- *   kdoc property
+ * @property protectedBirthDate kdoc property
  *   comment
- * @property internalBirthDate
- *   kdoc property
+ * @property internalBirthDate kdoc property
  *   comment
- * @property openBirthDate
- *   kdoc property
+ * @property openBirthDate kdoc property
  *   comment
- * @property birthDate
- *   kdoc property
+ * @property birthDate kdoc property
  *   comment
- * @param paramBirthDate
- *   kdoc property
+ * @param paramBirthDate kdoc property
  *   comment
  */
 class A<K : Any, P : Any, G : Any> constructor(

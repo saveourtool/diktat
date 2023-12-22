@@ -66,9 +66,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         KdocCommentsConfiguration(configRules.getRuleConfig(KDOC_NO_CONSTRUCTOR_PROPERTY)?.configuration ?: emptyMap())
     }
 
-    /**
-     * @param node
-     */
     override fun logic(node: ASTNode) {
         val filePath = node.getFilePath()
         val config = configRules.getCommonConfiguration()
@@ -190,11 +187,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             val correctTag = if (isParamTagNeeded) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
 
             if (parameterTagInClassKdoc.knownTag != correctTag) {
-                val warningText = if (isParamTagNeeded) {
-                    "change `@property` tag to `@param` tag for <$parameterName> to KDoc"
-                } else {
-                    "change `@param` tag to `@property` tag for <$parameterName> to KDoc"
-                }
+                val paramOrPropertySwitchText = if (isParamTagNeeded) "@property" to "@param" else "@param" to "@property"
+                val warningText = "change `${paramOrPropertySwitchText.first}` tag to `${paramOrPropertySwitchText.second}` tag for <$parameterName> to KDoc"
 
                 KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
                     replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded)
@@ -205,7 +199,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 val warningText = if (isParamTagNeeded) "add param <$parameterName> to KDoc" else "add property <$parameterName> to KDoc"
 
                 KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
-                    val newKdocText = if (isParamTagNeeded) "* @param $parameterName\n " else "* @property $parameterName\n "
+                    val paramOrPropertyTagText = if (isParamTagNeeded) "@param" else "@property"
+                    val newKdocText = "* $paramOrPropertyTagText $parameterName\n "
                     insertTextInKdoc(kdocBeforeClass, newKdocText)
                 }
             }
@@ -228,8 +223,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         parameterName: String,
         isParamTagNeeded: Boolean
     ) {
-        val wrongTagText = if (isParamTagNeeded) "* @property $parameterName" else "* @param $parameterName"
-        val replaceText = if (isParamTagNeeded) "* @param $parameterName" else "* @property $parameterName"
+        val paramOrPropertySwitchText = if (isParamTagNeeded) "@property" to "@param" else "@param" to "@property"
+        val wrongTagText = "* ${paramOrPropertySwitchText.first} $parameterName"
+        val replaceText = "* ${paramOrPropertySwitchText.second} $parameterName"
 
         changeTagInKdoc(kdocBeforeClass, wrongTagText, replaceText)
     }
@@ -267,7 +263,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
                 val classNode = node.parent { it.elementType == CLASS }!!
-                val newKdocText = if (isParamTagNeeded) "/**\n * @param $parameterName\n */" else "/**\n * @property $parameterName\n */"
+                val paramOrPropertyTagText = if (isParamTagNeeded) "@param" else "@property"
+                val newKdocText = "/**\n * $paramOrPropertyTagText $parameterName\n */"
                 val newKdoc = KotlinParser().createNode(newKdocText)
 
                 classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
@@ -309,34 +306,36 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         parameterName: String,
         paramOrPropertyTagText: String
     ) = when (prevComment.elementType) {
-        KDOC -> "/**\n * $paramOrPropertyTagText $parameterName${createClassKdocTextFromKdocComment(prevComment)}\n */"
+        KDOC -> "/**\n * $paramOrPropertyTagText $parameterName ${createClassKdocTextFromKdocComment(prevComment)}\n */"
         EOL_COMMENT -> "/**\n * $paramOrPropertyTagText $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n */"
-        else -> "/**\n * $paramOrPropertyTagText $parameterName${createClassKdocTextFromBlockComment(prevComment)}\n */"
+        else -> "/**\n * $paramOrPropertyTagText $parameterName ${createClassKdocTextFromBlockComment(prevComment)}\n */"
     }
 
     private fun createClassKdocTextFromKdocComment(prevComment: ASTNode) =
         prevComment.text
             .removePrefix("/**")
             .removeSuffix("*/")
-            .replace("\n( )*\\*( )*".toRegex(), "\n *   ")
-            .trimStart(' ')
+            .replace("\\*+".toRegex(), "")
+            .replace("( )+".toRegex(), " ")
+            .trimStart(' ', '\n')
             .trimEnd(' ', '\n')
-            .let { if (!it.startsWith("\n")) " $it" else it }
+            .replace("( )*\n( )*".toRegex(), "\n *   ")
 
     private fun createClassKdocTextFromEolComment(prevComment: ASTNode) =
         prevComment.text
             .removePrefix("//")
-            .trimStart(' ')
+            .trimStart(' ', '\n')
             .trimEnd(' ', '\n')
 
     private fun createClassKdocTextFromBlockComment(prevComment: ASTNode) =
         prevComment.text
             .removePrefix("/*")
             .removeSuffix("*/")
-            .replace("\n( )*\\*( )*".toRegex(), "\n *   ")
-            .trimStart(' ')
+            .replace("\\*+".toRegex(), "")
+            .replace("( )+".toRegex(), " ")
+            .trimStart(' ', '\n')
             .trimEnd(' ', '\n')
-            .let { if (!it.startsWith("\n")) " $it" else it }
+            .replace("( )*\n( )*".toRegex(), "\n *   ")
 
     @Suppress(
         "UnsafeCallOnNullableType",
@@ -369,7 +368,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         parameterInClassKdoc?.let {
             KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
                 // local docs should be appended to docs in class
-                appendKdocTagContent(parameterInClassKdoc, commentText)
+                appendKdocTagContent(parameterInClassKdoc, parameterName, commentText)
 
                 if (isHasWrongTag) {
                     replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded)
@@ -381,7 +380,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             ?: run {
                 if (isNeedToWarn(node, isParamTagNeeded)) {
                     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnOnlyOrWarnAndFix(configRules, emitWarn, warningText, prevComment.startOffset, node, isFixable, isFixMode) {
-                        val newKdocText = if (isParamTagNeeded) "* @param $parameterName$commentText\n " else "* @property $parameterName$commentText\n "
+                        val paramOrPropertyTagText = if (isParamTagNeeded) "@param" else "@property"
+                        val newKdocText = "* $paramOrPropertyTagText $parameterName $commentText\n "
                         insertTextInKdoc(kdocBeforeClass, newKdocText)
 
                         node.removeWithWhiteSpace(prevComment)
@@ -409,14 +409,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
         parameterInClassKdoc?.let {
             KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
-                if (parameterInClassKdoc.hasChildOfType(KDocTokens.TEXT)) {
-                    val newKdocText = parameterInClassKdoc
-                        .findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT || it.elementType == KDocTokens.MARKDOWN_LINK }
-                        .lastOrNull()
-                    (newKdocText as LeafPsiElement).rawReplaceWithText("${newKdocText.text}\n *   ${createClassKdocTextFromEolComment(prevComment)}")
-                } else {
-                    parameterInClassKdoc.addChild(LeafPsiElement(KDocTokens.TEXT, " ${createClassKdocTextFromEolComment(prevComment)}"), null)
-                }
+                // local docs should be appended to docs in class
+                appendKdocTagContent(parameterInClassKdoc, parameterName, createClassKdocTextFromEolComment(prevComment))
 
                 if (isHasWrongTag) {
                     replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded)
@@ -428,11 +422,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             ?: run {
                 if (isNeedToWarn(node, isParamTagNeeded)) {
                     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, warningText, prevComment.startOffset, node) {
-                        val newKdocText = if (isParamTagNeeded) {
-                            "* @param $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
-                        } else {
-                            "* @property $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
-                        }
+                        val paramOrPropertyTagText = if (isParamTagNeeded) "@param" else "@property"
+                        val newKdocText = "* $paramOrPropertyTagText $parameterName ${createClassKdocTextFromEolComment(prevComment)}\n "
 
                         insertTextInKdoc(kdocBeforeClass, newKdocText)
 
@@ -457,18 +448,13 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     ): Pair<Boolean, String> {
         val correctTag = if (isParamTagNeeded) KDocKnownTag.PARAM else KDocKnownTag.PROPERTY
         val isHasWrongTag = parameterTagInClassKdoc != null && parameterTagInClassKdoc.knownTag != correctTag
+
+        val paramOrPropertySwitchText = if (isParamTagNeeded) "@property" to "@param" else "@param" to "@property"
+        val paramOrPropertyText = if (isParamTagNeeded) "param" else "property"
         val warningText = if (isHasWrongTag) {
-            if (isParamTagNeeded) {
-                "change `@property` tag to `@param` tag for <$parameterName> and add comment to KDoc"
-            } else {
-                "change `@param` tag to `@property` tag for <$parameterName> and add comment to KDoc"
-            }
+            "change `${paramOrPropertySwitchText.first}` tag to `${paramOrPropertySwitchText.second}` tag for <$parameterName> and add comment to KDoc"
         } else {
-            if (isParamTagNeeded) {
-                "add comment for param <$parameterName> to KDoc"
-            } else {
-                "add comment for property <$parameterName> to KDoc"
-            }
+            "add comment for $paramOrPropertyText <$parameterName> to KDoc"
         }
 
         return Pair(isHasWrongTag, warningText)
@@ -498,15 +484,16 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      * Append [content] to [kdocTagNode], e.g.
      * (`@property foo bar`, "baz") -> `@property foo bar baz`
      */
-    private fun appendKdocTagContent(kdocTagNode: ASTNode, content: String) {
-        kdocTagNode.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT || it.elementType == KDocTokens.MARKDOWN_LINK }
+    private fun appendKdocTagContent(kdocTagNode: ASTNode, parameterName: String, content: String) {
+        kdocTagNode.findChildrenMatching { it.elementType == KDocTokens.TEXT || it.elementType == KDocTokens.CODE_BLOCK_TEXT ||
+                (it.elementType == KDocTokens.MARKDOWN_LINK && it.text != parameterName) }
             .lastOrNull()
             ?.let {
                 kdocTagNode.replaceChild(
                     it,
-                    LeafPsiElement(KDocTokens.TEXT, "${it.text}$content"),
+                    LeafPsiElement(KDocTokens.TEXT, "${it.text}\n *   $content"),
                 )
-            } ?: kdocTagNode.addChild(LeafPsiElement(KDocTokens.TEXT, content), null)
+            } ?: kdocTagNode.addChild(LeafPsiElement(KDocTokens.TEXT, " $content"), null)
     }
 
     private fun checkClassElements(classNode: ASTNode) {
