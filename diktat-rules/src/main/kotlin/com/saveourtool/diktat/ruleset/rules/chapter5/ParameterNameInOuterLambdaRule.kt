@@ -48,7 +48,12 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         const val NAME_ID = "parameter-name-in-outer-lambda"
     }
 
-    @Suppress("MISSING_KDOC_CLASS_ELEMENTS")
+    /**
+     * ParameterNameInOuterLambdaConfiguration used when we need to allow the usage of 'it' in outer lambda
+     *
+     * @param config - map of strings with configuration options for a ParameterNameInOuterLambda rule
+     * @property strictMode - flag
+     */
     class ParameterNameInOuterLambdaConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
          * Flag (when false) which allows to use `it` in outer lambda, if in inner lambdas would be no `it`
