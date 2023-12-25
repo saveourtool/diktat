@@ -52,7 +52,7 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     }
 
     /**
-     * Parameter Name In Outer Lambda Configuration used when we need to allow the usage of 'it' in outer lambda
+     * ParameterNameInOuterLambdaConfiguration used when we need to allow the usage of 'it' in outer lambda
      *
      * @param config - map of strings with configuration options for a Parameter Name In Outer Lambda rule
      */
