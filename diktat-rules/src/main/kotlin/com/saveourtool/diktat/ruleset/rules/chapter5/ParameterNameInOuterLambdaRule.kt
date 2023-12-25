@@ -2,6 +2,7 @@ package com.saveourtool.diktat.ruleset.rules.chapter5
 
 import com.saveourtool.diktat.common.config.rules.RuleConfiguration
 import com.saveourtool.diktat.common.config.rules.RulesConfig
+import com.saveourtool.diktat.common.config.rules.getRuleConfig
 import com.saveourtool.diktat.ruleset.constants.Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.doesLambdaContainIt
@@ -28,10 +29,16 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     }
 
     private fun checkLambda(node: ASTNode) {
+        val configuration = ParameterNameInOuterLambdaConfiguration(
+            configRules.getRuleConfig(PARAMETER_NAME_IN_OUTER_LAMBDA)?.configuration
+                ?: emptyMap()
+        )
+        val strictMode = configuration.strictMode
+
         val innerLambdaList = node.findAllDescendantsWithSpecificType(KtNodeTypes.LAMBDA_EXPRESSION, false)
         val hasInnerLambda = innerLambdaList.isNotEmpty()
 
-        if ((hasNoParameters(node) || node.hasExplicitIt()) && (!hasInnerLambda ||
+        if (!strictMode && (hasNoParameters(node) || node.hasExplicitIt()) && (!hasInnerLambda ||
                 innerLambdaList.all { innerLambda -> !hasItInLambda(innerLambda) })) {
             return
         }
@@ -44,20 +51,19 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         }
     }
 
-    companion object {
-        const val NAME_ID = "parameter-name-in-outer-lambda"
-    }
-
     /**
      * Parameter Name In Outer Lambda Configuration used when we need to allow the usage of 'it' in outer lambda
      *
      * @param config - map of strings with configuration options for a Parameter Name In Outer Lambda rule
-     * @property strictMode - flag
      */
     class ParameterNameInOuterLambdaConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
          * Flag (when false) allows to use `it` in outer lambda, if in inner lambdas would be no `it`
          */
-        private val strictMode = (config["strictMode"] == "true")
+        val strictMode = (config["strictMode"] == "true")
+    }
+
+    companion object {
+        const val NAME_ID = "parameter-name-in-outer-lambda"
     }
 }
