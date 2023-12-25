@@ -56,7 +56,7 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
      */
     class ParameterNameInOuterLambdaConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
-         * Flag (when false) which allows to use `it` in outer lambda, if in inner lambdas would be no `it`
+         * Flag (when false) allows to use `it` in outer lambda, if in inner lambdas would be no `it`
          */
         val strictMode = (config["strictMode"] == "true")
     }
