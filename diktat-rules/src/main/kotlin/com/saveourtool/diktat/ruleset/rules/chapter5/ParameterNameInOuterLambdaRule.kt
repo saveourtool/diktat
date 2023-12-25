@@ -58,6 +58,6 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         /**
          * Flag (when false) allows to use `it` in outer lambda, if in inner lambdas would be no `it`
          */
-        val strictMode = (config["strictMode"] == "true")
+        private val strictMode = (config["strictMode"] == "true")
     }
 }
