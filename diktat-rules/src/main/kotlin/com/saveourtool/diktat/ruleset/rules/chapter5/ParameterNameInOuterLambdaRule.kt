@@ -22,6 +22,15 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     configRules,
     listOf(PARAMETER_NAME_IN_OUTER_LAMBDA)
 ) {
+    /**
+     * Configuration for the rule ParameterNameInOuterLambda
+     */
+    val configuration by lazy {
+        ParameterNameInOuterLambdaConfiguration(
+            configRules.getRuleConfig(PARAMETER_NAME_IN_OUTER_LAMBDA)?.configuration
+                ?: emptyMap())
+    }
+
     override fun logic(node: ASTNode) {
         if (node.elementType == KtNodeTypes.LAMBDA_EXPRESSION) {
             checkLambda(node)
@@ -29,17 +38,17 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     }
 
     private fun checkLambda(node: ASTNode) {
-        val configuration = ParameterNameInOuterLambdaConfiguration(
-            configRules.getRuleConfig(PARAMETER_NAME_IN_OUTER_LAMBDA)?.configuration
-                ?: emptyMap()
-        )
+        val configuration: ParameterNameInOuterLambdaConfiguration = configuration
         val strictMode = configuration.strictMode
 
         val innerLambdaList = node.findAllDescendantsWithSpecificType(KtNodeTypes.LAMBDA_EXPRESSION, false)
         val hasInnerLambda = innerLambdaList.isNotEmpty()
 
-        if (!strictMode && (hasNoParameters(node) || node.hasExplicitIt()) && (!hasInnerLambda ||
-                innerLambdaList.all { innerLambda -> !hasItInLambda(innerLambda) })) {
+        val outerLambdaHasNoParameterName = hasNoParameters(node) || node.hasExplicitIt()
+        val innerLambdasHasNoIt = !hasInnerLambda ||
+                innerLambdaList.all { innerLambda -> !hasItInLambda(innerLambda) }
+
+        if (!strictMode && outerLambdaHasNoParameterName && innerLambdasHasNoIt) {
             return
         }
         if (hasInnerLambda && doesLambdaContainIt(node)) {
@@ -60,7 +69,7 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         /**
          * Flag (when false) allows to use `it` in outer lambda, if in inner lambdas would be no `it`
          */
-        val strictMode = (config["strictMode"] == "true")
+        val strictMode = config["strictMode"]?.toBoolean() ?: true
     }
 
     companion object {
