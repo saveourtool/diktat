@@ -31,8 +31,8 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         val innerLambdaList = node.findAllDescendantsWithSpecificType(KtNodeTypes.LAMBDA_EXPRESSION, false)
         val hasInnerLambda = innerLambdaList.isNotEmpty()
 
-        if (hasNoParameters(node) || node.hasExplicitIt() && (!hasInnerLambda ||
-                innerLambdaList.all { innerLambda -> hasNoParameters(innerLambda) || !hasItInLambda(innerLambda) })) {
+        if ((hasNoParameters(node) || node.hasExplicitIt()) && (!hasInnerLambda ||
+                innerLambdaList.all { innerLambda -> !hasItInLambda(innerLambda) })) {
             return
         }
         if (hasInnerLambda && doesLambdaContainIt(node)) {
