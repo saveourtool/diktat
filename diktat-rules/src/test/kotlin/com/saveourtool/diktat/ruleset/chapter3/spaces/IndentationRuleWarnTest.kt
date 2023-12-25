@@ -726,5 +726,36 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `should warn message with configured indentation size`() {
+        val rulesConfigListWithIndentation2 = rulesConfigList.map { ruleConfig ->
+            ruleConfig.copy(configuration = ruleConfig.configuration.mapValues { (key, value) ->
+                if (key == INDENTATION_SIZE) {
+                    "2"
+                } else {
+                    value
+                }
+            })
+        }
+        val warnMessage = WRONG_INDENTATION.warnText().replace("4", "2")
+        lintMethod(
+            """
+                |fun foo(some: String) {
+                |    print("test")
+                |if (test){
+                |print("2")
+                |}
+                |}
+                |
+            """.trimMargin(),
+            DiktatError(2, 1, ruleId, "$warnMessage expected 2 but was 4", true),
+            DiktatError(3, 1, ruleId, "$warnMessage expected 2 but was 0", true),
+            DiktatError(4, 1, ruleId, "$warnMessage expected 4 but was 0", true),
+            DiktatError(5, 1, ruleId, "$warnMessage expected 2 but was 0", true),
+            rulesConfigList = rulesConfigListWithIndentation2
+        )
+    }
+
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 }
