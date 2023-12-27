@@ -25,7 +25,7 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     /**
      * Configuration for the rule ParameterNameInOuterLambda
      */
-    val configuration by lazy {
+    private val configuration by lazy {
         ParameterNameInOuterLambdaConfiguration(
             configRules.getRuleConfig(PARAMETER_NAME_IN_OUTER_LAMBDA)?.configuration
                 ?: emptyMap())
@@ -38,7 +38,6 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     }
 
     private fun checkLambda(node: ASTNode) {
-        val configuration: ParameterNameInOuterLambdaConfiguration = configuration
         val strictMode = configuration.strictMode
 
         val innerLambdaList = node.findAllDescendantsWithSpecificType(KtNodeTypes.LAMBDA_EXPRESSION, false)
