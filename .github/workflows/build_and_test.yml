@@ -67,6 +67,10 @@ jobs:
           retention-days: 1
       - name: Code coverage report
         uses: codecov/codecov-action@v3
+        # Do not run coverage for forks since they cannot upload the results to codecov.
+        # For reference, see:
+        # https://docs.github.com/en/actions/using-jobs/using-conditions-to-control-job-execution#example-only-run-job-for-specific-repository
+        if: github.repository == 'saveourtool/diktat'
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -91,9 +95,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          # required for correct codecov upload
-          fetch-depth: 0
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
@@ -154,15 +155,10 @@ jobs:
           name: gradle-test-report-${{ matrix.os }}
           path: '**/build/reports/'
           retention-days: 1
-      - name: Code coverage report
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: 'Publish a snapshot to GitHub'
         id: publish-github
-        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' && github.repository == 'saveourtool/diktat' }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
@@ -172,7 +168,7 @@ jobs:
 
       - name: 'Publish a snapshot to Maven Central'
         id: publish-sonatype
-        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' && github.repository == 'saveourtool/diktat' }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
