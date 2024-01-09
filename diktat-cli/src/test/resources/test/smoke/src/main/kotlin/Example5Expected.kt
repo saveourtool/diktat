@@ -1,6 +1,6 @@
 // ;warn:$line:1: [FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: Example5Expected.kt vs Some{{.*}}
 /*
-    Copyright 2018-2023 John Doe.
+    Copyright 2018-2024 John Doe.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
