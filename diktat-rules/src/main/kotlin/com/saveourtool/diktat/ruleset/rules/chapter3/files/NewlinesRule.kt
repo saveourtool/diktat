@@ -505,7 +505,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         val newlineBeforeSuperTypeList = colonNodes?.find {colonNode ->
             val newlineNode = colonNode.treeNext
             val superClassType = newlineNode?.treeNext
-            newlineNode?.text?.count { it == '\n' } == 1 && superClassType?.elementType == SUPER_TYPE_LIST }
+            newlineNode?.text?.count { it == '\n' } == 1 && superClassType?.elementType == SUPER_TYPE_LIST
+        }
 
         var areElementsCorrect = true
         var valueParameter = valueParameterList[0].treeNext
@@ -550,9 +551,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                         colonNode.treeNext.elementType == WHITE_SPACE &&
                                 colonNode.treeNext.treeNext.elementType == SUPER_TYPE_LIST
                     }
-                    if (newlineBeforeSuperTypeList != null) {
-                        node.treeParent.appendNewlineMergingWhiteSpace(newlineBeforeSuperTypeList.treeNext, newlineBeforeSuperTypeList)
-                    }
+                    newlineBeforeSuperTypeList?.let { node.treeParent.appendNewlineMergingWhiteSpace(newlineBeforeSuperTypeList.treeNext, newlineBeforeSuperTypeList) }
                 }
             }
         } else {
