@@ -1014,6 +1014,22 @@ fun ASTNode.isPrivate(): Boolean = this.getFirstChildWithType(MODIFIER_LIST)?.ge
  */
 fun ASTNode.hasSetterOrGetter(): Boolean = this.getFirstChildWithType(KtNodeTypes.PROPERTY_ACCESSOR) != null
 
+/**
+ * Checks if ASTNode has parameter `it`
+ *
+ * @return true if this ASTNode has parameter `it`
+ */
+fun ASTNode.hasExplicitIt(): Boolean {
+    require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    val parameterList = findChildByType(FUNCTION_LITERAL)
+        ?.findChildByType(VALUE_PARAMETER_LIST)
+        ?.psi
+            as KtParameterList?
+    return parameterList?.parameters
+        ?.any { it.name == "it" }
+        ?: false
+}
+
 private fun ASTNode.isFollowedByNewlineCheck() =
     this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 
@@ -1115,17 +1131,6 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         index + 1
     }
 
-private fun ASTNode.hasExplicitIt(): Boolean {
-    require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-    val parameterList = findChildByType(FUNCTION_LITERAL)
-        ?.findChildByType(VALUE_PARAMETER_LIST)
-        ?.psi
-            as KtParameterList?
-    return parameterList?.parameters
-        ?.any { it.name == "it" }
-        ?: false
-}
-
 /**
  * Gets list of property nodes
  *
@@ -1163,14 +1168,10 @@ fun countCodeLines(node: ASTNode): Int {
 /**
  * Check that lambda contains `it`.
  *
- * Note: it checks only provided lambda and inner lambda with explicit parameters
- *
- * Note: this method can be called only for lambda
+ * @param lambdaNode ASTNode with type LAMBDA_EXPRESSION
+ * @return true if `it` contains in lambdaNode.text
  */
-@Suppress("FUNCTION_BOOLEAN_PREFIX")
-fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
-    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-
+fun hasItInLambda(lambdaNode: ASTNode): Boolean {
     val excludeChildrenCondition = { node: ASTNode ->
         node.elementType == LAMBDA_EXPRESSION && (hasNoParameters(node) || node.hasExplicitIt())
     }
@@ -1181,7 +1182,30 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
         .map { it.text }
         .contains("it")
 
-    return hasNoParameters(lambdaNode) && hasIt
+    return hasIt
+}
+
+/**
+ * @param lambdaNode
+ * @return true if lambdaNode has no parameters and has `it` in lambdaNode.text
+ */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
+fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
+    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    return hasNoParameters(lambdaNode) && hasItInLambda(lambdaNode)
+}
+
+/**
+ * Checks that lambda has no parameters
+ *
+ * @param lambdaNode ASTNode with type LAMBDA_EXPRESSION
+ * @return true if node has no parameters
+ */
+fun hasNoParameters(lambdaNode: ASTNode): Boolean {
+    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    return null == lambdaNode
+        .findChildByType(FUNCTION_LITERAL)
+        ?.findChildByType(VALUE_PARAMETER_LIST)
 }
 
 /**
@@ -1253,11 +1277,4 @@ private fun hasAnySuppressorForInspection(
     val isCompletelyIgnoredBlock = annotationsForNode.containSuppressWithName(DIKTAT)
 
     foundSuppress || foundIgnoredAnnotation || isCompletelyIgnoredBlock
-}
-
-private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
-    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-    return null == lambdaNode
-        .findChildByType(FUNCTION_LITERAL)
-        ?.findChildByType(VALUE_PARAMETER_LIST)
 }
