@@ -502,15 +502,18 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val classDefinitionNode = valueParameterList[0].treeParent?.treeParent
         val colonNodes = classDefinitionNode?.getAllChildrenWithType(COLON)
-        val newlineBeforeSuperTypeList = colonNodes?.find { it.treeNext?.text == "\n" && it.treeNext?.treeNext?.elementType == SUPER_TYPE_LIST }
+        val newlineBeforeSuperTypeList = colonNodes?.find {colonNode ->
+            val newlineNode = colonNode.treeNext
+            val superClassType = newlineNode?.treeNext
+            newlineNode?.text?.count { it == '\n' } == 1 && superClassType?.elementType == SUPER_TYPE_LIST }
 
         var areElementsCorrect = true
         var valueParameter = valueParameterList[0].treeNext
         while (valueParameter != null) {
             val newlineNode = valueParameter.treeNext
             val superClassType = valueParameter.treeNext?.treeNext
-            if (valueParameter.elementType != COMMA || newlineNode?.text != "\n" ||
-                superClassType?.elementType != SUPER_TYPE_ENTRY) {
+            if (valueParameter.elementType != COMMA || newlineNode?.text?.count { it == '\n' } != 1 ||
+                    superClassType?.elementType != SUPER_TYPE_ENTRY) {
                 areElementsCorrect = false
                 break
             }
@@ -547,7 +550,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                         colonNode.treeNext.elementType == WHITE_SPACE &&
                                 colonNode.treeNext.treeNext.elementType == SUPER_TYPE_LIST
                     }
-                    node.treeParent.appendNewlineMergingWhiteSpace(newlineBeforeSuperTypeList?.treeNext, newlineBeforeSuperTypeList)
+                    if (newlineBeforeSuperTypeList != null) {
+                        node.treeParent.appendNewlineMergingWhiteSpace(newlineBeforeSuperTypeList.treeNext, newlineBeforeSuperTypeList)
+                    }
                 }
             }
         } else {

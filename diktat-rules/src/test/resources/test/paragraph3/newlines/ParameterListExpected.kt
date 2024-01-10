@@ -6,7 +6,8 @@ arg1: Int,
  arg3: Int
 ) { }
 
-class Foo : FooBase<Bar>(),
+class Foo :
+ FooBase<Bar>(),
  BazInterface,
  BazSuperclass { }
 

@@ -29,6 +29,21 @@ class SuperClassListWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `first superclass also on a new line`() {
+        lintMethod(
+            """
+                    |package com.saveourtool.diktat
+                    |
+                    |class A<K : Any, P : Any, G : Any> : B<K>(),
+                    |C<P>,
+                    |D<G> {}
+            """.trimMargin(),
+            DiktatError(3, 38, ruleId, "${Warnings.WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <A>", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `superclass list of 2 elements on the same line`() {
         lintMethod(
             """
