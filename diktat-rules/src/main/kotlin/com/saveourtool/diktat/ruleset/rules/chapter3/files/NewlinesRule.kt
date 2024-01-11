@@ -7,6 +7,7 @@ import com.saveourtool.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import com.saveourtool.diktat.ruleset.utils.changeWhiteSpaceOnNewline
 import com.saveourtool.diktat.ruleset.utils.emptyBlockList
 import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.findAllNodesWithCondition
@@ -494,6 +495,11 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+    /**
+     * Check that super classes are on separate lines (if there are three or more)
+     *
+     * @return true if there are less than three super classes or if all of them are on separate lines
+     */
     private fun isCorrectSuperTypeList(valueParameterList: List<ASTNode>): Boolean {
         val superTypeList = valueParameterList.filter { it.elementType in listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY) }
         if (superTypeList.size <= 2) {
@@ -508,6 +514,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             newlineNode?.text?.count { it == '\n' } == 1 && superClassType?.elementType == SUPER_TYPE_LIST
         }
 
+        // list elements are correct if they are sequence of (COMMA, '\n', supertype)
         var areElementsCorrect = true
         var valueParameter = valueParameterList[0].treeNext
         while (valueParameter != null) {
@@ -523,7 +530,67 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         return newlineBeforeSuperTypeList != null && areElementsCorrect
     }
 
-    @Suppress("TOO_LONG_FUNCTION", "ComplexMethod")
+    private fun setSuperClassesOnSeparateLines(
+        node: ASTNode,
+        valueParameterList: List<ASTNode>,
+        warnText: String,
+        colonNodes: List<ASTNode>?
+    ) {
+        WRONG_NEWLINES.warnAndFix(
+            configRules, emitWarn, isFixMode,
+            warnText, node.startOffset, node
+        ) {
+            valueParameterList.forEach { superClassNode ->
+                val commaNode = superClassNode.treeNext
+                val whiteSpaceNode = commaNode?.treeNext
+                // put super classes on separate lines
+                if (superClassNode.elementType in listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY) &&
+                        commaNode != null && whiteSpaceNode?.elementType == WHITE_SPACE
+                ) {
+                    commaNode.changeWhiteSpaceOnNewline(whiteSpaceNode, commaNode)
+                }
+
+                // add newline before the first element of super class list
+                val colonNodeBeforeList = colonNodes?.find { colonNode ->
+                    colonNode.treeNext.text.count { it == '\n' } == 0 &&
+                            colonNode.treeNext.treeNext.elementType == SUPER_TYPE_LIST
+                }
+                colonNodeBeforeList?.changeWhiteSpaceOnNewline(colonNodeBeforeList.treeNext, colonNodeBeforeList)
+            }
+        }
+    }
+
+    private fun fixInvalidCommas(node: ASTNode, warnText: String) {
+        node.children()
+            .filter {
+                val isNewLineNext = it.treeNext?.isNewLineNode() ?: false
+                val isNewLinePrev = it.treePrev?.isNewLineNode() ?: false
+
+                (it.elementType == COMMA && !isNewLineNext) ||
+                        // Move RPAR to the new line
+                        (it.elementType == RPAR && it.treePrev?.elementType != COMMA && !isNewLinePrev)
+            }
+            .toList()
+            .takeIf { it.isNotEmpty() }
+            ?.let { invalidCommas ->
+                WRONG_NEWLINES.warnAndFix(
+                    configRules, emitWarn, isFixMode,
+                    warnText, node.startOffset, node
+                ) {
+                    invalidCommas.forEach { commaOrRpar ->
+                        val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
+                        if (commaOrRpar.elementType == COMMA) {
+                            nextWhiteSpace?.treeNext?.let {
+                                commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
+                            } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
+                        } else {
+                            commaOrRpar.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
+                        }
+                    }
+                }
+            }
+    }
+
     private fun handleValueParameterList(node: ASTNode, entryType: String) {
         val valueParameterList = node.children().toList()
         val warnText = node.getParentIdentifier()?.let {
@@ -533,57 +600,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         val colonNodes = classDefinitionNode?.getAllChildrenWithType(COLON)
 
         if (!isCorrectSuperTypeList(valueParameterList)) {
-            WRONG_NEWLINES.warnAndFix(
-                configRules, emitWarn, isFixMode,
-                warnText, node.startOffset, node
-            ) {
-                valueParameterList.forEach {superClassNode ->
-                    val commaNode = superClassNode.treeNext
-                    val whiteSpaceNode = commaNode?.treeNext
-                    // put super classes on separate lines
-                    if (superClassNode.elementType in listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY) &&
-                            commaNode != null && whiteSpaceNode?.elementType == WHITE_SPACE) {
-                        node.treeParent.appendNewlineMergingWhiteSpace(whiteSpaceNode, commaNode)
-                    }
-
-                    // add newline before the first element of super class list
-                    val newlineBeforeSuperTypeList = colonNodes?.find { colonNode ->
-                        colonNode.treeNext.elementType == WHITE_SPACE &&
-                                colonNode.treeNext.treeNext.elementType == SUPER_TYPE_LIST
-                    }
-                    newlineBeforeSuperTypeList?.let { node.treeParent.appendNewlineMergingWhiteSpace(newlineBeforeSuperTypeList.treeNext, newlineBeforeSuperTypeList) }
-                }
-            }
+            setSuperClassesOnSeparateLines(node, valueParameterList, warnText, colonNodes)
         } else {
-            node
-                .children()
-                .filter {
-                    val isNewLineNext = it.treeNext?.isNewLineNode() ?: false
-                    val isNewLinePrev = it.treePrev?.isNewLineNode() ?: false
-
-                    (it.elementType == COMMA && !isNewLineNext) ||
-                            // Move RPAR to the new line
-                            (it.elementType == RPAR && it.treePrev?.elementType != COMMA && !isNewLinePrev)
-                }
-                .toList()
-                .takeIf { it.isNotEmpty() }
-                ?.let { invalidCommas ->
-                    WRONG_NEWLINES.warnAndFix(
-                        configRules, emitWarn, isFixMode,
-                        warnText, node.startOffset, node
-                    ) {
-                        invalidCommas.forEach { commaOrRpar ->
-                            val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
-                            if (commaOrRpar.elementType == COMMA) {
-                                nextWhiteSpace?.treeNext?.let {
-                                    commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
-                                } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
-                            } else {
-                                commaOrRpar.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
-                            }
-                        }
-                    }
-                }
+            fixInvalidCommas(node, warnText)
         }
     }
 

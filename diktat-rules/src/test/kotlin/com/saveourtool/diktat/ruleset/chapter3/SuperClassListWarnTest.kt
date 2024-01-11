@@ -71,7 +71,7 @@ class SuperClassListWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `superclass list different white spaces`() {
+    fun `superclass list different whitespaces`() {
         lintMethod(
             """
                     |package com.saveourtool.diktat
