@@ -11,6 +11,7 @@ private val log = KotlinLogging.logger {}
 
 /**
  * Available cases to name enum members
+ *
  * @property str
  */
 enum class Style(val str: String) {

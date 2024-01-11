@@ -20,6 +20,7 @@ import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEM
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import com.saveourtool.diktat.ruleset.rules.chapter1.FileNaming
 import com.saveourtool.diktat.ruleset.rules.chapter2.comments.CommentsRule
 import com.saveourtool.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
@@ -27,7 +28,6 @@ import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import com.saveourtool.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import com.saveourtool.diktat.ruleset.rules.chapter3.EmptyBlock
-import com.saveourtool.diktat.ruleset.rules.chapter3.files.SemicolonsRule
 import com.saveourtool.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig
 import com.saveourtool.diktat.ruleset.utils.indentation.IndentationConfig.Companion.EXTENDED_INDENT_AFTER_OPERATORS
@@ -39,6 +39,7 @@ import com.charleskorn.kaml.YamlConfiguration
 import generated.WarningNames
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -255,6 +256,24 @@ abstract class DiktatSmokeTestBase {
                 DiktatError(36, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             )
         }
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    @Disabled("https://github.com/saveourtool/diktat/issues/1889")
+    fun `regression - kdoc for classes`() {
+        val configFilePath = prepareOverriddenRulesConfig(
+            rulesToDisable = emptyList(),
+            rulesToOverride = mapOf(
+                KDOC_NO_CONSTRUCTOR_PROPERTY.name to mapOf(
+                    "isParamTagsForParameters" to "true",
+                    "isParamTagsForPrivateProperties" to "true",
+                    "isParamTagsForGenericTypes" to "true"
+                )
+            )
+        )
+        fixAndCompare(configFilePath, "ClassKdocExpected.kt", "ClassKdocTest.kt")
     }
 
     @Test
