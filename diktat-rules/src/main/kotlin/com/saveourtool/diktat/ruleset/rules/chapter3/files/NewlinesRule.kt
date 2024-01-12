@@ -545,7 +545,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 val whiteSpaceNode = commaNode?.treeNext
                 // put super classes on separate lines
                 if (superClassNode.elementType in listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY) &&
-                        commaNode != null && commaNode.text == "," && whiteSpaceNode?.elementType == WHITE_SPACE
+                        commaNode?.text == "," && whiteSpaceNode?.elementType == WHITE_SPACE
                 ) {
                     commaNode.changeWhiteSpaceOnNewline(whiteSpaceNode, commaNode)
                 }
