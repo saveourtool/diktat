@@ -622,6 +622,34 @@ fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode:
 }
 
 /**
+ * Appends newline after this node
+ */
+fun ASTNode.appendNewline() {
+    val nextNode = this.treeNext
+    if (nextNode.elementType == WHITE_SPACE) {
+        (nextNode as LeafPsiElement).rawReplaceWithText("\n${nextNode.text}")
+    } else {
+        this.treeParent.addChild(PsiWhiteSpaceImpl("\n"), nextNode)
+    }
+}
+
+/**
+ * Changes any whitespace node on newline node
+ *
+ * @param whiteSpaceNode
+ * @param beforeNode
+ */
+fun ASTNode.changeWhiteSpaceOnNewline(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
+    if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
+        if (whiteSpaceNode.text.lines().size == 1) {
+            (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n")
+        }
+    } else {
+        addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
+    }
+}
+
+/**
  * Transforms last line of this WHITE_SPACE to exactly [indent] spaces
  */
 fun ASTNode.indentBy(indent: Int) {
