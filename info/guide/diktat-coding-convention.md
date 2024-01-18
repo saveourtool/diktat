@@ -1,6 +1,6 @@
 <img src="logo.svg" width="64px"/>
 
-# Diktat Coding Style Guide, v.0.0.1
+# Kotlin Coding Style Guide (Diktat Code Style), v.1.0.0
 
 # Table of contents
 I [Preface](#c0)
