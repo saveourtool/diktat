@@ -31,7 +31,7 @@ jobs:
 
       - name: 'Cache ~/.konan'
         id: cache-konan
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.konan
@@ -42,7 +42,7 @@ jobs:
 
       - name: 'Publish a snapshot version to local repo'
         id: generateLibsForDiktatSnapshot
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
@@ -52,7 +52,7 @@ jobs:
             -x diktatCheck
 
       # copied from .github/workflows/diktat.yml
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |

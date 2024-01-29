@@ -58,7 +58,7 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
 
-    - uses: gradle/gradle-build-action@v2
+    - uses: gradle/gradle-build-action@v3
       with:
         gradle-version: wrapper
         # The `--continue` flag is necessary so that Gradle keeps going after the 1st test failure.
