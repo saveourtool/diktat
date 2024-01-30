@@ -43,12 +43,12 @@ jobs:
           echo KOTLIN_VERSION=$kv >> $GITHUB_ENV
         shell: bash
       - name: Cache konan
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.konan
           key: ${{ runner.os }}-gradle-konan-${{ env.KOTLIN_VERSION }}
       - name: Build all
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           gradle-home-cache-cleanup: true
@@ -106,13 +106,13 @@ jobs:
           echo KOTLIN_VERSION=$kv >> $GITHUB_ENV
         shell: bash
       - name: Cache konan
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.konan
           key: ${{ runner.os }}-gradle-konan-${{ env.KOTLIN_VERSION }}
 
       - name: Build all
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           gradle-home-cache-cleanup: true
@@ -159,7 +159,7 @@ jobs:
       - name: 'Publish a snapshot to GitHub'
         id: publish-github
         if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' && github.repository == 'saveourtool/diktat' }}
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
@@ -169,7 +169,7 @@ jobs:
       - name: 'Publish a snapshot to Maven Central'
         id: publish-sonatype
         if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' && github.repository == 'saveourtool/diktat' }}
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
