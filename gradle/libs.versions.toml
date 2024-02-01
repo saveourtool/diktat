@@ -8,7 +8,7 @@ junit-platfrom = "1.10.1"
 guava = "33.0.0-jre"
 commons-cli = "1.6.0"
 commons-io = "2.15.1"
-detekt = "1.23.4"
+detekt = "1.23.5"
 dokka = "1.9.10"
 gradle-nexus-publish-plugin = "1.3.0"
 jacoco = "0.8.8"
@@ -20,10 +20,10 @@ plexus = "2.1.0"
 
 jbool = "1.24"
 kotlin-logging = "6.0.3"
-log4j2 = "2.22.0"
-kaml = "0.56.0"
+log4j2 = "2.22.1"
+kaml = "0.57.0"
 sarif4k = "0.5.0"
-jupiter-itf-extension = "0.12.0"
+jupiter-itf-extension = "0.13.1"
 
 # executable jar
 kotlinx-cli = "0.3.6"
@@ -32,10 +32,10 @@ gradle-shadow = "8.1.1"
 # copied from save-cloud
 jetbrains-annotations = "24.1.0"
 kotlinx-coroutines = "1.7.3"
-assertj = "3.24.2"
+assertj = "3.25.2"
 diktat = "2.0.0"
-reckon = "0.18.1"
-spotless = "6.23.3"
+reckon = "0.18.2"
+spotless = "6.25.0"
 download = "5.5.0"
 
 [plugins]
@@ -106,7 +106,7 @@ jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref =
 
 # logging
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.9" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.11" }
 log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
 log4j2-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j2" }
 
