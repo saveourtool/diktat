@@ -71,6 +71,13 @@
         "org.apache.maven.plugin-tools:maven-plugin-annotations"
       ],
       "allowedVersions": "< 3.7.0"
+    },
+    {
+      "managers": ["gradle"],
+      "matchPackageNames": [
+        "commons-cli:commons-cli"
+      ],
+      "allowedVersions": "!/^20040117\\.000000$/"
     }
   ]
 }
