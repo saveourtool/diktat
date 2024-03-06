@@ -6,7 +6,7 @@ plugins {
     id("com.saveourtool.diktat.buildutils.kotlin-jvm-configuration")
     id("com.saveourtool.diktat.buildutils.code-quality-convention")
     id("com.saveourtool.diktat.buildutils.publishing-configuration")
-    id("de.benediktritter.maven-plugin-development") version "0.4.2"
+    id("de.benediktritter.maven-plugin-development") version "0.4.3"
     `maven-publish`
 }
 
