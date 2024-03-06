@@ -39,7 +39,7 @@ jobs:
 
       - name: 'Publish a release to Maven Central'
         id: publish-sonatype
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
@@ -48,7 +48,7 @@ jobs:
 
       - name: 'Publish a release to Gradle Plugins'
         id: publish-gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: 'Publish a release to GitHub'
         id: publish-github
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
