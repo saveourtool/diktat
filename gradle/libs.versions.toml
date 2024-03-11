@@ -20,7 +20,7 @@ plexus = "2.1.0"
 
 jbool = "1.24"
 kotlin-logging = "6.0.3"
-log4j2 = "2.23.0"
+log4j2 = "2.23.1"
 kaml = "0.57.0"
 sarif4k = "0.5.0"
 jupiter-itf-extension = "0.13.1"
