@@ -10,7 +10,7 @@ commons-cli = "1.6.0"
 commons-io = "2.15.1"
 detekt = "1.23.5"
 dokka = "1.9.20"
-gradle-nexus-publish-plugin = "1.3.0"
+gradle-nexus-publish-plugin = "2.0.0"
 jacoco = "0.8.8"
 # maven
 maven-api = "3.9.6"
