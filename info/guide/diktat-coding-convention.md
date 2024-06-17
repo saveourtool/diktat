@@ -1,8 +1,7 @@
 <img src="logo.svg" width="64px"/>
 
-# Diktat Coding Style Guide, v.0.0.1
+## Kotlin Coding Style Guide (Diktat Code Style), v.1.0.0
 
-# Table of contents
 I [Preface](#c0)
 * [I.I Purpose of this document](#c0.1)
 * [I.II General principles](#c0.2)
@@ -120,12 +119,6 @@ I [Preface](#c0)
     * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2)
 * [6.5 Kts Files](#c6.5)
     * [6.5.1 kts files should wrap logic into top-level scope](#r6.5.1)
-
-
-# Diktat Coding Style Guide
-# International version, v.0.0.1
-
-<img src="logo.svg" width="64px"/>
 
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->

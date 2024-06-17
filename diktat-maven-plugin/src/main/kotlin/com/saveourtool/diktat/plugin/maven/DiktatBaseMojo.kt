@@ -92,7 +92,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
         )
 
-        val sourceRootDir = generateSequence(mavenProject) { it.parent }.last().basedir.toPath()
+        val sourceRootDir = getSourceRootDirTransitive()
         val reporters: List<Reporter> = (reporters?.getAll() ?: listOf(PlainReporter()))
             .let { all ->
                 if (githubActions && all.filterIsInstance<GitHubActionsReporter>().isEmpty()) {
@@ -137,6 +137,13 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .map { it.basedir.toPath().resolve(diktatConfigFile) }
             .firstOrNull { it.isRegularFile() }
     }
+
+    private fun getSourceRootDirTransitive(): Path = generateSequence(mavenProject) { project ->
+        val parent = project.parent
+        parent?.basedir?.let {
+            parent
+        }
+    }.last().basedir.toPath()
 
     private fun files(): List<Path> {
         val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }

@@ -6,9 +6,10 @@ arg1: Int,
  arg3: Int
 ) { }
 
-class Foo : FooBase<Bar>(),
- BazInterface,
- BazSuperclass { }
+class Foo :
+FooBase<Bar>(),
+BazInterface,
+BazSuperclass { }
 
 class Foo(val arg1: Int, arg2: Int) { }
 

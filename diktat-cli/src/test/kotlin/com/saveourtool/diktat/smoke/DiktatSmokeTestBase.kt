@@ -20,6 +20,7 @@ import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEM
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import com.saveourtool.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import com.saveourtool.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import com.saveourtool.diktat.ruleset.rules.chapter1.FileNaming
 import com.saveourtool.diktat.ruleset.rules.chapter2.comments.CommentsRule
@@ -395,6 +396,13 @@ abstract class DiktatSmokeTestBase {
     @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
     fun `regression - should not fail if file has unnecessary semicolons`() {
         fixAndCompare(prepareOverriddenRulesConfig(), "SemicolonsExpected.kt", "SemicolonsTest.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    @Timeout(TEST_TIMEOUT_SECONDS, unit = SECONDS)
+    fun `should add newlines between interfaces`() {
+        fixAndCompare(prepareOverriddenRulesConfig(), "NewlinesAfterInterfacesExpected.kt", "NewlinesAfterInterfacesTest.kt")
     }
 
     abstract fun fixAndCompare(

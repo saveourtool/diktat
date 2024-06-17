@@ -7,10 +7,12 @@ import com.saveourtool.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import com.saveourtool.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import com.saveourtool.diktat.ruleset.utils.changeWhiteSpaceOnNewline
 import com.saveourtool.diktat.ruleset.utils.emptyBlockList
 import com.saveourtool.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import com.saveourtool.diktat.ruleset.utils.findAllNodesWithCondition
 import com.saveourtool.diktat.ruleset.utils.findParentNodeWithSpecificType
+import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.getFilePath
 import com.saveourtool.diktat.ruleset.utils.getFirstChildWithType
 import com.saveourtool.diktat.ruleset.utils.getIdentifierName
@@ -49,6 +51,8 @@ import org.jetbrains.kotlin.KtNodeTypes.REFERENCE_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.RETURN
 import org.jetbrains.kotlin.KtNodeTypes.SAFE_ACCESS_EXPRESSION
 import org.jetbrains.kotlin.KtNodeTypes.SECONDARY_CONSTRUCTOR
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_CALL_ENTRY
+import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_ENTRY
 import org.jetbrains.kotlin.KtNodeTypes.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT
 import org.jetbrains.kotlin.KtNodeTypes.VALUE_ARGUMENT_LIST
@@ -491,35 +495,116 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-    private fun handleValueParameterList(node: ASTNode, entryType: String) = node
-        .children()
-        .filter {
-            val isNewLineNext = it.treeNext?.isNewLineNode() ?: false
-            val isNewLinePrev = it.treePrev?.isNewLineNode() ?: false
-            (it.elementType == COMMA && !isNewLineNext) ||
-                    // Move RPAR to the new line
-                    (it.elementType == RPAR && it.treePrev?.elementType != COMMA && !isNewLinePrev)
+    /**
+     * Check that super classes are on separate lines (if there are three or more)
+     *
+     * @return true if there are less than three super classes or if all of them are on separate lines
+     */
+    private fun isCorrectSuperTypeList(valueParameterList: List<ASTNode>): Boolean {
+        val superTypeList = valueParameterList.filter { it.elementType in listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY) }
+        if (superTypeList.size <= 2) {
+            return true
         }
-        .toList()
-        .takeIf { it.isNotEmpty() }
-        ?.let { invalidCommas ->
-            val warnText = node.getParentIdentifier()?.let {
-                "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>"
-            } ?: "$entryType should be placed on different lines"
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                warnText, node.startOffset, node) {
-                invalidCommas.forEach { commaOrRpar ->
-                    val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
-                    if (commaOrRpar.elementType == COMMA) {
-                        nextWhiteSpace?.treeNext?.let {
-                            commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
-                        } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
-                    } else {
-                        commaOrRpar.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
+
+        val classDefinitionNode = valueParameterList[0].treeParent?.treeParent
+        val colonNodes = classDefinitionNode?.getAllChildrenWithType(COLON)
+        val newlineBeforeSuperTypeList = colonNodes?.find {colonNode ->
+            val newlineNode = colonNode.treeNext
+            val superClassType = newlineNode?.treeNext
+            newlineNode?.text?.count { it == '\n' } == 1 && superClassType?.elementType == SUPER_TYPE_LIST
+        }
+
+        // list elements are correct if they are sequence of (COMMA, '\n', supertype)
+        var areElementsCorrect = true
+        var valueParameter = valueParameterList[0].treeNext
+        while (valueParameter != null) {
+            val newlineNode = valueParameter.treeNext
+            val superClassType = valueParameter.treeNext?.treeNext
+            if (valueParameter.elementType != COMMA || newlineNode?.text?.count { it == '\n' } != 1 ||
+                    superClassType?.elementType != SUPER_TYPE_ENTRY) {
+                areElementsCorrect = false
+                break
+            }
+            valueParameter = superClassType?.treeNext
+        }
+        return newlineBeforeSuperTypeList != null && areElementsCorrect
+    }
+
+    private fun setSuperClassesOnSeparateLines(
+        node: ASTNode,
+        valueParameterList: List<ASTNode>,
+        warnText: String,
+        colonNodes: List<ASTNode>?
+    ) {
+        WRONG_NEWLINES.warnAndFix(
+            configRules, emitWarn, isFixMode,
+            warnText, node.startOffset, node
+        ) {
+            valueParameterList.forEach { superClassNode ->
+                val commaNode = superClassNode.treeNext
+                val whiteSpaceNode = commaNode?.treeNext
+                // put super classes on separate lines
+                if (superClassNode.elementType in listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY) &&
+                        commaNode?.text == "," && whiteSpaceNode?.elementType == WHITE_SPACE
+                ) {
+                    commaNode.changeWhiteSpaceOnNewline(whiteSpaceNode, commaNode)
+                }
+
+                // add newline before the first element of super class list
+                val colonNodeBeforeList = colonNodes?.find { colonNode ->
+                    colonNode.treeNext.text.count { it == '\n' } == 0 &&
+                            colonNode.treeNext.treeNext.elementType == SUPER_TYPE_LIST
+                }
+                colonNodeBeforeList?.changeWhiteSpaceOnNewline(colonNodeBeforeList.treeNext, colonNodeBeforeList)
+            }
+        }
+    }
+
+    private fun fixInvalidCommas(node: ASTNode, warnText: String) {
+        node.children()
+            .filter {
+                val isNewLineNext = it.treeNext?.isNewLineNode() ?: false
+                val isNewLinePrev = it.treePrev?.isNewLineNode() ?: false
+
+                (it.elementType == COMMA && !isNewLineNext) ||
+                        // Move RPAR to the new line
+                        (it.elementType == RPAR && it.treePrev?.elementType != COMMA && !isNewLinePrev)
+            }
+            .toList()
+            .takeIf { it.isNotEmpty() }
+            ?.let { invalidCommas ->
+                WRONG_NEWLINES.warnAndFix(
+                    configRules, emitWarn, isFixMode,
+                    warnText, node.startOffset, node
+                ) {
+                    invalidCommas.forEach { commaOrRpar ->
+                        val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
+                        if (commaOrRpar.elementType == COMMA) {
+                            nextWhiteSpace?.treeNext?.let {
+                                commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
+                            } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
+                        } else {
+                            commaOrRpar.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
+                        }
                     }
                 }
             }
+    }
+
+    private fun handleValueParameterList(node: ASTNode, entryType: String) {
+        val valueParameterList = node.children().toList()
+        val warnText = node.getParentIdentifier()?.let {
+            "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>"
+        } ?: "$entryType should be placed on different lines"
+        val classDefinitionNode = valueParameterList[0].treeParent?.treeParent
+        val colonNodes = classDefinitionNode?.getAllChildrenWithType(COLON)
+
+        if (!isCorrectSuperTypeList(valueParameterList)) {
+            setSuperClassesOnSeparateLines(node, valueParameterList, warnText, colonNodes)
+        } else {
+            fixInvalidCommas(node, warnText)
         }
+    }
 
     private fun ASTNode.isNewLineNode(): Boolean = this.run { elementType == WHITE_SPACE && textContains('\n') }
 

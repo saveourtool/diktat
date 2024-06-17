@@ -1,11 +1,6 @@
-# Diktat Coding Style Guide
-# International version, v.0.0.1
-
-<img src="logo.svg" width="64px"/>
-
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
-### <a name="c0.1"></a> Purpose of this document   
+### <a name="c0.1"></a> Purpose of this document
 
 The purpose of this document is to provide a specification that software developers could reference to enhance their ability to write consistent, easy-to-read, and high-quality code.
 Such a specification will ultimately improve software development efficiency and product competitiveness.
@@ -38,7 +33,7 @@ Also, we need to consider the following factors when programming on Kotlin:
 
 2. Following Kotlin idioms
 
-    The author of Kotlin, Andrey Breslav, mentioned that Kotlin is both pragmatic and practical, but not academic. 
+    The author of Kotlin, Andrey Breslav, mentioned that Kotlin is both pragmatic and practical, but not academic.
     Its pragmatic features enable ideas to be transformed into real working software easily. Kotlin is closer to natural languages than its predecessors, and it implements the following design principles: readability, reusability, interoperability, security, and tool-friendliness (https://blog.jetbrains.com/kotlin/2018/10/kotlinconf-2018-announcements/).
 
 3. Using Kotlin efficiently
@@ -46,7 +41,7 @@ Also, we need to consider the following factors when programming on Kotlin:
     Some Kotlin features can help you write high-performance code. Such features include: rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
 
 <!-- =============================================================================== -->
-### <a name="c0.3"></a> Terminology   
+### <a name="c0.3"></a> Terminology
 
 **Rules** — conventions that should be followed when programming.
 

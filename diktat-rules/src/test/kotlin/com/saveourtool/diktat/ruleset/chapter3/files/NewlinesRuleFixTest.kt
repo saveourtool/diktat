@@ -71,6 +71,12 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should insert newlines in supertype list`() {
+        fixAndCompare("SuperClassListOnTheSameLineExpected.kt", "SuperClassListOnTheSameLineTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should fix one line function`() {
         fixAndCompare("OneLineFunctionExpected.kt", "OneLineFunctionTest.kt")
     }

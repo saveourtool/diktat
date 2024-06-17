@@ -5,6 +5,7 @@ import com.saveourtool.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import com.saveourtool.diktat.ruleset.rules.DiktatRule
 import com.saveourtool.diktat.ruleset.utils.AstNodePredicate
 import com.saveourtool.diktat.ruleset.utils.allSiblings
+import com.saveourtool.diktat.ruleset.utils.appendNewline
 import com.saveourtool.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import com.saveourtool.diktat.ruleset.utils.getAllChildrenWithType
 import com.saveourtool.diktat.ruleset.utils.hasChildOfType
@@ -56,15 +57,6 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
         checkLastEnum(enumEntries.last())
-    }
-
-    private fun ASTNode.appendNewline() {
-        val nextNode = this.treeNext
-        if (nextNode.elementType == WHITE_SPACE) {
-            (nextNode as LeafPsiElement).rawReplaceWithText("\n${nextNode.text}")
-        } else {
-            this.treeParent.addChild(PsiWhiteSpaceImpl("\n"), nextNode)
-        }
     }
 
     private fun isEnumOneLine(nodes: List<ASTNode>) =
