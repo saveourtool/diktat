@@ -191,7 +191,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 val warningText = "change `${paramOrPropertySwitchText.first}` tag to `${paramOrPropertySwitchText.second}` tag for <$parameterName> to KDoc"
 
                 KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, warningText, node.startOffset, node) {
-                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded)
+                    kdocBeforeClass.replaceWrongTagInClassKdoc(parameterName, isParamTagNeeded)
                 }
             }
         } ?: run {
@@ -216,29 +216,6 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 (isParameter && configuration.isParamTagsForParameters) ||
                 (isPrivateProperty && configuration.isParamTagsForPrivateProperties) ||
                 (isTypeParameterNode && configuration.isParamTagsForGenericTypes)
-    }
-
-    private fun replaceWrongTagInClassKdoc(
-        kdocBeforeClass: ASTNode,
-        parameterName: String,
-        isParamTagNeeded: Boolean
-    ) {
-        val paramOrPropertySwitchText = if (isParamTagNeeded) "@property" to "@param" else "@param" to "@property"
-        val wrongTagText = "* ${paramOrPropertySwitchText.first} $parameterName"
-        val replaceText = "* ${paramOrPropertySwitchText.second} $parameterName"
-
-        changeTagInKdoc(kdocBeforeClass, wrongTagText, replaceText)
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun changeTagInKdoc(
-        kdocBeforeClass: ASTNode,
-        wrongTagText: String,
-        correctTagText: String
-    ) {
-        val allKdocText = kdocBeforeClass.text
-        val newKdocText = allKdocText.replaceFirst(wrongTagText, correctTagText)
-        kdocBeforeClass.treeParent.replaceChild(kdocBeforeClass, KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!)
     }
 
     private fun checkKdocBeforeClass(
@@ -371,7 +348,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 appendKdocTagContent(parameterInClassKdoc, parameterName, commentText)
 
                 if (isHasWrongTag) {
-                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded)
+                    kdocBeforeClass.replaceWrongTagInClassKdoc(parameterName, isParamTagNeeded)
                 }
 
                 node.removeWithWhiteSpace(prevComment)
@@ -413,7 +390,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 appendKdocTagContent(parameterInClassKdoc, parameterName, createClassKdocTextFromEolComment(prevComment))
 
                 if (isHasWrongTag) {
-                    replaceWrongTagInClassKdoc(kdocBeforeClass, parameterName, isParamTagNeeded)
+                    kdocBeforeClass.replaceWrongTagInClassKdoc(parameterName, isParamTagNeeded)
                 }
 
                 node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment.treePrev, prevComment, prevComment.treeNext)
