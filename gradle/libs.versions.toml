@@ -1,28 +1,28 @@
 [versions]
 kotlin = "1.9.24"
 kotlin-ksp = "1.9.24-1.0.20"
-serialization = "1.6.3"
+serialization = "1.7.1"
 ktlint = "1.0.1"
-junit = "5.10.2"
-junit-platfrom = "1.10.2"
-guava = "33.0.0-jre"
-commons-cli = "1.6.0"
-commons-io = "2.15.1"
-detekt = "1.23.5"
+junit = "5.10.3"
+junit-platfrom = "1.10.3"
+guava = "33.2.1-jre"
+commons-cli = "1.8.0"
+commons-io = "2.16.1"
+detekt = "1.23.6"
 dokka = "1.9.20"
 gradle-nexus-publish-plugin = "2.0.0"
 jacoco = "0.8.8"
 # maven
-maven-api = "3.9.6"
+maven-api = "3.9.8"
 maven-plugin-tools = "3.8.1"
 maven-plugin-testing-harness = "3.3.0"
 plexus = "2.1.0"
 
 jbool = "1.24"
-kotlin-logging = "6.0.3"
+kotlin-logging = "6.0.9"
 log4j2 = "2.23.1"
-kaml = "0.57.0"
-sarif4k = "0.5.0"
+kaml = "0.60.0"
+sarif4k = "0.6.0"
 jupiter-itf-extension = "0.13.1"
 
 # executable jar
@@ -31,8 +31,8 @@ gradle-shadow = "8.1.1"
 
 # copied from save-cloud
 jetbrains-annotations = "24.1.0"
-kotlinx-coroutines = "1.8.0"
-assertj = "3.25.3"
+kotlinx-coroutines = "1.8.1"
+assertj = "3.26.0"
 diktat = "2.0.0"
 reckon = "0.18.3"
 spotless = "6.25.0"
@@ -106,7 +106,7 @@ jbool-expressions = { module = "com.bpodgursky:jbool_expressions", version.ref =
 
 # logging
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.12" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.13" }
 log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
 log4j2-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j2" }
 
