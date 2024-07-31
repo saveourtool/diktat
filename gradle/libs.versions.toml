@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.9.25"
 kotlin-ksp = "1.9.25-1.0.20"
-serialization = "1.7.1"
+serialization = "1.6.3"
 ktlint = "1.0.1"
 junit = "5.10.3"
 junit-platfrom = "1.10.3"
