@@ -30,7 +30,7 @@ kotlinx-cli = "0.3.6"
 gradle-shadow = "8.1.1"
 
 # copied from save-cloud
-jetbrains-annotations = "24.1.0"
+jetbrains-annotations = "25.0.0"
 kotlinx-coroutines = "1.8.0"
 assertj = "3.25.3"
 diktat = "2.0.0"
