@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.lexer.KDocTokens
+import org.jetbrains.kotlin.kdoc.lexer.KDocTokens.KDOC
 import org.jetbrains.kotlin.kdoc.parser.KDocElementTypes
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
@@ -76,4 +77,37 @@ inline fun ASTNode.insertTagBefore(
     kdocSection.addChild(LeafPsiElement(KDocTokens.TEXT, " "), beforeTagLineStart)
     kdocSection.addChild(newTag, beforeTagLineStart)
     consumer(newTag)
+}
+
+/**
+ * This method replaces wrong tag in class KDoc leaving [parameterName] unchanged.
+ *
+ * @param parameterName name of class parameter
+ * @param isParamTagNeeded true, in case we need to change the tag to `@param`
+ */
+fun ASTNode.replaceWrongTagInClassKdoc(
+    parameterName: String,
+    isParamTagNeeded: Boolean
+) {
+    val paramOrPropertySwitchText = if (isParamTagNeeded) "@property" to "@param" else "@param" to "@property"
+    val wrongTagText = "* ${paramOrPropertySwitchText.first} $parameterName"
+    val replaceText = "* ${paramOrPropertySwitchText.second} $parameterName"
+
+    this.replaceFirstTextInKdoc(wrongTagText, replaceText)
+}
+
+/**
+ * This method replaces the first occurrence of text in class KDoc.
+ *
+ * @param wrongText text to replace
+ * @param correctText replacement text
+ */
+@Suppress("UnsafeCallOnNullableType")
+fun ASTNode.replaceFirstTextInKdoc(
+    wrongText: String,
+    correctText: String
+) {
+    val allKdocText = this.text
+    val newKdocText = allKdocText.replaceFirst(wrongText, correctText)
+    this.treeParent.replaceChild(this, KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!)
 }

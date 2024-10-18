@@ -545,6 +545,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class Comment show that long line should be split in comment
+     *
      * @property hasNewLineBefore flag to handle type of comment: ordinary comment (long part of which should be moved to the next line)
      * and inline comments (which should be moved entirely to the previous line)
      * @property indexLastSpace index of last space to substring comment
@@ -593,6 +594,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class StringTemplate show that long line should be split in string template
+     *
      * @property delimiterIndex
      * @property isOneLineString
      */
@@ -643,6 +645,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Class LongBinaryExpression show that long line should be split between other parts long binary expression,
      * after one of operation reference
+     *
      * @property maximumLineLength is number of maximum line length
      * @property leftOffset is offset before start [node]
      * @property binList is list of Binary Expression which are children of [node]
@@ -798,6 +801,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Class ValueArgumentList show that line should be split in ValueArgumentList:
+     *
      * @property maximumLineLength - max line length
      * @property positionByOffset
      */

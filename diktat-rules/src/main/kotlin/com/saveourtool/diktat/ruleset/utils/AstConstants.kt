@@ -66,6 +66,7 @@ internal val ignoreImports = setOf("invoke", "get", "set", "getValue", "setValue
 
 /**
  * Enum that represents some standard platforms that can appear in kotlin code
+ *
  * @property packages beginnings of fully qualified names of packages belonging to a particular platform
  */
 enum class StandardPlatforms(val packages: List<String>) {
