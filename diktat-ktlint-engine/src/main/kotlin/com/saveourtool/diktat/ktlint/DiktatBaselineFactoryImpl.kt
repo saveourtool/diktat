@@ -6,6 +6,7 @@ import com.saveourtool.diktat.api.DiktatProcessorListener
 import com.saveourtool.diktat.ktlint.DiktatReporterImpl.Companion.wrap
 
 import com.pinterest.ktlint.cli.reporter.baseline.Baseline
+import com.pinterest.ktlint.cli.reporter.baseline.BaselineErrorHandling
 import com.pinterest.ktlint.cli.reporter.baseline.BaselineReporterProvider
 import com.pinterest.ktlint.cli.reporter.baseline.loadBaseline
 
@@ -23,7 +24,7 @@ class DiktatBaselineFactoryImpl : DiktatBaselineFactory {
     override fun tryToLoad(
         baselineFile: Path,
         sourceRootDir: Path?,
-    ): DiktatBaseline? = loadBaseline(baselineFile.absolutePathString())
+    ): DiktatBaseline? = loadBaseline(baselineFile.absolutePathString(), BaselineErrorHandling.LOG)
         .takeIf { it.status == Baseline.Status.VALID }
         ?.let { ktLintBaseline ->
             DiktatBaseline { file ->

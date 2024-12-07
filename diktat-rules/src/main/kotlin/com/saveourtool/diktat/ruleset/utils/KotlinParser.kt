@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.com.intellij.pom.PomTransaction
 import org.jetbrains.kotlin.com.intellij.pom.impl.PomTransactionBase
 import org.jetbrains.kotlin.com.intellij.pom.tree.TreeAspect
 import org.jetbrains.kotlin.com.intellij.psi.TokenType.ERROR_ELEMENT
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.IMPORT_KEYWORD
@@ -30,7 +31,7 @@ import sun.reflect.ReflectionFactory
 class KotlinParser {
     private val project: Project by lazy {
         val compilerConfiguration = CompilerConfiguration()
-        compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)  // mute the output logging to process it themselves
+        compilerConfiguration.put(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)  // mute the output logging to process it themselves
         val pomModel: PomModel = object : UserDataHolderBase(), PomModel {
             override fun runTransaction(transaction: PomTransaction) {
                 (transaction as PomTransactionBase).run()
