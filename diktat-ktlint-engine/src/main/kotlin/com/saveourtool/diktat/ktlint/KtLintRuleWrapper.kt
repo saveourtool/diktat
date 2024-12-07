@@ -24,6 +24,7 @@ class KtLintRuleWrapper(
     about = about,
     visitorModifiers = createVisitorModifiers(rule, prevRuleId),
 ) {
+    @Deprecated("Marked for removal in Ktlint 2.0. Please implement interface RuleAutocorrectApproveHandler.")
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,

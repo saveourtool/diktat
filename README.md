@@ -168,8 +168,8 @@ Requires a gradle version no lower than 7.0
 
 You can see how the plugin is configured in our examples:
 - [Kotlin DSL](examples/gradle-kotlin-dsl/build.gradle.kts)
-- [Kotlin DSL for multi-module project](examples/gradle-kotlin-dsl/build.gradle.kts)
-- [Groovy DSL](examples/gradle-kotlin-dsl/build.gradle.kts)
+- [Kotlin DSL for multi-module project](examples/gradle-kotlin-dsl-multiproject/build.gradle.kts)
+- [Groovy DSL](examples/gradle-groovy-dsl/build.gradle)
 
 <details>
 <summary>Add this plugin to your `build.gradle.kts`:</summary>

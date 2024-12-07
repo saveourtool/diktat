@@ -1,8 +1,8 @@
 [versions]
-kotlin = "1.9.24"
-kotlin-ksp = "1.9.24-1.0.20"
+kotlin = "2.1.0"
+kotlin-ksp = "2.1.0-1.0.29"
 serialization = "1.6.3"
-ktlint = "1.0.1"
+ktlint = "1.5.0"
 junit = "5.10.2"
 junit-platfrom = "1.10.2"
 guava = "33.0.0-jre"
@@ -16,13 +16,13 @@ jacoco = "0.8.8"
 maven-api = "3.9.6"
 maven-plugin-tools = "3.8.1"
 maven-plugin-testing-harness = "3.3.0"
-plexus = "2.1.0"
+plexus = "3.0.0"
 
 jbool = "1.24"
 kotlin-logging = "6.0.3"
 log4j2 = "2.23.1"
 kaml = "0.57.0"
-sarif4k = "0.5.0"
+sarif4k = "0.6.0"
 jupiter-itf-extension = "0.13.1"
 
 # executable jar
@@ -30,7 +30,7 @@ kotlinx-cli = "0.3.6"
 gradle-shadow = "8.1.1"
 
 # copied from save-cloud
-jetbrains-annotations = "24.1.0"
+jetbrains-annotations = "26.0.1"
 kotlinx-coroutines = "1.8.0"
 assertj = "3.25.3"
 diktat = "2.0.0"
