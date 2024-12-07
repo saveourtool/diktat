@@ -83,6 +83,8 @@ class DiktatProcessorFactoryImpl : DiktatProcessorFactory {
             code: Code,
             callback: LintCallback,
         ): String {
+            // this API method is significantly changed in Ktlint, so -werror was disabled due to it
+            @Suppress("Deprecation")
             val formatResult = format(code)
             lint(
                 code = Code(
