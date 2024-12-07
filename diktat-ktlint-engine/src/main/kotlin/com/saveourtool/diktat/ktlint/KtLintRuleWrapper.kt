@@ -13,6 +13,7 @@ private typealias EmitType = (offset: Int, errorMessage: String, canBeAutoCorrec
 
 /**
  * This is a wrapper around __KtLint__'s [Rule] which adjusts visitorModifiers to keep order with prevRule.
+ *
  * @property rule
  */
 class KtLintRuleWrapper(

@@ -6,7 +6,7 @@ Comments should be accurately and clearly expressed, without repeating the name 
 Comments are not a solution to the wrong code. Instead, you should fix the code as soon as you notice an issue or plan to fix it (by entering a TODO comment, including a Jira number).
 Comments should accurately reflect the code's design ideas and logic and further describe its business logic.
 As a result, other programmers will be able to save time when trying to understand the code.
-Imagine that you are writing the comments to help yourself to understand the original ideas behind the code in the future. 
+Imagine that you are writing the comments to help yourself to understand the original ideas behind the code in the future.
 
 ### <a name="c2.1"></a> 2.1 General form of Kdoc
 
@@ -56,6 +56,7 @@ class Example(
 ```kotlin
 /**
  * Class description
+ *     / * Add a blank line between the comment text and each KDoc tag underneath * /
  * @property foo property description
  * @property bar another property description
  */
@@ -68,7 +69,7 @@ class Example(
 **Exceptions:**
 
 * For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
-   
+
 * It is optional to add comments for simple one-line methods, such as shown in the example below:
 ```kotlin
 val isEmpty: Boolean
@@ -82,7 +83,7 @@ fun isEmptyList(list: List<String>) = list.size == 0
 ```
 
 **Note:** You can skip KDocs for a method's override if it is almost the same as the superclass method.
-- 
+-
 - Don't use Kdoc comments inside code blocks as block comments
 
 **Incorrect Example:**
@@ -118,18 +119,18 @@ When the method has such details as arguments, return value, or can throw except
 **Valid examples:**
 
  ```kotlin
-/** 
+/**
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
  * @since 1.6
  */
  protected abstract class Sample {
     /**
-     * This is a long comment with whitespace that should be split in 
+     * This is a long comment with whitespace that should be split in
      * comments on multiple lines if the line comment formatting is enabled.
      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
      * @param fox A quick brown fox jumps over the lazy dog
-     * @return battle between fox and dog 
+     * @return battle between fox and dog
      */
     protected abstract fun foo(Fox fox)
      /**
@@ -139,10 +140,10 @@ When the method has such details as arguments, return value, or can throw except
       * @throws ProblemException if lazy dog wins
       */
     protected fun bar() throws ProblemException {
-        // Some comments / * No need to add a blank line here * /   
+        // Some comments / * No need to add a blank line here * /
         var aVar = ...
 
-        // Some comments  / * Add a blank line before the comment * /   
+        // Some comments  / * Add a blank line before the comment * /
         fun doSome()
     }
  }
@@ -168,15 +169,15 @@ Important notes:
 - KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
 - The `@since` tag should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
 
-If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
- 
+If a tag block cannot be described in one line, indent the content of the new line by *two spaces* from the `@` position to achieve alignment (`@` counts as one + one space).
+
 **Exception:**
- 
+
 When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
 See [3.8 Horizontal space](#c3.8).
 
 In Kotlin, compared to Java, you can put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
-This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the `@since` tag.
+This comment should contain `@since` tag. The right style is to write the application version when its functionality is released. It should be entered after the `@since` tag.
 
 **Examples:**
 
@@ -237,7 +238,7 @@ class Foo
 
 - The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
-English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.` 
+English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.`
 
 - The copyright information should not be written in KDoc style or use single-line comments. It must start from the beginning of the file.
 The following example is a copyright statement for Huawei, without other functional comments:
@@ -278,9 +279,9 @@ It is a good practice to add a blank line between the body of the comment and Kd
 **Valid Examples:**
 
 ```kotlin
-/** 
+/**
  * This is the short overview comment for the example interface.
- * 
+ *
  * @since 1.6
  */
  public interface Example {
@@ -291,17 +292,17 @@ It is a good practice to add a blank line between the body of the comment and Kd
     val bField: String = ...
                       /* Add a blank line above the comment */
     /**
-     * This is a long comment with whitespace that should be split in 
+     * This is a long comment with whitespace that should be split in
      * multiple line comments in case the line comment formatting is enabled.
      *                /* blank line between description and Kdoc tag */
      * @param fox A quick brown fox jumps over the lazy dog
-     * @return the rounds of battle of fox and dog 
+     * @return the rounds of battle of fox and dog
      */
     fun foo(Fox fox)
                       /* Add a blank line above the comment */
      /**
       * These possibilities include: Formatting of header comments
-      * 
+      *
       * @return the rounds of battle of fox and dog
       * @throws ProblemException if lazy dog wins
       */
@@ -309,13 +310,13 @@ It is a good practice to add a blank line between the body of the comment and Kd
         // Some comments  /* Since it is the first member definition in this range, there is no need to add a blank line here */
         var aVar = ...
 
-        // Some comments  /* Add a blank line above the comment */            
+        // Some comments  /* Add a blank line above the comment */
         fun doSome()
     }
  }
 ```
 
-- Leave one single space between the comment on the right side of the code and the code. 
+- Leave one single space between the comment on the right side of the code and the code.
 If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes the code more understandable.
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
 Compared to Java, the `if` statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole `if-statement`.
@@ -360,7 +361,7 @@ A code is not used to store history. Git, svn, or other VCS tools should be used
 Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
 In an attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
 The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
-If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
+If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code.
 
 #### <a name="r2.4.3"></a>2.4.3 Code delivered to the client should not contain TODO/FIXME comments
 

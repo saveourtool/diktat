@@ -237,6 +237,19 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkEmptyLineBeforeBasicTags(basicTags: List<KDocTag>) {
         val firstBasicTag = basicTags.firstOrNull() ?: return
 
+        // Unlike other tags, @property and @constructor tags are inside separate KDOC_SECTION,
+        // so we need to move all children from current KDOC_SECTION to previous one and delete current KDOC_SECTION
+        if (firstBasicTag.knownTag == KDocKnownTag.PROPERTY || firstBasicTag.knownTag == KDocKnownTag.CONSTRUCTOR) {
+            val currentSection = firstBasicTag.node.treeParent
+            val prevSection = currentSection.prevSibling { it.elementType == KDocElementTypes.KDOC_SECTION }
+
+            prevSection?.let {
+                prevSection.addChildren(currentSection.firstChildNode, currentSection.lastChildNode, null)
+                prevSection.addChild(currentSection.lastChildNode, null)
+                currentSection.treeParent.removeChild(currentSection)
+            }
+        }
+
         val hasContentBefore = firstBasicTag
             .node
             .allSiblings(true)

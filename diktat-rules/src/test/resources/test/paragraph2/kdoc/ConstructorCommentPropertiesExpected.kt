@@ -135,17 +135,14 @@ class A constructor(
 /**
  * @property openName open property info
  *   single-line comment
- * @property openLastName
- *   open last property
+ * @property openLastName open last property
  *   info
  *   block
  *   comment
- * @property openAddr
- *   property
+ * @property openAddr property
  *   info
  * @param K
- * @property openBirthDate
- *   kdoc property
+ * @property openBirthDate kdoc property
  *   comment
  */
 open class B<K : Any> constructor(
@@ -179,41 +176,30 @@ open class B<K : Any> constructor(
  * @property protectedName single-line comment
  * @property name single-line comment
  * @param paramName single-line comment
- * @property protectedLastName
- *   block
+ * @property protectedLastName block
  *   comment
- * @property internalLastName
- *   block
+ * @property internalLastName block
  *   comment
- * @property openLastName
- *   block
+ * @property openLastName block
  *   comment
- * @property lastName
- *   block
+ * @property lastName block
  *   comment
- * @param paramLastName
- *   block
+ * @param paramLastName block
  *   comment
- * @param privateBirthDate
- *   kdoc property
+ * @param privateBirthDate kdoc property
  *   comment
- * @property protectedBirthDate
- *   kdoc property
+ * @property protectedBirthDate kdoc property
  *   comment
- * @property internalBirthDate
- *   kdoc property
+ * @property internalBirthDate kdoc property
  *   comment
- * @property openBirthDate
- *   kdoc property
+ * @property openBirthDate kdoc property
  *   comment
- * @property birthDate
- *   kdoc property
+ * @property birthDate kdoc property
  *   comment
- * @param paramBirthDate
- *   kdoc property
+ * @param paramBirthDate kdoc property
  *   comment
  */
-class A<K : Any, P: Any, G: Any> constructor(
+class A<K : Any, P : Any, G : Any> constructor(
     private val privateName: String,
     protected val protectedName: String,
     internal val internalName: String,
