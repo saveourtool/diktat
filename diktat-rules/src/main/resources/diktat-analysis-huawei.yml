@@ -7,7 +7,7 @@
     # testDirs: test
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.9
+    kotlinVersion: 2.1
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT

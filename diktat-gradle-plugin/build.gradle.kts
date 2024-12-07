@@ -2,6 +2,8 @@ import com.saveourtool.diktat.buildutils.configurePom
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("DSL_SCOPE_VIOLATION", "RUN_IN_SCRIPT")  // https://github.com/gradle/gradle/issues/22797
@@ -31,13 +33,12 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
+    compilerOptions {
         // kotlin 1.4 api is the latest support version in kotlin 1.9
         // min supported Gradle is 7.0
-        languageVersion = "1.4"
-        apiVersion = "1.4"
-        jvmTarget = "1.8"
-        freeCompilerArgs = freeCompilerArgs - "-Werror"
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
+        jvmTarget.set(JvmTarget.JVM_1_8)
     }
 }
 
