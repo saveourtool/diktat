@@ -1,7 +1,6 @@
 package com.saveourtool.diktat.buildutils
 
 import org.gradle.api.tasks.testing.Test
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
