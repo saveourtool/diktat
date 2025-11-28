@@ -15,7 +15,7 @@ jobs:
       security-events: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Fetch Git tags, so that semantic version can be calculated.
           # Alternatively, run `git fetch --prune --unshallow --tags` as the
@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: 11
           distribution: temurin
@@ -65,14 +65,14 @@ jobs:
             -PgprUser=${{ github.actor }}
             -PgprKey=${{ secrets.GITHUB_TOKEN }}
       - name: Upload SARIF report to Github
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: ${{ always() }}
         with:
           sarif_file: build/reports/diktat/diktat-merged.sarif
           # override category to have a different with release version
           category: diktat (snapshot)
       - name: Upload SARIF artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ failure() }}
         with:
           name: sarif-reports

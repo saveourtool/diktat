@@ -18,7 +18,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Fetch Git tags, so that semantic version can be calculated.
           # Alternatively, run `git fetch --prune --unshallow --tags` as the
@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'Set up Java 11'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 11
