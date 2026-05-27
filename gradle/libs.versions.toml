@@ -35,7 +35,7 @@ kotlinx-coroutines = "1.8.0"
 assertj = "3.25.3"
 diktat = "2.0.0"
 reckon = "0.18.3"
-spotless = "6.25.0"
+spotless = "8.6.0"
 download = "5.6.0"
 
 [plugins]
